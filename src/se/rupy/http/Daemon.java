@@ -1080,7 +1080,7 @@ public class Daemon implements Runnable {
 
 				if(host)
 					out.println("- domain     \t" + domain);
-			}			
+			}
 
 			if (pass != null && pass.length() > 0 || host) {
 				Service deploy = null;

@@ -1,12 +1,7 @@
 INTRODUCTION:
 
     I always wanted something that wrapped HTTP 
-    in Java without forcing a ton of crap on me 
-    like JSP and a million other things.
-    
-    I think the HTTP server should be small and 
-    easy to use without sacrificing performance 
-    or basic features.
+    in Java without forcing me to work slowly.
 
 RUN:
 
@@ -331,8 +326,6 @@ VERSION:
       node one and the project.domain.com deploy will reply.
     - All request paths that starts with "/root/" are now forbidden 
       in hosted mode.
-    - Allow for apps to modify http headers so we no longer are slave 
-      to the DNS crap.
     - Uninstantiable services now complain upon hot-deploy.
     - Threadlock prints stacktrace.
     - Added /api with all service endpoints when -panel is used.
