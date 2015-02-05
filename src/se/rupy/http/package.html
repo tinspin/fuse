@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>Rupy - Tiny NIO Application Server</title>
+</head>
+<body>
+Instructions: start {@link se.rupy.http.Daemon}, implement {@link se.rupy.http.Service} then {@link se.rupy.http.Deploy}.<br>
+<br>
+Rupy is lightweight and fast.<br>
+It also consumes very few joules per request.<br>
+<br>
+The hierarchy of the code is as follows:
+<tt><br>
+<br>
+&nbsp;&nbsp;&nbsp;<a href="http://rupy.se/doc/se/rupy/http/Event.html" class="not">Event</a>&nbsp;-+--&nbsp;<a href="http://rupy.se/doc/se/rupy/http/Query.html" class="not">Query</a>&nbsp;&lt;--&nbsp;<a href="http://rupy.se/doc/se/rupy/http/Input.html" class="not">Input</a>&nbsp;&lt;---&nbsp;+-----------+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;Browser&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+-&gt;&nbsp;<a href="http://rupy.se/doc/se/rupy/http/Reply.html" class="not">Reply</a>&nbsp;--&gt;&nbsp;<a href="http://rupy.se/doc/se/rupy/http/Output.html" class="not">Output</a>&nbsp;--&gt;&nbsp;+-----------+<br>
+<br>
+</tt>
+Where X marks the potential Comet pause point.<br>
+<br>
+{@link se.rupy.http.Chain}, {@link se.rupy.http.Failure}, {@link se.rupy.http.Hash}, {@link se.rupy.http.Session} and {@link se.rupy.http.Worker} should be pretty self explanatory.<br>
+<br>
+For more details on how to configure rupy, see the properties for <a href="http://rupy.se/doc/se/rupy/http/Daemon.html#Daemon(java.util.Properties)">Daemon</a>.
+</body>

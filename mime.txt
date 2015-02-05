@@ -1,0 +1,20 @@
+doc   application/msword
+exe   application/octet-stream
+js    application/javascript
+zip   application/zip
+aiff  audio/aiff
+midi  audio/midi
+mp3   audio/mpeg3
+wav   audio/wav
+gif   image/gif
+jpg   image/jpeg
+png   image/png
+tiff  image/tiff
+css   text/css
+html  text/html; charset=UTF-8
+txt   text/plain; charset=UTF-8
+xml   text/xml
+avi   video/avi
+mov   video/quicktime
+mpeg  video/mpeg
+mp4   video/mp4
