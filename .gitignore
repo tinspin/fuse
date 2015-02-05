@@ -2,3 +2,6 @@
 .idea
 *.iml
 target
+bin
+log
+pid.txt
