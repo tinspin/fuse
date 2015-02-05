@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="test" name="http">
+
+	<property name="name" value="http"/>
+	
+	<target name="check">
+		<uptodate property="required" targetfile="bin/${name}.jar">
+			<srcfiles dir="src" includes="**/*.java"/>
+			<srcfiles file="mime.txt"/>
+		</uptodate>
+	</target>
+
+	<target name="build" depends="check" unless="required">
+		<echo>Building (${name})</echo>
+		<mkdir dir="tmp/cls"/>
+		<javac srcdir="src" target="1.4" source="1.4" destdir="tmp/cls" debug="on" deprecation="off" classpath="src"/>
+		<mkdir dir="tmp/jar"/>
+		<copy todir="tmp/jar">
+			<fileset dir="tmp/cls"/>
+		</copy>
+		<copy file="mime.txt" todir="tmp/jar"/>
+		<jar jarfile="tmp/${name}.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="se.rupy.http.Daemon"/>
+			</manifest>
+			<fileset dir="tmp/jar"/>
+		</jar>
+		<mkdir dir="bin"/>
+		<copy file="tmp/${name}.jar" todir="bin"/>
+		<delete dir="tmp" quiet="yes"/>
+	</target>
+	
+	<target name="test" depends="build">
+		<java fork="yes" jar="bin/http.jar">
+			<!--sysproperty key="java.security.manager" value=""/>
+			<sysproperty key="java.security.policy" value="policy"/>
+			<arg line="-host"/>
+			<arg line="-verbose"/>
+			<arg line="-debug"/-->
+			<arg line="-timeout 1"/>
+			<arg line="-threads 1"/>
+			<arg line="-delay 60"/>
+			<arg line="-test"/>
+		</java>
+	</target>
+
+	<target name="doc">
+		<javadoc access="public" sourcepath="src" destdir="doc" executable="javadoc" stylesheetfile="sheet.css"/>
+	</target>
+		
+</project>
