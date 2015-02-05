@@ -1,7 +1,8 @@
 INTRODUCTION:
 
     I always wanted something that wrapped HTTP 
-    in Java without forcing me to work slowly.
+    in Java without forcing me or the CPU to work 
+    slowly.
 
 RUN:
 
