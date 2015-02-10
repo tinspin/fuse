@@ -335,6 +335,7 @@ VERSION:
     - Fixed wildcard "null" path service on host and 
       a potential hosted security problem.
     - Added a simple but high performance Async client.
+    - Added timeout for the async client.
     
     1.3 Cluster (WIP)
     

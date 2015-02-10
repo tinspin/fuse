@@ -38,7 +38,7 @@ public class Daemon implements Runnable {
 	PrintStream out, access, error;
 	AccessControlContext control, no_control;
 	ConcurrentHashMap events, session;
-	int threads, timeout, cookie, delay, size, port, cache;
+	int threads, timeout, cookie, delay, size, port, cache, async_timeout;
 	boolean verbose, debug, host, alive, panel;
 	Async client;
 
@@ -113,6 +113,14 @@ public class Daemon implements Runnable {
 	 * </td><td>
 	 *            simple log of access and error in /log.
 	 * </td></tr>
+	 * <tr><td valign="top"><b>bind</b> ()
+	 * </td><td>
+	 *            to bind to a specific ip.
+	 * </td></tr>
+	 * <tr><td valign="top"><b>async_timeout</b> (1000)
+	 * </td><td>
+	 *            timeout for the async client in milliseconds.
+	 * </td></tr>
 	 * <tr><td valign="top"><b>host</b> (false)
 	 * </td><td>
 	 *            to enable virtual hosting, you need to name the deployment 
@@ -173,6 +181,7 @@ public class Daemon implements Runnable {
 		delay = Integer.parseInt(properties.getProperty("delay", "5000"));
 		size = Integer.parseInt(properties.getProperty("size", "1024"));
 		cache = Integer.parseInt(properties.getProperty("cache", "86400"));
+		async_timeout = Integer.parseInt(properties.getProperty("async_timeout", "1000"));
 
 		verbose = properties.getProperty("verbose", "false").toLowerCase()
 				.equals("true");
@@ -361,7 +370,7 @@ public class Daemon implements Runnable {
 				//System.err.println(worker.index() + "|" + worker.id());
 			}
 
-			client = new Async(this, false);
+			client = new Async(this, async_timeout, false);
 			client.start(threads);
 			
 			alive = true;

@@ -31,14 +31,16 @@ import java.util.Set;
 public class Async implements Runnable {
 	private static final int SIZE = 1024;
 	private boolean alive = true, debug;
+	private int timeout;
 
 	private CopyOnWriteArrayList calls;
 	private Selector selector;
 	private Daemon daemon;
 	private Queue queue;
 	
-	protected Async(Daemon daemon, boolean debug) {
+	protected Async(Daemon daemon, int timeout, boolean debug) {
 		calls = new CopyOnWriteArrayList();
+		this.timeout = timeout;
 		this.daemon = daemon;
 		this.debug = debug;
 	}
@@ -201,6 +203,7 @@ public class Async implements Runnable {
 			channel = SocketChannel.open();
 			channel.configureBlocking(false);
 			channel.socket().setTcpNoDelay(true);
+			channel.socket().setSoTimeout(timeout);
 			channel.connect(new InetSocketAddress(InetAddress.getByName(host), port));
 			channel.register(selector, SelectionKey.OP_CONNECT, this);
 			time = System.currentTimeMillis();
@@ -406,7 +409,8 @@ public class Async implements Runnable {
 							}, archive.access());
 						}
 						catch(PrivilegedActionException e) {
-							e.printStackTrace();
+							//e.printStackTrace();
+							throw e;
 						}
 					}
 					else {
@@ -430,7 +434,8 @@ public class Async implements Runnable {
 							}, archive.access());
 						}
 						catch(PrivilegedActionException e) {
-							e.printStackTrace();
+							//e.printStackTrace();
+							throw e;
 						}
 					}
 					else {
