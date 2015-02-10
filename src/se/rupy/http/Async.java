@@ -397,21 +397,15 @@ public class Async implements Runnable {
 
 				if(run == WRITE) {
 					if(daemon.host) {
-						try {
-							final Deploy.Archive archive = daemon.archive(work.event.query().header("host"));
-							final Call call = this;
-							Thread.currentThread().setContextClassLoader(archive);
-							AccessController.doPrivileged(new PrivilegedExceptionAction() {
-								public Object run() throws Exception {
-									work.send(call);
-									return null;
-								}
-							}, archive.access());
-						}
-						catch(PrivilegedActionException e) {
-							//e.printStackTrace();
-							throw e;
-						}
+						final Deploy.Archive archive = daemon.archive(work.event.query().header("host"));
+						final Call call = this;
+						Thread.currentThread().setContextClassLoader(archive);
+						AccessController.doPrivileged(new PrivilegedExceptionAction() {
+							public Object run() throws Exception {
+								work.send(call);
+								return null;
+							}
+						}, archive.access());
 					}
 					else {
 						work.send(this);
@@ -423,20 +417,14 @@ public class Async implements Runnable {
 
 				if(run == READ) {
 					if(daemon.host) {
-						try {
-							final Deploy.Archive archive = daemon.archive(work.event.query().header("host"));
-							Thread.currentThread().setContextClassLoader(archive);
-							AccessController.doPrivileged(new PrivilegedExceptionAction() {
-								public Object run() throws Exception {
-									work.read(read());
-									return null;
-								}
-							}, archive.access());
-						}
-						catch(PrivilegedActionException e) {
-							//e.printStackTrace();
-							throw e;
-						}
+						final Deploy.Archive archive = daemon.archive(work.event.query().header("host"));
+						Thread.currentThread().setContextClassLoader(archive);
+						AccessController.doPrivileged(new PrivilegedExceptionAction() {
+							public Object run() throws Exception {
+								work.read(read());
+								return null;
+							}
+						}, archive.access());
 					}
 					else {
 						work.read(read());
