@@ -50,8 +50,9 @@ public class Daemon implements Runnable {
 	}
 
 	/**
-	 * Don't forget to call {@link #start()}. The parameters below
-	 * should be in the properties argument. The parenthesis contains the default value.<br><br>
+	 * Don't forget to call {@link #start()}. You can also use {@link Daemon#init()} which will parse 
+	 * the parameters for you. The parameters below should be in the properties argument. The parenthesis 
+	 * contains the default value.<br><br>
 	 * These are also used from the command line, so for example 'java -cp http.jar se.rupy.http.Daemon 
 	 * -pass !@#$ -log -port 80' would enable remote deploy with password '!@#$', run on port 80 (requires 
 	 * root on linux) and turn on logging.
@@ -497,9 +498,10 @@ public class Daemon implements Runnable {
 	}
 
 	private Listener listener;
-	private Chain listeners;
+	private Chain listeners; // ClusterListeners
 	private ErrorListener errlis;
-
+	private Com com;
+	
 	/**
 	 * Send Object to JVM listener. We recommend you only send bootclasspath loaded 
 	 * classes here otherwise hotdeploy will fail.
@@ -561,7 +563,47 @@ public class Daemon implements Runnable {
 		 */
 		public Object receive(Object message) throws Exception;
 	}
-
+	
+	/**
+	 * Receives COM port data.
+	 */
+	public interface Listen {
+		public void read(byte[] data, int length) throws IOException;
+	}
+	
+	/**
+	 * COM port.
+	 */
+	public static abstract class Com {
+		public Listen listen;
+		
+		/**
+		 * To set the hot-deploy as listener.
+		 */
+		public void set(Listen listen) {
+			this.listen = listen;
+		}
+		
+		public abstract void write(byte[] data) throws IOException;
+	}
+	
+	/**
+	 * To get the COM port.
+	 */
+	public Com com() {
+		return com;
+	}
+	
+	/**
+	 * To use the COM interface you should boot rupy with your own main method. 
+	 * And call {@link Daemon#init(String[])} from there to be able to use this method.
+	 * Don't forget to call {@link Daemon#start()} after you used this method.
+	 * @param com
+	 */
+	public void set(Com com) {
+		this.com = com;
+	}
+	
 	/**
 	 * Cross cluster-node communication interface. So that applications deployed 
 	 * on one node can send messages to instances deployed in other nodes.
@@ -1491,7 +1533,13 @@ public class Daemon implements Runnable {
 		}
 	}
 
-	public static void main(String[] args) {
+	/**
+	 * To use your own main method if you for example need COM port handling.
+	 * Don't forget to call {@link Daemon#start()} after you called {@link Daemon#set(Com)}.
+	 * @param args
+	 * @return the Daemon
+	 */
+	public static Daemon init(String[] args) {
 		Properties properties = new Properties();
 
 		for (int i = 0; i < args.length; i++) {
@@ -1517,10 +1565,10 @@ public class Daemon implements Runnable {
 		if (properties.getProperty("help", "false").toLowerCase()
 				.equals("true")) {
 			System.out.println("Usage: java -jar http.jar -verbose");
-			return;
+			return null;
 		}
 
-		new Daemon(properties).start();
+		Daemon daemon = new Daemon(properties);
 
 		/*
 		 * If this is run as an application we log PID to pid.txt file in root.
@@ -1534,5 +1582,12 @@ public class Daemon implements Runnable {
 			out.close();
 		}
 		catch(Exception e) {}
+		
+		return daemon;
+	}
+	
+	public static void main(String[] args) {
+		Daemon daemon = init(args);
+		daemon.start();
 	}
 }
