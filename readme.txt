@@ -337,6 +337,7 @@ VERSION:
     - Added a simple but high performance Async client.
     - Added timeout for the async client.
     - Added COM port compatibility for p2p mesh radio.
+    - Fixed some wildcard stuff, preparing for both proxy and load-balancing.
     
     1.3 Cluster (WIP)
     

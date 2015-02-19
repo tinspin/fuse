@@ -3,6 +3,7 @@ package se.rupy.http;
 import java.io.*;
 import java.net.*;
 import java.nio.*;
+import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.security.SecureRandom;
@@ -246,7 +247,7 @@ public class Event extends Throwable implements Chain.Link {
 			reply.code("400 Bad Request");
 		}
 		else {
-			if(!service(daemon.chain(query))) {
+			if(!service(daemon.chain(this))) {
 				if(daemon.host && query.path().startsWith("/root/")) {
 					reply.code("403 Forbidden");
 					reply.output().print(
@@ -347,7 +348,7 @@ public class Event extends Throwable implements Chain.Link {
 
 	protected void write() throws IOException {
 		touch();
-		service(daemon.chain(query));
+		service(daemon.chain(this));
 		finish();
 	}
 
@@ -535,7 +536,12 @@ public class Event extends Throwable implements Chain.Link {
 
 		if(daemon.host) {
 			final Deploy.Archive archive = daemon.archive(query().header("host"));
-			Thread.currentThread().setContextClassLoader(archive);
+			try {
+				Thread.currentThread().setContextClassLoader(archive);
+			}
+			catch(AccessControlException e) {
+				// recursive chaining fails here, no worries! ;)
+			}
 			Integer i = (Integer) AccessController.doPrivileged(new PrivilegedExceptionAction() {
 				public Object run() throws Exception {
 					return new Integer(service.index());

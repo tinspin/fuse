@@ -50,7 +50,7 @@ public class Daemon implements Runnable {
 	}
 
 	/**
-	 * Don't forget to call {@link #start()}. You can also use {@link Daemon#init()} which will parse 
+	 * Don't forget to call {@link #start()}. You can also use {@link Daemon#init(String[])} which will parse 
 	 * the parameters for you. The parameters below should be in the properties argument. The parenthesis 
 	 * contains the default value.<br><br>
 	 * These are also used from the command line, so for example 'java -cp http.jar se.rupy.http.Daemon 
@@ -243,6 +243,19 @@ public class Daemon implements Runnable {
 
 	public Async client() throws Exception {
 		return client;
+	}
+	
+	/**
+	 * Disabled for hosted mode.
+	 * @param id
+	 * @return the event for async wakeup.
+	 */
+	public Event event(int id) {
+		if(!host) {
+			return (Event) events.get(new Integer(id));
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -568,7 +581,7 @@ public class Daemon implements Runnable {
 	 * Receives COM port data.
 	 */
 	public interface Listen {
-		public void read(byte[] data, int length) throws IOException;
+		public void read(byte[] data, int length) throws Exception;
 	}
 	
 	/**
@@ -584,7 +597,7 @@ public class Daemon implements Runnable {
 			this.listen = listen;
 		}
 		
-		public abstract void write(byte[] data) throws IOException;
+		public abstract void write(byte[] data) throws Exception;
 	}
 	
 	/**
@@ -996,25 +1009,25 @@ public class Daemon implements Runnable {
 		return null;
 	}
 
-	protected Chain chain(Query query) {
+	protected Chain chain(Event event) {
 		if(host) {
-			return chain(query.header("host"), query.path());
+			return chain(event.query().header("host"), event.query().path(), event.push());
 		}
 		else {
-			return chain("content", query.path());
+			return chain("content", event.query().path(), event.push());
 		}
 	}
 	
 	public Chain chain(Event event, String path) {
 		if(host) {
-			return chain(event.query().header("host"), path);
+			return chain(event.query().header("host"), path, event.push());
 		}
 		else {
-			return chain("content", path);
+			return chain("content", path, event.push());
 		}
 	}
 
-	protected Chain chain(String host, String path) {
+	protected Chain chain(String host, String path, boolean wakeup) {
 		synchronized (this.service) {
 			Chain chain = (Chain) this.service.get(path);
 
@@ -1079,6 +1092,13 @@ public class Daemon implements Runnable {
 
 						if (chain != null) {
 							return chain;
+						}
+						else if(wakeup) {
+							chain = (Chain) archive.chain().get("null");
+							
+							if (chain != null) {
+								return chain;
+							}
 						}
 					}
 				}
@@ -1235,17 +1255,24 @@ public class Daemon implements Runnable {
 							if(host) {
 								name = event.query().header("host");
 							}
-
-							if(name == null || name.equals(archive.host())) {	
-								out.println("- " + title);
-
+							
+							if(name.equals("host.rupy.se")) {
+								out.println("<a href=\"http://" + title + "/api\">" + title + "</a>");
+							}
+							else if(name == null || name.equals(archive.host())) {
+								if(host) {
+									out.println("<a href=\"http://" + title + "\">" + title + "</a>");
+								}
+								else {
+									out.println(title);
+								}
+								
 								Iterator it2 = archive.chain().keySet().iterator();
 								while(it2.hasNext()) {
 									String path = (String) it2.next();
 
 									if(path.startsWith("/") && path.length() > 1)
-										out.println("    <a href=\"" + path + "\">" + path + "</a>");
-										//out.println("    <a href=\"" + (host ? "http://" + title : "") + path + "\">" + path + "</a>");
+										out.println("  <a href=\"" + path + "\">" + path + "</a>");
 								}
 							}
 						}
