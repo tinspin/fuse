@@ -215,6 +215,8 @@ public class Deploy extends Service {
 		private String host;
 		private long date;
 
+		long ram;
+		
 		Vector classes = new Vector();
 
 		Archive() { // Archive for deployment.
@@ -257,7 +259,7 @@ public class Deploy extends Service {
 				permissions.add(new PropertyPermission("sun.net.http.allowRestrictedHeaders", "write"));
 				permissions.add(new PropertyPermission("java.version", "read"));
 				permissions.add(new RuntimePermission("getStackTrace"));
-				
+
 				if(host.equals("root.rupy.se")) {
 					try {
 						permissions.add(new java.nio.file.LinkPermission("hard"));
@@ -265,7 +267,7 @@ public class Deploy extends Service {
 					}
 					catch(Error e) {}
 				}
-				
+
 				access = new AccessControlContext(new ProtectionDomain[] {
 						new ProtectionDomain(null, permissions)});
 				new File(path).mkdirs();
@@ -286,6 +288,7 @@ public class Deploy extends Service {
 
 					String name = name(entry.getName());
 					classes.add(new Small(name, data));
+					ram += data.length;
 				} else if (!entry.isDirectory()) {
 					Big.write(host, "/" + entry.getName(), entry, in);
 				}
@@ -318,8 +321,10 @@ public class Deploy extends Service {
 				event.output().flush();
 			}
 		}
-
+		
 		protected Class findClass(String name) throws ClassNotFoundException {
+			//System.out.println(name);
+			
 			Small small = null;
 			for(int i = 0; i < classes.size(); i++) {
 				small = (Small) classes.get(i);
@@ -371,7 +376,7 @@ public class Deploy extends Service {
 					if(daemon.verbose) {
 						daemon.out.println(small.name + " couldn't be instantiated!");
 					}
-					
+
 					throw new Exception(small.name() + " could not be instantiated, make it public (static if inner class) with no or a zero argument constructor.");
 				}
 			}
@@ -423,7 +428,7 @@ public class Deploy extends Service {
 		}
 	}
 
-	static class Big implements Stream {
+	static class Big extends Stream {
 		private File file;
 		private FileInputStream in;
 		private String name;
@@ -450,7 +455,7 @@ public class Deploy extends Service {
 			new File(root + path).mkdirs();
 			File file = new File(root + name);
 			file.createNewFile();
-						
+
 			OutputStream out = new FileOutputStream(file);
 
 			pipe(in, out);
@@ -460,7 +465,7 @@ public class Deploy extends Service {
 
 			//System.out.println(name + " " + new Date(entry.getTime()));
 			file.setLastModified(entry.getTime());
-			
+
 			return file;
 		}
 
@@ -492,7 +497,7 @@ public class Deploy extends Service {
 		}
 	}
 
-	static class Small implements Stream {
+	static class Small extends Stream {
 		private String name;
 		private byte[] data;
 		private ByteArrayInputStream in;
@@ -541,12 +546,12 @@ public class Deploy extends Service {
 		}
 	}
 
-	static interface Stream {
-		public String name();
-		public InputStream input();
-		public void close();
-		public long length();
-		public long date();
+	static abstract class Stream extends Daemon.Metric {
+		public abstract String name();
+		public abstract InputStream input();
+		public abstract void close();
+		public abstract long length();
+		public abstract long date();
 	}
 
 	static class Client {
@@ -724,7 +729,7 @@ public class Deploy extends Service {
 		md.update(hash.getBytes(), 0, hash.length());
 		return hex(md.digest());
 	}
-	
+
 	/**
 	 * Hash file to hex.
 	 */
@@ -741,7 +746,7 @@ public class Deploy extends Service {
 		}
 		return hex(md.digest());
 	}
-	
+
 	private static String hex(byte[] data) {
 		StringBuilder builder = new StringBuilder();
 
@@ -750,7 +755,7 @@ public class Deploy extends Service {
 
 			if(hex.length() < 2)
 				hex = "0" + hex;
-			
+
 			builder.append(hex);
 		}
 

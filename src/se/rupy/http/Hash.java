@@ -1,6 +1,7 @@
 package se.rupy.http;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Convenience class to avoid casting and parsing everywhere.
@@ -189,10 +190,17 @@ public class Hash extends HashMap {
 		return super.put(key, value);
 	}
 	
-	/**
-	 * @return HashMap.toString()
-	 */
-	public String contents() {
-		return super.toString();
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		Iterator it = keySet().iterator();
+		
+		while(it.hasNext()) {
+			String key = (String) it.next();
+			String value = (String) get(key);
+			
+			builder.append(key + ":" + value + Output.EOL);
+		}
+		
+		return builder.toString();
 	}
 }

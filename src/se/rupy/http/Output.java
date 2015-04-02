@@ -11,7 +11,7 @@ import java.util.*;
  */
 public abstract class Output extends OutputStream implements Event.Block {
 	public final static String EOL = "\r\n";
-	private final static byte[] server = ("Server: Rupy/1.2" + EOL).getBytes();
+	private final static byte[] server = ("Server: Rupy/1.3" + EOL).getBytes();
 	private final static byte[] close = ("Connection: Close" + EOL).getBytes();
 	private final static byte[] alive = ("Connection: Keep-Alive" + EOL).getBytes();
 	private final static byte[] chunked = ("Transfer-Encoding: Chunked" + EOL).getBytes();
@@ -19,6 +19,7 @@ public abstract class Output extends OutputStream implements Event.Block {
 
 	private byte[] one = new byte[1];
 	protected int length, size;
+	protected long total;
 	protected Reply reply;
 	protected boolean init, push, fixed, done;
 
@@ -243,6 +244,8 @@ public abstract class Output extends OutputStream implements Event.Block {
 			if (len > 0) {
 				out.put(b, off, len);
 			}
+			
+			total += len;
 		} catch (Failure.Close c) {
 			throw c;
 		} catch (IOException e) {

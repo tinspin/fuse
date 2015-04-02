@@ -15,7 +15,7 @@ public class Query extends Hash {
 	private static URLDecoder decoder = new URLDecoder();
 	private String path, version, parameters;
 	private Hash headers;
-	private Input input;
+	protected Input input;
 	private int method;
 	private long length, modified;
 	private boolean done, parsed, policy;

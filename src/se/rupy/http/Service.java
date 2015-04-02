@@ -1,5 +1,7 @@
 package se.rupy.http;
 
+import java.util.HashMap;
+
 /**
  * The service filter is like a servlet which describes its own identifier. You
  * have to be careful how you write your hot-deployable code, see the wiki for
@@ -9,6 +11,8 @@ package se.rupy.http;
  * @author marc
  */
 public abstract class Service implements Chain.Link {
+	HashMap metric = new HashMap();
+	
 	/**
 	 * When the session is created, read the incoming cookie key and/or set 
 	 * the key you wish to be stored, the domain and the expire date.
@@ -26,7 +30,7 @@ public abstract class Service implements Chain.Link {
 	 * correctly if the server is placed behind a proxy.
 	 */
 	public final static int DISCONNECT = 3;
-
+	
 	/**
 	 * Where in the filter chain is this service? Default position is first
 	 * (index 0).

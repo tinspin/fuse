@@ -1,6 +1,8 @@
 package se.rupy.http;
 
 import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.net.*;
 import java.nio.*;
 import java.security.AccessControlException;
@@ -73,6 +75,14 @@ public class Event extends Throwable implements Chain.Link {
 	private boolean close;
 	private long touch;
 
+	static ThreadMXBean bean;
+	
+	static {
+		bean = ManagementFactory.getThreadMXBean();
+		bean.setThreadContentionMonitoringEnabled(true);
+		//System.out.println(bean.isThreadCpuTimeSupported() + " " + bean.isThreadCpuTimeEnabled() + " " + bean.isThreadContentionMonitoringSupported() + " " + bean.isThreadContentionMonitoringEnabled() + " " + bean.isCurrentThreadCpuTimeSupported());
+	}
+	
 	/*
 	 * Since variable chunk length on HTTP requests implementations
 	 * are sparse I needed a way to remove all of the irrelevant 
@@ -297,7 +307,13 @@ public class Event extends Throwable implements Chain.Link {
 
 		if(query.modified() == 0 || query.modified() < reply.modified()) {
 			try {
+				long cpu = bean.getThreadCpuTime(Thread.currentThread().getId());
+
 				Deploy.pipe(stream.input(), reply.output(stream.length()));
+				
+				stream.cpu += bean.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
+				stream.net.read += query.input.length;
+				stream.net.write += reply.output.total;
 			}
 			finally {
 				stream.close();

@@ -4,6 +4,8 @@ INTRODUCTION:
     in Java without forcing me or the CPU to work 
     slowly.
 
+LICENSE: LGPL
+
 RUN:
 
     You need java 1.5 or later installed and 
@@ -346,12 +348,20 @@ VERSION:
     - Fixed some wildcard stuff, preparing for 
       both proxy and load-balancing.
     
-    1.3 Cluster (WIP)
+    1.3 Metrics
     
-    TODO:
+    - Measures:
+      1) the time worker threads spend servicing an app. (CPU)
+      2) the amount of bytes:
+        a) loaded by the classloader. (RAM)
+        b) read/written to:
+           - disk. (SSD)
+           - network. (NET)
     
-    - Integrate ROOT.
-    - Add deploy rollback.
-    - Store CPU/SSD/NET for everyone.
+    // TODO:
+    
+    - Measure client NET and File SSD. Disable other network stuff.
+    - Save/load metrics to/from disk.
+    - Mail exceptions via listener on host.rupy.se.
     
 have fun!

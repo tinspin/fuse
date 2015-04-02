@@ -2,6 +2,7 @@ package se.rupy.http;
 
 import java.io.File;
 import java.io.FilePermission;
+import java.lang.reflect.Field;
 import java.net.SocketPermission;
 import java.security.AccessControlContext;
 import java.security.AccessControlException;
@@ -50,6 +51,8 @@ public class Chain extends LinkedList {
 				event.session(service, event);
 			}
 
+			long cpu = Event.bean.getThreadCpuTime(Thread.currentThread().getId());
+			
 			if(event.daemon().host) {
 				try {
 					final Deploy.Archive archive = event.daemon().archive(event.query().header("host"));
@@ -87,6 +90,22 @@ public class Chain extends LinkedList {
 			else {
 				service.filter(event);
 			}
+			
+			String path = event.query().path();
+			Daemon.Metric metric = (Daemon.Metric) service.metric.get(path);
+			
+			if(metric == null) {
+				metric = new Daemon.Metric();
+				service.metric.put(path, metric);
+			}
+			
+			metric.cpu += Event.bean.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
+			
+			metric.net.read += event.query().input.total;
+			metric.net.write += event.reply().output.total;
+			
+			event.query().input.total = 0;
+			event.reply().output.total = 0;
 		}
 	}
 

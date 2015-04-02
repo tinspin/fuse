@@ -11,6 +11,7 @@ public abstract class Input extends InputStream implements Event.Block {
 	private byte[] one = new byte[1];
 	protected boolean chunk, init;
 	protected int available, length;
+	protected long total;
 	protected Event event;
 
 	protected Input(Event event) throws IOException {
@@ -75,6 +76,7 @@ public abstract class Input extends InputStream implements Event.Block {
 			event.worker().in().get(b, off, read);
 			available -= read;
 			length += read;
+			total += read;
 			return read;
 		} catch (Failure.Close c) {
 			throw c;
