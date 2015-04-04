@@ -530,9 +530,15 @@ public class Daemon implements Runnable {
 					//System.out.println(base);
 
 					archive = (Deploy.Archive) this.archive.get(base);
+					
+					if(archive == null) {
+						archive = (Deploy.Archive) this.archive.get("www." + base);
+					}
 				}
 			}
 
+			//System.out.println(archive);
+			
 			return archive;
 		}
 		else {
@@ -1018,6 +1024,12 @@ public class Daemon implements Runnable {
 			if(file.exists() && !file.isDirectory()) {
 				return new Deploy.Big(file);
 			}
+			
+			file = new File("app" + File.separator + "www." + base + File.separator + path);
+
+			if(file.exists() && !file.isDirectory()) {
+				return new Deploy.Big(file);
+			}
 
 			try {
 				String message = "{\"type\": \"host\", \"file\": \"" + host + ".jar\"}";
@@ -1088,6 +1100,10 @@ public class Daemon implements Runnable {
 
 					archive = (Deploy.Archive) this.archive.get(base + ".jar");
 
+					if(archive == null) {
+						archive = (Deploy.Archive) this.archive.get("www." + base + ".jar");
+					}
+					
 					if(archive == null) {
 						try {
 							String message = "{\"type\": \"host\", \"file\": \"" + host + ".jar\"}";

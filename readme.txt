@@ -351,17 +351,16 @@ VERSION:
     1.3 Metrics
     
     - Measures:
-      1) the time worker threads spend servicing an app. (CPU)
+      1) the time worker threads spend filtering services. (CPU)
       2) the amount of bytes:
-        a) loaded by the classloader. (RAM)
-        b) read/written to:
-           - disk. (SSD)
-           - network. (NET)
+         a) loaded by the classloader. (RAM)
+         b) read from / written to:
+            - disk. (SSD)
+            - network. (NET)
     
     // TODO:
     
-    - Measure client NET and File SSD. Disable other network stuff.
+    - Measure async client NET and File SSD. Disable other network stuff.
     - Save/load metrics to/from disk.
-    - Mail exceptions via listener on host.rupy.se.
     
 have fun!

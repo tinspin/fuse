@@ -1,17 +1,11 @@
 package se.rupy.http;
 
-import java.io.File;
-import java.io.FilePermission;
-import java.lang.reflect.Field;
-import java.net.SocketPermission;
-import java.security.AccessControlContext;
 import java.security.AccessControlException;
 import java.security.AccessController;
-import java.security.PermissionCollection;
-import java.security.Permissions;
+
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.security.ProtectionDomain;
+
 import java.util.*;
 
 /**

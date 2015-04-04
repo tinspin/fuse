@@ -312,8 +312,12 @@ public class Event extends Throwable implements Chain.Link {
 				Deploy.pipe(stream.input(), reply.output(stream.length()));
 				
 				stream.cpu += bean.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
-				stream.net.read += query.input.length;
+				
+				stream.net.read += query.input.total;
 				stream.net.write += reply.output.total;
+				
+				query.input.total = 0;
+				reply.output.total = 0;
 			}
 			finally {
 				stream.close();

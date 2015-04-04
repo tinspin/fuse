@@ -68,7 +68,7 @@ public class Async implements Runnable {
 		/**
 		 * Will probably return String headers and byte[] body at some point.
 		 */
-		public abstract void read(String body) throws Exception;
+		public abstract void read(String host, String body) throws Exception;
 
 		/**
 		 * If this happens with {@link Async.Timeout}, just resend.
@@ -421,13 +421,13 @@ public class Async implements Runnable {
 						Thread.currentThread().setContextClassLoader(archive);
 						AccessController.doPrivileged(new PrivilegedExceptionAction() {
 							public Object run() throws Exception {
-								work.read(read());
+								work.read(host, read());
 								return null;
 							}
 						}, archive.access());
 					}
 					else {
-						work.read(read());
+						work.read(host, read());
 					}
 					
 					remove(this);
@@ -448,7 +448,20 @@ public class Async implements Runnable {
 			async.remove(this);
 
 			if(work != null) {
-				work.fail(host, e);
+				if(daemon.host) {
+					final Exception ex = e;
+					final Deploy.Archive archive = daemon.archive(work.event.query().header("host"));
+					Thread.currentThread().setContextClassLoader(archive);
+					AccessController.doPrivileged(new PrivilegedExceptionAction() {
+						public Object run() throws Exception {
+							work.fail(host, ex);
+							return null;
+						}
+					}, archive.access());
+				}
+				else {
+					work.fail(host, e);
+				}
 			}
 			else {
 				e.printStackTrace();
@@ -553,7 +566,14 @@ public class Async implements Runnable {
 
 		while(it.hasNext()) {
 			Call call = (Call) it.next();
-			call.select();
+			
+			try {
+				call.select();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				it.remove();
+			}
 		}
 	}
 
