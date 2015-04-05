@@ -311,6 +311,11 @@ public class Event extends Throwable implements Chain.Link {
 			if(daemon.host) {
 				Deploy.Archive archive = daemon.archive(query.header("host"), false);
 				metric = (Daemon.Metric) archive.files().get(query.path());
+				
+				if(metric == null) {
+					metric = new Daemon.Metric();
+					archive.files().put(query.path(), metric);
+				}
 			}
 			
 			long cpu = bean.getThreadCpuTime(Thread.currentThread().getId());
