@@ -46,9 +46,9 @@ public class Daemon implements Runnable {
 	 * Also see ram on the archive.
 	 */
 	static class Metric {
-		long cpu; // CPU time
-		Data ssd = new Data(); // disk operations
-		Data net = new Data(); // network traffic
+		public long cpu; // CPU time
+		public Data ssd = new Data(); // disk operations
+		public Data net = new Data(); // network traffic
 
 		class Data {
 			long read;
@@ -463,7 +463,7 @@ public class Daemon implements Runnable {
 		Deploy.Archive old = (Deploy.Archive) this.archive.get(archive.name());
 
 		if (old != null) {
-			Iterator it = old.service().iterator();
+			Iterator it = old.service().values().iterator();
 
 			while (it.hasNext()) {
 				final Service service = (Service) it.next();
@@ -487,7 +487,7 @@ public class Daemon implements Runnable {
 			}
 		}
 
-		Iterator it = archive.service().iterator();
+		Iterator it = archive.service().values().iterator();
 
 		while (it.hasNext()) {
 			Service service = (Service) it.next();
@@ -497,14 +497,24 @@ public class Daemon implements Runnable {
 		this.archive.put(archive.name(), archive);
 	}
 
-	public Deploy.Archive archive(String name) {
+
+	// TODO: Sums up all metrics for an archive and resets it.
+	// For host to create bill.
+	public Daemon.Metric metric(String name) {
+		Metric metric = new Metric();
+		return metric;
+	}
+
+	public Deploy.Archive archive(String name, boolean deployer) {
 		if(!name.endsWith(".jar")) {
 			name += ".jar";
 		}
 
 		if(host) {
-			if(name.equals(domain + ".jar")) {
-				return Deploy.Archive.deployer;
+			if(deployer) {
+				if(name.equals(domain + ".jar")) {
+					return Deploy.Archive.deployer;
+				}
 			}
 
 			try {
@@ -512,7 +522,12 @@ public class Daemon implements Runnable {
 				String ok = (String) send(message);
 
 				if(ok.equals("OK")) {
-					return Deploy.Archive.deployer;
+					if(deployer) {
+						return Deploy.Archive.deployer;
+					}
+					else {
+						return (Deploy.Archive) this.archive.get(domain + ".jar");
+					}
 				}
 			}
 			catch(Exception e) {
@@ -530,7 +545,7 @@ public class Daemon implements Runnable {
 					//System.out.println(base);
 
 					archive = (Deploy.Archive) this.archive.get(base);
-					
+
 					if(archive == null) {
 						archive = (Deploy.Archive) this.archive.get("www." + base);
 					}
@@ -538,7 +553,7 @@ public class Daemon implements Runnable {
 			}
 
 			//System.out.println(archive);
-			
+
 			return archive;
 		}
 		else {
@@ -1024,7 +1039,7 @@ public class Daemon implements Runnable {
 			if(file.exists() && !file.isDirectory()) {
 				return new Deploy.Big(file);
 			}
-			
+
 			file = new File("app" + File.separator + "www." + base + File.separator + path);
 
 			if(file.exists() && !file.isDirectory()) {
@@ -1103,7 +1118,7 @@ public class Daemon implements Runnable {
 					if(archive == null) {
 						archive = (Deploy.Archive) this.archive.get("www." + base + ".jar");
 					}
-					
+
 					if(archive == null) {
 						try {
 							String message = "{\"type\": \"host\", \"file\": \"" + host + ".jar\"}";
@@ -1166,14 +1181,16 @@ public class Daemon implements Runnable {
 				Daemon.Metric part = (Daemon.Metric) service.metric.get(path);
 
 				//System.out.println(path + " " + part);
-				
+
 				if(part != null)
 					metric.add(part);
 			}
 
+			//System.out.println("api " + metric.hashCode() + " " + metric);
+
 			return metric.toString();
 		}
-		
+
 		return "";
 	}
 
@@ -1312,6 +1329,8 @@ public class Daemon implements Runnable {
 				Service api = new Service() {
 					public String path() { return "/api"; }
 					public void filter(Event event) throws Event, Exception {
+						event.query().parse();
+						boolean files = event.bit("files");
 						Iterator it = archive.values().iterator();
 						Output out = event.output();
 						out.println("<pre>");
@@ -1326,23 +1345,34 @@ public class Daemon implements Runnable {
 								name = event.query().header("host");
 							}
 
-							if(name.equals("host.rupy.se")) {
+							if(name.equals(domain)) {
 								out.println("<a href=\"http://" + title + "/api\">" + title + "</a>");
 							}
 							else if(name.equals("localhost") || name.equals(archive.host())) {
 								if(host) {
-									out.println("<a href=\"http://" + title + "\">" + title + "</a>");
+									out.println("<a href=\"http://" + title + "\">" + title + "</a>" + "&nbsp;" + metric(archive, "/"));
 								}
 								else {
 									out.println(title + "&nbsp;" + archive.ram + "&nbsp;" + metric(archive, "/"));
 								}
 
 								Iterator it2 = archive.chain().keySet().iterator();
+
 								while(it2.hasNext()) {
 									String path = (String) it2.next();
 
 									if(path.startsWith("/") && path.length() > 1) {
 										out.println("  <a href=\"" + path + "\">" + path + "</a>&nbsp;" + metric(archive, path));
+									}
+								}
+
+								if(files) {
+									Iterator it3 = archive.files().keySet().iterator();
+
+									while(it3.hasNext()) {
+										String path = (String) it3.next();
+										Metric metric = (Metric) archive.files().get(path);
+										out.println("  <a href=\"" + path + "\">" + path + "</a>&nbsp;" + metric);
 									}
 								}
 							}

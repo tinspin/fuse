@@ -49,7 +49,7 @@ public class Chain extends LinkedList {
 			
 			if(event.daemon().host) {
 				try {
-					final Deploy.Archive archive = event.daemon().archive(event.query().header("host"));
+					final Deploy.Archive archive = event.daemon().archive(event.query().header("host"), true);
 					try {
 						Thread.currentThread().setContextClassLoader(archive);
 					}
@@ -94,9 +94,10 @@ public class Chain extends LinkedList {
 			}
 			
 			metric.cpu += Event.bean.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
-			
 			metric.net.read += event.query().input.total;
 			metric.net.write += event.reply().output.total;
+			
+			//System.out.println("add " + metric.hashCode() + " " + metric);
 			
 			event.query().input.total = 0;
 			event.reply().output.total = 0;

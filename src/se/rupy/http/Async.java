@@ -397,7 +397,7 @@ public class Async implements Runnable {
 
 				if(run == WRITE) {
 					if(daemon.host) {
-						final Deploy.Archive archive = daemon.archive(work.event.query().header("host"));
+						final Deploy.Archive archive = daemon.archive(work.event.query().header("host"), true);
 						final Call call = this;
 						Thread.currentThread().setContextClassLoader(archive);
 						AccessController.doPrivileged(new PrivilegedExceptionAction() {
@@ -417,7 +417,7 @@ public class Async implements Runnable {
 
 				if(run == READ) {
 					if(daemon.host) {
-						final Deploy.Archive archive = daemon.archive(work.event.query().header("host"));
+						final Deploy.Archive archive = daemon.archive(work.event.query().header("host"), true);
 						Thread.currentThread().setContextClassLoader(archive);
 						AccessController.doPrivileged(new PrivilegedExceptionAction() {
 							public Object run() throws Exception {
@@ -450,7 +450,7 @@ public class Async implements Runnable {
 			if(work != null) {
 				if(daemon.host) {
 					final Exception ex = e;
-					final Deploy.Archive archive = daemon.archive(work.event.query().header("host"));
+					final Deploy.Archive archive = daemon.archive(work.event.query().header("host"), true);
 					Thread.currentThread().setContextClassLoader(archive);
 					AccessController.doPrivileged(new PrivilegedExceptionAction() {
 						public Object run() throws Exception {

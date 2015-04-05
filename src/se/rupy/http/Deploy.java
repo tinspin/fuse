@@ -194,7 +194,7 @@ public class Deploy extends Service {
 
 	protected static String deploy(Daemon daemon, File file, Event event) throws Exception {
 		Archive archive = new Archive(daemon, file, event);
-
+		
 		daemon.chain(archive);
 		daemon.verify(archive);
 
@@ -209,10 +209,8 @@ public class Deploy extends Service {
 	 */
 	public static class Archive extends ClassLoader {
 		private AccessControlContext access;
-		private HashSet service;
-		private HashMap chain;
-		private String name;
-		private String host;
+		private HashMap service, chain, files;
+		private String name, host;
 		private long date;
 
 		long ram;
@@ -233,13 +231,20 @@ public class Deploy extends Service {
 		}
 
 		Archive(Daemon daemon, File file, Event event) throws Exception {
-			service = new HashSet();
+			service = new HashMap();
 			chain = new HashMap();
+			files = new HashMap();
 			name = file.getName();
 			date = file.lastModified();
 
 			JarInputStream in = new JarInput(new FileInputStream(file));
 
+			Archive old = daemon.archive(file.getName(), false);
+			
+			if(old != null && old.files() != null) {
+				files = old.files();
+			}
+			
 			if(daemon.host) {
 				host = name.substring(0, name.lastIndexOf('.'));
 				String path = "app" + File.separator + host + File.separator;
@@ -260,7 +265,7 @@ public class Deploy extends Service {
 				permissions.add(new PropertyPermission("java.version", "read"));
 				permissions.add(new RuntimePermission("getStackTrace"));
 
-				if(host.equals("root.rupy.se")) {
+				if(host.equals("root.rupy.se")) { // Nasty hardcode, but it will go away with SSD metrics file API.
 					try {
 						permissions.add(new java.nio.file.LinkPermission("hard"));
 						permissions.add(new java.nio.file.LinkPermission("symbolic"));
@@ -270,6 +275,7 @@ public class Deploy extends Service {
 
 				access = new AccessControlContext(new ProtectionDomain[] {
 						new ProtectionDomain(null, permissions)});
+				
 				new File(path).mkdirs();
 			}
 			else {
@@ -291,6 +297,9 @@ public class Deploy extends Service {
 					ram += data.length;
 				} else if (!entry.isDirectory()) {
 					Big.write(host, "/" + entry.getName(), entry, in);
+					
+					if(!files.containsKey("/" + entry.getName()))
+						files.put("/" + entry.getName(), new Daemon.Metric());
 				}
 
 				if(event != null) {
@@ -313,7 +322,7 @@ public class Deploy extends Service {
 			while (classes.size() > 0) {
 				small = (Small) classes.elementAt(0);
 				classes.removeElement(small);
-				instantiate(small, daemon);
+				instantiate(small, daemon, old);
 			}
 
 			if(event != null) {
@@ -323,11 +332,11 @@ public class Deploy extends Service {
 		}
 		
 		protected Class findClass(String name) throws ClassNotFoundException {
-			//System.out.println(name);
-			
 			Small small = null;
+			
 			for(int i = 0; i < classes.size(); i++) {
 				small = (Small) classes.get(i);
+				
 				if(small.name.equals(name)) {
 					small.clazz = defineClass(small.name, small.data, 0,
 							small.data.length);
@@ -335,10 +344,11 @@ public class Deploy extends Service {
 					return small.clazz;
 				}
 			}
+			
 			throw new ClassNotFoundException();
 		}
 
-		private void instantiate(final Small small, Daemon daemon) throws Exception {
+		private void instantiate(final Small small, Daemon daemon, Deploy.Archive old) throws Exception {
 			if (small.clazz == null) {
 				small.clazz = defineClass(small.name, small.data, 0,
 						small.data.length);
@@ -357,20 +367,29 @@ public class Deploy extends Service {
 
 			if(service) {
 				try {
+					Service s = null;
+					
 					if(daemon.host) {
 						final Deploy.Archive archive = this;
 						Thread.currentThread().setContextClassLoader(archive);
-						Service s = (Service) AccessController.doPrivileged(new PrivilegedExceptionAction() {
+						s = (Service) AccessController.doPrivileged(new PrivilegedExceptionAction() {
 							public Object run() throws Exception {
 								return (Service) small.clazz.newInstance();
 							}
 						}, access());
-
-						this.service.add(s);
 					}
 					else {
-						this.service.add(small.clazz.newInstance());
+						s = (Service) small.clazz.newInstance();
 					}
+					
+					if(old != null && old.service() != null) {
+						Service o = (Service) old.service().get(small.name());
+						
+						if(o != null)
+							s.metric = o.metric;
+					}
+					
+					this.service.put(small.name, s);
 				}
 				catch(Exception e) {
 					if(daemon.verbose) {
@@ -415,11 +434,15 @@ public class Deploy extends Service {
 			return date;
 		}
 
+		protected HashMap files() {
+			return files;
+		}
+		
 		protected HashMap chain() {
 			return chain;
 		}
 
-		protected HashSet service() {
+		protected HashMap service() {
 			return service;
 		}
 
@@ -428,19 +451,12 @@ public class Deploy extends Service {
 		}
 	}
 
-	static class Big extends Stream {
+	static class Big implements Stream {
 		private File file;
 		private FileInputStream in;
 		private String name;
 		private long date;
-		/*
-		private Big(String host, String name, InputStream in, long date) throws IOException {
-			file = write(host, name, in);
 
-			this.name = name;
-			this.date = date - date % 1000;
-		}
-		 */
 		public Big(File file) {
 			long date = file.lastModified();
 			this.name = file.getName();
@@ -463,7 +479,6 @@ public class Deploy extends Service {
 			out.flush();
 			out.close();
 
-			//System.out.println(name + " " + new Date(entry.getTime()));
 			file.setLastModified(entry.getTime());
 
 			return file;
@@ -497,7 +512,7 @@ public class Deploy extends Service {
 		}
 	}
 
-	static class Small extends Stream {
+	static class Small implements Stream {
 		private String name;
 		private byte[] data;
 		private ByteArrayInputStream in;
@@ -546,12 +561,12 @@ public class Deploy extends Service {
 		}
 	}
 
-	static abstract class Stream extends Daemon.Metric {
-		public abstract String name();
-		public abstract InputStream input();
-		public abstract void close();
-		public abstract long length();
-		public abstract long date();
+	static interface Stream {
+		public String name();
+		public InputStream input();
+		public void close();
+		public long length();
+		public long date();
 	}
 
 	static class Client {

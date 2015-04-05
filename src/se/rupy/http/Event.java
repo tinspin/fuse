@@ -306,23 +306,30 @@ public class Event extends Throwable implements Chain.Link {
 		reply.modified(stream.date());
 
 		if(query.modified() == 0 || query.modified() < reply.modified()) {
+			Daemon.Metric metric = null;
+			
+			if(daemon.host) {
+				Deploy.Archive archive = daemon.archive(query.header("host"), false);
+				metric = (Daemon.Metric) archive.files().get(query.path());
+			}
+			
+			long cpu = bean.getThreadCpuTime(Thread.currentThread().getId());
+			
 			try {
-				long cpu = bean.getThreadCpuTime(Thread.currentThread().getId());
-
 				Deploy.pipe(stream.input(), reply.output(stream.length()));
-				
-				stream.cpu += bean.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
-				
-				stream.net.read += query.input.total;
-				stream.net.write += reply.output.total;
-				
-				query.input.total = 0;
-				reply.output.total = 0;
 			}
 			finally {
 				stream.close();
 			}
 
+			if(daemon.host) {
+				metric.cpu += bean.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
+				metric.net.read += query.input.total;
+				metric.net.write += reply.output.total;
+				query.input.total = 0;
+				reply.output.total = 0;
+			}
+			
 			if(Event.LOG) {
 				log("content " + type, VERBOSE);
 			}
@@ -555,7 +562,7 @@ public class Event extends Throwable implements Chain.Link {
 		int index = 0;
 
 		if(daemon.host) {
-			final Deploy.Archive archive = daemon.archive(query().header("host"));
+			final Deploy.Archive archive = daemon.archive(query().header("host"), true);
 			try {
 				Thread.currentThread().setContextClassLoader(archive);
 			}

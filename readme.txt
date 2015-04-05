@@ -351,16 +351,19 @@ VERSION:
     1.3 Metrics
     
     - Measures:
-      1) the time worker threads spend filtering services. (CPU)
+      1) the time worker threads spend filtering 
+         services. (CPU)
       2) the amount of bytes:
          a) loaded by the classloader. (RAM)
          b) read from / written to:
             - disk. (SSD)
             - network. (NET)
+    - CPU metrics don't work on Windows.
+    - NET metrics doesn't work at all on non-hosted.
     
     // TODO:
     
-    - Measure async client NET and File SSD. Disable other network stuff.
-    - Save/load metrics to/from disk.
+    - Event redirect is free!
+    - Measure async client NET and file SSD.
     
 have fun!
