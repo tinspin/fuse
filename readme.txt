@@ -363,8 +363,8 @@ VERSION:
     
     // TODO:
     
+    - Not modified is free!
     - Event redirect is free!
-    - Images break if .jar does not contain them.
     - Measure async client NET and file SSD.
     
 have fun!

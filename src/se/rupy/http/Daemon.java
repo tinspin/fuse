@@ -1350,7 +1350,7 @@ public class Daemon implements Runnable {
 							}
 							else if(name.equals("localhost") || name.equals(archive.host())) {
 								if(host) {
-									out.println("<a href=\"http://" + title + "\">" + title + "</a>" + "&nbsp;" + metric(archive, "/"));
+									out.println("<a href=\"http://" + title + "\">" + title + "</a>" + "&nbsp;" + archive.ram + "&nbsp;" + metric(archive, "/"));
 								}
 								else {
 									out.println(title + "&nbsp;" + archive.ram + "&nbsp;" + metric(archive, "/"));

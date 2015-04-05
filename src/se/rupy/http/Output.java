@@ -230,6 +230,8 @@ public abstract class Output extends OutputStream implements Event.Block {
 			ByteBuffer out = reply.event().worker().out();
 			remaining = out.remaining();
 
+			total += len;
+			
 			while (len > remaining) {
 				out.put(b, off, remaining);
 
@@ -244,8 +246,6 @@ public abstract class Output extends OutputStream implements Event.Block {
 			if (len > 0) {
 				out.put(b, off, len);
 			}
-			
-			total += len;
 		} catch (Failure.Close c) {
 			throw c;
 		} catch (IOException e) {
