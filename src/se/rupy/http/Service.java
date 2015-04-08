@@ -11,7 +11,7 @@ import java.util.HashMap;
  * @author marc
  */
 public abstract class Service implements Chain.Link {
-	HashMap metric = new HashMap();
+	protected HashMap metric = new HashMap();
 	
 	/**
 	 * When the session is created, read the incoming cookie key and/or set 

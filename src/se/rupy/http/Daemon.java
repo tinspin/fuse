@@ -46,29 +46,36 @@ public class Daemon implements Runnable {
 	 * Also see ram on the archive.
 	 */
 	static class Metric {
-		public long cpu; // CPU time
-		public Data ssd = new Data(); // disk operations
-		public Data net = new Data(); // network traffic
+		static String header = "Glossary {CPU, REQ, SSD, NET}";
+		protected long cpu; // CPU time
+		protected Data req = new Data(); // how many requests and responses
+		protected Data ssd = new Data(); // disk operations
+		protected Data net = new Data(); // network traffic
 
 		class Data {
-			long read;
-			long write;
+			long in;
+			long out;
 
 			void add(Data data) {
-				read += data.read;
-				write += data.write;
+				in += data.in;
+				out += data.out;
+			}
+			
+			public String toString() {
+				return in + "/" + out;
 			}
 		}
 
 		void add(Metric metric) {
 			cpu += metric.cpu;
 
+			req.add(metric.req);
 			ssd.add(metric.ssd);
 			net.add(metric.net);
 		}
 
 		public String toString() {
-			return "(" + cpu + ", " + ssd.read + "/" + ssd.write + ", " + net.read + "/" + net.write + ")";
+			return "{" + cpu + ", " + req + ", " + ssd + ", " + net + "}";
 		}
 	}
 
@@ -1334,7 +1341,10 @@ public class Daemon implements Runnable {
 						Iterator it = archive.values().iterator();
 						Output out = event.output();
 						out.println("<pre>");
-						out.println("Metrics (CPU, SSD, NET)");
+						
+						if(!event.query().header("host").equals(domain))
+							out.println(Metric.header);
+						
 						while(it.hasNext()) {
 							Deploy.Archive archive = (Deploy.Archive) it.next();
 							boolean host = !archive.host().equals("content");

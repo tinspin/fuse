@@ -37,7 +37,7 @@ public class Chain extends LinkedList {
 		return null;
 	}
 
-	public void filter(final Event event) throws Event, Exception {
+	public void filter(final Event event, boolean write) throws Event, Exception {
 		for (int i = 0; i < size(); i++) {
 			final Service service = (Service) get(i);
 
@@ -93,9 +93,14 @@ public class Chain extends LinkedList {
 				service.metric.put(path, metric);
 			}
 			
+			if(i == 0) {
+				if(!write)
+					metric.req.in++;
+				metric.req.out++;
+			}
 			metric.cpu += Event.bean.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
-			metric.net.read += event.query().input.total;
-			metric.net.write += event.reply().output.total;
+			metric.net.in += event.query().input.total;
+			metric.net.out += event.reply().output.total;
 			
 			//System.out.println("add " + metric.hashCode() + " " + metric);
 			

@@ -257,14 +257,14 @@ public class Event extends Throwable implements Chain.Link {
 			reply.code("400 Bad Request");
 		}
 		else {
-			if(!service(daemon.chain(this))) {
+			if(!service(daemon.chain(this), false)) {
 				if(daemon.host && query.path().startsWith("/root/")) {
 					reply.code("403 Forbidden");
 					reply.output().print(
 							"<pre>'" + query.path() + "' is forbidden.</pre>");
 				}
 				else if(!content()) {
-					if(!service(daemon.chain(this, "null"))) {
+					if(!service(daemon.chain(this, "null"), false)) {
 						reply.code("404 Not Found");
 						reply.output().print(
 								"<pre>'" + query.path() + "' was not found.</pre>");
@@ -328,9 +328,11 @@ public class Event extends Throwable implements Chain.Link {
 			}
 
 			if(daemon.host) {
+				metric.req.in++;
+				metric.req.out++;
 				metric.cpu += bean.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
-				metric.net.read += query.input.total;
-				metric.net.write += reply.output.total;
+				metric.net.in += query.input.total;
+				metric.net.out += reply.output.total;
 				query.input.total = 0;
 				reply.output.total = 0;
 			}
@@ -345,12 +347,12 @@ public class Event extends Throwable implements Chain.Link {
 		return true;
 	}
 
-	protected boolean service(Chain chain) throws IOException {
+	protected boolean service(Chain chain, boolean write) throws IOException {
 		if(chain == null)
 			return false;
 
 		try {
-			chain.filter(this);
+			chain.filter(this, write);
 		} catch (Failure f) {
 			throw f;
 		} catch (Event e) {
@@ -380,7 +382,7 @@ public class Event extends Throwable implements Chain.Link {
 
 	protected void write() throws IOException {
 		touch();
-		service(daemon.chain(this));
+		service(daemon.chain(this), true);
 		finish();
 	}
 
