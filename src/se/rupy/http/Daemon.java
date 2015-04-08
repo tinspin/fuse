@@ -1095,14 +1095,6 @@ public class Daemon implements Runnable {
 	}
 
 	protected Chain chain(String host, String path, boolean wakeup) {
-		synchronized (this.service) {
-			Chain chain = (Chain) this.service.get(path);
-
-			if (chain != null) {
-				return chain;
-			}
-		}
-
 		if(!this.host) {
 			host = "content";
 		}
@@ -1176,6 +1168,14 @@ public class Daemon implements Runnable {
 			}
 		}
 
+		synchronized (this.service) {
+			Chain chain = (Chain) this.service.get(path);
+
+			if (chain != null) {
+				return chain;
+			}
+		}
+		
 		return null;
 	}
 
