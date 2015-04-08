@@ -37,7 +37,11 @@ public class Chain extends LinkedList {
 		return null;
 	}
 
-	public void filter(final Event event, boolean write) throws Event, Exception {
+	public void filter(final Event event) throws Event, Exception {
+		filter(event, true);
+	}
+	
+	protected void filter(final Event event, boolean write) throws Event, Exception {
 		for (int i = 0; i < size(); i++) {
 			final Service service = (Service) get(i);
 

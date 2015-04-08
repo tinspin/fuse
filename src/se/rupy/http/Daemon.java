@@ -46,9 +46,9 @@ public class Daemon implements Runnable {
 	 * Also see ram on the archive.
 	 */
 	static class Metric {
-		static String header = "Glossary {CPU, REQ, SSD, NET}";
+		static String header = "Glossary {CPU, R&R, SSD, NET}";
 		protected long cpu; // CPU time
-		protected Data req = new Data(); // how many requests and responses
+		protected Data req = new Data(); // requests and async response chunks
 		protected Data ssd = new Data(); // disk operations
 		protected Data net = new Data(); // network traffic
 
@@ -75,7 +75,7 @@ public class Daemon implements Runnable {
 		}
 
 		public String toString() {
-			return "{" + cpu + ", " + req + ", " + ssd + ", " + net + "}";
+			return "{" + cpu/1000 + "μs, " + req + ", " + ssd + ", " + net + "}";
 		}
 	}
 
@@ -1339,6 +1339,7 @@ public class Daemon implements Runnable {
 						event.query().parse();
 						boolean files = event.bit("files");
 						Iterator it = archive.values().iterator();
+						event.reply().type("text/html; charset=UTF-8");
 						Output out = event.output();
 						out.println("<pre>");
 						
