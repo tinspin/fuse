@@ -46,7 +46,9 @@ public class Daemon implements Runnable {
 	 * Also see ram on the archive.
 	 */
 	static class Metric {
-		static String header = "Glossary {CPU, R&R, SSD, NET}";
+		static String header = "<tr><td></td><td>CPU</td><td colspan=\"2\">R&R</td><td colspan=\"2\">SSD</td><td colspan=\"2\">NET</td></tr>" +
+				               "<tr><td></td><td>&mu;s</td><td>&darr;</td><td>&uarr;</td><td>&darr;</td><td>&uarr;</td><td>&darr;</td><td>&uarr;</td></tr>";
+		//static String header = "Glossary {CPU, R&R, SSD, NET}";
 		protected long cpu; // CPU time
 		protected Data req = new Data(); // requests and async response chunks
 		protected Data ssd = new Data(); // disk operations
@@ -62,7 +64,7 @@ public class Daemon implements Runnable {
 			}
 			
 			public String toString() {
-				return in + "/" + out;
+				return in + "</td><td>" + out;
 			}
 		}
 
@@ -75,7 +77,8 @@ public class Daemon implements Runnable {
 		}
 
 		public String toString() {
-			return "{" + cpu/1000 + "μs, " + req + ", " + ssd + ", " + net + "}";
+			return "</td><td>" + cpu/1000 + "</td><td>" + req + "</td><td>" + ssd + "</td><td>" + net + "</td>";
+			//return "{" + cpu/1000 + "μs, " + req + ", " + ssd + ", " + net + "}";
 		}
 	}
 
@@ -1198,7 +1201,7 @@ public class Daemon implements Runnable {
 			return metric.toString();
 		}
 
-		return "";
+		return "</td><td colspan=\"7\"></td>";
 	}
 
 	public void run() {
@@ -1339,9 +1342,9 @@ public class Daemon implements Runnable {
 						event.query().parse();
 						boolean files = event.bit("files");
 						Iterator it = archive.values().iterator();
-						event.reply().type("text/html; charset=UTF-8");
 						Output out = event.output();
 						out.println("<pre>");
+						out.println("<table cellspacing=\"0\" cellpadding=\"2\">");
 						
 						if(!event.query().header("host").equals(domain))
 							out.println(Metric.header);
@@ -1357,14 +1360,18 @@ public class Daemon implements Runnable {
 							}
 
 							if(name.equals(domain)) {
-								out.println("<a href=\"http://" + title + "/api\">" + title + "</a>");
+								if(!title.equals(domain)) {
+									out.println("<tr><td>");
+									out.println("<a href=\"http://" + title + "/api\">" + title + "</a>");
+									out.println("</td></tr>");
+								}
 							}
 							else if(name.equals("localhost") || name.equals(archive.host())) {
 								if(host) {
-									out.println("<a href=\"http://" + title + "\">" + title + "</a>" + "&nbsp;" + archive.ram + "&nbsp;" + metric(archive, "/"));
+									out.println("<tr><td><a href=\"http://" + title + "\">" + title + "</a>" + "&nbsp;" + archive.ram + "&nbsp;" + metric(archive, "/") + "</td></tr>");
 								}
 								else {
-									out.println(title + "&nbsp;" + archive.ram + "&nbsp;" + metric(archive, "/"));
+									out.println("<tr><td>" + title + "&nbsp;" + archive.ram + "&nbsp;" + metric(archive, "/") + "</td></tr>");
 								}
 
 								Iterator it2 = archive.chain().keySet().iterator();
@@ -1373,7 +1380,7 @@ public class Daemon implements Runnable {
 									String path = (String) it2.next();
 
 									if(path.startsWith("/") && path.length() > 1) {
-										out.println("  <a href=\"" + path + "\">" + path + "</a>&nbsp;" + metric(archive, path));
+										out.println("<tr><td>&nbsp;&nbsp;<a href=\"" + path + "\">" + path + "</a>&nbsp;" + metric(archive, path) + "</tr>");
 									}
 								}
 
@@ -1383,12 +1390,14 @@ public class Daemon implements Runnable {
 									while(it3.hasNext()) {
 										String path = (String) it3.next();
 										Metric metric = (Metric) archive.files().get(path);
-										out.println("  <a href=\"" + path + "\">" + path + "</a>&nbsp;" + metric);
+										out.println("<tr><td>&nbsp;&nbsp;<a href=\"" + path + "\">" + path + "</a>&nbsp;" + metric + "</tr>");
 									}
 								}
 							}
 						}
-						event.output().println("</pre>");
+						
+						out.println("</table>");
+						out.println("</pre>");
 					}
 				};
 
