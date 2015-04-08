@@ -209,7 +209,7 @@ public class Deploy extends Service {
 	 */
 	public static class Archive extends ClassLoader {
 		private AccessControlContext access;
-		private HashMap service, chain, files;
+		private TreeMap service, chain, files;
 		private String name, host;
 		private long date;
 
@@ -231,9 +231,9 @@ public class Deploy extends Service {
 		}
 
 		Archive(Daemon daemon, File file, Event event) throws Exception {
-			service = new HashMap();
-			chain = new HashMap();
-			files = new HashMap();
+			service = new TreeMap();
+			chain = new TreeMap();
+			files = new TreeMap();
 			name = file.getName();
 			date = file.lastModified();
 
@@ -434,15 +434,15 @@ public class Deploy extends Service {
 			return date;
 		}
 
-		protected HashMap files() {
+		protected TreeMap files() {
 			return files;
 		}
 		
-		protected HashMap chain() {
+		protected TreeMap chain() {
 			return chain;
 		}
 
-		protected HashMap service() {
+		protected TreeMap service() {
 			return service;
 		}
 

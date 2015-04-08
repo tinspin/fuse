@@ -28,7 +28,7 @@ public class Daemon implements Runnable {
 	static DateFormat DATE;
 
 	private int selected, valid, accept, readwrite; // panel stats
-	private HashMap archive, service;
+	private TreeMap archive, service;
 	private Heart heart;
 	private Selector selector;
 	private String domain, name, bind;
@@ -261,8 +261,8 @@ public class Daemon implements Runnable {
 		//	debug = false;
 		//}
 
-		archive = new HashMap();
-		service = new HashMap();
+		archive = new TreeMap();
+		service = new TreeMap();
 		session = new ConcurrentHashMap();
 		events = new ConcurrentHashMap();
 
@@ -878,7 +878,7 @@ public class Daemon implements Runnable {
 			add(this.service, service, null);
 	}
 
-	protected void add(HashMap map, final Service service, final Deploy.Archive archive) throws Exception {
+	protected void add(TreeMap map, final Service service, final Deploy.Archive archive) throws Exception {
 		String path = null;
 
 		if(host) {
@@ -981,7 +981,7 @@ public class Daemon implements Runnable {
 				final Service service = (Service) chain.get(i);
 
 				if(host) {
-					final HashMap a = this.archive;
+					final TreeMap a = this.archive;
 					final int j = i;
 					Thread.currentThread().setContextClassLoader(archive);
 					AccessController.doPrivileged(new PrivilegedExceptionAction() {
