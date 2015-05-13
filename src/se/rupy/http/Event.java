@@ -542,6 +542,8 @@ public class Event extends Throwable implements Chain.Link {
 	protected final void session(final Service service, Event event) throws Exception {
 		String key = cookie(query.header("cookie"), "key");
 
+		//System.out.println("KEY " + key + " " + query.header("cookie"));
+		
 		if(key == null && query.method() == Query.GET) {
 			// XSS comet cookie: this means first GETs are parsed!
 			// TODO: This should be removed because you can use a P3P header to fix this, go figure!
@@ -578,7 +580,13 @@ public class Event extends Throwable implements Chain.Link {
 			}
 			Integer i = (Integer) AccessController.doPrivileged(new PrivilegedExceptionAction() {
 				public Object run() throws Exception {
-					return new Integer(service.index());
+					try {
+						return new Integer(service.index());
+					}
+					catch(Throwable t) {
+						t.printStackTrace();
+						return new Integer(0);
+					}
 				}
 			}, daemon.control);
 

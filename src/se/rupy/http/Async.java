@@ -1,14 +1,15 @@
 package se.rupy.http;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.security.AccessControlException;
 import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Iterator;
@@ -37,6 +38,12 @@ public class Async implements Runnable {
 	private Selector selector;
 	private Daemon daemon;
 	private Queue queue;
+
+	protected Async() {
+		calls = new CopyOnWriteArrayList();
+		timeout = 1000;
+		debug = true;
+	}
 	
 	protected Async(Daemon daemon, int timeout, boolean debug) {
 		calls = new CopyOnWriteArrayList();
@@ -55,13 +62,13 @@ public class Async implements Runnable {
 	 */
 	public static abstract class Work {
 		protected Event event;
-		
+
 		public Work(Event event) {
 			this.event = event;
 		}
-		
+
 		/**
-		 * POST or GET small data with {@link Async.Call#post(String, String, byte[])} or {@link Async.Call#get(String, String)}.
+		 * POST or GET small data with {@link Async.Call#post(String, String, byte[])} and {@link Async.Call#get(String, String)}, POST large data with {@link Async.Call#post(String, String, File)}.
 		 */
 		public abstract void send(Call call) throws Exception;
 
@@ -235,6 +242,13 @@ public class Async implements Runnable {
 			write("POST", path, headers, body);
 		}
 
+		/**
+		 * Headers should be \r\n separated, but no trailing \r\n.
+		 */
+		public void post(String path, String headers, File file) throws Exception {
+			write(path, headers, file);
+		}
+
 		private void write(String method, String path, String headers, byte[] body) throws Exception {
 			String http = method + " " + path + " HTTP/1.1\r\n" + 
 					(body == null ? "" : "Content-Length: " + body.length + "\r\n") + 
@@ -243,7 +257,7 @@ public class Async implements Runnable {
 					"\r\n\r\n";
 
 			byte[] head = http.getBytes("utf-8");
-			int length, write;
+			long length, write;
 
 			if(body == null) {
 				length = head.length;
@@ -267,6 +281,47 @@ public class Async implements Runnable {
 			}
 		}
 
+		private void write(String path, String headers, File file) throws Exception {
+			String http = "POST " + path + " HTTP/1.1\r\n" + 
+					(file == null ? "" : "Content-Length: " + file.length() + "\r\n") + 
+					(cookie == null ? "" : "Cookie: " + cookie + "\r\n") + 
+					headers + 
+					"\r\n\r\n";
+
+			byte[] head = http.getBytes("utf-8");
+			long length, sent = 0, write = 0;
+
+			write = channel.write(ByteBuffer.wrap(head));
+
+			//System.out.println("  write " + write + " " + head.length);
+
+			length = file.length();
+			
+			//System.out.println(file.length());
+			
+			FileChannel out = new FileInputStream(file).getChannel();
+			
+			//System.out.println(out.isOpen() + " " + file.length());
+			
+			try {
+				while(sent < length) {
+					//System.out.println(".");
+					
+					sent += out.transferTo(sent, 1024, channel);
+					
+					//System.out.println("  sent " + sent);
+				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			finally {
+				out.close();
+			}
+			
+			//System.out.println(out.isOpen());
+		}
+
 		/*
 		 * Only one chunk supported.
 		 */
@@ -274,7 +329,7 @@ public class Async implements Runnable {
 			ByteBuffer buffer = ByteBuffer.allocate(SIZE);
 			byte[] data = new byte[SIZE];
 			byte[] body = null;
-			
+
 			int read = channel.read(buffer), full = 0;
 			String length = null;
 			String head = null;
@@ -283,7 +338,7 @@ public class Async implements Runnable {
 				System.out.println("  read " + read);
 
 			try {
-				while(read > 0) {
+				while(read > -1) {
 					buffer.rewind();
 					buffer.get(data, 0, read);
 
@@ -300,6 +355,8 @@ public class Async implements Runnable {
 							cookie = header(head, "Set-Cookie:");
 							if(cookie != null)
 								cookie = cookie.substring(0, cookie.indexOf(";"));
+							
+							//System.out.println("COOKIE " + cookie);
 						}
 
 						length = header(head, "Content-Length:");
@@ -347,7 +404,7 @@ public class Async implements Runnable {
 					buffer.clear();
 					read = channel.read(buffer);
 
-					while(body != null && read == 0) {
+					while(read == 0) {
 						read(selector);
 						selector.wakeup();
 						read = channel.read(buffer);
@@ -396,13 +453,26 @@ public class Async implements Runnable {
 				}
 
 				if(run == WRITE) {
-					if(daemon.host) {
-						final Deploy.Archive archive = daemon.archive(work.event.query().header("host"), true);
+					if(daemon != null && daemon.host) {
+						Deploy.Archive archive;
+						
+						if(work.event == null)
+							archive = daemon.archive(host, true);
+						else
+							archive = daemon.archive(work.event.query().header("host"), true);
+						
 						final Call call = this;
 						Thread.currentThread().setContextClassLoader(archive);
 						AccessController.doPrivileged(new PrivilegedExceptionAction() {
 							public Object run() throws Exception {
-								work.send(call);
+								try {
+									work.send(call);
+								}
+								catch(Throwable t) {
+									Exception e = new Exception();
+									e.initCause(t);
+									throw e;
+								}
 								return null;
 							}
 						}, archive.access());
@@ -410,18 +480,31 @@ public class Async implements Runnable {
 					else {
 						work.send(this);
 					}
-					
+
 					state(Call.READ);
 					async.wakeup();
 				}
 
 				if(run == READ) {
-					if(daemon.host) {
-						final Deploy.Archive archive = daemon.archive(work.event.query().header("host"), true);
+					if(daemon != null && daemon.host) {
+						Deploy.Archive archive;
+						
+						if(work.event == null)
+							archive = daemon.archive(host, true);
+						else
+							archive = daemon.archive(work.event.query().header("host"), true);
+						
 						Thread.currentThread().setContextClassLoader(archive);
 						AccessController.doPrivileged(new PrivilegedExceptionAction() {
 							public Object run() throws Exception {
-								work.read(host, read());
+								try {
+									work.read(host, read());
+								}
+								catch(Throwable t) {
+									Exception e = new Exception();
+									e.initCause(t);
+									throw e;
+								}
 								return null;
 							}
 						}, archive.access());
@@ -429,7 +512,7 @@ public class Async implements Runnable {
 					else {
 						work.read(host, read());
 					}
-					
+
 					remove(this);
 					work = null;
 				}
@@ -439,6 +522,7 @@ public class Async implements Runnable {
 					failure(e);
 				}
 				catch(Exception ex) {
+					e.printStackTrace();
 					ex.printStackTrace();
 				}
 			}
@@ -448,13 +532,24 @@ public class Async implements Runnable {
 			async.remove(this);
 
 			if(work != null) {
-				if(daemon.host) {
+				if(daemon != null && daemon.host) {
 					final Exception ex = e;
-					final Deploy.Archive archive = daemon.archive(work.event.query().header("host"), true);
+					Deploy.Archive archive;
+					
+					if(work.event == null)
+						archive = daemon.archive(host, true);
+					else
+						archive = daemon.archive(work.event.query().header("host"), true);
+					
 					Thread.currentThread().setContextClassLoader(archive);
 					AccessController.doPrivileged(new PrivilegedExceptionAction() {
 						public Object run() throws Exception {
-							work.fail(host, ex);
+							try {
+								work.fail(host, ex);
+							}
+							catch(Throwable t) {
+								t.printStackTrace();
+							}
 							return null;
 						}
 					}, archive.access());
@@ -566,7 +661,7 @@ public class Async implements Runnable {
 
 		while(it.hasNext()) {
 			Call call = (Call) it.next();
-			
+
 			try {
 				call.select();
 			}

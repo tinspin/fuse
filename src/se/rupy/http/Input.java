@@ -130,7 +130,7 @@ public abstract class Input extends InputStream implements Event.Block {
 		StringBuilder buffer = new StringBuilder();
 
 		while (true) {
-			if (buffer.length() > 2048) { // Facebook... :P
+			if (buffer.length() > Hash.MAX) {
 				throw new IOException("Line too long.");
 			}
 

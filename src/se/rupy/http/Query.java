@@ -22,7 +22,7 @@ public class Query extends Hash {
 
 	protected Query(Event event) throws IOException {
 		super(false);
-		headers = new Hash(true);
+		headers = new Hash(event.daemon().host);
 		input = new Input.Chunked(event);
 	}
 
