@@ -123,7 +123,7 @@ public class Deploy extends Service {
 
 		if (Deploy.pass == null) {
 			String message = "{\"type\": \"auth\", \"file\": \"" + name + "\", \"pass\": \"" + pass + "\", \"cookie\": \"" + cookie + "\", \"cluster\": " + cluster + "}";
-			String auth = (String) event.daemon().send(message);
+			String auth = (String) event.daemon().send(event, message);
 
 			if(auth.equals(message)) {
 				Properties properties = new Properties();
@@ -142,7 +142,8 @@ public class Deploy extends Service {
 			}
 			else {
 				if(auth.equals("OK")) {
-					event.reply().output().println("Deploy is propagating on cluster.");
+					if(!cluster)
+						event.reply().output().println("Deploy is propagating on cluster.");
 				}
 				else {
 					// doesen't work :(
@@ -700,12 +701,29 @@ public class Deploy extends Service {
 		}
 	}
 
+	/**
+	 * Sync hot-deploy.
+	 * @param host
+	 * @param file
+	 * @param pass
+	 * @throws IOException
+	 * @throws NoSuchAlgorithmException
+	 */
 	public static void deploy(String host, File file, String pass) throws IOException, NoSuchAlgorithmException {
 		deploy(host, file, pass, true);
 	}
 	
-	public static void deploy(Async async, String host, File file, String pass) throws Exception {
-		deploy(async, host, file, pass, true);
+	/**
+	 * Async hot-deploy.
+	 * @param event
+	 * @param host
+	 * @param file
+	 * @param pass
+	 * @throws Exception
+	 */
+	
+	public static void deploy(Event event, String host, File file, String pass) throws Exception {
+		deploy(event, host, file, pass, true);
 	}
 
 	/**
@@ -715,7 +733,7 @@ public class Deploy extends Service {
 	 * <br>
 	 * Basically: don't put passwords in clear text in the deployment 
 	 * jar and you will be fine! To get your host, pass and database IP on <i>host.rupy.se</i>
-	 * call {@link Daemon#send(Object message)} with "{"type": "account"}"
+	 * call {@link Daemon#send(Event event, Object message)} with "{"type": "account"}"
 	 * like so:
 <tt><br><br>
 &nbsp;&nbsp;&nbsp;&nbsp;String account = (String) daemon.send("{\"type\": \"account\"}");<br>
@@ -732,8 +750,8 @@ public class Deploy extends Service {
 		return hash;
 	}
 
-	private static void deploy(final Async async, final String host, final File file, final String pass, final boolean cluster) throws Exception {
-		Async.Work work = new Async.Work(null) {
+	private static void deploy(Event event, final String host, final File file, final String pass, final boolean cluster) throws Exception {
+		Async.Work work = new Async.Work(event) {
 			public void send(Async.Call call) throws Exception {
 				call.get("/deploy", "Host:" + host);
 			}
@@ -741,7 +759,7 @@ public class Deploy extends Service {
 			public void read(final String host, final String body) throws Exception {
 				//System.out.println("cookie " + body);
 				
-				Async.Work work = new Async.Work(null) {
+				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
 						String key = hash(file, pass, body);
 						
@@ -766,7 +784,7 @@ public class Deploy extends Service {
 					}
 				};
 				
-				async.send(host, work, 30);
+				event.daemon().client().send(host, work, 30);
 			}
 
 			public void fail(String host, Exception e) throws Exception {
@@ -774,7 +792,7 @@ public class Deploy extends Service {
 			}
 		};
 
-		async.send(host, work, 30);
+		event.daemon().client().send(host, work, 30);
 	}
 	
 	private static void deploy(String host, File file, String pass, boolean cluster) throws IOException, NoSuchAlgorithmException {

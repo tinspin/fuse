@@ -62,8 +62,8 @@ public class Async implements Runnable {
 	 */
 	public static abstract class Work {
 		protected Event event;
-
-		public Work(Event event) {
+		
+		public Work(Event event) throws Exception {
 			this.event = event;
 		}
 
@@ -293,23 +293,13 @@ public class Async implements Runnable {
 
 			write = channel.write(ByteBuffer.wrap(head));
 
-			//System.out.println("  write " + write + " " + head.length);
-
 			length = file.length();
 			
-			//System.out.println(file.length());
-			
 			FileChannel out = new FileInputStream(file).getChannel();
-			
-			//System.out.println(out.isOpen() + " " + file.length());
-			
+
 			try {
 				while(sent < length) {
-					//System.out.println(".");
-					
 					sent += out.transferTo(sent, 1024, channel);
-					
-					//System.out.println("  sent " + sent);
 				}
 			}
 			catch(Exception e) {
@@ -318,8 +308,6 @@ public class Async implements Runnable {
 			finally {
 				out.close();
 			}
-			
-			//System.out.println(out.isOpen());
 		}
 
 		/*
@@ -454,14 +442,8 @@ public class Async implements Runnable {
 
 				if(run == WRITE) {
 					if(daemon != null && daemon.host) {
-						Deploy.Archive archive;
-						
-						if(work.event == null)
-							archive = daemon.archive(host, true);
-						else
-							archive = daemon.archive(work.event.query().header("host"), true);
-						
 						final Call call = this;
+						Deploy.Archive archive = daemon.archive(work.event.host(), true);
 						Thread.currentThread().setContextClassLoader(archive);
 						AccessController.doPrivileged(new PrivilegedExceptionAction() {
 							public Object run() throws Exception {
@@ -487,13 +469,7 @@ public class Async implements Runnable {
 
 				if(run == READ) {
 					if(daemon != null && daemon.host) {
-						Deploy.Archive archive;
-						
-						if(work.event == null)
-							archive = daemon.archive(host, true);
-						else
-							archive = daemon.archive(work.event.query().header("host"), true);
-						
+						Deploy.Archive archive = daemon.archive(work.event.host(), true);
 						Thread.currentThread().setContextClassLoader(archive);
 						AccessController.doPrivileged(new PrivilegedExceptionAction() {
 							public Object run() throws Exception {
@@ -534,13 +510,7 @@ public class Async implements Runnable {
 			if(work != null) {
 				if(daemon != null && daemon.host) {
 					final Exception ex = e;
-					Deploy.Archive archive;
-					
-					if(work.event == null)
-						archive = daemon.archive(host, true);
-					else
-						archive = daemon.archive(work.event.query().header("host"), true);
-					
+					Deploy.Archive archive = daemon.archive(work.event.host(), true);
 					Thread.currentThread().setContextClassLoader(archive);
 					AccessController.doPrivileged(new PrivilegedExceptionAction() {
 						public Object run() throws Exception {

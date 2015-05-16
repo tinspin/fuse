@@ -71,7 +71,7 @@ public class Event extends Throwable implements Chain.Link {
 	private Worker worker;
 
 	private int index, interest;
-	private String remote;
+	private String remote, host;
 	private boolean close;
 	private long touch;
 
@@ -111,6 +111,10 @@ public class Event extends Throwable implements Chain.Link {
 		this.key = key;
 	}
 
+	protected String host() {
+		return host;
+	}
+	
 	protected int interest() {
 		return interest;
 	}
@@ -257,6 +261,9 @@ public class Event extends Throwable implements Chain.Link {
 			reply.code("400 Bad Request");
 		}
 		else {
+			if(host == null)
+				host = query.header("host");
+			
 			if(!service(daemon.chain(this), false)) {
 				if(daemon.host && query.path().startsWith("/root/")) {
 					reply.code("403 Forbidden");

@@ -186,7 +186,7 @@ public class Hash extends HashMap {
 	
 	public Object put(Object key, Object value) {
 		if(secure && key instanceof String && ((String) key).equals("host"))
-			return null;
+			return "Host header put not allowed!";
 		
 		if(value instanceof String) {
 			String v = (String) value;

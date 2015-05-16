@@ -646,8 +646,8 @@ public class Daemon implements Runnable {
 
 			try {
 				String message = "{\"type\": \"host\", \"file\": \"" + name + "\"}";
-				String ok = (String) send(message);
-//System.out.println(name + " " + ok);
+				String ok = (String) send(null, message);
+
 				if(ok.equals("OK")) {
 					if(deployer) {
 						return Deploy.Archive.deployer;
@@ -697,16 +697,17 @@ public class Daemon implements Runnable {
 	 * Send Object to JVM listener. We recommend you only send bootclasspath loaded 
 	 * classes here otherwise hotdeploy will fail.
 	 * 
+	 * @param event if applicable attach event
 	 * @param message to send
 	 * @return reply message
 	 * @throws Exception
 	 */
-	public Object send(Object message) throws Exception {
+	public Object send(Event event, Object message) throws Exception {
 		if(listener == null) {
 			return message;
 		}
 
-		return listener.receive(message);
+		return listener.receive(event, message);
 	}
 
 	/**
@@ -752,7 +753,7 @@ public class Daemon implements Runnable {
 		 * @return the reply message to the sender.
 		 * @throws Exception
 		 */
-		public Object receive(Object message) throws Exception;
+		public Object receive(Event event, Object message) throws Exception;
 	}
 
 	/**
@@ -1206,7 +1207,7 @@ public class Daemon implements Runnable {
 
 			try {
 				String message = "{\"type\": \"host\", \"file\": \"" + host + ".jar\"}";
-				String ok = (String) send(message);
+				String ok = (String) send(null, message);
 
 				if(ok.equals("OK")) {
 					file = new File("app" + File.separator + domain + path);
@@ -1272,7 +1273,7 @@ public class Daemon implements Runnable {
 					if(archive == null) {
 						try {
 							String message = "{\"type\": \"host\", \"file\": \"" + host + ".jar\"}";
-							String ok = (String) send(message);
+							String ok = (String) send(null, message);
 
 							if(ok.equals("OK")) {
 								archive = (Deploy.Archive) this.archive.get(domain + ".jar");
