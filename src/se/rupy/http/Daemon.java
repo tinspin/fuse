@@ -16,8 +16,8 @@ import java.security.ProtectionDomain;
 import java.text.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
 import java.nio.channels.*;
+import java.nio.file.LinkPermission;
 
 /**
  * A tiny HTTP daemon. The whole server is non-static so that you can launch
@@ -43,7 +43,7 @@ public class Daemon implements Runnable {
 	AccessControlContext control, no_control;
 	ConcurrentHashMap events, session;
 	int threads, timeout, cookie, delay, size, port, cache, async_timeout;
-	boolean verbose, debug, host, alive, panel;
+	boolean verbose, debug, host, alive, panel, root;
 	Async client;
 
 	/* Rupy 1.3 introduces measuring of metrics.
@@ -307,6 +307,11 @@ public class Daemon implements Runnable {
 &nbsp;&nbsp;&nbsp;&nbsp;{"type": "packet", "from": "[ip]"}<br>
 <br></tt>
 	 * </td></tr>
+	 * <tr><td valign="top"><b>root</b> (false)
+	 * </td><td>
+	 *            Root is a distributed index of JSON objects and graph of their relationships in the filesystem. 
+	 *            It supports full text search but has rough naming conventions and no order guarantee, it's a work in progress.
+	 * </td></tr>
 	 * </table>
 	 */
 	public Daemon(Properties properties) {
@@ -329,6 +334,8 @@ public class Daemon implements Runnable {
 				"true");
 		panel = properties.getProperty("panel", "false").toLowerCase().equals(
 				"true");
+		root = properties.getProperty("root", "false").toLowerCase().equals(
+				"true");
 		boolean multi = properties.getProperty("multi", "false").toLowerCase().equals(
 				"true");
 
@@ -347,6 +354,9 @@ public class Daemon implements Runnable {
 			domain = properties.getProperty("domain", "host.rupy.se");
 			PermissionCollection permissions = new Permissions();
 			permissions.add(new RuntimePermission("setContextClassLoader"));
+			permissions.add(new LinkPermission("hard"));
+			permissions.add(new LinkPermission("symbolic"));
+			permissions.add(new PropertyPermission("host", "read"));
 			control = new AccessControlContext(new ProtectionDomain[] {
 					new ProtectionDomain(null, permissions)});
 			permissions = new Permissions();
@@ -749,7 +759,8 @@ public class Daemon implements Runnable {
 	 */
 	public interface Listener {
 		/**
-		 * @param message
+		 * @param event if applicable attach event
+		 * @param message most likely a json string
 		 * @return the reply message to the sender.
 		 * @throws Exception
 		 */
@@ -1225,7 +1236,7 @@ public class Daemon implements Runnable {
 		return null;
 	}
 
-	protected Chain chain(Event event) {
+	protected Lock chain(Event event) {
 		if(host) {
 			return chain(event.query().header("host"), event.query().path(), event.push());
 		}
@@ -1234,7 +1245,7 @@ public class Daemon implements Runnable {
 		}
 	}
 
-	public Chain chain(Event event, String path) {
+	public Lock chain(Event event, String path) {
 		if(host) {
 			return chain(event.query().header("host"), path, event.push());
 		}
@@ -1242,8 +1253,18 @@ public class Daemon implements Runnable {
 			return chain("content", path, event.push());
 		}
 	}
+	
+	public class Lock {
+		public Chain chain;
+		boolean root;
+		
+		protected Lock(Chain chain, boolean root) {
+			this.chain = chain;
+			this.root = root;
+		}
+	}
 
-	protected Chain chain(String host, String path, boolean wakeup) {
+	protected Lock chain(String host, String path, boolean wakeup) {
 		if(!this.host) {
 			host = "content";
 		}
@@ -1287,9 +1308,9 @@ public class Daemon implements Runnable {
 
 				if(archive != null) {
 					Chain chain = (Chain) archive.chain().get(path);
-
+					
 					if (chain != null) {
-						return chain;
+						return new Lock(chain, false);
 					}
 				}
 			}
@@ -1303,13 +1324,13 @@ public class Daemon implements Runnable {
 						Chain chain = (Chain) archive.chain().get(path);
 
 						if (chain != null) {
-							return chain;
+							return new Lock(chain, false);
 						}
 						else if(wakeup) {
 							chain = (Chain) archive.chain().get("null");
 
 							if (chain != null) {
-								return chain;
+								return new Lock(chain, false);
 							}
 						}
 					}
@@ -1317,17 +1338,30 @@ public class Daemon implements Runnable {
 			}
 		}
 
+		if(root && path.equals("null"))
+			return null;
+		
 		synchronized (this.service) {
 			Chain chain = (Chain) this.service.get(path);
-
+			
 			if (chain != null) {
-				return chain;
+				return new Lock(chain, true);
 			}
 		}
 
 		return null;
 	}
 
+	protected Lock root() {
+		Chain chain = (Chain) this.service.get("null");
+			
+		if (chain != null) {
+			return new Lock(chain, true);
+		}
+			
+		return null;
+	}
+	
 	private String metric(Deploy.Archive archive, String path) {
 		Chain chain = (Chain) archive.chain().get(path);
 		Daemon.Metric metric = new Daemon.Metric();
@@ -1568,7 +1602,16 @@ public class Daemon implements Runnable {
 				add(this.service, debug, null);
 				add(this.service, api, null);
 			}
-
+			
+			if(root) {
+				Properties prop = new Properties();
+				prop.load(new FileInputStream("root.txt"));
+				add(this.service, new Root(prop), null);
+				add(this.service, new Root.Node(), null);
+				add(this.service, new Root.Link(), null);
+				add(this.service, new Root.Find(), null);
+			}
+			
 			if (properties.getProperty("test", "false").toLowerCase().equals(
 					"true")) {
 				new Test(this, 1);

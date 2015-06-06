@@ -186,7 +186,7 @@ public class Worker implements Runnable, Chain.Link {
 	public void run() {
 		touch = System.currentTimeMillis();
 
-		while (alive) {
+		while(alive) {
 			try {
 				if (event != null) {
 					if (event.push()) {
@@ -203,8 +203,11 @@ public class Worker implements Runnable, Chain.Link {
 					System.exit(-1);
 				}
 			} finally {
-				if (event != null) {
-					if (!daemon.match(event, this)) {
+				if(event != null) {
+					if(event.wakeup) {
+						event.wakeup = false;
+					} else
+					if(!daemon.match(event, this)) {
 						snooze();
 					}
 				}

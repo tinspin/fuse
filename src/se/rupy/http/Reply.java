@@ -185,26 +185,31 @@ public class Reply {
 		output.policy();
 	}
 
+	public synchronized int wakeup() {
+		return wakeup(false);
+	}
+	
 	/**
 	 * To send data asynchronously, call this and the event will be re-filtered.
 	 * Just make sure you didn't already flush the reply and that you are ready to
 	 * catch the event when it recycles in {@link Service#filter(Event)}!
 	 * 
+	 * @param queue Automatically wakeup the worker on this event if WORKING.
 	 * @return The status of the wakeup call. {@link Reply#OK}, {@link Reply#COMPLETE}, {@link Reply#CLOSED} or {@link Reply#WORKING}
 	 */
-	public synchronized int wakeup() {
-		if (output.complete()) {
+	public synchronized int wakeup(boolean queue) {
+		if (output.complete())
 			return COMPLETE;
-		}
 		
-		if (!event.channel().isOpen()) {
+		if (!event.channel().isOpen())
 			return CLOSED;
-		}
 		
-		if(event.daemon().match(event, null)) {
+		if(event.daemon().match(event, null))
 			return OK;
-		}
 
+		if(queue)
+			event.wakeup = true;
+		
 		return WORKING;
 	}
 	

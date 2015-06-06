@@ -11,8 +11,9 @@ import java.security.PrivilegedExceptionAction;
 import java.security.SecureRandom;
 import java.text.*;
 import java.util.*;
-
 import java.nio.channels.*;
+
+import se.rupy.http.Daemon.Lock;
 
 /**
  * Asynchronous HTTP request/response, this virtually represents a client
@@ -72,6 +73,7 @@ public class Event extends Throwable implements Chain.Link {
 
 	private int index, interest;
 	private String remote, host;
+	protected boolean wakeup = false;
 	private boolean close;
 	private long touch;
 
@@ -271,7 +273,22 @@ public class Event extends Throwable implements Chain.Link {
 							"<pre>'" + query.path() + "' is forbidden.</pre>");
 				}
 				else if(!content()) {
-					if(!service(daemon.chain(this, "null"), false)) {
+					//System.out.println(daemon.host + " " + 
+					//		query.path().startsWith("/root") + " " + 
+					//		query.path().startsWith("/node") + " " + 
+					//		query.path().startsWith("/link"));
+					if(daemon.host && (
+							query.path().startsWith("/root") || 
+							query.path().startsWith("/node") || 
+							query.path().startsWith("/link")) && 
+							!host.equals("root.rupy.se")) {
+						if(!service(daemon.root(), false)) {
+							reply.code("404 Not Found");
+							reply.output().print(
+									"<pre>'" + query.path() + "' was not found.</pre>");
+						}
+					}
+					else if(!service(daemon.chain(this, "null"), false)) {
 						reply.code("404 Not Found");
 						reply.output().print(
 								"<pre>'" + query.path() + "' was not found.</pre>");
@@ -354,12 +371,14 @@ public class Event extends Throwable implements Chain.Link {
 		return true;
 	}
 
-	protected boolean service(Chain chain, boolean write) throws IOException {
+	protected boolean service(Daemon.Lock chain, boolean write) throws IOException {
 		if(chain == null)
 			return false;
 
 		try {
-			chain.filter(this, write);
+			//System.out.println("ROOT " + chain.root);
+			
+			chain.chain.filter(this, write, chain.root);
 		} catch (Failure f) {
 			throw f;
 		} catch (Event e) {

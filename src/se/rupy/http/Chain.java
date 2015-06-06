@@ -39,10 +39,10 @@ public class Chain extends LinkedList {
 	}
 
 	public void filter(final Event event) throws Event, Exception {
-		filter(event, true);
+		filter(event, true, false);
 	}
 
-	protected void filter(final Event event, boolean write) throws Event, Exception {
+	protected void filter(final Event event, boolean write, boolean root) throws Event, Exception {
 		for (int i = 0; i < size(); i++) {
 			final Service service = (Service) get(i);
 
@@ -52,19 +52,19 @@ public class Chain extends LinkedList {
 
 			long cpu = Event.bean.getThreadCpuTime(Thread.currentThread().getId());
 
-			if(event.daemon().host) {
+			if(event.daemon().host && !root) {
 				try {
 					final Deploy.Archive archive = event.daemon().archive(event.query().header("host"), true);
-					
+
 					//System.out.println(archive + " " + event.query().header("host"));
-					
+
 					try {
 						Thread.currentThread().setContextClassLoader(archive);
 					}
 					catch(AccessControlException e) {
 						// recursive chaining fails here, no worries! ;)
 					}
-					
+
 					Object o = AccessController.doPrivileged(new PrivilegedExceptionAction() {
 						public Object run() throws Exception {
 							try {
@@ -81,7 +81,7 @@ public class Chain extends LinkedList {
 							}
 						}
 					}, archive.access());
-					
+
 					if(o != null) {
 						throw (Event) o;
 					}
@@ -96,6 +96,17 @@ public class Chain extends LinkedList {
 				}
 			}
 			else {
+				if(root) {
+					final Deploy.Archive archive = event.daemon().archive(event.query().header("host"), true);
+
+					try {
+						Thread.currentThread().setContextClassLoader(archive);
+					}
+					catch(AccessControlException e) {
+						// recursive chaining fails here, no worries! ;)
+					}
+				}
+
 				service.filter(event);
 			}
 
