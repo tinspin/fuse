@@ -146,7 +146,6 @@ public abstract class Output extends OutputStream implements Event.Block {
 		else {
 			wrote(("Date: " + reply.event().worker().date().format(new Date()) + EOL)
 					.getBytes());
-			wrote(server);
 
 			if(!zero()) {
 				wrote(("Content-Type: " + reply.type() + EOL).getBytes());
@@ -196,6 +195,8 @@ public abstract class Output extends OutputStream implements Event.Block {
 			} else {
 				wrote(alive);
 			}
+			
+			wrote(server);
 			
 			HashMap headers = reply.headers();
 
