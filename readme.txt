@@ -350,6 +350,10 @@ VERSION:
     
     1.3 Metrics
     
+    - Added root cloud store to rupy core. This will 
+    change everything but it's completely undocumented 
+    right now. Take a look at http://root.rupy.se for 
+    preview.
     - Measures:
       1) the time worker threads spend filtering 
          services. (CPU)

@@ -324,7 +324,7 @@ public class Root extends Service {
 
 		if(!create && event.query().path().startsWith("/node") && 
 				!key_exist && !id_exist)
-			throw new Exception("Node does not exist!");
+			throw new Exception("Node does not exist! [type=" + type + "]");
 
 		byte[] encrypted = encrypt(json.toString());
 
@@ -391,7 +391,7 @@ public class Root extends Service {
 
 			if(value.contains(" ") || key.equals("text"))
 				full = true;
-			else if(value.matches("[0-9]+") || !value.matches("[a-zA-Z0-9/.@]+"))
+			else if(value.matches("[0-9]+") || !value.matches("[a-zA-Z0-9/.@\\+]+"))
 				throw new SortException("Validation [" + key + "=" + json.getString(key) + "]");
 
 			if(full) {
@@ -708,9 +708,7 @@ public class Root extends Service {
 	}
 
 	static String file(File file) throws Exception {
-		BufferedReader in = new BufferedReader(
-		           new InputStreamReader(
-		                      new FileInputStream(file), "UTF8"));
+		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 		String content = in.readLine();
 		in.close();
 		return content;

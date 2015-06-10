@@ -277,7 +277,7 @@ public class Event extends Throwable implements Chain.Link {
 					//		query.path().startsWith("/root") + " " + 
 					//		query.path().startsWith("/node") + " " + 
 					//		query.path().startsWith("/link"));
-					if(daemon.host && (
+					if(daemon.root && (
 							query.path().startsWith("/root") || 
 							query.path().startsWith("/node") || 
 							query.path().startsWith("/link")) && 
