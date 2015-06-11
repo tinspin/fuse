@@ -139,7 +139,13 @@ public class Chain extends LinkedList {
 			final Service service = (Service) get(i);
 
 			if(session.daemon().host) {
-				Thread.currentThread().setContextClassLoader(null);
+				try {
+					Thread.currentThread().setContextClassLoader(null);
+				}
+				catch(AccessControlException e) {
+					// exit fails here, no worries! ;)
+				}
+				
 				AccessController.doPrivileged(new PrivilegedExceptionAction() {
 					public Object run() throws Exception {
 						try {

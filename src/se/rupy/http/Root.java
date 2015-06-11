@@ -401,10 +401,16 @@ public class Root extends Service {
 					String word = words[j];
 
 					// remove punctuation
-					if(word.endsWith(".") || word.endsWith(":") || word.endsWith(",") || word.endsWith(";"))
+					// remove punctuation
+					while(word.endsWith(".") 
+					   || word.endsWith(":") 
+					   || word.endsWith(",") 
+					   || word.endsWith(";") 
+					   || word.endsWith("!") 
+					   || word.endsWith("?"))
 						word = word.substring(0, word.length() - 1);
 
-					if(word.matches("[a-z]+")) {
+					if(word.matches("[\\p{L}]+")) { // UTF-8 character
 						sort = home + "/" + key + "/" + word;
 						new File(sort.substring(0, sort.lastIndexOf("/"))).mkdirs();
 						RandomAccessFile file = new RandomAccessFile(sort, "rw");
@@ -416,7 +422,7 @@ public class Root extends Service {
 				if(value.indexOf("/") > 0)
 					sort = home + "/" + key + "/" + value;
 				else
-					sort = home + "/" + key + path(value);
+					sort = home + "/" + key + path(value, 3);
 
 				boolean exists = new File(sort).exists();
 
@@ -668,6 +674,10 @@ public class Root extends Service {
 	/* Make a path of the first X chars then a file of the remainder.
 	 * 58^2=3364 this is how you calculate if you need more or less folders.
 	 * 10^3=1000 this is why the id needs one more folder.
+	 * 
+	 * At further thought the index for user input fields like mail and name 
+	 * should probably have a depth of 3 since few will index zzz... for example 
+	 * but dan... or joh... will have alot of entries. Fixed!
 	 */
 	static String path(String name, int length) {
 		int index = name.indexOf('.');
@@ -872,8 +882,8 @@ public class Root extends Service {
 						}
 					}
 					else { // node sort index
-						if(last.matches("[a-zA-Z0-9]+"))
-							full = home() + "/node/" + type + "/" + sort + Root.path(last);
+						if(last.matches("[a-zA-Z0-9.@\\+]+"))
+							full = home() + "/node/" + type + "/" + sort + Root.path(last, sort.equals("key") ? 2 : 3);
 
 						if(last.matches("[0-9]+")) {
 							full = home() + "/node/" + type + "/" + sort + Root.path(Long.parseLong(last));
@@ -889,8 +899,10 @@ public class Root extends Service {
 							event.reply().type("application/json; charset=UTF-8");
 							JSONObject obj = new JSONObject(file(full));
 							
-							if(remove)
+							if(remove) {
+								obj.put("id", hash(obj.getString("key")));
 								obj.remove("key");
+							}
 							
 							byte[] data = obj.toString(4).getBytes("UTF-8");
 							Output out = event.reply().output(data.length);
@@ -950,8 +962,15 @@ public class Root extends Service {
 					String open = Root.home() + "/node/" + type + "/id" + Root.path(id);
 
 					JSONObject obj = new JSONObject(file(open));
-					if(remove)
+					
+					if(remove) {
+						obj.put("id", hash(obj.getString("key")));
 						obj.remove("key");
+					}
+					
+					//if(type.equals("user"))
+					//	obj.remove("pass");
+						
 					builder.append(obj.toString(4));
 				}
 
