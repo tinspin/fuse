@@ -6,7 +6,7 @@ The latest build can be found here: <a href="http://rupy.se/rupy.zip">rupy.zip</
 
 Older releases can be found here: <a href="http://rupy.googlecode.com">GoogleCode</a>.
 
-Next release (1.3) will be added to github once it is ready.
+Next release (Cloud 1.3) will be added to github once it is ready.
 
 ![http://host.rupy.se](http://host.rupy.se/cluster.jpg)
 
