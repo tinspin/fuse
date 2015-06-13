@@ -228,7 +228,6 @@ public class Deploy extends Service {
 			permissions.add(new PropertyPermission("user.dir", "read"));
 			permissions.add(new RuntimePermission("createClassLoader"));
 			permissions.add(new RuntimePermission("setContextClassLoader"));
-			//permissions.add(new PropertyPermission("host", "read"));
 			access = new AccessControlContext(new ProtectionDomain[] {
 					new ProtectionDomain(null, permissions)});
 		}
@@ -267,7 +266,6 @@ public class Deploy extends Service {
 				permissions.add(new PropertyPermission("sun.net.http.allowRestrictedHeaders", "write"));
 				permissions.add(new PropertyPermission("java.version", "read"));
 				permissions.add(new RuntimePermission("getStackTrace"));
-				//permissions.add(new PropertyPermission("host", "read"));
 
 				if(host.equals("root.rupy.se")) { // Nasty hardcode, but it will go away with SSD metrics file API.
 					try {

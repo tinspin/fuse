@@ -156,7 +156,7 @@ public class Chain extends LinkedList {
 						}
 						return null;
 					}
-				}, session.daemon().no_control);
+				}, session.daemon().control);
 			}
 			else {
 				service.session(session, type);

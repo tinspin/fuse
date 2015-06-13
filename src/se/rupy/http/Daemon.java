@@ -40,7 +40,7 @@ public class Daemon implements Runnable {
 	Chain workers, queue;
 	Properties properties;
 	PrintStream out, access, error;
-	AccessControlContext control, no_control;
+	AccessControlContext control;
 	ConcurrentHashMap events, session;
 	int threads, timeout, cookie, delay, size, port, cache, async_timeout;
 	boolean verbose, debug, host, alive, panel, root;
@@ -353,12 +353,8 @@ public class Daemon implements Runnable {
 		if(host) {
 			domain = properties.getProperty("domain", "host.rupy.se");
 			PermissionCollection permissions = new Permissions();
-			permissions.add(new RuntimePermission("setContextClassLoader"));
 			permissions.add(new PropertyPermission("host", "read"));
 			control = new AccessControlContext(new ProtectionDomain[] {
-					new ProtectionDomain(null, permissions)});
-			permissions = new Permissions();
-			no_control = new AccessControlContext(new ProtectionDomain[] {
 					new ProtectionDomain(null, permissions)});
 		}
 
