@@ -354,8 +354,6 @@ public class Daemon implements Runnable {
 			domain = properties.getProperty("domain", "host.rupy.se");
 			PermissionCollection permissions = new Permissions();
 			permissions.add(new RuntimePermission("setContextClassLoader"));
-			permissions.add(new LinkPermission("hard"));
-			permissions.add(new LinkPermission("symbolic"));
 			permissions.add(new PropertyPermission("host", "read"));
 			control = new AccessControlContext(new ProtectionDomain[] {
 					new ProtectionDomain(null, permissions)});
