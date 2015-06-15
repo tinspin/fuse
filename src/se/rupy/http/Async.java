@@ -103,6 +103,10 @@ public class Async implements Runnable {
 	 * @param invalidate the number of seconds after which the channel is regarded as unreliable.
 	 */
 	public synchronized void send(String host, Work work, int invalidate) throws Exception {
+		// Fixes FUSE "opened output without flush" cascade.
+		if(work.event.reply().output.init)
+			work.event.reply().output.flush();
+		
 		if(invalidate > 0) {
 			Iterator it = calls.iterator();
 

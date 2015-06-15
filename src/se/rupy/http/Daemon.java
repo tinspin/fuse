@@ -31,17 +31,20 @@ import java.nio.file.LinkPermission;
 public class Daemon implements Runnable {
 	static DateFormat DATE;
 
+	protected String domain = "host.rupy.se";
+	
 	private int selected, valid, accept, readwrite; // panel stats
 	private TreeMap archive, service;
 	private Heart heart;
 	private Selector selector;
-	private String domain, name, bind;
-
+	private String name, bind;
+	
 	Chain workers, queue;
 	Properties properties;
 	PrintStream out, access, error;
 	AccessControlContext control;
 	ConcurrentHashMap events, session;
+	Deploy.Archive deployer;
 	int threads, timeout, cookie, delay, size, port, cache, async_timeout;
 	boolean verbose, debug, host, alive, panel, root;
 	Async client;
@@ -351,6 +354,7 @@ public class Daemon implements Runnable {
 		}
 
 		if(host) {
+			deployer = new Deploy.Archive(this);
 			domain = properties.getProperty("domain", "host.rupy.se");
 			PermissionCollection permissions = new Permissions();
 			permissions.add(new PropertyPermission("host", "read"));
@@ -644,7 +648,7 @@ public class Daemon implements Runnable {
 		if(host) {
 			if(deployer) {
 				if(name.equals(domain + ".jar")) {
-					return Deploy.Archive.deployer;
+					return this.deployer;
 				}
 			}
 
@@ -654,7 +658,7 @@ public class Daemon implements Runnable {
 
 				if(ok.equals("OK")) {
 					if(deployer) {
-						return Deploy.Archive.deployer;
+						return this.deployer;
 					}
 					else {
 						return (Deploy.Archive) this.archive.get(domain + ".jar");

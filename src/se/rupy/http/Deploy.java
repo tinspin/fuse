@@ -219,7 +219,7 @@ public class Deploy extends Service {
 		
 		Vector classes = new Vector();
 
-		Archive() { // Archive for deployment.
+		Archive(Daemon daemon) { // Archive for deployment.
 			PermissionCollection permissions = new Permissions();
 			permissions.add(new SocketPermission("*", "listen,accept,resolve,connect"));
 			permissions.add(new FilePermission("/-", "read"));
@@ -230,6 +230,8 @@ public class Deploy extends Service {
 			permissions.add(new RuntimePermission("setContextClassLoader"));
 			access = new AccessControlContext(new ProtectionDomain[] {
 					new ProtectionDomain(null, permissions)});
+			
+			host = daemon.domain;
 		}
 
 		Archive(Daemon daemon, File file, Event event) throws Exception {
@@ -267,7 +269,7 @@ public class Deploy extends Service {
 				permissions.add(new PropertyPermission("java.version", "read"));
 				permissions.add(new RuntimePermission("getStackTrace"));
 
-				if(host.equals("root.rupy.se")) { // Nasty hardcode, but it will go away with SSD metrics file API.
+				if(daemon.domain.equals("host.rupy.se") && host.equals("root.rupy.se")) { // Nasty hardcode, but it will go away with SSD metrics file API.
 					try {
 						permissions.add(new LinkPermission("hard"));
 						permissions.add(new LinkPermission("symbolic"));
@@ -412,7 +414,7 @@ public class Deploy extends Service {
 			}
 		}
 
-		static Deploy.Archive deployer = new Deploy.Archive();
+		//static Deploy.Archive deployer = new Deploy.Archive();
 
 		protected AccessControlContext access() {
 			return access;

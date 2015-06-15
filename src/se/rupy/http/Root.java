@@ -679,7 +679,7 @@ public class Root extends Service {
 	 * should probably have a depth of 3 since few will index zzz... for example 
 	 * but dan... or joh... will have alot of entries. Fixed!
 	 */
-	static String path(String name, int length) {
+	public static String path(String name, int length) {
 		int index = name.indexOf('.');
 
 		if((index > 0 && index <= length) || name.length() <= length) // Unless we can't!
@@ -713,11 +713,11 @@ public class Root extends Service {
 		return secret;
 	}
 
-	static String file(String path) throws Exception {
+	public static String file(String path) throws Exception {
 		return file(new File(path));
 	}
 
-	static String file(File file) throws Exception {
+	public static String file(File file) throws Exception {
 		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 		String content = in.readLine();
 		in.close();

@@ -129,6 +129,9 @@ public abstract class Output extends OutputStream implements Event.Block {
 	}
 
 	protected void headers(long length) throws IOException {
+		//System.out.println("headers " + length);
+		//System.out.println(Worker.stack(Thread.currentThread()));
+		
 		if (Event.LOG) {
 			if (reply.event().daemon().verbose) {
 				reply.event().log("code " + reply.code(), Event.VERBOSE);
@@ -138,6 +141,10 @@ public abstract class Output extends OutputStream implements Event.Block {
 		wrote((reply.event().query().version() + " " + reply.code() + EOL)
 				.getBytes());
 
+		// Debug for multiple async cascade...
+		//wrote(("Query-Path: " + reply.event().query().path() + EOL).getBytes());
+		//wrote(("Event: " + reply.event().index() + EOL).getBytes());
+		
 		if(reply.event().headless) {
 			if(reply.type().equals("text/event-stream")) {
 				wrote(stream);

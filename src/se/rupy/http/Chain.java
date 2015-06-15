@@ -74,10 +74,12 @@ public class Chain extends LinkedList {
 							catch(Event event) {
 								return event;
 							}
+							catch(Exception e) {
+								throw new PrivilegedActionException(e);
+							}
 							catch(Throwable t) {
-								Exception e = new Exception();
-								e.initCause(t);
-								throw e;
+								t.printStackTrace();
+								return null;
 							}
 						}
 					}, archive.access());

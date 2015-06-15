@@ -63,14 +63,14 @@ public class Worker implements Runnable, Chain.Link {
 	}
 
 	protected void wakeup(boolean match) {
-		if (Event.LOG) {
+		if(Event.LOG) {
 			if(event != null && event.daemon().debug)
 				event.log("wakeup " + match, Event.DEBUG);
 		}
 
 		touch();
 
-		synchronized (thread) {
+		synchronized(thread) {
 			thread.notify();
 		}
 
@@ -86,14 +86,14 @@ public class Worker implements Runnable, Chain.Link {
 	}
 
 	protected void snooze(long delay) {
-		if (Event.LOG) {
+		if(Event.LOG) {
 			if(event != null && event.daemon().debug)
 				event.log("snooze " + delay, Event.DEBUG);
 		}
 
-		synchronized (thread) {
+		synchronized(thread) {
 			try {
-				if (delay > 0) {
+				if(delay > 0) {
 					if(awake) {
 						awake = false;
 						return;
@@ -105,7 +105,7 @@ public class Worker implements Runnable, Chain.Link {
 						thread.wait();
 					}
 				}
-			} catch (InterruptedException e) {
+			} catch(InterruptedException e) {
 				event.disconnect(e);
 			}
 
@@ -149,7 +149,7 @@ public class Worker implements Runnable, Chain.Link {
 					daemon.error.write(stack(thread).getBytes());
 				}
 				catch (IOException e) {}
-				
+
 				reset(new Exception("Threadlock"));
 
 				//if(exit) {
@@ -176,7 +176,7 @@ public class Worker implements Runnable, Chain.Link {
 	}
 
 	protected void stop() {
-		synchronized (thread) {
+		synchronized(thread) {
 			thread.notify();
 		}
 
@@ -188,14 +188,14 @@ public class Worker implements Runnable, Chain.Link {
 
 		while(alive) {
 			try {
-				if (event != null) {
-					if (event.push()) {
+				if(event != null) {
+					if(event.push()) {
 						event.write();
 					} else {
 						event.read();
 					}
 				}
-			} catch (Exception e) {
+			} catch(Exception e) {
 				reset(e);
 
 				if(exit) {
@@ -206,8 +206,7 @@ public class Worker implements Runnable, Chain.Link {
 				if(event != null) {
 					if(event.wakeup) {
 						event.wakeup = false;
-					} else
-					if(!daemon.match(event, this)) {
+					} else if(!daemon.match(event, this)) {
 						snooze();
 					}
 				}
