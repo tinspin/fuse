@@ -281,7 +281,8 @@ public class Event extends Throwable implements Chain.Link {
 					if(daemon.root && (
 							query.path().startsWith("/root") || 
 							query.path().startsWith("/node") || 
-							query.path().startsWith("/link")) && 
+							query.path().startsWith("/link") || 
+							query.path().startsWith("/salt")) && 
 							!host.equals("root.rupy.se")) {
 						if(!service(daemon.root(), false)) {
 							reply.code("404 Not Found");
@@ -692,10 +693,13 @@ public class Event extends Throwable implements Chain.Link {
 	public static String random(int length) {
 		StringBuilder builder = new StringBuilder();
 
-		while (builder.length() < length) {
-			builder.append(BASE_58[Math.abs(random.nextInt() % BASE_58.length)]);
+		do {
+			while (builder.length() < length) {
+				builder.append(BASE_58[Math.abs(random.nextInt() % BASE_58.length)]);
+			}
 		}
-
+		while(builder.toString().matches("[0-9]+"));
+		
 		return builder.toString();
 	}
 

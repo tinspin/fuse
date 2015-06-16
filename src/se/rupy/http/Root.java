@@ -13,6 +13,7 @@ import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -842,7 +843,7 @@ public class Root extends Service {
 					File file = new File(full);
 
 					if(file.exists()) {
-						write_last(event, sort, new RandomAccessFile(file, "rw"), from, size, remove);
+						write_last(event, sort, new RandomAccessFile(file, "rw"), type, last, from, size, remove);
 					}
 					else {
 						event.reply().type("application/json; charset=UTF-8");
@@ -873,12 +874,12 @@ public class Root extends Service {
 								list = remove(next, list);
 							}
 
-							print_list(event, type, list, list.size(), remove);
+							print_list(event, type, list, null, null, list.size(), remove);
 						}
 						else {
 							full = home() + "/node/" + type + "/" + sort + "/";
 
-							write_last(event, type, new RandomAccessFile(full + last, "r"), from, size, remove);
+							write_last(event, type, new RandomAccessFile(full + last, "r"), null, null, from, size, remove);
 						}
 					}
 					else { // node sort index
@@ -920,7 +921,7 @@ public class Root extends Service {
 			}
 		}
 
-		private void write_last(Event event, String type, RandomAccessFile file, int from, int size, boolean remove) throws Exception {
+		private void write_last(Event event, String type, RandomAccessFile file, String poll, String last, int from, int size, boolean remove) throws Event, Exception {
 			LinkedList list = new LinkedList();
 			int length = (int) (file.length() > 8 * size ? 8 * size : file.length());
 			long start = length + from * 8;
@@ -941,11 +942,39 @@ public class Root extends Service {
 					break;
 			}
 			
-			print_list(event, type, list, file.length() / 8, remove);
+			print_list(event, type, list, poll, last, file.length() / 8, remove);
 		}
 
-		private void print_list(Event event, String type, List list, long total, boolean remove) throws Exception {
-			event.reply().type("application/json; charset=UTF-8");
+		private void print_list(Event event, String type, List list, String poll, String last, long total, boolean remove) throws Event, Exception {
+			boolean secure = poll != null && last != null && last.matches("[0-9]+") && type.equals("user");
+			String key = "";
+			
+			if(secure) {
+				event.query().parse();
+				
+				String hash = event.string("hash");
+				String salt = event.string("salt");
+				
+				if(Salt.salt.containsKey(salt)) {
+					Salt.salt.remove(salt);
+				}
+				else {
+					event.reply().code("400 Bad Request");
+					event.output().print("<pre>Salt not found.</pre>");
+					throw event;
+				}
+				
+				JSONObject object = new JSONObject(file(home() + "/node/" + poll + "/id/" + Root.path(last, 3)));
+				key = object.getString("key");
+				
+				String match = Deploy.hash(Deploy.hash(key, "SHA") + salt, "SHA");
+				
+				if(!hash.equals(match)) {
+					event.reply().code("400 Bad Request");
+					event.output().print("<pre>Auth did not match.</pre>");
+					throw event;
+				}
+			}
 			
 			StringBuilder builder = new StringBuilder();
 			builder.append("{\"total\":" + total + ", \"list\":[");
@@ -980,7 +1009,14 @@ public class Root extends Service {
 
 			builder.append("]}");
 			
-			byte[] data = builder.toString().getBytes("UTF-8");
+			String result = builder.toString();
+			
+			if(secure) {
+				event.reply().header("Hash", Deploy.hash(Deploy.hash(result, "SHA") + key, "SHA"));
+			}
+			
+			event.reply().type("application/json; charset=UTF-8");
+			byte[] data = result.getBytes("UTF-8");
 			Output out = event.reply().output(data.length);
 			out.write(data);
 		}
@@ -1039,6 +1075,20 @@ public class Root extends Service {
 		}
 	}
 
+	public static class Salt extends Service {
+		static HashMap salt = new HashMap();
+		
+		public String path() {
+			return "/salt";
+		}
+
+		public void filter(Event event) throws Event, Exception {
+			String salt = Event.random(8);
+			this.salt.put(salt, null);
+			event.output().print(salt);
+		}
+	}
+	
 	public static class Hash extends Service {
 		public String path() {
 			return "/hash";
