@@ -693,12 +693,12 @@ public class Event extends Throwable implements Chain.Link {
 	public static String random(int length) {
 		StringBuilder builder = new StringBuilder();
 
-		do {
+		//do {
 			while (builder.length() < length) {
 				builder.append(BASE_58[Math.abs(random.nextInt() % BASE_58.length)]);
 			}
-		}
-		while(builder.toString().matches("[0-9]+"));
+		//}
+		//while(!builder.toString().matches("[a-zA-Z]+"));
 		
 		return builder.toString();
 	}

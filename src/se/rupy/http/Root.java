@@ -1084,6 +1084,11 @@ public class Root extends Service {
 
 		public void filter(Event event) throws Event, Exception {
 			String salt = Event.random(8);
+			
+			while(this.salt.containsKey(salt)) {
+				salt = Event.random(8);
+			}
+			
 			this.salt.put(salt, null);
 			event.output().print(salt);
 		}
