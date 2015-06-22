@@ -44,7 +44,7 @@ import se.rupy.http.Service;
  */
 public class Root extends Service {
 	static int LENGTH = 16;
-	static String local;
+	public static String local;
 	static String secret;
 	//static String home;
 	static String[] ip = {"89.221.241.32", "89.221.241.33", "92.63.174.125", "2.248.42.217", "2.248.42.217", "2.248.42.217", "2.248.42.217"};
@@ -92,12 +92,7 @@ public class Root extends Service {
 	public String path() { return "/root"; }
 
 	public void create(Daemon daemon) throws Exception {
-		local = InetAddress.getLocalHost().getHostName();
-		//System.out.println(local);
 		local = System.getProperty("host", "none");
-		//System.out.println(local);
-		//archive = (Deploy.Archive) Thread.currentThread().getContextClassLoader();
-		//home = "app/" + archive.host() + "/root";
 	}
 
 	private static String home() {
@@ -423,7 +418,7 @@ public class Root extends Service {
 				if(value.indexOf("/") > 0)
 					sort = home + "/" + key + "/" + value;
 				else
-					sort = home + "/" + key + path(value, 3);
+					sort = home + "/" + key + path(value);
 
 				boolean exists = new File(sort).exists();
 
@@ -664,23 +659,19 @@ public class Root extends Service {
 		return Math.abs(h);
 	}
 
-	static String path(long id) {
+	public static String path(long id) {
 		return path(String.valueOf(id), 3);
 	}
 
-	static String path(String name) {
+	public static String path(String name) {
 		return path(name, 2);
 	}
 
 	/* Make a path of the first X chars then a file of the remainder.
 	 * 58^2=3364 this is how you calculate if you need more or less folders.
 	 * 10^3=1000 this is why the id needs one more folder.
-	 * 
-	 * At further thought the index for user input fields like mail and name 
-	 * should probably have a depth of 3 since few will index zzz... for example 
-	 * but dan... or joh... will have alot of entries. Fixed!
 	 */
-	public static String path(String name, int length) {
+	private static String path(String name, int length) {
 		int index = name.indexOf('.');
 
 		if((index > 0 && index <= length) || name.length() <= length) // Unless we can't!
@@ -884,7 +875,7 @@ public class Root extends Service {
 					}
 					else { // node sort index
 						if(last.matches("[a-zA-Z0-9.@\\+]+"))
-							full = home() + "/node/" + type + "/" + sort + Root.path(last, sort.equals("key") ? 2 : 3);
+							full = home() + "/node/" + type + "/" + sort + Root.path(last);
 
 						if(last.matches("[0-9]+")) {
 							full = home() + "/node/" + type + "/" + sort + Root.path(Long.parseLong(last));
@@ -898,7 +889,7 @@ public class Root extends Service {
 
 						if(file.exists()) {
 							event.reply().type("application/json; charset=UTF-8");
-							JSONObject obj = new JSONObject(file(full));
+							JSONObject obj = new JSONObject(file(file));
 							
 							if(remove) {
 								obj.put("id", hash(obj.getString("key")));
@@ -964,7 +955,7 @@ public class Root extends Service {
 					throw event;
 				}
 				
-				JSONObject object = new JSONObject(file(home() + "/node/" + poll + "/id/" + Root.path(last, 3)));
+				JSONObject object = new JSONObject(file(home() + "/node/" + poll + "/id/" + Root.path(last)));
 				key = object.getString("key");
 				
 				String match = Deploy.hash(Deploy.hash(key, "SHA") + salt, "SHA");
