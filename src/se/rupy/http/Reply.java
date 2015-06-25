@@ -19,7 +19,9 @@ import java.util.*;
  */
 public class Reply {
 	/**
-	 * If the reply has a thread writing already. You have to wait until it finishes.
+	 * If the reply has a thread writing already. You have to wait until it finishes. this 
+	 * should not happen on a 1-to-1 wakeup, but when many threads are writing to one reply 
+	 * you can queue replies with {@link #wakeup(boolean)} instead to avoid conflicts.
 	 */
 	public static int WORKING = -1;
 	

@@ -2,7 +2,9 @@ package se.rupy.http;
 
 import java.io.*;
 import java.lang.reflect.ReflectPermission;
+
 import javax.net.ssl.SSLPermission;
+
 import java.net.*;
 import java.nio.file.LinkPermission;
 import java.security.*;
@@ -48,6 +50,17 @@ public class Deploy extends Service {
 	}
 
 	public void filter(Event event) throws Event, Exception {
+		//TODO: Realtime feedback of deployment!
+		/*
+		if(event.push()) {
+			Output out = event.output();
+			out.print(".");
+			out.flush();
+			
+			throw event;
+		}
+		*/
+		
 		/*
 		 * concurrent deploys will fail without sessions.
 		 * added this just so instances without session can hot-deploy.
@@ -268,15 +281,18 @@ public class Deploy extends Service {
 				permissions.add(new PropertyPermission("sun.net.http.allowRestrictedHeaders", "write"));
 				permissions.add(new PropertyPermission("java.version", "read"));
 				permissions.add(new RuntimePermission("getStackTrace"));
+				permissions.add(new PropertyPermission("host", "read"));
 
-				if(daemon.domain.equals("host.rupy.se") && host.equals("root.rupy.se")) { // Nasty hardcode, but it will go away with SSD metrics file API.
-					try {
-						permissions.add(new LinkPermission("hard"));
-						permissions.add(new LinkPermission("symbolic"));
+				if(daemon.domain.equals("host.rupy.se")) {
+					if(host.equals("root.rupy.se")) { // Nasty hardcode, but it will go away with SSD metrics file API.
+						try {
+							permissions.add(new LinkPermission("hard"));
+							permissions.add(new LinkPermission("symbolic"));
+						}
+						catch(Error e) {}
 					}
-					catch(Error e) {}
 				}
-
+				
 				access = new AccessControlContext(new ProtectionDomain[] {
 						new ProtectionDomain(null, permissions)});
 				
@@ -405,7 +421,7 @@ public class Deploy extends Service {
 						daemon.out.println(small.name + " couldn't be instantiated!");
 					}
 
-					throw new Exception(small.name() + " could not be instantiated, make it public (static if inner class) with no or a zero argument constructor.");
+					throw (Exception) new Exception(small.name() + " could not be instantiated, make it public (static if inner class) with no or a zero argument constructor.").initCause(e);
 				}
 			}
 
@@ -773,13 +789,18 @@ public class Deploy extends Service {
 									  "Host:" + host + Output.EOL + 
 									  "Pass:" + key;
 
-						//System.out.println(head);
+						System.out.println(event.index());
 						
 						call.post("/deploy", head, file);
 					}
 
 					public void read(String host, String body) throws Exception {
 						System.out.println(body);
+						
+						//TODO: Realtime feedback of deployment!
+						
+						//if(event != null)
+						//	System.out.println(event.reply().wakeup());
 					}
 
 					public void fail(String host, Exception e) throws Exception {

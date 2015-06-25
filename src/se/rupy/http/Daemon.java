@@ -11,6 +11,7 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PermissionCollection;
 import java.security.Permissions;
+import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.security.ProtectionDomain;
 import java.text.*;
@@ -32,13 +33,13 @@ public class Daemon implements Runnable {
 	static DateFormat DATE;
 
 	protected String domain = "host.rupy.se";
-	
+
 	private int selected, valid, accept, readwrite; // panel stats
 	private TreeMap archive, service;
 	private Heart heart;
 	private Selector selector;
 	private String name, bind;
-	
+
 	Chain workers, queue;
 	Properties properties;
 	PrintStream out, access, error;
@@ -81,7 +82,7 @@ public class Daemon implements Runnable {
 		void add(Metric metric) {
 			cpu += metric.cpu;
 			ram += metric.ram;
-			
+
 			req.add(metric.req);
 			ssd.add(metric.ssd);
 			net.add(metric.net);
@@ -341,12 +342,23 @@ public class Daemon implements Runnable {
 				"true");
 		boolean multi = properties.getProperty("multi", "false").toLowerCase().equals(
 				"true");
+		boolean dns = properties.getProperty("dns", "false").toLowerCase().equals(
+				"true");
 
 		bind = properties.getProperty("bind", null);
 
 		if(multi) {
 			try {
 				setup();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		if(dns) {
+			try {
+				dns_setup();
 			}
 			catch(Exception e) {
 				e.printStackTrace();
@@ -436,13 +448,30 @@ public class Daemon implements Runnable {
 		DATE = new SimpleDateFormat("yy-MM-dd HH:mm:ss.SSS");
 	}
 
-	protected void error(Event e, Throwable t) throws IOException {
+	protected void error(final Event e, final Throwable t) throws IOException {
 		//t.printStackTrace();
 
 		if (error != null && t != null && !(t instanceof Failure.Close)) {
-			if(errlis != null) {
-				if(!errlis.log(e, t))
-					return;
+			if(err != null) {
+				try {
+					Boolean log = (Boolean) AccessController.doPrivileged(new PrivilegedExceptionAction() {
+						public Object run() throws Exception {
+							try {
+								return new Boolean(err.log(e, t));
+							}
+							catch(Throwable t) {
+								t.printStackTrace();
+								return true;
+							}
+						}
+					}, control);
+
+					if(!log.booleanValue())
+						return;
+				}
+				catch(PrivilegedActionException pae) {
+					pae.printStackTrace();
+				}
 			}
 
 			Calendar date = Calendar.getInstance();
@@ -628,15 +657,15 @@ public class Daemon implements Runnable {
 		while (it.hasNext()) {
 			Service service = (Service) it.next();
 			Iterator it2 = service.metric.values().iterator();
-			
+
 			while(it2.hasNext()) {
 				Metric m = (Metric) it2.next();
 				metric.add(m);
 			}
 		}
-		
+
 		metric.rom = archive.rom;
-		
+
 		return metric;
 	}
 
@@ -698,7 +727,9 @@ public class Daemon implements Runnable {
 
 	private Listener listener;
 	private Chain listeners; // ClusterListeners
-	private ErrorListener errlis;
+
+	private ErrorListener err;
+	private DNSListener dns;
 	private Com com;
 
 	/**
@@ -726,20 +757,7 @@ public class Daemon implements Runnable {
 	 */
 	public boolean set(Listener listener) {
 		try {
-			/*
-			 * So only the controller can be added as listener since we use this feature to authenticate deployments.
-			 */
-
-			if(host) {
-				File pass = new File("app/" + domain + "/passport");
-
-				if(!pass.exists()) {
-					pass.createNewFile();
-				}
-
-				pass.canRead();
-			}
-
+			secure();
 			this.listener = listener;
 			return true;
 		}
@@ -748,6 +766,41 @@ public class Daemon implements Runnable {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Set the host controller as DNS server.
+	 * @param dns
+	 * @return
+	 */
+	public boolean set(DNSListener dns) {
+		try {
+			secure();
+			this.dns = dns;
+			return true;
+		}
+		catch(IOException e) {
+			// if passport could not be created
+		}
+
+		return false;
+	}
+
+	/*
+	 * So only the controller can be added as listener since we use this feature to authenticate deployments and DNS.
+	 */
+	private void secure() throws IOException {
+		if(host) {
+			//TODO: Replace with classloader test.
+
+			File pass = new File("app/" + domain + "/passport");
+
+			if(!pass.exists()) {
+				pass.createNewFile();
+			}
+
+			pass.canRead();
+		}
 	}
 
 	/**
@@ -824,9 +877,22 @@ public class Daemon implements Runnable {
 	}
 
 	/**
+	 * So that you can hot-deploy your DNS solution. For some reason, even if you assign 
+	 * the right permissions, the receive method on the DatagramSocket will not return if 
+	 * it is started from the hot-deployed classloader!?
+	 */
+	public interface DNSListener {
+		/**
+		 * @param message The incoming DNS question message.
+		 * @return The outgoing DNS answer message.
+		 * @throws Exception
+		 */
+		public byte[] receive(byte[] message) throws Exception;
+	}
+
+	/**
 	 * Error listener, so you can for example send a warning mail and swallow 
 	 * certain exceptions to not be logged.
-	 * @author Marc
 	 */
 	public interface ErrorListener {
 		/**
@@ -844,23 +910,10 @@ public class Daemon implements Runnable {
 	 * @return true if successful.
 	 * @param listener
 	 */
-	public boolean set(ErrorListener listener) {
+	public boolean set(ErrorListener err) {
 		try {
-			/*
-			 * So only the controller can be added as error listener as the controller will mail.
-			 */
-
-			if(host) {
-				File pass = new File("app/" + domain + "/passport");
-
-				if(!pass.exists()) {
-					pass.createNewFile();
-				}
-
-				pass.canRead();
-			}
-
-			this.errlis = errlis;
+			secure();
+			this.err = err;
 			return true;
 		}
 		catch(IOException e) {
@@ -885,26 +938,6 @@ public class Daemon implements Runnable {
 
 			Deploy.Archive archive = (Deploy.Archive) loader;
 
-			/* Why? There was some weird onion shell filter plan...
-			String name = archive.name();
-
-			if(name == null) {
-				name = domain + ".jar";
-			}
-
-			String[] reverse = name.split("\\.");
-			StringBuilder header = new StringBuilder();
-
-			for(int i = reverse.length - 2; i > -1; i--) {
-				header.append(reverse[i]);
-
-				if(i > 0) {
-					header.append('.');
-				}
-			}
-
-			header.append("." + name());
-			 */
 			byte[] head = (name() + "." + archive.host()).getBytes();
 
 			if(head.length + tail.length > 256) {
@@ -940,6 +973,48 @@ public class Daemon implements Runnable {
 		}
 	}
 
+	DatagramSocket dns_socket;
+
+	private void dns_setup() throws IOException {
+		Thread thread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					byte[] data = new byte[512];
+					DatagramPacket packet = new DatagramPacket(data, data.length);
+					dns_socket = new DatagramSocket(53);
+
+					while(true) {
+						dns_socket.receive(packet);
+
+						if(dns != null) {
+							final byte[] request = packet.getData();
+
+							byte[] response = (byte[]) AccessController.doPrivileged(new PrivilegedExceptionAction() {
+								public Object run() throws Exception {
+									try {
+										return dns.receive(request);
+									}
+									catch(Throwable t) {
+										t.printStackTrace();
+										return null;
+									}
+								}
+							}, control);
+
+							if(response != null)
+								dns_socket.send(new DatagramPacket(response, response.length, packet.getAddress(), packet.getPort()));
+						}
+					}
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		thread.start();
+	}
+
 	DatagramSocket socket;
 	InetAddress address;
 
@@ -961,25 +1036,27 @@ public class Daemon implements Runnable {
 					while (true) {
 						socket.receive(packet);
 
-						//String message = "{\"type\": \"packet\", \"from\": \"" + packet.getAddress() + "\"}";
-						//String ok = (String) send(message);
-
-						//if(ok.equals("OK")) {
 						synchronized (listeners) {
 							Iterator it = listeners.iterator();
 
 							while(it.hasNext()) {
-								ClusterListener listener = (ClusterListener) it.next();
+								final ClusterListener listener = (ClusterListener) it.next();
+								final byte[] message = data;
 
-								try {
-									listener.receive(data);
-								}
-								catch(Exception e) {
-									e.printStackTrace();
-								}
+								AccessController.doPrivileged(new PrivilegedExceptionAction() {
+									public Object run() throws Exception {
+										try {
+											listener.receive(message);
+										}
+										catch(Throwable t) {
+											t.printStackTrace();
+										}
+
+										return null;
+									}
+								}, control);
 							}
 						}
-						//}
 
 						System.arraycopy(empty, 0, data, 0, 256);
 					}
@@ -1251,11 +1328,11 @@ public class Daemon implements Runnable {
 			return chain("content", path, event.push());
 		}
 	}
-	
+
 	public class Lock {
 		public Chain chain;
 		boolean root;
-		
+
 		protected Lock(Chain chain, boolean root) {
 			this.chain = chain;
 			this.root = root;
@@ -1306,7 +1383,7 @@ public class Daemon implements Runnable {
 
 				if(archive != null) {
 					Chain chain = (Chain) archive.chain().get(path);
-					
+
 					if (chain != null) {
 						return new Lock(chain, false);
 					}
@@ -1338,10 +1415,10 @@ public class Daemon implements Runnable {
 
 		if(root && path.equals("null"))
 			return null;
-		
+
 		synchronized (this.service) {
 			Chain chain = (Chain) this.service.get(path);
-			
+
 			if (chain != null) {
 				return new Lock(chain, true);
 			}
@@ -1352,14 +1429,14 @@ public class Daemon implements Runnable {
 
 	protected Lock root() {
 		Chain chain = (Chain) this.service.get("null");
-			
+
 		if (chain != null) {
 			return new Lock(chain, true);
 		}
-			
+
 		return null;
 	}
-	
+
 	private String metric(Deploy.Archive archive, String path) {
 		Chain chain = (Chain) archive.chain().get(path);
 		Daemon.Metric metric = new Daemon.Metric();
@@ -1375,10 +1452,10 @@ public class Daemon implements Runnable {
 
 				if(part != null) {
 					Daemon.Metric ram = (Daemon.Metric) service.metric.get("RAM");
-					
+
 					if(ram != null)
 						metric.add(ram);
-					
+
 					metric.add(part);
 				}
 			}
@@ -1476,7 +1553,7 @@ public class Daemon implements Runnable {
 			}
 
 			new Thread(heart).start(); // moved this to get metrics immediately during development.
-			
+
 			/*
 			 * Used to debug thread locks and file descriptor leaks.
 			 */
@@ -1557,13 +1634,13 @@ public class Daemon implements Runnable {
 							}
 							else if(name.equals("localhost") || name.equals(archive.host())) {
 								String s = metric(archive, "/");
-								
+
 								if(s == null)
 									s = metric(archive, "null");
-								
+
 								if(s == null)
 									s = "</td><td colspan=\"8\"></td>";
-								
+
 								if(host)
 									out.println("<tr><td><a href=\"http://" + title + "\">" + title + "</a>" + "&nbsp;" + archive.rom + "&nbsp;" + s + "</td></tr>");
 								else
@@ -1600,7 +1677,7 @@ public class Daemon implements Runnable {
 				add(this.service, debug, null);
 				add(this.service, api, null);
 			}
-			
+
 			if(root) {
 				Properties prop = new Properties();
 				prop.load(new FileInputStream("root.txt"));
@@ -1610,7 +1687,7 @@ public class Daemon implements Runnable {
 				add(this.service, new Root.Find(), null);
 				add(this.service, new Root.Salt(), null);
 			}
-			
+
 			if (properties.getProperty("test", "false").toLowerCase().equals(
 					"true")) {
 				new Test(this, 1);
@@ -1833,7 +1910,7 @@ public class Daemon implements Runnable {
 		public void run() {
 			int socket = 300000;
 			int timer = 60 * 60 + 1;
-			
+
 			if(timeout > 0) {
 				socket = timeout;
 			}
@@ -1879,7 +1956,7 @@ public class Daemon implements Runnable {
 							event.disconnect(null);
 						}
 					}
-					
+
 					if(host && timer > 60 * 60) { // Once per hour
 						it = archive.values().iterator();
 
@@ -1893,24 +1970,24 @@ public class Daemon implements Runnable {
 								while(it2.hasNext()) {
 									Service service = (Service) it2.next();
 									long size = Daemon.size(service);
-									
+
 									Daemon.Metric metric = (Daemon.Metric) service.metric.get("RAM");
 
 									if(metric == null) {
 										metric = new Daemon.Metric();
 										service.metric.put("RAM", metric);
 									}
-									
+
 									metric.ram = size;
-									
+
 									//System.out.println(archive.name() + service.path() + " " + (System.currentTimeMillis() - time) + " " + size);
 								}
 							}
 						}
-						
+
 						timer = 0;
 					}
-					
+
 					timer++;
 				} catch (Exception e) {
 					e.printStackTrace(out);

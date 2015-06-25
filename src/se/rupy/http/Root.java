@@ -89,6 +89,15 @@ public class Root extends Service {
 		return select.toString();
 	}
 
+	static int type(String[] type, String name) {
+		for(int i = 0; i < type.length; i++) {
+			if(type[i].equals(name))
+				return i;
+		}
+
+		return -1;
+	}
+	
 	public String path() { return "/root"; }
 
 	public void create(Daemon daemon) throws Exception {
@@ -1235,6 +1244,8 @@ public class Root extends Service {
 					if(event.query().method() == Query.GET) {
 						boolean make = event.query().bit("make", true);
 
+						int user = type(node_type, "user");
+						
 						Output out = event.output();
 						out.println("<script>");
 						out.println("  function toggle() {");
@@ -1242,11 +1253,11 @@ public class Root extends Service {
 						out.println("    document.getElementById('node').value = (make ? 'Make' : 'Edit');");
 						out.println("    var select = document.getElementById('type');");
 						out.println("    if(make) {");
-						out.println("      select.remove(1);");
+						out.println("      select.remove(" + user + ");");
 						out.println("    } else {");
 						out.println("      var option = document.createElement('option');");
 						out.println("      option.text = 'user';");
-						out.println("      select.add(option);");
+						out.println("      select.options.add(option, select.options[" + user + "]);");
 						out.println("    }");
 						out.println("  }");
 						out.println("</script>");

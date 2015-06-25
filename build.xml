@@ -47,7 +47,7 @@
 	</target>
 
 	<target name="doc">
-		<javadoc access="public" sourcepath="src" destdir="doc" executable="javadoc" stylesheetfile="sheet.css"/>
+		<javadoc access="public" sourcepath="src" destdir="doc" executable="javadoc" encoding="UTF-8" charset="UTF-8" docencoding="UTF-8" stylesheetfile="sheet.css"/>
 	</target>
 		
 </project>
