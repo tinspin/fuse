@@ -964,7 +964,7 @@ public class Root extends Service {
 					throw event;
 				}
 				
-				JSONObject object = new JSONObject(file(home() + "/node/" + poll + "/id/" + Root.path(last)));
+				JSONObject object = new JSONObject(file(home() + "/node/" + poll + "/id/" + Root.path(last, 3)));
 				key = object.getString("key");
 				
 				String match = Deploy.hash(Deploy.hash(key, "SHA") + salt, "SHA");
@@ -1024,7 +1024,10 @@ public class Root extends Service {
 		private void fail(Event event, String path, String poll, String type, String sort, String last) throws Event, Exception {
 			JSONObject obj = new JSONObject("{\"path\":\"" + path + "\",\"poll\":\"" + poll + "\",\"type\":\"" + type + "\",\"sort\":\"" + sort + "\",\"last\":\"" + last + "\"}");
 			event.reply().code("404 Not Found");
-			event.output().print("<pre>Node '" + event.query().path() + "' was not found.<br>" + obj.toString(4) + "</pre>");
+			event.output().print("<pre>Node '" + event.query().path() + "' was not found on host " + local + ".</pre>");
+			
+			System.out.println(obj.toString(4));
+			
 			throw event;
 		}
 	}

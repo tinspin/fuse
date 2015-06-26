@@ -754,6 +754,7 @@ public class Daemon implements Runnable {
 	 * controller, use multicast on cluster instead.
 	 * @return true if successful.
 	 * @param listener
+	 * @return success
 	 */
 	public boolean set(Listener listener) {
 		try {
@@ -771,7 +772,7 @@ public class Daemon implements Runnable {
 	/**
 	 * Set the host controller as DNS server.
 	 * @param dns
-	 * @return
+	 * @return success
 	 */
 	public boolean set(DNSListener dns) {
 		try {
@@ -806,7 +807,6 @@ public class Daemon implements Runnable {
 	/**
 	 * Cross class-loader communication interface. So that a class deployed 
 	 * in one archive can send messages to a class deployed in another.
-	 * @author Marc
 	 */
 	public interface Listener {
 		/**
@@ -907,8 +907,8 @@ public class Daemon implements Runnable {
 
 	/**
 	 * Listens for errors.
-	 * @return true if successful.
-	 * @param listener
+	 * @param err
+	 * @return success
 	 */
 	public boolean set(ErrorListener err) {
 		try {
