@@ -20,6 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.nio.channels.*;
 import java.nio.file.LinkPermission;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 /**
  * A tiny HTTP daemon. The whole server is non-static so that you can launch
  * multiple contained HTTP servers in one application on different ports.<br>
@@ -2052,5 +2057,28 @@ public class Daemon implements Runnable {
 	public static void main(String[] args) {
 		Daemon daemon = init(args);
 		daemon.start();
+	}
+	
+	static {
+		System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+		TrustManager[] trustAllCerts = new TrustManager[]{
+				new X509TrustManager() {
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						return null;
+					}
+					public void checkClientTrusted(
+							java.security.cert.X509Certificate[] certs, String authType) {
+					}
+					public void checkServerTrusted(
+							java.security.cert.X509Certificate[] certs, String authType) {
+					}
+				}
+		};
+
+		try {
+			SSLContext sc = SSLContext.getInstance("SSL");
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+		} catch (Exception e) {}
 	}
 }

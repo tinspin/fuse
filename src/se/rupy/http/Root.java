@@ -204,7 +204,7 @@ public class Root extends Service {
 			out.println("");
 			out.println("                <font color=\"grey\"><i><b>sort</b></i></font>");
 			out.println("       ┌──────┬──────┬──────┐");
-			out.println(" open  │ <a href=\"/node/data/text/" + search + "\">text</a> │ <a href=\"/node/data/date/14/11/25/example\">path</a> │ <a href=\"/link/user/data/884953893672469819\">list</a> │");
+			out.println(" open  │ <a href=\"/node/data/text/" + search + "\">text</a> │ <a href=\"/node/data/date/14/11/25/example\">path</a> │ <a href=\"/link/user/data/" + hash(key) + "\">list</a> │");
 			out.println("       └──────┴──────┴──────┘");
 			out.println("");
 			out.println("<font color=\"red\"><sup>*</sup></font><i>Source:</i> <a href=\"http://root.rupy.se/code\">Async</a>, <a href=\"http://root.rupy.se/code?path=/User.java\">User</a>, <a href=\"http://root.rupy.se/code?path=/Root.java\">Root</a>");
@@ -819,7 +819,7 @@ public class Root extends Service {
 							full = home() + "/link/" + type + "/" + sort + Root.path(last);
 
 							if(last.matches("[0-9]+")) {
-								full = home() + "/node/" + type + "/id" + Root.path(Long.parseLong(last));
+								full = home() + "/node/" + type + "/id" + Root.path(last, 3);
 
 								File file = new File(full);
 

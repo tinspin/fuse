@@ -278,7 +278,6 @@ public class Deploy extends Service {
 				permissions.add(new SSLPermission("setHostnameVerifier"));
 				permissions.add(new ReflectPermission("suppressAccessChecks"));
 				permissions.add(new SecurityPermission("insertProvider.SunJSSE"));
-				permissions.add(new PropertyPermission("sun.net.http.allowRestrictedHeaders", "write"));
 				permissions.add(new PropertyPermission("java.version", "read"));
 				permissions.add(new RuntimePermission("getStackTrace"));
 				permissions.add(new PropertyPermission("host", "read"));
@@ -342,7 +341,16 @@ public class Deploy extends Service {
 			while (classes.size() > 0) {
 				small = (Small) classes.elementAt(0);
 				classes.removeElement(small);
-				instantiate(small, daemon, old);
+				
+				try {
+					instantiate(small, daemon, old);
+				}
+				catch(Exception e) {
+					if(event == null)
+						System.out.println(e);
+					else
+						throw e;
+				}
 			}
 
 			if(event != null) {
@@ -398,7 +406,7 @@ public class Deploy extends Service {
 									return (Service) small.clazz.newInstance();
 								}
 								catch(Throwable t) {
-									throw new Exception();
+									throw (Exception) new Exception().initCause(t);
 								}
 							}
 						}, access());
@@ -789,7 +797,7 @@ public class Deploy extends Service {
 									  "Host:" + host + Output.EOL + 
 									  "Pass:" + key;
 
-						System.out.println(event.index());
+						//System.out.println(event.index());
 						
 						call.post("/deploy", head, file);
 					}
