@@ -843,9 +843,10 @@ public class Deploy extends Service {
 	/**
 	 * Hash string to hex.
 	 */
-	public static String hash(String hash, String algo) throws NoSuchAlgorithmException {
+	public static String hash(String hash, String algo) throws NoSuchAlgorithmException, UnsupportedEncodingException {
 		MessageDigest md = MessageDigest.getInstance(algo);
-		md.update(hash.getBytes(), 0, hash.length());
+		byte[] data = hash.getBytes("UTF-8");
+		md.update(data, 0, data.length);
 		return hex(md.digest());
 	}
 

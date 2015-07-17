@@ -635,11 +635,11 @@ public class Root extends Service {
 				if(complete == Root.host.length - 1) {
 					event.query().put("result", "1");
 					link((JSONObject) event.query().get("json"), null);
-					int state = event.reply().wakeup();
+					int state = event.reply().wakeup(true);
 				}
 				else if(failed > 0) {
 					event.query().put("result", body + "[" + local + "]");
-					int state = event.reply().wakeup();
+					int state = event.reply().wakeup(true);
 				}
 			}
 
