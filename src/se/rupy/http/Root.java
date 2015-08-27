@@ -104,7 +104,46 @@ public class Root extends Service {
 		local = System.getProperty("host", "none");
 	}
 
-	private static String home() {
+	/**
+	 * A cross functional Root home folder detection for your deploy.
+	 * 
+	 * Usage example from logging in a user:
+	 * 
+	 * <pre>
+	public static class Login extends Service {
+		public String path() { return "/login"; }
+		public void filter(Event event) throws Event, Exception {
+			event.query().parse();
+			
+			String mail = event.string("mail");
+			String pass = event.string("pass");
+
+			if(mail.length() > 0 && pass.length() > 0) {
+				File file = new File(<b>Root.home()</b> + "/node/user/mail" + <b>Root.path(mail)</b>);
+
+				if(!file.exists()) {
+					System.out.println(file);
+					error(event, "Anv&auml;ndare ej funnen.");
+				}
+
+				JSONObject user = new JSONObject(<b>Root.file(file)</b>);
+
+				if(Deploy.hash(pass, "SHA").equals(user.getString("pass"))) {
+					event.session().put("user", user);
+				}
+				else {
+					error(event, "Fel l&ouml;senord.");
+				}
+			}
+
+			event.reply().header("Location", "user");
+			event.reply().code("302 Found");
+		}
+	}</pre>
+	 * @return
+	 * @throws Exception
+	 */
+	public static String home() throws Exception {
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		
 		if(loader instanceof Deploy.Archive) {
@@ -112,7 +151,7 @@ public class Root extends Service {
 			return "app/" + archive.host() + "/root";
 		}
 		else {
-			return "";
+			throw new Exception("Home could not be found.");
 		}
 	}
 	
@@ -658,7 +697,7 @@ public class Root extends Service {
 		event.daemon().client().send(ip[i], work, 60);
 	}
 
-	private static long hash(String key) throws Exception {
+	public static long hash(String key) throws Exception {
 		long h = 2166136261L;
 
 		for(int i = 0; i < key.length(); i++) {
@@ -967,7 +1006,7 @@ public class Root extends Service {
 				JSONObject object = new JSONObject(file(home() + "/node/" + poll + "/id/" + Root.path(last, 3)));
 				key = object.getString("key");
 				
-				String match = Deploy.hash(Deploy.hash(key, "SHA") + salt, "SHA");
+				String match = Deploy.hash(key + salt, "SHA");
 				
 				if(!hash.equals(match)) {
 					event.reply().code("400 Bad Request");
@@ -1012,7 +1051,7 @@ public class Root extends Service {
 			String result = builder.toString();
 			
 			if(secure) {
-				event.reply().header("Hash", Deploy.hash(Deploy.hash(result, "SHA") + key, "SHA"));
+				event.reply().header("Hash", Deploy.hash(result + key, "SHA"));
 			}
 			
 			event.reply().type("application/json; charset=UTF-8");

@@ -346,19 +346,47 @@ public class Event extends Throwable implements Chain.Link {
 			
 			long cpu = bean.getThreadCpuTime(Thread.currentThread().getId());
 			
+			/* Zero-Copy file stream.
+			 * This does not seem to improve speed or CPU usage when testing manually.
+			 * TODO: Test with Siege.
+			 
+			Output out = reply.output(stream.length());
+			out.flush();
+			
+			File file = ((Deploy.Big) stream).file;
+			
+			long length, sent = 0;
+			
+			length = file.length();
+			
+			FileChannel fc = new FileInputStream(file).getChannel();
+			
+			try {
+				while(sent < length) {
+					sent += fc.transferTo(sent, 1024, channel);
+				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			finally {
+				fc.close();
+			}
+			*/
+			///*
 			try {
 				Deploy.pipe(stream.input(), reply.output(stream.length()));
 			}
 			finally {
 				stream.close();
 			}
-
+			//*/
 			if(daemon.host) {
 				metric.req.in++;
 				metric.req.out++;
 				metric.cpu += bean.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
 				metric.net.in += query.input.total;
-				metric.net.out += reply.output.total;
+				metric.net.out += reply.output.total; // + file.length();
 				query.input.total = 0;
 				reply.output.total = 0;
 			}

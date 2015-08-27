@@ -450,7 +450,7 @@ public class Async implements Runnable {
 									work.send(call);
 								}
 								catch(Throwable t) {
-									Exception e = new Exception();
+									Exception e = new Exception(work.event.host());
 									e.initCause(t);
 									throw e;
 								}
@@ -476,7 +476,7 @@ public class Async implements Runnable {
 									work.read(host, read());
 								}
 								catch(Throwable t) {
-									Exception e = new Exception();
+									Exception e = new Exception(work.event.host());
 									e.initCause(t);
 									throw e;
 								}

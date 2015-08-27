@@ -56,11 +56,11 @@ public class Deploy extends Service {
 			Output out = event.output();
 			out.print(".");
 			out.flush();
-			
+
 			throw event;
 		}
-		*/
-		
+		 */
+
 		/*
 		 * concurrent deploys will fail without sessions.
 		 * added this just so instances without session can hot-deploy.
@@ -76,7 +76,7 @@ public class Deploy extends Service {
 		}
 
 		//System.out.println(cookie + " " + event.session().key());
-		
+
 		if(event.query().method() == Query.GET) {
 			event.output().print(cookie);
 			throw event;
@@ -209,7 +209,7 @@ public class Deploy extends Service {
 
 	protected static String deploy(Daemon daemon, File file, Event event) throws Exception {
 		Archive archive = new Archive(daemon, file, event);
-		
+
 		daemon.chain(archive);
 		daemon.verify(archive);
 
@@ -229,7 +229,7 @@ public class Deploy extends Service {
 		private long date;
 
 		long rom;
-		
+
 		Vector classes = new Vector();
 
 		Archive(Daemon daemon) { // Archive for deployment.
@@ -243,7 +243,7 @@ public class Deploy extends Service {
 			permissions.add(new RuntimePermission("setContextClassLoader"));
 			access = new AccessControlContext(new ProtectionDomain[] {
 					new ProtectionDomain(null, permissions)});
-			
+
 			host = daemon.domain;
 		}
 
@@ -257,11 +257,11 @@ public class Deploy extends Service {
 			JarInputStream in = new JarInput(new FileInputStream(file));
 
 			Archive old = daemon.archive(file.getName(), false);
-			
+
 			if(old != null && old.files() != null) {
 				files = old.files();
 			}
-			
+
 			if(daemon.host) {
 				host = name.substring(0, name.lastIndexOf('.'));
 				String path = "app" + File.separator + host + File.separator;
@@ -291,10 +291,10 @@ public class Deploy extends Service {
 						catch(Error e) {}
 					}
 				}
-				
+
 				access = new AccessControlContext(new ProtectionDomain[] {
 						new ProtectionDomain(null, permissions)});
-				
+
 				new File(path).mkdirs();
 			}
 			else {
@@ -316,7 +316,7 @@ public class Deploy extends Service {
 					rom += data.length;
 				} else if (!entry.isDirectory()) {
 					Big.write(host, "/" + entry.getName(), entry, in);
-					
+
 					if(!files.containsKey("/" + entry.getName()))
 						files.put("/" + entry.getName(), new Daemon.Metric());
 				}
@@ -341,7 +341,7 @@ public class Deploy extends Service {
 			while (classes.size() > 0) {
 				small = (Small) classes.elementAt(0);
 				classes.removeElement(small);
-				
+
 				try {
 					instantiate(small, daemon, old);
 				}
@@ -358,13 +358,13 @@ public class Deploy extends Service {
 				event.output().flush();
 			}
 		}
-		
+
 		protected Class findClass(String name) throws ClassNotFoundException {
 			Small small = null;
-			
+
 			for(int i = 0; i < classes.size(); i++) {
 				small = (Small) classes.get(i);
-				
+
 				if(small.name.equals(name)) {
 					small.clazz = defineClass(small.name, small.data, 0,
 							small.data.length);
@@ -372,7 +372,7 @@ public class Deploy extends Service {
 					return small.clazz;
 				}
 			}
-			
+
 			throw new ClassNotFoundException();
 		}
 
@@ -396,7 +396,7 @@ public class Deploy extends Service {
 			if(service) {
 				try {
 					Service s = null;
-					
+
 					if(daemon.host) {
 						final Deploy.Archive archive = this;
 						Thread.currentThread().setContextClassLoader(archive);
@@ -414,14 +414,14 @@ public class Deploy extends Service {
 					else {
 						s = (Service) small.clazz.newInstance();
 					}
-					
+
 					if(old != null && old.service() != null) {
 						Service o = (Service) old.service().get(small.name());
-						
+
 						if(o != null)
 							s.metric = o.metric;
 					}
-					
+
 					this.service.put(small.name, s);
 				}
 				catch(Exception e) {
@@ -470,7 +470,7 @@ public class Deploy extends Service {
 		protected TreeMap files() {
 			return files;
 		}
-		
+
 		protected TreeMap chain() {
 			return chain;
 		}
@@ -485,7 +485,7 @@ public class Deploy extends Service {
 	}
 
 	static class Big implements Stream {
-		private File file;
+		File file;
 		private FileInputStream in;
 		private String name;
 		private long date;
@@ -503,6 +503,16 @@ public class Deploy extends Service {
 
 			new File(root + path).mkdirs();
 			File file = new File(root + name);
+
+			if(file.exists()) {
+				if(file.lastModified() >= entry.getTime()) {
+					return file;
+				}
+				//else {
+				//	System.out.println(name + " has changed!");
+				//}
+			}
+
 			file.createNewFile();
 
 			OutputStream out = new FileOutputStream(file);
@@ -739,7 +749,7 @@ public class Deploy extends Service {
 	public static void deploy(String host, File file, String pass) throws IOException, NoSuchAlgorithmException {
 		deploy(host, file, pass, true);
 	}
-	
+
 	/**
 	 * Async hot-deploy.
 	 * @param event
@@ -748,7 +758,6 @@ public class Deploy extends Service {
 	 * @param pass
 	 * @throws Exception
 	 */
-	
 	public static void deploy(Event event, String host, File file, String pass) throws Exception {
 		deploy(event, host, file, pass, true);
 	}
@@ -785,28 +794,28 @@ public class Deploy extends Service {
 
 			public void read(final String host, final String body) throws Exception {
 				//System.out.println("cookie " + body);
-				
+
 				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
 						String key = hash(file, pass, body);
-						
+
 						String head = "File:" + file.getName() + Output.EOL + 
-									  "Size:" + file.length() + Output.EOL + 
-									  "Cluster:" + cluster + Output.EOL + 
-									  "Cookie:" + "key=" + body + Output.EOL + 
-									  "Host:" + host + Output.EOL + 
-									  "Pass:" + key;
+								"Size:" + file.length() + Output.EOL + 
+								"Cluster:" + cluster + Output.EOL + 
+								"Cookie:" + "key=" + body + Output.EOL + 
+								"Host:" + host + Output.EOL + 
+								"Pass:" + key;
 
 						//System.out.println(event.index());
-						
+
 						call.post("/deploy", head, file);
 					}
 
 					public void read(String host, String body) throws Exception {
 						System.out.println(body);
-						
+
 						//TODO: Realtime feedback of deployment!
-						
+
 						//if(event != null)
 						//	System.out.println(event.reply().wakeup());
 					}
@@ -815,7 +824,7 @@ public class Deploy extends Service {
 						e.printStackTrace();
 					}
 				};
-				
+
 				event.daemon().client().send(host, work, 30);
 			}
 
@@ -826,7 +835,7 @@ public class Deploy extends Service {
 
 		event.daemon().client().send(host, work, 30);
 	}
-	
+
 	private static void deploy(String host, File file, String pass, boolean cluster) throws IOException, NoSuchAlgorithmException {
 		URL url = new URL("http://" + host + "/deploy");
 		Client client = new Client();
@@ -835,7 +844,7 @@ public class Deploy extends Service {
 		InputStream in = client.send(url, file, key, cluster, true);
 		System.out.println(new SimpleDateFormat("H:mm").format(new Date()));
 		Client.toStream(in, System.out);
-		
+
 		// test cookie reuse hack
 		//in = client.send(url, file, port, cluster, true);
 	}

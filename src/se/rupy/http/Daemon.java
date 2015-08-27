@@ -375,6 +375,7 @@ public class Daemon implements Runnable {
 			domain = properties.getProperty("domain", "host.rupy.se");
 			PermissionCollection permissions = new Permissions();
 			permissions.add(new PropertyPermission("host", "read"));
+			permissions.add(new SocketPermission("*", "resolve,connect"));
 			control = new AccessControlContext(new ProtectionDomain[] {
 					new ProtectionDomain(null, permissions)});
 		}
