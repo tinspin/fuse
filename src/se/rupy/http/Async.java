@@ -10,6 +10,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Iterator;
@@ -86,7 +87,13 @@ public class Async implements Runnable {
 	/**
 	 * Thrown when {@link SocketChannel#read(ByteBuffer)} returns -1.
 	 */
-	public static class Timeout extends Exception {}
+	public static class Timeout extends Exception {
+		String host;
+		
+		public Timeout(String host) {
+			this.host = host;
+		}
+	}
 
 	/**
 	 * More workers are only important on multi-core processors.
@@ -407,7 +414,7 @@ public class Async implements Runnable {
 			}
 
 			if(read == -1) {
-				throw new Timeout();
+				throw new Timeout(host);
 			}
 
 			return null;
@@ -450,7 +457,7 @@ public class Async implements Runnable {
 									work.send(call);
 								}
 								catch(Throwable t) {
-									Exception e = new Exception(work.event.host());
+									Exception e = new Exception(host);
 									e.initCause(t);
 									throw e;
 								}
@@ -475,8 +482,11 @@ public class Async implements Runnable {
 								try {
 									work.read(host, read());
 								}
+								catch(Timeout t) {
+									throw t;
+								}
 								catch(Throwable t) {
-									Exception e = new Exception(work.event.host());
+									Exception e = new Exception(host);
 									e.initCause(t);
 									throw e;
 								}
@@ -490,6 +500,15 @@ public class Async implements Runnable {
 
 					remove(this);
 					work = null;
+				}
+			}
+			catch(PrivilegedActionException e) {
+				try {
+					failure(e.getException());
+				}
+				catch(Exception ex) {
+					e.printStackTrace();
+					ex.printStackTrace();
 				}
 			}
 			catch(Exception e) {
