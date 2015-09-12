@@ -459,6 +459,7 @@ public class Root extends Service {
 						new File(sort.substring(0, sort.lastIndexOf("/"))).mkdirs();
 						RandomAccessFile file = new RandomAccessFile(sort, "rw");
 						write(file, id);
+						file.close();
 					}
 				}
 			}
@@ -535,6 +536,8 @@ public class Root extends Service {
 		RandomAccessFile file = new RandomAccessFile(path, "rw");
 
 		write(file, cid);
+		
+		file.close();
 	}
 
 	/*
@@ -882,7 +885,9 @@ public class Root extends Service {
 					File file = new File(full);
 
 					if(file.exists()) {
-						write_last(event, sort, new RandomAccessFile(file, "rw"), type, last, from, size, remove);
+						RandomAccessFile raf = new RandomAccessFile(file, "rw");
+						write_last(event, sort, raf, type, last, from, size, remove);
+						raf.close();
 					}
 					else {
 						event.reply().type("application/json; charset=UTF-8");
@@ -911,14 +916,23 @@ public class Root extends Service {
 								RandomAccessFile next = new RandomAccessFile(full + word[i], "r");
 
 								list = remove(next, list);
+								
+								next.close();
 							}
 
 							print_list(event, type, list, null, null, list.size(), remove);
+							
+							one.close();
+							two.close();
 						}
 						else {
 							full = home() + "/node/" + type + "/" + sort + "/";
 
-							write_last(event, type, new RandomAccessFile(full + last, "r"), null, null, from, size, remove);
+							RandomAccessFile raf = new RandomAccessFile(full + last, "r");
+							
+							write_last(event, type, raf, null, null, from, size, remove);
+							
+							raf.close();
 						}
 					}
 					else { // node sort index
