@@ -1082,14 +1082,18 @@ public class Root extends Service {
 		}
 
 		private void fail(Event event, String path, String poll, String type, String sort, String last) throws Event, Exception {
-			JSONObject obj = new JSONObject("{\"path\":\"" + path + "\",\"poll\":\"" + poll + "\",\"type\":\"" + type + "\",\"sort\":\"" + sort + "\",\"last\":\"" + last + "\"}");
 			event.reply().code("404 Not Found");
-			event.output().print("<pre>Node '" + event.query().path() + "' was not found on host " + local + ".</pre>");
+			event.output().print("<pre>" + toCase(poll) + " '" + event.query().path() + "' was not found on host " + local + ".</pre>");
 			
+			JSONObject obj = new JSONObject("{\"path\":\"" + path + "\",\"poll\":\"" + poll + "\",\"type\":\"" + type + "\",\"sort\":\"" + sort + "\",\"last\":\"" + last + "\"}");
 			System.out.println(obj.toString(4));
 			
 			throw event;
 		}
+
+		public final static String toCase(String name) {
+	        return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+	    }
 	}
 
 	public static class Link extends Service {
