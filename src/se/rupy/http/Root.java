@@ -897,9 +897,9 @@ public class Root extends Service {
 						raf.close();
 					}
 					else {
-						event.reply().type("application/json; charset=UTF-8");
-						event.output().print("{\"total\":0,\"list\":[],\"node\":\"" + local + "\"}");
-						//fail(event, full, poll, type, sort, last);
+						//event.reply().type("application/json; charset=UTF-8");
+						//event.output().print("{\"total\":0,\"list\":[],\"node\":\"" + local + "\"}");
+						fail(event, full, poll, type, sort, last);
 					}
 				}
 				else {
