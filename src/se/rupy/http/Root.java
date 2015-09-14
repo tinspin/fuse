@@ -13,6 +13,7 @@ import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -56,7 +57,7 @@ public class Root extends Service {
 	static URLDecoder decoder = new URLDecoder();
 
 	// example data for tutorial
-	final String key = "yN5SFvPCL2eshThB";
+	final String key = "SWhK6hk5jhQuJJaJ";
 	final String search = "full%20text%20search";
 
 	public Root(Properties prop) {
@@ -701,10 +702,16 @@ public class Root extends Service {
 	}
 
 	public static long hash(String key) throws Exception {
+		MessageDigest md = MessageDigest.getInstance("SHA-512");
+		
+		byte[] data = key.getBytes();
+		md.update(data, 0, data.length);
+		byte[] hash = md.digest();
+		
 		long h = 2166136261L;
 
-		for(int i = 0; i < key.length(); i++) {
-			h = (h ^ key.charAt(i)) * 16777619;
+		for(int i = 0; i < hash.length; i++) {
+			h = (h ^ hash[i]) * 16777619;
 		}
 
 		return Math.abs(h);
@@ -891,7 +898,7 @@ public class Root extends Service {
 					}
 					else {
 						event.reply().type("application/json; charset=UTF-8");
-						event.output().print("[]");
+						event.output().print("{\"total\":0,\"list\":[],\"node\":\"" + local + "\"}");
 						//fail(event, full, poll, type, sort, last);
 					}
 				}
