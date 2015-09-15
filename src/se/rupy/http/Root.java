@@ -78,7 +78,7 @@ public class Root extends Service {
 			}
 		}
 	}
-	
+
 	static String type(String[] type, String name, int selected) {
 		StringBuilder select = new StringBuilder("<select id=\"type\" name=\"" + name + "\">");
 
@@ -98,7 +98,7 @@ public class Root extends Service {
 
 		return -1;
 	}
-	
+
 	public String path() { return "/root"; }
 
 	public void create(Daemon daemon) throws Exception {
@@ -115,7 +115,7 @@ public class Root extends Service {
 		public String path() { return "/login"; }
 		public void filter(Event event) throws Event, Exception {
 			event.query().parse();
-			
+
 			String mail = event.string("mail");
 			String pass = event.string("pass");
 
@@ -146,7 +146,7 @@ public class Root extends Service {
 	 */
 	public static String home() throws Exception {
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		
+
 		if(loader instanceof Deploy.Archive) {
 			Deploy.Archive archive = (Deploy.Archive) loader;
 			return "app/" + archive.host() + "/root";
@@ -155,10 +155,10 @@ public class Root extends Service {
 			throw new Exception("Home could not be found.");
 		}
 	}
-	
+
 	private static String host() {
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		
+
 		if(loader instanceof Deploy.Archive) {
 			Deploy.Archive archive = (Deploy.Archive) loader;
 			return archive.host();
@@ -167,7 +167,7 @@ public class Root extends Service {
 			return "";
 		}
 	}
-	
+
 	public void filter(Event event) throws Event, Exception {
 		Output out = event.output();
 
@@ -299,7 +299,7 @@ public class Root extends Service {
 						event.query().put("wakeup", Root.host[i]);
 
 					e.printStackTrace();
-					
+
 					event.reply().wakeup(true);
 				}
 			}
@@ -409,7 +409,7 @@ public class Root extends Service {
 		String path = Root.home() + "/node/" + type + "/id" + path(hash(json.getString("key")));
 
 		//System.out.println(path);
-		
+
 		new File(path.substring(0, path.lastIndexOf("/"))).mkdirs();
 
 		File file = new File(path);
@@ -448,11 +448,11 @@ public class Root extends Service {
 					// remove punctuation
 					// remove punctuation
 					while(word.endsWith(".") 
-					   || word.endsWith(":") 
-					   || word.endsWith(",") 
-					   || word.endsWith(";") 
-					   || word.endsWith("!") 
-					   || word.endsWith("?"))
+							|| word.endsWith(":") 
+							|| word.endsWith(",") 
+							|| word.endsWith(";") 
+							|| word.endsWith("!") 
+							|| word.endsWith("?"))
 						word = word.substring(0, word.length() - 1);
 
 					if(word.matches("[\\p{L}]+")) { // UTF-8 character
@@ -537,7 +537,7 @@ public class Root extends Service {
 		RandomAccessFile file = new RandomAccessFile(path, "rw");
 
 		write(file, cid);
-		
+
 		file.close();
 	}
 
@@ -703,11 +703,11 @@ public class Root extends Service {
 
 	public static long hash(String key) throws Exception {
 		MessageDigest md = MessageDigest.getInstance("SHA-512");
-		
+
 		byte[] data = key.getBytes();
 		md.update(data, 0, data.length);
 		byte[] hash = md.digest();
-		
+
 		long h = 2166136261L;
 
 		for(int i = 0; i < hash.length; i++) {
@@ -850,7 +850,7 @@ public class Root extends Service {
 				event.output().print("<pre>Public node/user/" + sort + " is forbidden.</pre>");
 				throw event;
 			}
-			
+
 			if(poll.equals("link") && type.equals("user") && sort.equals("date") && last.matches("[0-9]+")) {
 				event.reply().code("403 Forbidden");
 				event.output().print("<pre>Public link/user/date is forbidden.</pre>");
@@ -923,12 +923,12 @@ public class Root extends Service {
 								RandomAccessFile next = new RandomAccessFile(full + word[i], "r");
 
 								list = remove(next, list);
-								
+
 								next.close();
 							}
 
 							print_list(event, type, list, null, null, list.size(), remove);
-							
+
 							one.close();
 							two.close();
 						}
@@ -936,9 +936,9 @@ public class Root extends Service {
 							full = home() + "/node/" + type + "/" + sort + "/";
 
 							RandomAccessFile raf = new RandomAccessFile(full + last, "r");
-							
+
 							write_last(event, type, raf, null, null, from, size, remove);
-							
+
 							raf.close();
 						}
 					}
@@ -959,12 +959,12 @@ public class Root extends Service {
 						if(file.exists()) {
 							event.reply().type("application/json; charset=UTF-8");
 							JSONObject obj = new JSONObject(file(file));
-							
+
 							if(remove) {
 								obj.put("id", hash(obj.getString("key")));
 								obj.remove("key");
 							}
-							
+
 							byte[] data = obj.toString(4).getBytes("UTF-8");
 							Output out = event.reply().output(data.length);
 							out.write(data);
@@ -989,7 +989,7 @@ public class Root extends Service {
 			if(start > file.length()) {
 				start = file.length();
 			}
-			
+
 			byte[] data = new byte[length];
 			file.seek(file.length() - start);
 			int read = file.read(data);
@@ -1001,20 +1001,20 @@ public class Root extends Service {
 				else
 					break;
 			}
-			
+
 			print_list(event, type, list, poll, last, file.length() / 8, remove);
 		}
 
 		private void print_list(Event event, String type, List list, String poll, String last, long total, boolean remove) throws Event, Exception {
 			boolean secure = poll != null && last != null && last.matches("[0-9]+") && type.equals("user");
 			String key = "";
-			
+
 			if(secure) {
 				event.query().parse();
-				
+
 				String hash = event.string("hash");
 				String salt = event.string("salt");
-				
+
 				if(Salt.salt.containsKey(salt)) {
 					Salt.salt.remove(salt);
 				}
@@ -1023,19 +1023,19 @@ public class Root extends Service {
 					event.output().print("<pre>Salt not found.</pre>");
 					throw event;
 				}
-				
+
 				JSONObject object = new JSONObject(file(home() + "/node/" + poll + "/id/" + Root.path(last, 3)));
 				key = object.getString("key");
-				
+
 				String match = Deploy.hash(key + salt, "SHA");
-				
+
 				if(!hash.equals(match)) {
 					event.reply().code("400 Bad Request");
 					event.output().print("<pre>Auth did not match.</pre>");
 					throw event;
 				}
 			}
-			
+
 			StringBuilder builder = new StringBuilder();
 			builder.append("{\"total\":" + total + ", \"list\":[");
 
@@ -1051,15 +1051,15 @@ public class Root extends Service {
 					String open = Root.home() + "/node/" + type + "/id" + Root.path(id);
 
 					JSONObject obj = new JSONObject(file(open));
-					
+
 					if(remove) {
 						obj.put("id", hash(obj.getString("key")));
 						obj.remove("key");
 					}
-					
+
 					//if(type.equals("user"))
 					//	obj.remove("pass");
-						
+
 					builder.append(obj.toString(4));
 				}
 
@@ -1068,13 +1068,13 @@ public class Root extends Service {
 			}
 
 			builder.append("]}");
-			
+
 			String result = builder.toString();
-			
+
 			if(secure) {
 				event.reply().header("Hash", Deploy.hash(result + key, "SHA"));
 			}
-			
+
 			event.reply().type("application/json; charset=UTF-8");
 			byte[] data = result.getBytes("UTF-8");
 			Output out = event.reply().output(data.length);
@@ -1084,16 +1084,16 @@ public class Root extends Service {
 		private void fail(Event event, String path, String poll, String type, String sort, String last) throws Event, Exception {
 			event.reply().code("404 Not Found");
 			event.output().print("<pre>" + toCase(poll) + " '" + event.query().path() + "' was not found on host " + local + ".</pre>");
-			
+
 			JSONObject obj = new JSONObject("{\"path\":\"" + path + "\",\"poll\":\"" + poll + "\",\"type\":\"" + type + "\",\"sort\":\"" + sort + "\",\"last\":\"" + last + "\"}");
 			System.out.println(obj.toString(4));
-			
+
 			throw event;
 		}
 
 		public final static String toCase(String name) {
-	        return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
-	    }
+			return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+		}
 	}
 
 	public static class Link extends Service {
@@ -1144,23 +1144,23 @@ public class Root extends Service {
 
 	public static class Salt extends Service {
 		static HashMap salt = new HashMap();
-		
+
 		public String path() {
 			return "/salt";
 		}
 
 		public void filter(Event event) throws Event, Exception {
 			String salt = Event.random(8);
-			
+
 			while(this.salt.containsKey(salt)) {
 				salt = Event.random(8);
 			}
-			
+
 			this.salt.put(salt, null);
 			event.output().print(salt);
 		}
 	}
-	
+
 	public static class Hash extends Service {
 		public String path() {
 			return "/hash";
@@ -1312,7 +1312,7 @@ public class Root extends Service {
 						boolean make = event.query().bit("make", true);
 
 						int user = type(node_type, "user");
-						
+
 						Output out = event.output();
 						out.println("<script>");
 						out.println("  function toggle() {");

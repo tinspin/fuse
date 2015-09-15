@@ -60,9 +60,11 @@ public class Async implements Runnable {
 	 */
 	public static abstract class Work {
 		protected Event event;
+		protected Deploy.Archive archive;
 		
 		public Work(Event event) throws Exception {
 			this.event = event;
+			archive = (Deploy.Archive) Thread.currentThread().getContextClassLoader();
 		}
 
 		/**
@@ -111,7 +113,7 @@ public class Async implements Runnable {
 	 */
 	public synchronized void send(String host, Work work, int invalidate) throws Exception {
 		// Fixes FUSE "opened output without flush" cascade.
-		if(work.event.reply().output.init)
+		if(work.event != null && work.event.reply().output.init)
 			work.event.reply().output.flush();
 		
 		if(invalidate > 0) {
@@ -449,8 +451,8 @@ public class Async implements Runnable {
 				if(run == WRITE) {
 					if(daemon != null && daemon.host) {
 						final Call call = this;
-						Deploy.Archive archive = daemon.archive(work.event.host(), true);
-						Thread.currentThread().setContextClassLoader(archive);
+						//Deploy.Archive archive = daemon.archive(work.event.host(), true);
+						Thread.currentThread().setContextClassLoader(work.archive);
 						AccessController.doPrivileged(new PrivilegedExceptionAction() {
 							public Object run() throws Exception {
 								try {
@@ -463,7 +465,7 @@ public class Async implements Runnable {
 								}
 								return null;
 							}
-						}, archive.access());
+						}, work.archive.access());
 					}
 					else {
 						work.send(this);
@@ -475,8 +477,8 @@ public class Async implements Runnable {
 
 				if(run == READ) {
 					if(daemon != null && daemon.host) {
-						Deploy.Archive archive = daemon.archive(work.event.host(), true);
-						Thread.currentThread().setContextClassLoader(archive);
+						//Deploy.Archive archive = daemon.archive(work.event.host(), true);
+						Thread.currentThread().setContextClassLoader(work.archive);
 						AccessController.doPrivileged(new PrivilegedExceptionAction() {
 							public Object run() throws Exception {
 								try {
@@ -492,7 +494,7 @@ public class Async implements Runnable {
 								}
 								return null;
 							}
-						}, archive.access());
+						}, work.archive.access());
 					}
 					else {
 						work.read(host, read());
