@@ -373,9 +373,11 @@ public class Daemon implements Runnable {
 		if(host) {
 			deployer = new Deploy.Archive(this);
 			domain = properties.getProperty("domain", "host.rupy.se");
+			
 			PermissionCollection permissions = new Permissions();
 			permissions.add(new PropertyPermission("host", "read"));
 			permissions.add(new SocketPermission("*", "resolve,connect"));
+			
 			control = new AccessControlContext(new ProtectionDomain[] {
 					new ProtectionDomain(null, permissions)});
 		}
@@ -2061,6 +2063,14 @@ public class Daemon implements Runnable {
 	}
 	
 	static {
+		javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier(){
+			public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
+				if (hostname.equals("rupy.se")) {
+					return true;
+				}
+				return false;
+			}
+		});
 		System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 		TrustManager[] trustAllCerts = new TrustManager[]{
 				new X509TrustManager() {

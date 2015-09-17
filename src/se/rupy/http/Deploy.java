@@ -241,6 +241,8 @@ public class Deploy extends Service {
 			permissions.add(new PropertyPermission("user.dir", "read"));
 			permissions.add(new RuntimePermission("createClassLoader"));
 			permissions.add(new RuntimePermission("setContextClassLoader"));
+			permissions.add(new SecurityPermission("insertProvider.SunJSSE"));
+			
 			access = new AccessControlContext(new ProtectionDomain[] {
 					new ProtectionDomain(null, permissions)});
 
@@ -273,14 +275,11 @@ public class Deploy extends Service {
 				permissions.add(new FilePermission(path + "-", "delete"));
 				permissions.add(new FilePermission("res" + File.separator + "-", "read"));
 				permissions.add(new PropertyPermission("user.dir", "read"));
+				permissions.add(new PropertyPermission("java.version", "read"));
+				permissions.add(new PropertyPermission("host", "read"));
 				permissions.add(new RuntimePermission("accessDeclaredMembers"));
 				permissions.add(new RuntimePermission("getClassLoader"));
-				permissions.add(new SSLPermission("setHostnameVerifier"));
-				permissions.add(new ReflectPermission("suppressAccessChecks"));
-				permissions.add(new SecurityPermission("insertProvider.SunJSSE"));
-				permissions.add(new PropertyPermission("java.version", "read"));
 				permissions.add(new RuntimePermission("getStackTrace"));
-				permissions.add(new PropertyPermission("host", "read"));
 
 				if(daemon.domain.equals("host.rupy.se")) {
 					if(host.equals("root.rupy.se")) { // Nasty hardcode, but it will go away with SSD metrics file API.
