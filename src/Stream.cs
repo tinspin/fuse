@@ -17,6 +17,7 @@ public class Stream {
 	
 	private Queue<string> queue;
 	private Socket pull, push;
+	private bool connected;
 	
 	private class State {
 		public Socket socket = null;
@@ -38,6 +39,7 @@ public class Stream {
 		//Console.WriteLine("Address: " + address + ".");
 		
 		push = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+		push.NoDelay = true;
 		push.Connect(remote);
 	}
 	
@@ -48,6 +50,7 @@ public class Stream {
 		IPEndPoint remote = new IPEndPoint(address, port);
 	
 		pull = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+		pull.NoDelay = true;
 		pull.Connect(remote);
 		
 		String data = "GET /pull?name=" + name + " HTTP/1.1\r\n"
@@ -60,6 +63,8 @@ public class Stream {
 		state.socket = pull;
 		
 		pull.BeginReceive(state.data, 0, State.size, 0, new AsyncCallback(Callback), state);
+		
+		connected = true;
 	}
 	
 	public string Send(String name, String message) {
@@ -81,6 +86,9 @@ public class Stream {
 	}
 	
 	public string[] Receive() {
+		if(!connected)
+			return null;
+		
 		lock(queue) {
 			if(queue.Count > 0) {
 				string[] messages = new string[queue.Count];
@@ -164,14 +172,17 @@ public class Stream {
 			}
 			
 			if(success) {
-				// remove in unity ###
-				Alpha alpha = new Alpha(stream);
-				Thread thread = new Thread(new ThreadStart(alpha.Beta));
-				thread.Start();
-				
 				// this will allow you to Stream.Receive();
 				// from MonoBehaviour.Update();
 				stream.Connect(name); 
+		
+				// remove in unity ###
+				Thread.Sleep(1);
+				Alpha alpha = new Alpha(stream);
+				Thread thread = new Thread(new ThreadStart(alpha.Beta));
+				thread.Start();
+				Thread.Sleep(5);
+				// remove
 		
 				stream.Chat(name, "hello");
 			}
@@ -292,8 +303,6 @@ public class Alpha {
 					Console.WriteLine("Received: " + received[i] + ".");
 				}
 			}
-			
-			Thread.Sleep(1);
 		}
 	}
 };

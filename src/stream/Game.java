@@ -225,6 +225,10 @@ public class Game implements Node {
 				to.send(this, "room|" + name);
 			}
 		}
+		
+		public String toString() {
+			return name;
+		}
 	}
 	
 	public static class Room {
@@ -246,7 +250,7 @@ public class Game implements Node {
 			
 			while(it.hasNext()) {
 				User user = (User) it.next();
-				
+System.out.println(from + " " + message);
 				if(from == null || !from.name.equals(user.name))
 					node.push(null, user.name, message);
 			}
