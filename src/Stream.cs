@@ -134,11 +134,12 @@ public class Stream {
 	 * auth|<salt>|<hash>	-> auth|Success.
 	 * 						-> fail|User not found
 	 * 						-> fail|Wrong hash
-	 * make					-> make|Success
+	 * make|<size>			-> make|Success
 	 * 						-> fail|User not in lobby
 	 * list					-> list|<name>|<name>|...
 	 * room|<name>			-> room|Success // join room
 	 * 						-> fail|Room not found
+	 * 						-> fail|Room is full
 	 * exit					-> exit|Success
 	 * 						-> fail|User in lobby
 	 * chat|<text>			-> <nothing> users in same room get chat|<name>|<text>
@@ -213,8 +214,8 @@ public class Stream {
 		return true;
 	}
 	
-	public bool Make(string name) {
-		string[] make = Send(name, "make").Split('|');
+	public bool Make(string name, int size) {
+		string[] make = Send(name, "make|" + size).Split('|');
 		
 		if(make[0].Equals("fail")) {
 			Console.WriteLine("Make fail: " + make[1] + ".");

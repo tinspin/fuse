@@ -22,11 +22,12 @@ import stream.Node;
  * auth|<salt>|<hash>	-> auth|Success
  * 						-> fail|User not found
  * 						-> fail|Wrong hash
- * make					-> make|Success
+ * make|<size>			-> make|Success
  * 						-> fail|User not in lobby
  * list					-> list|<name>|<name>|...
  * room|<name>			-> room|Success // join room
  * 						-> fail|Room not found
+ * 						-> fail|Room is full
  * exit					-> exit|Success
  * 						-> fail|User in lobby
  * chat|<text>			-> <nothing> users in same room get chat|<name>|<text>
@@ -38,7 +39,7 @@ public class Game implements Node {
 	ConcurrentHashMap rooms = new ConcurrentHashMap();
 	ConcurrentHashMap users = new ConcurrentHashMap();
 	
-	static Room lobby = new Room(null);
+	static Room lobby = new Room(null, 1024);
 	static Daemon daemon;
 	static Node node;
 
@@ -121,12 +122,10 @@ public class Game implements Node {
 
 				JSONObject json = new JSONObject(Root.file(file));
 
-				if(hash.equals(Deploy.hash(json.getString("key") + salt, "MD5"))) {
+				if(salts.remove(salt) != null && hash.equals(Deploy.hash(json.getString("key") + salt, "MD5"))) {
 					User user = new User(name);
-					user.room = lobby;
 					users.put(user.name, user);
-					lobby.add(user);
-					salts.remove(salt);
+					user.move(null, lobby);
 					return "auth|Success";
 				}
 				else
@@ -143,7 +142,9 @@ public class Game implements Node {
 			if(user.room.user != null)
 				return "fail|User not in lobby";
 			
-			Room room = new Room(user);
+			int size = Integer.parseInt(split[1]);
+			
+			Room room = new Room(user, size);
 			rooms.put(room.user.name, room);
 			
 			user.move(lobby, room);
@@ -168,7 +169,10 @@ public class Game implements Node {
 				
 			if(room == null)
 				return "fail|Room not found";
-				
+			
+			if(room.users.size() == room.size)
+				return "fail|Room is full";
+			
 			user.move(user.room, room);
 		}
 		
@@ -208,19 +212,29 @@ public class Game implements Node {
 			this.name = name;
 		}
 		
-		void move(Room from, Room to) {
-			from.remove(this);
-			this.room = to;
-			to.add(this);
+		void move(Room from, Room to) throws Exception {
+			if(from != null) {
+				from.remove(this);
+				from.send("exit|" + name);
+			}
+			
+			if(to != null) {
+				this.room = to;
+			
+				to.add(this);
+				to.send(this, "room|" + name);
+			}
 		}
 	}
 	
 	public static class Room {
-		HashMap users = new HashMap();
+		ConcurrentHashMap users = new ConcurrentHashMap();
 		User user;
+		int size;
 		
-		Room(User user) {
+		Room(User user, int size) {
 			this.user = user;
+			this.size = size;
 		}
 		
 		void send(String message) throws Exception {
