@@ -136,8 +136,8 @@ public class Game implements Node {
 		
 		User user = (User) users.get(name);
 		
-		if(user == null)
-			return "fail|User '" + name + "' not auth";
+		if(event.query().header("host").equals("fuse.radiomesh.org") && user == null)
+			return "fail|User '" + name + "' not authorized";
 		
 		if(message.startsWith("make")) {
 			if(user.room.user != null)
@@ -183,12 +183,20 @@ public class Game implements Node {
 		}
 		
 		if(message.startsWith("chat")) {
-			user.room.send("chat|" + name + "|" + split[1]);
+			if(user == null)
+				lobby.send("chat|" + name + "|" + split[1]);
+			else
+				user.room.send("chat|" + name + "|" + split[1]);
+			
 			return null;
 		}
 		
 		if(message.startsWith("move")) {
-			user.room.send(user, "move|" + name + "|" + split[1]);
+			if(user == null)
+				lobby.send("chat|" + name + "|" + split[1]);
+			else
+				user.room.send(user, "move|" + name + "|" + split[1]);
+			
 			return null;
 		}
 		

@@ -227,10 +227,6 @@ public class Stream {
 		}
 		return sb.ToString();
 	}
-	
-	void StartEmulation() {
-		
-	}
 }
 
 // this is my emulation of MonoBehaviour.Update();
