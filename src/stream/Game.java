@@ -16,19 +16,19 @@ import stream.Node;
 
 /* messages:
  * join					-> join|<key>
- * 						-> fail|<name> contains bad characters.
- * 						-> fail|<name> already registered.
+ * 						-> fail|<name> contains bad characters
+ * 						-> fail|<name> already registered
  * salt					-> salt|<salt>
- * auth|<salt>|<hash>	-> auth|Success.
- * 						-> fail|User not found.
- * 						-> fail|Wrong hash.
+ * auth|<salt>|<hash>	-> auth|Success
+ * 						-> fail|User not found
+ * 						-> fail|Wrong hash
  * make					-> make|Success
- * 						-> fail|User not in lobby.
+ * 						-> fail|User not in lobby
  * list					-> list|<name>|<name>|...
  * room|<name>			-> room|Success // join room
- * 						-> fail|User not in lobby.
+ * 						-> fail|Room not found
  * exit					-> exit|Success
- * 						-> fail|User in lobby.
+ * 						-> fail|User in lobby
  * chat|<text>			-> <nothing> users in same room get chat|<name>|<text>
  * move|<data>			-> <nothing> users in same room get move|<name>|<data>
  */
@@ -51,7 +51,7 @@ public class Game implements Node {
 		System.err.println(name + " " + message);
 
 		if(name.length() == 0)
-			return "fail|Name missing.";
+			return "fail|Name missing";
 		
 		String[] split = message.split("\\|");
 		
@@ -164,15 +164,12 @@ public class Game implements Node {
 		}
 		
 		if(message.startsWith("room")) {
-			if(user.room.user != null)
-				return "fail|User not in lobby";
-			
 			Room room = (Room) rooms.get(split[1]);
 				
 			if(room == null)
 				return "fail|Room not found";
 				
-			user.move(lobby, room);
+			user.move(user.room, room);
 		}
 		
 		if(message.startsWith("exit")) {

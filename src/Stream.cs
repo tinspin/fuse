@@ -128,19 +128,19 @@ public class Stream {
 	
 	/* messages:
 	 * join					-> join|<key>
-	 * 						-> fail|<name> contains bad characters.
-	 * 						-> fail|<name> already registered.
+	 * 						-> fail|<name> contains bad characters
+	 * 						-> fail|<name> already registered
 	 * salt					-> salt|<salt>
 	 * auth|<salt>|<hash>	-> auth|Success.
-	 * 						-> fail|User not found.
-	 * 						-> fail|Wrong hash.
+	 * 						-> fail|User not found
+	 * 						-> fail|Wrong hash
 	 * make					-> make|Success
-	 * 						-> fail|User not in lobby.
+	 * 						-> fail|User not in lobby
 	 * list					-> list|<name>|<name>|...
 	 * room|<name>			-> room|Success // join room
-	 * 						-> fail|User not in lobby.
+	 * 						-> fail|Room not found
 	 * exit					-> exit|Success
-	 * 						-> fail|User in lobby.
+	 * 						-> fail|User in lobby
 	 * chat|<text>			-> <nothing> users in same room get chat|<name>|<text>
 	 * move|<data>			-> <nothing> users in same room get move|<name>|<data>
 	 */
