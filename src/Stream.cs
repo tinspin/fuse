@@ -1,4 +1,4 @@
-//using UnityEngine; // policy
+//using UnityEngine; // policy ###
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -8,7 +8,7 @@ using System.Threading;
 using System.Text;
 
 /* A real-time comet stream plugin for rupy.
- * For unity policy check, uncomment lines with: // policy
+ * For unity seach for ###
  * For usage scroll down to main() method.
  */
 public class Stream {
@@ -27,7 +27,7 @@ public class Stream {
 	public Stream() {
 		bool policy = true;
 		
-		//policy = Security.PrefetchSocketPolicy(host, port); // policy
+		//policy = Security.PrefetchSocketPolicy(host, port); // policy ###
 		
 		if(!policy)
 			throw new Exception("Policy (" + host + ":" + port + ") failed.");
@@ -149,11 +149,12 @@ public class Stream {
 		try {
 			string name = "two";
 			Stream stream = new Stream();
+			
 			// if no key is stored try
 			//string key = stream.join(name);
-			//   then store name and key!
+			//   then store name and key
 			// otherwise
-			//   get name and key and auth
+			//   get name and key
 			string key = "SFwPWQLZcBAES7BZ";
 			bool success = false;
 		
@@ -162,8 +163,11 @@ public class Stream {
 			}
 			
 			if(success) {
-				// remove in Unity!
-				stream.StartEmulation();
+				// remove in unity ###
+				Alpha alpha = new Alpha(stream);
+				Thread thread = new Thread(new ThreadStart(alpha.Beta));
+				thread.Start();
+				
 				// this will allow you to Stream.Receive();
 				// from MonoBehaviour.Update();
 				stream.Connect(name); 
@@ -182,10 +186,10 @@ public class Stream {
 		string[] join = Send(name, "join").Split('|');
 
 		if(join[0].Equals("fail")) {
-			if(join[1].Contains("bad")) {
+			if(join[1].IndexOf("bad") > 0) {
 				// limit characters to alpha numeric.
 			}
-			else if(join[1].Contains("already")) {
+			else if(join[1].IndexOf("already") > 0) {
 				// prompt for other name.
 			}
 			
@@ -225,9 +229,7 @@ public class Stream {
 	}
 	
 	void StartEmulation() {
-		Alpha alpha = new Alpha(this);
-		Thread thread = new Thread(new ThreadStart(alpha.Beta));
-		thread.Start();
+		
 	}
 }
 
@@ -245,6 +247,8 @@ public class Alpha {
 					Console.WriteLine("Received: " + received[i] + ".");
 				}
 			}
+			
+			Thread.Sleep(1);
 		}
 	}
 };
