@@ -151,7 +151,7 @@ public class Stream {
 			Stream stream = new Stream();
 			
 			// if no key is stored try
-			//string key = stream.join(name);
+			//string key = stream.Join(name);
 			//   then store name and key
 			// otherwise
 			//   get name and key
@@ -159,7 +159,7 @@ public class Stream {
 			bool success = false;
 		
 			if(key != null) {
-				success = stream.auth(name, key);
+				success = stream.Auth(name, key);
 			}
 			
 			if(success) {
@@ -172,7 +172,7 @@ public class Stream {
 				// from MonoBehaviour.Update();
 				stream.Connect(name); 
 		
-				stream.chat(name, "hello");
+				stream.Chat(name, "hello");
 			}
 			
 			Console.WriteLine("Login: " + success + ".");
@@ -182,7 +182,7 @@ public class Stream {
 		}
 	}
 
-	public string join(Stream stream, string name) {
+	public string Join(Stream stream, string name) {
 		string[] join = Send(name, "join").Split('|');
 
 		if(join[0].Equals("fail")) {
@@ -200,7 +200,7 @@ public class Stream {
 		return join[1];
 	}
 	
-	public bool auth(string name, string key) {
+	public bool Auth(string name, string key) {
 		string salt = Send(name, "salt").Split('|')[1];
 		string hash = MD5(key + salt);
 		string[] auth = Send(name, "auth|" + salt + "|" + hash).Split('|');
@@ -213,8 +213,56 @@ public class Stream {
 		return true;
 	}
 	
-	public string chat(string name, string text) {
-		return Send(name, "chat|" + text);
+	public bool Make(string name) {
+		string[] make = Send(name, "make").Split('|');
+		
+		if(make[0].Equals("fail")) {
+			Console.WriteLine("Make fail: " + make[1] + ".");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public string[] List(string name) {
+		string list = Send(name, "list");
+		
+		if(list.StartsWith("fail")) {
+			Console.WriteLine("List fail: " + list + ".");
+			return null;
+		}
+		
+		return list.Substring(list.IndexOf('|') + 1).Split('|');
+	}
+	
+	public bool Room(string name) {
+		string[] room = Send(name, "room").Split('|');
+		
+		if(room[0].Equals("fail")) {
+			Console.WriteLine("Room fail: " + room[1] + ".");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public bool Exit(string name) {
+		string[] exit = Send(name, "exit").Split('|');
+		
+		if(exit[0].Equals("fail")) {
+			Console.WriteLine("Exit fail: " + exit[1] + ".");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public void Chat(string name, string text) {
+		Send(name, "chat|" + text);
+	}
+	
+	public void Move(string name, string data) {
+		Send(name, "move|" + data);
 	}
 	
 	public static string MD5(string input) {
