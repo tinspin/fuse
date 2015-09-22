@@ -33,7 +33,7 @@ public class Server extends Service implements Node, Runnable {
 	}
 
 	public void remove(Queue queue, int place) throws Exception {
-		System.out.println("remove " + queue + " " + place);
+		System.err.println("remove " + queue + " " + place);
 	}
 
 	public void create(Daemon daemon) throws Exception {

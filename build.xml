@@ -37,19 +37,6 @@
 		    <fileset file="favicon.ico"/>
 			<fileset dir="tmp/cls"/>
 		</copy>
-		<java classname="Page" classpath="${lib}">
-			<arg line="bin/${name}.jar"/>
-			<arg line="res"/>
-		</java>
-		<javac srcdir="res" target="1.4" source="1.4" destdir="res" nowarn="on" debug="on" deprecation="off" classpath="${lib};bin" encoding="UTF-8"/>
-		<copy preservelastmodified="true" todir="tmp/jar">
-			<fileset dir="res">
-				<exclude name="**/*.java"/>
-				<!-- removed to avoid spamming -->
-				<exclude name="**/bg.jpg"/>
-				<exclude name="**/*.ttf"/>
-			</fileset>
-		</copy>
 		<jar jarfile="tmp/${root}.jar">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
@@ -61,7 +48,7 @@
 		<delete dir="tmp" quiet="yes"/>
 	</target>
 	
-	<target name="build-live" depends="http, page, util, check" unless="required">
+	<target name="build-live" depends="http, check" unless="required">
 		<echo>Building (fuse.radiomesh.org)</echo>
 		<mkdir dir="tmp/cls"/>
 		<javac srcdir="src" target="1.5" source="1.5" destdir="tmp/cls" debug="on" deprecation="off" classpath="src;${lib}" encoding="UTF-8"/>
@@ -69,19 +56,6 @@
 		<copy todir="tmp/jar">
 		    <fileset file="favicon.ico"/>
 			<fileset dir="tmp/cls"/>
-		</copy>
-		<java classname="Page" classpath="${lib}">
-			<arg line="bin/btcx.radiomesh.org.jar"/>
-			<arg line="res"/>
-		</java>
-		<javac srcdir="res" target="1.4" source="1.4" destdir="res" nowarn="on" debug="on" deprecation="off" classpath="${lib};bin" encoding="UTF-8"/>
-		<copy preservelastmodified="true" todir="tmp/jar">
-			<fileset dir="res">
-				<exclude name="**/*.java"/>
-				<!-- removed to avoid spamming -->
-				<exclude name="**/bg.jpg"/>
-				<exclude name="**/*.ttf"/>
-			</fileset>
 		</copy>
 		<jar jarfile="tmp/fuse.radiomesh.org.jar">
 			<manifest>
