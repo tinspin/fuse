@@ -133,7 +133,7 @@ public class Stream {
 	}
 	
 	/* Protocol:           --> double arrow = broadcast
-	 *                      -> single arrow = single send
+	 *                      -> single arrow = direct return
 	 *
 	 * Send()                  Return;
 	 * user                 -> user|<key>
