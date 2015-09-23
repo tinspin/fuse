@@ -142,6 +142,7 @@ public class Stream {
 	 * salt                 -> salt|<salt>
 	 * auth|<salt>|<hash>   -> auth|Success
 	 *                      -> fail|User not found
+	 *                      -> fail|Salt not found
 	 *                      -> fail|Wrong hash
 	 * room|<type>|<size>   -> room|Success // make and join room
 	 *                      -> fail|User not in lobby

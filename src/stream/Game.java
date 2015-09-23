@@ -101,7 +101,17 @@ public class Game implements Node {
 
 				JSONObject json = new JSONObject(Root.file(file));
 
-				if(salts.remove(salt) != null && hash.equals(Deploy.hash(json.getString("key") + salt, "MD5"))) {
+				if(salts.remove(salt) == null) {
+					return "fail|Salt not found";
+				}
+				
+				String md5 = Deploy.hash(json.getString("key") + salt, "MD5");
+				
+				//System.out.println(json);
+				//System.out.println(hash);
+				//System.out.println(md5);
+				
+				if(hash.equals(md5)) {
 					User user = new User(name);
 					users.put(user.name, user);
 					user.move(null, lobby);
