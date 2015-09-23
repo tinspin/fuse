@@ -185,6 +185,20 @@ public class Stream {
 				// remove
 		
 				stream.Chat(name, "hello");
+				
+				Thread.Sleep(5);
+				
+				stream.Make(name, 4);
+				
+				Thread.Sleep(5);
+				
+				string[] list = stream.List(name);
+				
+				Console.WriteLine("List: (" + list.Length / 2 + ")");
+				
+				for(int i = 0; i < list.Length; i+=2) {
+					Console.WriteLine(list[i] + " (" + list[i + 1] + ")");
+				}
 			}
 			
 			Console.WriteLine("Login: " + success + ".");

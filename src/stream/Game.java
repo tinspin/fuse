@@ -180,7 +180,11 @@ public class Game implements Node {
 			if(user.room.user == null)
 				return "fail|User in lobby";
 			
-			user.move(user.room, lobby);
+			Room room = user.move(user.room, lobby);
+			
+			if(room != null) {
+				rooms.remove(room);
+			}
 		}
 		
 		if(message.startsWith("chat")) {
@@ -212,10 +216,20 @@ public class Game implements Node {
 			this.name = name;
 		}
 		
-		void move(Room from, Room to) throws Exception {
+		Room move(Room from, Room to) throws Exception {
+			Room drop = null;
+			
 			if(from != null) {
 				from.remove(this);
-				from.send("exit|" + name);
+				
+				if(from.user.name.equals(name)) {
+					from.send("drop|" + name);
+					from.clear();
+					
+					drop = from;
+				}
+				else
+					from.send("exit|" + name);
 			}
 			
 			if(to != null) {
@@ -224,6 +238,8 @@ public class Game implements Node {
 				to.add(this);
 				to.send(this, "room|" + name);
 			}
+			
+			return drop;
 		}
 		
 		public String toString() {
@@ -250,10 +266,19 @@ public class Game implements Node {
 			
 			while(it.hasNext()) {
 				User user = (User) it.next();
+				
 System.out.println(from + " " + message);
+				
 				if(from == null || !from.name.equals(user.name))
 					node.push(null, user.name, message);
+				
+				if(message.startsWith("drop"))
+					user.move(null, lobby);
 			}
+		}
+		
+		void clear() {
+			users.clear();
 		}
 		
 		void add(User user) {
