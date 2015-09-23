@@ -132,9 +132,10 @@ public class Stream {
 		}
 	}
 	
-	// ------------- EXAMPLE USAGE -------------
-	
-	/* messages:
+	/* Protocol:           --> double arrow = broadcast
+	 *                      -> single arrow = single send
+	 *
+	 * Send()                  Return;
 	 * user                 -> user|<key>
 	 *                      -> fail|<name> contains bad characters
 	 *                      -> fail|<name> already registered
@@ -146,25 +147,29 @@ public class Stream {
 	 *                      -> fail|User not in lobby
 	 * list                 -> list|<name>|<type>|<size>|<name>|<type>|<size>|...
 	 * join|<name>          -> join|Success
-	 *                      -> join|<name> // in new room
-	 *                      -> exit|<name> // in lobby
+	 *                     --> join|<name> // in new room
+	 *                     --> exit|<name> // in lobby
 	 *                      -> fail|Room not found
 	 *                      -> fail|Room is locked
 	 *                      -> fail|Room is full
 	 * exit                 -> exit|Success
-	 *                      -> exit|<name> // in old room OR
-	 *                      -> drop|<name> // in old room when maker leaves 
+	 *                     --> exit|<name> // in old room OR
+	 *                     --> drop|<name> // in old room when maker leaves 
 	 *                                        then room is dropped and everyone 
 	 *                                        put back in lobby
-	 *                      -> join|<name> // in lobby
+	 *                     --> join|<name> // in lobby
 	 *                      -> fail|User in lobby
 	 * lock                 -> lock|Success
-	 *                      -> lock|<name> // to everyone in room, can be used 
+	 *                     --> lock|<name> // to everyone in room, can be used 
 	 *                                        to start the game
 	 *                      -> fail|User not room host
-	 * chat|<text>          -> noop // users in same room get chat|<name>|<text>
-	 * data|<data>          -> noop // users in same room get data|<name>|<data>
+	 * chat|<text>          -> noop
+	 *                     --> chat|<name>|<text>
+	 * data|<data>          -> noop
+	 *                     --> data|<name>|<data>
 	 */
+	
+	// ------------- EXAMPLE USAGE -------------
 	
 	public static void Main() {
 		try {
