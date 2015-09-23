@@ -144,7 +144,7 @@ public class Stream {
 	 * 						-> fail|Wrong hash
 	 * make|<size>			-> make|Success
 	 * 						-> fail|User not in lobby
-	 * list					-> list|<name> (<size>)|<name> (<size>)|...
+	 * list					-> list|<name>|<size>|<name>|<size>|...
 	 * room|<name>			-> room|Success // join room
 	 * 						-> fail|Room not found
 	 * 						-> fail|Room is full
