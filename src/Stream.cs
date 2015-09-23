@@ -199,7 +199,7 @@ public class Stream {
 				
 				Thread.Sleep(5);
 				
-				stream.Make(name, 4);
+				Console.WriteLine("Make: " + stream.Make(name, 4));
 				
 				Thread.Sleep(5);
 				

@@ -148,14 +148,15 @@ public class Game implements Node {
 		if(message.startsWith("make")) {
 			if(user.room.user != null)
 				return "fail|User not in lobby";
-			
+
 			int size = Integer.parseInt(split[1]);
-			
+
 			Room room = new Room(user, size);
+
 			rooms.put(room.user.name, room);
-			
+
 			user.move(lobby, room);
-			
+
 			return "make|Success";
 		}
 		
@@ -165,7 +166,7 @@ public class Game implements Node {
 			
 			while(it.hasNext()) {
 				Room room = (Room) it.next();
-System.out.println(room);
+
 				builder.append("|" + room.user.name + "|" + room.users.size());
 			}
 			
@@ -193,7 +194,7 @@ System.out.println(room);
 			Room room = user.move(user.room, lobby);
 			
 			if(room != null) {
-				rooms.remove(room);
+				rooms.remove(room.user.name);
 			}
 			
 			return "exit|Success";
@@ -234,7 +235,7 @@ System.out.println(room);
 			if(from != null) {
 				from.remove(this);
 				
-				if(from.user.name.equals(name)) {
+				if(from.user != null && from.user.name.equals(name)) {
 					from.send("drop|" + name);
 					from.clear();
 					
