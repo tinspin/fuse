@@ -150,11 +150,8 @@ public class Game implements Node {
 				return "fail|User not in lobby";
 
 			int size = Integer.parseInt(split[1]);
-
 			Room room = new Room(user, size);
-
 			rooms.put(room.user.name, room);
-
 			user.move(lobby, room);
 
 			return "make|Success";
@@ -166,7 +163,6 @@ public class Game implements Node {
 			
 			while(it.hasNext()) {
 				Room room = (Room) it.next();
-
 				builder.append("|" + room.user.name + "|" + room.users.size());
 			}
 			
@@ -175,7 +171,7 @@ public class Game implements Node {
 		
 		if(message.startsWith("join")) {
 			Room room = (Room) rooms.get(split[1]);
-				
+			
 			if(room == null)
 				return "fail|Room not found";
 			

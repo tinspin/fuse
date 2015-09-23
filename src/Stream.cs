@@ -188,28 +188,32 @@ public class Stream {
 				stream.Connect(name); 
 		
 				// remove in unity ###
-				Thread.Sleep(1);
+				Thread.Sleep(100);
 				Alpha alpha = new Alpha(stream);
 				Thread thread = new Thread(new ThreadStart(alpha.Beta));
 				thread.Start();
-				Thread.Sleep(5);
+				Thread.Sleep(500);
 				// remove
 		
 				stream.Chat(name, "hello");
 				
-				Thread.Sleep(5);
+				Thread.Sleep(500);
 				
 				Console.WriteLine("Make: " + stream.Make(name, 4));
 				
-				Thread.Sleep(5);
+				Thread.Sleep(500);
 				
 				string[] list = stream.List(name);
 				
-				Console.WriteLine("List: (" + list.Length / 2 + ")");
+				Console.WriteLine("List: " + list.Length / 2);
 				
 				for(int i = 0; i < list.Length; i+=2) {
 					Console.WriteLine(list[i] + " (" + list[i + 1] + ")");
 				}
+				
+				Thread.Sleep(500);
+				
+				stream.Chat(name, "hello");
 			}
 			
 			Console.WriteLine("Login: " + success + ".");
