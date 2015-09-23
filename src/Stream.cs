@@ -135,7 +135,7 @@ public class Stream {
 	// ------------- EXAMPLE USAGE -------------
 	
 	/* messages:
-	 * join					-> join|<key>
+	 * user					-> user|<key>
 	 * 						-> fail|<name> contains bad characters
 	 * 						-> fail|<name> already registered
 	 * salt					-> salt|<salt>
@@ -145,8 +145,8 @@ public class Stream {
 	 * make|<size>			-> make|Success
 	 * 						-> fail|User not in lobby
 	 * list					-> list|<name>|<size>|<name>|<size>|...
-	 * room|<name>			-> room|Success // join room
-	 * 						-> room|<name> // in new room
+	 * join|<name>			-> join|Success
+	 * 						-> join|<name> // in new room
 	 * 						-> exit|<name> // in lobby
 	 * 						-> fail|Room not found
 	 * 						-> fail|Room is full
@@ -155,7 +155,7 @@ public class Stream {
 	 * 						-> drop|<name> // in old room when maker leaves 
 	 * 										  then room is dropped and everyone 
 	 * 										  put back in lobby
-	 * 						-> room|<name> // in lobby
+	 * 						-> join|<name> // in lobby
 	 * 						-> fail|User in lobby
 	 * chat|<text>			-> <nothing> users in same room get chat|<name>|<text>
 	 * move|<data>			-> <nothing> users in same room get move|<name>|<data>

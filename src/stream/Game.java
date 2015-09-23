@@ -15,7 +15,7 @@ import se.rupy.http.Root;
 import stream.Node;
 
 /* messages:
- * join					-> join|<key>
+ * user					-> user|<key>
  * 						-> fail|<name> contains bad characters
  * 						-> fail|<name> already registered
  * salt					-> salt|<salt>
@@ -25,8 +25,8 @@ import stream.Node;
  * make|<size>			-> make|Success
  * 						-> fail|User not in lobby
  * list					-> list|<name>|<size>|<name>|<size>|...
- * room|<name>			-> room|Success // join room
- * 						-> room|<name> // in new room
+ * join|<name>			-> join|Success
+ * 						-> join|<name> // in new room
  * 						-> exit|<name> // in lobby
  * 						-> fail|Room not found
  * 						-> fail|Room is full
@@ -35,7 +35,7 @@ import stream.Node;
  * 						-> drop|<name> // in old room when maker leaves 
  * 										  then room is dropped and everyone 
  * 										  put back in lobby
- * 						-> room|<name> // in lobby
+ * 						-> join|<name> // in lobby
  * 						-> fail|User in lobby
  * chat|<text>			-> <nothing> users in same room get chat|<name>|<text>
  * move|<data>			-> <nothing> users in same room get move|<name>|<data>
@@ -63,7 +63,7 @@ public class Game implements Node {
 		
 		String[] split = message.split("\\|");
 		
-		if(message.startsWith("join")) {
+		if(message.startsWith("user")) {
 			Async.Work user = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.post("/node", "Host:fuse.rupy.se", ("json={\"name\":\"" + name + "\"}&sort=key,name&create").getBytes("utf-8"));
@@ -93,7 +93,7 @@ public class Game implements Node {
 
 						String key = user.getString("key");
 
-						event.query().put("data", "join|" + key);
+						event.query().put("data", "user|" + key);
 					}
 					
 					event.reply().wakeup();
@@ -171,7 +171,7 @@ public class Game implements Node {
 			return builder.toString();
 		}
 		
-		if(message.startsWith("room")) {
+		if(message.startsWith("join")) {
 			Room room = (Room) rooms.get(split[1]);
 				
 			if(room == null)
@@ -181,6 +181,8 @@ public class Game implements Node {
 				return "fail|Room is full";
 			
 			user.move(user.room, room);
+			
+			return "join|Success";
 		}
 		
 		if(message.startsWith("exit")) {
@@ -192,6 +194,8 @@ public class Game implements Node {
 			if(room != null) {
 				rooms.remove(room);
 			}
+			
+			return "exit|Success";
 		}
 		
 		if(message.startsWith("chat")) {
@@ -243,7 +247,7 @@ public class Game implements Node {
 				this.room = to;
 			
 				to.add(this);
-				to.send(this, "room|" + name);
+				to.send(this, "join|" + name);
 			}
 			
 			return drop;
