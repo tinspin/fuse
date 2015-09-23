@@ -167,10 +167,13 @@ public class Stream {
 			Stream stream = new Stream();
 			
 			// if no key is stored try
+			
 			//string key = stream.User(name);
+			
 			//   then store name and key
 			// otherwise
 			//   get name and key
+			
 			string key = "SFwPWQLZcBAES7BZ";
 			bool success = false;
 		
@@ -215,7 +218,7 @@ public class Stream {
 		}
 	}
 
-	public string User(Stream stream, string name) {
+	public string User(string name) {
 		string[] join = Send(name, "user").Split('|');
 
 		if(join[0].Equals("fail")) {
