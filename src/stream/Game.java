@@ -24,7 +24,7 @@ import stream.Node;
  * 						-> fail|Wrong hash
  * make|<size>			-> make|Success
  * 						-> fail|User not in lobby
- * list					-> list|<name>|<name>|...
+ * list					-> list|<name> (<size>)|<name> (<size>)|...
  * room|<name>			-> room|Success // join room
  * 						-> fail|Room not found
  * 						-> fail|Room is full
@@ -158,7 +158,7 @@ public class Game implements Node {
 			
 			while(it.hasNext()) {
 				Room room = (Room) it.next();
-				builder.append("|" + room.user.name);
+				builder.append("|" + room.user.name + " (" + room.users.size() + ")");
 			}
 			
 			return builder.toString();
@@ -194,7 +194,7 @@ public class Game implements Node {
 		
 		if(message.startsWith("move")) {
 			if(user == null)
-				lobby.send("chat|" + name + "|" + split[1]);
+				lobby.send("move|" + name + "|" + split[1]);
 			else
 				user.room.send(user, "move|" + name + "|" + split[1]);
 			
