@@ -46,7 +46,7 @@ public class Game implements Node {
 	ConcurrentHashMap rooms = new ConcurrentHashMap();
 	ConcurrentHashMap users = new ConcurrentHashMap();
 	
-	static Room lobby = new Room(null, 1024);
+	static Room lobby = new Room(null, "lobby", 1024);
 	static Daemon daemon;
 	static Node node;
 
@@ -149,8 +149,9 @@ public class Game implements Node {
 			if(user.room.user != null)
 				return "fail|User not in lobby";
 
-			int size = Integer.parseInt(split[1]);
-			Room room = new Room(user, size);
+			String type = split[1];
+			int size = Integer.parseInt(split[2]);
+			Room room = new Room(user, type, size);
 			rooms.put(room.user.name, room);
 			user.move(lobby, room);
 
@@ -163,7 +164,7 @@ public class Game implements Node {
 			
 			while(it.hasNext()) {
 				Room room = (Room) it.next();
-				builder.append("|" + room.user.name + "|" + room.users.size());
+				builder.append("|" + room.user.name + "|" + room.type + "|" + room.users.size());
 			}
 			
 			return builder.toString();
@@ -258,10 +259,12 @@ public class Game implements Node {
 	
 	public static class Room {
 		ConcurrentHashMap users = new ConcurrentHashMap();
+		String type;
 		User user;
 		int size;
 		
-		Room(User user, int size) {
+		Room(User user, String type, int size) {
+			this.type = type;
 			this.user = user;
 			this.size = size;
 		}
@@ -299,7 +302,7 @@ System.out.println(from + " " + message);
 		}
 		
 		public String toString() {
-			return user.name + " " + users;
+			return user.name + " " + type + " " + users;
 		}
 	}
 	

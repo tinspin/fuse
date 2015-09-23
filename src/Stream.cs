@@ -142,7 +142,7 @@ public class Stream {
 	 * auth|<salt>|<hash>	-> auth|Success
 	 * 						-> fail|User not found
 	 * 						-> fail|Wrong hash
-	 * make|<size>			-> make|Success
+	 * make|<type>|<size>	-> make|Success // make and join room
 	 * 						-> fail|User not in lobby
 	 * list					-> list|<name>|<size>|<name>|<size>|...
 	 * join|<name>			-> join|Success
@@ -157,6 +157,8 @@ public class Stream {
 	 * 										  put back in lobby
 	 * 						-> join|<name> // in lobby
 	 * 						-> fail|User in lobby
+	 * lock					-> lock|Success
+	 * 						-> fail|User not room host
 	 * chat|<text>			-> <nothing> users in same room get chat|<name>|<text>
 	 * move|<data>			-> <nothing> users in same room get move|<name>|<data>
 	 */
@@ -199,16 +201,16 @@ public class Stream {
 				
 				Thread.Sleep(500);
 				
-				Console.WriteLine("Make: " + stream.Make(name, 4));
+				Console.WriteLine("Make: " + stream.Make(name, "dirt", 4));
 				
 				Thread.Sleep(500);
 				
 				string[] list = stream.List(name);
 				
-				Console.WriteLine("List: " + list.Length / 2);
+				Console.WriteLine("List: " + list.Length / 3);
 				
-				for(int i = 0; i < list.Length; i+=2) {
-					Console.WriteLine(list[i] + " (" + list[i + 1] + ")");
+				for(int i = 0; i < list.Length; i+=3) {
+					Console.WriteLine(list[i] + " " + list[i + 1] + " (" + list[i + 2] + ")");
 				}
 				
 				Thread.Sleep(500);
@@ -254,8 +256,8 @@ public class Stream {
 		return true;
 	}
 	
-	public bool Make(string name, int size) {
-		string[] make = Send(name, "make|" + size).Split('|');
+	public bool Make(string name, String type, int size) {
+		string[] make = Send(name, "make|" + type + "|" + size).Split('|');
 		
 		if(make[0].Equals("fail")) {
 			Console.WriteLine("Make fail: " + make[1] + ".");
