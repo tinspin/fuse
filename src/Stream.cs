@@ -215,8 +215,8 @@ public class Stream {
 		}
 	}
 
-	public string Join(Stream stream, string name) {
-		string[] join = Send(name, "join").Split('|');
+	public string User(Stream stream, string name) {
+		string[] join = Send(name, "user").Split('|');
 
 		if(join[0].Equals("fail")) {
 			if(join[1].IndexOf("bad") > 0) {
@@ -268,8 +268,8 @@ public class Stream {
 		return list.Substring(list.IndexOf('|') + 1).Split('|');
 	}
 	
-	public bool Room(string name) {
-		string[] room = Send(name, "room").Split('|');
+	public bool Join(string name) {
+		string[] room = Send(name, "join").Split('|');
 		
 		if(room[0].Equals("fail")) {
 			Console.WriteLine("Room fail: " + room[1] + ".");
