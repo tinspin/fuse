@@ -175,6 +175,7 @@ public class Stream {
 			//   get name and key
 			
 			string key = "SFwPWQLZcBAES7BZ";
+			
 			bool success = false;
 		
 			if(key != null) {
@@ -219,21 +220,21 @@ public class Stream {
 	}
 
 	public string User(string name) {
-		string[] join = Send(name, "user").Split('|');
+		string[] user = Send(name, "user").Split('|');
 
-		if(join[0].Equals("fail")) {
-			if(join[1].IndexOf("bad") > 0) {
+		if(user[0].Equals("fail")) {
+			if(user[1].IndexOf("bad") > 0) {
 				// limit characters to alpha numeric.
 			}
-			else if(join[1].IndexOf("already") > 0) {
+			else if(user[1].IndexOf("already") > 0) {
 				// prompt for other name.
 			}
 			
-			Console.WriteLine("Join fail: " + join[1] + ".");
+			Console.WriteLine("User fail: " + user[1] + ".");
 			return null;
 		}
 		
-		return join[1];
+		return user[1];
 	}
 	
 	public bool Auth(string name, string key) {
@@ -272,10 +273,10 @@ public class Stream {
 	}
 	
 	public bool Join(string name) {
-		string[] room = Send(name, "join").Split('|');
+		string[] join = Send(name, "join").Split('|');
 		
-		if(room[0].Equals("fail")) {
-			Console.WriteLine("Room fail: " + room[1] + ".");
+		if(join[0].Equals("fail")) {
+			Console.WriteLine("Join fail: " + join[1] + ".");
 			return false;
 		}
 		

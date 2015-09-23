@@ -165,6 +165,7 @@ public class Game implements Node {
 			
 			while(it.hasNext()) {
 				Room room = (Room) it.next();
+System.out.println(room);
 				builder.append("|" + room.user.name + "|" + room.users.size());
 			}
 			
@@ -298,6 +299,10 @@ System.out.println(from + " " + message);
 		
 		void remove(User user) {
 			users.remove(user.name);
+		}
+		
+		public String toString() {
+			return user.name + " " + users;
 		}
 	}
 	
