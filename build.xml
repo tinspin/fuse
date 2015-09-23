@@ -34,7 +34,7 @@
 		<javac srcdir="src" target="1.5" source="1.5" destdir="tmp/cls" debug="on" deprecation="off" classpath="src;${lib}" encoding="UTF-8"/>
 		<mkdir dir="tmp/jar"/>
 		<copy todir="tmp/jar">
-		    <fileset file="favicon.ico"/>
+		    <fileset file="res/favicon.ico"/>
 			<fileset dir="tmp/cls"/>
 		</copy>
 		<jar jarfile="tmp/${root}.jar">
@@ -54,7 +54,7 @@
 		<javac srcdir="src" target="1.5" source="1.5" destdir="tmp/cls" debug="on" deprecation="off" classpath="src;${lib}" encoding="UTF-8"/>
 		<mkdir dir="tmp/jar"/>
 		<copy todir="tmp/jar">
-		    <fileset file="favicon.ico"/>
+		    <fileset file="res/favicon.ico"/>
 			<fileset dir="tmp/cls"/>
 		</copy>
 		<jar jarfile="tmp/fuse.radiomesh.org.jar">

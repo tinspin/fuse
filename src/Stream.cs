@@ -142,13 +142,14 @@ public class Stream {
 	 * auth|<salt>|<hash>	-> auth|Success
 	 * 						-> fail|User not found
 	 * 						-> fail|Wrong hash
-	 * make|<type>|<size>	-> make|Success // make and join room
+	 * room|<type>|<size>	-> room|Success // make and join room
 	 * 						-> fail|User not in lobby
 	 * list					-> list|<name>|<type>|<size>|<name>|<type>|<size>|...
 	 * join|<name>			-> join|Success
 	 * 						-> join|<name> // in new room
 	 * 						-> exit|<name> // in lobby
 	 * 						-> fail|Room not found
+	 * 						-> fail|Room is locked
 	 * 						-> fail|Room is full
 	 * exit					-> exit|Success
 	 * 						-> exit|<name> // in old room OR
@@ -158,6 +159,8 @@ public class Stream {
 	 * 						-> join|<name> // in lobby
 	 * 						-> fail|User in lobby
 	 * lock					-> lock|Success
+	 * 						-> lock|<name> // to everyone in room, can be used 
+	 * 										  to start the game
 	 * 						-> fail|User not room host
 	 * chat|<text>			-> <nothing> users in same room get chat|<name>|<text>
 	 * move|<data>			-> <nothing> users in same room get move|<name>|<data>
@@ -201,7 +204,7 @@ public class Stream {
 				
 				Thread.Sleep(500);
 				
-				Console.WriteLine("Make: " + stream.Make(name, "dirt", 4));
+				Console.WriteLine("Make: " + stream.Room(name, "race", 4));
 				
 				Thread.Sleep(500);
 				
@@ -256,11 +259,11 @@ public class Stream {
 		return true;
 	}
 	
-	public bool Make(string name, String type, int size) {
-		string[] make = Send(name, "make|" + type + "|" + size).Split('|');
+	public bool Room(string name, String type, int size) {
+		string[] room = Send(name, "room|" + type + "|" + size).Split('|');
 		
-		if(make[0].Equals("fail")) {
-			Console.WriteLine("Make fail: " + make[1] + ".");
+		if(room[0].Equals("fail")) {
+			Console.WriteLine("Room fail: " + make[1] + ".");
 			return false;
 		}
 		
@@ -298,6 +301,10 @@ public class Stream {
 		}
 		
 		return true;
+	}
+	
+	public void Lock(string name, string text) {
+		Send(name, "lock");
 	}
 	
 	public void Chat(string name, string text) {

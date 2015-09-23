@@ -14,33 +14,6 @@ import se.rupy.http.Event;
 import se.rupy.http.Root;
 import stream.Node;
 
-/* messages:
- * user					-> user|<key>
- * 						-> fail|<name> contains bad characters
- * 						-> fail|<name> already registered
- * salt					-> salt|<salt>
- * auth|<salt>|<hash>	-> auth|Success
- * 						-> fail|User not found
- * 						-> fail|Wrong hash
- * make|<size>			-> make|Success
- * 						-> fail|User not in lobby
- * list					-> list|<name>|<size>|<name>|<size>|...
- * join|<name>			-> join|Success
- * 						-> join|<name> // in new room
- * 						-> exit|<name> // in lobby
- * 						-> fail|Room not found
- * 						-> fail|Room is full
- * exit					-> exit|Success
- * 						-> exit|<name> // in old room OR
- * 						-> drop|<name> // in old room when maker leaves 
- * 										  then room is dropped and everyone 
- * 										  put back in lobby
- * 						-> join|<name> // in lobby
- * 						-> fail|User in lobby
- * chat|<text>			-> <nothing> users in same room get chat|<name>|<text>
- * move|<data>			-> <nothing> users in same room get move|<name>|<data>
- */
-
 public class Game implements Node {
 	ConcurrentHashMap salts = new ConcurrentHashMap();
 	ConcurrentHashMap rooms = new ConcurrentHashMap();
@@ -145,7 +118,7 @@ public class Game implements Node {
 		if(event.query().header("host").equals("fuse.radiomesh.org") && user == null)
 			return "fail|User '" + name + "' not authorized";
 		
-		if(message.startsWith("make")) {
+		if(message.startsWith("room")) {
 			if(user.room.user != null)
 				return "fail|User not in lobby";
 
@@ -155,7 +128,7 @@ public class Game implements Node {
 			rooms.put(room.user.name, room);
 			user.move(lobby, room);
 
-			return "make|Success";
+			return "room|Success";
 		}
 		
 		if(message.startsWith("list")) {
@@ -176,12 +149,25 @@ public class Game implements Node {
 			if(room == null)
 				return "fail|Room not found";
 			
+			if(room.lock)
+				return "fail|Room is locked";
+			
 			if(room.users.size() == room.size)
 				return "fail|Room is full";
 			
 			user.move(user.room, room);
 			
 			return "join|Success";
+		}
+		
+		if(message.startsWith("lock")) {
+			if(user.room.user == null)
+				return "fail|User in lobby";
+			
+			if(user.room.user == user)
+				user.room.send(null, "lock");
+			
+			return "lock|Success";
 		}
 		
 		if(message.startsWith("exit")) {
@@ -259,6 +245,7 @@ public class Game implements Node {
 	
 	public static class Room {
 		ConcurrentHashMap users = new ConcurrentHashMap();
+		boolean lock;
 		String type;
 		User user;
 		int size;
@@ -275,6 +262,9 @@ public class Game implements Node {
 		
 		void send(User from, String message) throws Exception {
 			Iterator it = users.values().iterator();
+			
+			if(message.startsWith("lock"))
+				lock = true;
 			
 			while(it.hasNext()) {
 				User user = (User) it.next();
