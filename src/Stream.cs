@@ -163,7 +163,7 @@ public class Stream {
 	 * 										  to start the game
 	 * 						-> fail|User not room host
 	 * chat|<text>			-> <nothing> users in same room get chat|<name>|<text>
-	 * move|<data>			-> <nothing> users in same room get move|<name>|<data>
+	 * data|<data>			-> <nothing> users in same room get move|<name>|<data>
 	 */
 	
 	public static void Main() {
@@ -204,7 +204,7 @@ public class Stream {
 				
 				Thread.Sleep(500);
 				
-				Console.WriteLine("Make: " + stream.Room(name, "race", 4));
+				Console.WriteLine("Room: " + stream.Room(name, "race", 4));
 				
 				Thread.Sleep(500);
 				
@@ -311,8 +311,8 @@ public class Stream {
 		Send(name, "chat|" + text);
 	}
 	
-	public void Move(string name, string data) {
-		Send(name, "move|" + data);
+	public void Data(string name, string data) {
+		Send(name, "data|" + data);
 	}
 	
 	public static string MD5(string input) {

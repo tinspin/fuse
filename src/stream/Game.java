@@ -1,7 +1,6 @@
 package stream;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -192,11 +191,11 @@ public class Game implements Node {
 			return null;
 		}
 		
-		if(message.startsWith("move")) {
+		if(message.startsWith("data")) {
 			if(user == null)
-				lobby.send("move|" + name + "|" + split[1]);
+				lobby.send("data|" + name + "|" + split[1]);
 			else
-				user.room.send(user, "move|" + name + "|" + split[1]);
+				user.room.send(user, "data|" + name + "|" + split[1]);
 			
 			return null;
 		}
