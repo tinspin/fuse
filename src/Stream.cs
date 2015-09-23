@@ -167,7 +167,7 @@ public class Stream {
 			Stream stream = new Stream();
 			
 			// if no key is stored try
-			//string key = stream.Join(name);
+			//string key = stream.User(name);
 			//   then store name and key
 			// otherwise
 			//   get name and key
