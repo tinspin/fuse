@@ -162,8 +162,8 @@ public class Stream {
 	 *                      -> lock|<name> // to everyone in room, can be used 
 	 *                                        to start the game
 	 *                      -> fail|User not room host
-	 * chat|<text>          -> <nothing> users in same room get chat|<name>|<text>
-	 * data|<data>          -> <nothing> users in same room get data|<name>|<data>
+	 * chat|<text>          -> noop // users in same room get chat|<name>|<text>
+	 * data|<data>          -> noop // users in same room get data|<name>|<data>
 	 */
 	
 	public static void Main() {
