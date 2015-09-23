@@ -135,35 +135,35 @@ public class Stream {
 	// ------------- EXAMPLE USAGE -------------
 	
 	/* messages:
-	 * user					-> user|<key>
-	 * 						-> fail|<name> contains bad characters
-	 * 						-> fail|<name> already registered
-	 * salt					-> salt|<salt>
-	 * auth|<salt>|<hash>	-> auth|Success
-	 * 						-> fail|User not found
-	 * 						-> fail|Wrong hash
-	 * room|<type>|<size>	-> room|Success // make and join room
-	 * 						-> fail|User not in lobby
-	 * list					-> list|<name>|<type>|<size>|<name>|<type>|<size>|...
-	 * join|<name>			-> join|Success
-	 * 						-> join|<name> // in new room
-	 * 						-> exit|<name> // in lobby
-	 * 						-> fail|Room not found
-	 * 						-> fail|Room is locked
-	 * 						-> fail|Room is full
-	 * exit					-> exit|Success
-	 * 						-> exit|<name> // in old room OR
-	 * 						-> drop|<name> // in old room when maker leaves 
-	 * 										  then room is dropped and everyone 
-	 * 										  put back in lobby
-	 * 						-> join|<name> // in lobby
-	 * 						-> fail|User in lobby
-	 * lock					-> lock|Success
-	 * 						-> lock|<name> // to everyone in room, can be used 
-	 * 										  to start the game
-	 * 						-> fail|User not room host
-	 * chat|<text>			-> <nothing> users in same room get chat|<name>|<text>
-	 * data|<data>			-> <nothing> users in same room get move|<name>|<data>
+	 * user                 -> user|<key>
+	 *                      -> fail|<name> contains bad characters
+	 *                      -> fail|<name> already registered
+	 * salt                 -> salt|<salt>
+	 * auth|<salt>|<hash>   -> auth|Success
+	 *                      -> fail|User not found
+	 *                      -> fail|Wrong hash
+	 * room|<type>|<size>   -> room|Success // make and join room
+	 *                      -> fail|User not in lobby
+	 * list                 -> list|<name>|<type>|<size>|<name>|<type>|<size>|...
+	 * join|<name>          -> join|Success
+	 *                      -> join|<name> // in new room
+	 *                      -> exit|<name> // in lobby
+	 *                      -> fail|Room not found
+	 *                      -> fail|Room is locked
+	 *                      -> fail|Room is full
+	 * exit                 -> exit|Success
+	 *                      -> exit|<name> // in old room OR
+	 *                      -> drop|<name> // in old room when maker leaves 
+	 *                                        then room is dropped and everyone 
+	 *                                        put back in lobby
+	 *                      -> join|<name> // in lobby
+	 *                      -> fail|User in lobby
+	 * lock                 -> lock|Success
+	 *                      -> lock|<name> // to everyone in room, can be used 
+	 *                                        to start the game
+	 *                      -> fail|User not room host
+	 * chat|<text>          -> <nothing> users in same room get chat|<name>|<text>
+	 * data|<data>          -> <nothing> users in same room get data|<name>|<data>
 	 */
 	
 	public static void Main() {
