@@ -263,7 +263,7 @@ public class Stream {
 		string[] room = Send(name, "room|" + type + "|" + size).Split('|');
 		
 		if(room[0].Equals("fail")) {
-			Console.WriteLine("Room fail: " + make[1] + ".");
+			Console.WriteLine("Room fail: " + room[1] + ".");
 			return false;
 		}
 		
