@@ -136,41 +136,42 @@ public class Stream {
 	 *                      -> single arrow = direct return
 	 *
 	 * Send()                  Return;
+	 *
 	 * user                 -> user|<key>
 	 *                      -> fail|<name> contains bad characters
 	 *                      -> fail|<name> already registered
 	 * salt                 -> salt|<salt>
-	 * auth|<salt>|<hash>   -> auth|Success
-	 *                      -> fail|User not found
-	 *                      -> fail|Salt not found
-	 *                      -> fail|Wrong hash
-	 * peer|<192.168...>    -> peer|Success // store internal and external IP for peer-to-peer.
-	 * room|<type>|<size>   -> room|Success // make and join room
-	 *                      -> fail|User not in lobby
+	 * auth|<salt>|<hash>   -> auth|ok
+	 *                      -> fail|user not found
+	 *                      -> fail|salt not found
+	 *                      -> fail|wrong hash
+	 * peer|<192.168...>    -> peer|ok // store internal and external IP for peer-to-peer.
+	 * room|<type>|<size>   -> room|ok // make and join room
+	 *                      -> fail|user not in lobby
 	 * list|room            -> list|<name>|<type>|<size>|<name>|<type>|<size>|...
 	 * list|data|<type>     -> list|<id>|<id>|... // use load to get data
-	 *                      -> fail|Can only list 'room' or 'data'
-	 * join|<name>          -> join|Success
+	 *                      -> fail|can only list 'room' or 'data'
+	 * join|<name>          -> join|ok
 	 *                     --> join|<name>(|<ip>) // in new room all to all (if peer was set)
 	 *                     --> exit|<name> // in lobby
-	 *                      -> fail|Room not found
-	 *                      -> fail|Room is locked
-	 *                      -> fail|Room is full
-	 * exit                 -> exit|Success
+	 *                      -> fail|room not found
+	 *                      -> fail|room is locked
+	 *                      -> fail|room is full
+	 * exit                 -> exit|ok
 	 *                     --> exit|<name> // in old room OR
 	 *                     --> drop|<name> // in old room when maker leaves 
 	 *                                        then room is dropped and everyone 
 	 *                                        put back in lobby
 	 *                     --> join|<name>(|<ip>) // in lobby all to all (if peer was set)
-	 *                      -> fail|User in lobby
-	 * lock                 -> lock|Success
+	 *                      -> fail|user in lobby
+	 * lock                 -> lock|ok
 	 *                     --> lock|<name> // to everyone in room, can be used 
 	 *                                        to start the game
-	 *                      -> fail|User not room host
+	 *                      -> fail|user not room host
 	 * save|<type>|<json>   -> save|<id>|<key> // to update data use this key in json
-	 *                      -> fail|Data to large
+	 *                      -> fail|data to large
 	 * load|<type>|<id>     -> load|<json> // use id from list|data|<type>
-	 *                      -> fail|Data not found
+	 *                      -> fail|data not found
 	 * chat|<text>          -> noop
 	 *                     --> chat|<name>|<text>
 	 * data|<data>          -> noop

@@ -33,7 +33,7 @@ public class Game implements Node {
 		System.err.println(name + " " + message);
 
 		if(name.length() == 0)
-			return "fail|Name missing";
+			return "fail|name missing";
 		
 		String[] split = message.split("\\|");
 		
@@ -98,13 +98,13 @@ public class Game implements Node {
 
 				if(!file.exists()) {
 					System.out.println(file);
-					return "fail|User not found.";
+					return "fail|user not found.";
 				}
 
 				JSONObject json = new JSONObject(Root.file(file));
 
 				if(salts.remove(salt) == null) {
-					return "fail|Salt not found";
+					return "fail|salt not found";
 				}
 				
 				String md5 = Deploy.hash(json.getString("key") + salt, "MD5");
@@ -118,27 +118,27 @@ public class Game implements Node {
 					user.json = json;
 					users.put(user.name, user);
 					user.move(null, lobby);
-					return "auth|Success";
+					return "auth|ok";
 				}
 				else
-					return "fail|Wrong hash";
+					return "fail|wrong hash";
 			}
 		}
 		
 		final User user = (User) users.get(name);
 		
 		if(event.query().header("host").equals("fuse.radiomesh.org") && user == null)
-			return "fail|User '" + name + "' not authorized";
+			return "fail|user '" + name + "' not authorized";
 		
 		if(message.startsWith("peer")) {
 			user.peer(event, split[1]);
 
-			return "peer|Success";
+			return "peer|ok";
 		}
 		
 		if(message.startsWith("room")) {
 			if(user.room.user != null)
-				return "fail|User not in lobby";
+				return "fail|user not in lobby";
 
 			String type = split[1];
 			int size = Integer.parseInt(split[2]);
@@ -146,7 +146,7 @@ public class Game implements Node {
 			rooms.put(room.user.name, room);
 			user.move(lobby, room);
 
-			return "room|Success";
+			return "room|ok";
 		}
 		
 		if(message.startsWith("list")) {
@@ -199,39 +199,39 @@ public class Game implements Node {
 				return "hold";
 			}
 			
-			return "fail|Can only list 'room' or 'data'";
+			return "fail|can only list 'room' or 'data'";
 		}
 		
 		if(message.startsWith("join")) {
 			Room room = (Room) rooms.get(split[1]);
 			
 			if(room == null)
-				return "fail|Room not found";
+				return "fail|room not found";
 			
 			if(room.lock)
-				return "fail|Room is locked";
+				return "fail|room is locked";
 			
 			if(room.users.size() == room.size)
-				return "fail|Room is full";
+				return "fail|room is full";
 			
 			user.move(user.room, room);
 			
-			return "join|Success";
+			return "join|ok";
 		}
 		
 		if(message.startsWith("lock")) {
 			if(user.room.user == null)
-				return "fail|User in lobby";
+				return "fail|user in lobby";
 			
 			if(user.room.user == user)
 				user.room.send(null, "lock");
 			
-			return "lock|Success";
+			return "lock|ok";
 		}
 		
 		if(message.startsWith("exit")) {
 			if(user.room.user == null)
-				return "fail|User in lobby";
+				return "fail|user in lobby";
 			
 			Room room = user.move(user.room, lobby);
 			
@@ -239,12 +239,12 @@ public class Game implements Node {
 				rooms.remove(room.user.name);
 			}
 			
-			return "exit|Success";
+			return "exit|ok";
 		}
 		
 		if(message.startsWith("save")) {
 			if(split[2].length() > 512) {
-				return "fail|Data to large";
+				return "fail|data to large";
 			}
 			
 			final String type = split[1];
@@ -299,7 +299,7 @@ public class Game implements Node {
 
 			if(!file.exists()) {
 				System.out.println(file);
-				event.query().put("fail", "fail|Data not found");
+				event.query().put("fail", "fail|data not found");
 			}
 
 			return "load|" + Root.file(file);
@@ -323,7 +323,7 @@ public class Game implements Node {
 			return null;
 		}
 		
-		return "fail|Method '" + split[0] + "' not found";
+		return "fail|method '" + split[0] + "' not found";
 	}
 
 	public static class User {
