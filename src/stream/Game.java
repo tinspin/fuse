@@ -342,8 +342,14 @@ public class Game implements Node {
 			this.ip[1] = event.remote();
 		}
 
-		boolean peer() {
-			return ip != null;
+		String peer(User other) {
+			if(ip != null)
+				if(other.ip != null && ip[1].equals(other.ip[1]))
+					return "|" + ip[0];
+				else
+					return "|" + ip[1];
+			
+			return "";
 		}
 		
 		Room move(Room from, Room to) throws Exception {
@@ -403,19 +409,15 @@ public class Game implements Node {
 			while(it.hasNext()) {
 				User user = (User) it.next();
 				
-				if(message.startsWith("join") && user.peer()) {
-					if(from.peer() && user.ip[1].equals(from.ip))
-						message += "|" + user.ip[0];
-					else
-						message += "|" + user.ip[1];
-				}
-				
 System.out.println(from + " " + message);
 				
-				if(from == null || !from.name.equals(user.name))
-					node.push(null, user.name, message);
+				if(message.startsWith("join")) // send every user in room to joining user
+					node.push(null, from.name, "join|" + user.name + user.peer(from));
 				
-				if(message.startsWith("drop"))
+				if(from == null || !from.name.equals(user.name)) // send message from user to room
+					node.push(null, user.name, message.startsWith("join") ? message + from.peer(user) : message);
+				
+				if(message.startsWith("drop")) // eject everyone
 					user.move(null, lobby);
 			}
 		}
