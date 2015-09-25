@@ -144,11 +144,14 @@ public class Stream {
 	 *                      -> fail|User not found
 	 *                      -> fail|Salt not found
 	 *                      -> fail|Wrong hash
+	 * peer|<192.168...>    -> peer|Success // store internal and external IP for peer-to-peer.
 	 * room|<type>|<size>   -> room|Success // make and join room
 	 *                      -> fail|User not in lobby
-	 * list                 -> list|<name>|<type>|<size>|<name>|<type>|<size>|...
+	 * list|room            -> list|<name>|<type>|<size>|<name>|<type>|<size>|...
+	 * list|data|<type>     -> list|<id>|<id>|... // use load to get data
 	 * join|<name>          -> join|Success
-	 *                     --> join|<name> // in new room
+	 *                     --> join|<name> // in new room OR
+	 *                     --> join|<name>(|<ip>) // (if peer was set)
 	 *                     --> exit|<name> // in lobby
 	 *                      -> fail|Room not found
 	 *                      -> fail|Room is locked
@@ -158,12 +161,16 @@ public class Stream {
 	 *                     --> drop|<name> // in old room when maker leaves 
 	 *                                        then room is dropped and everyone 
 	 *                                        put back in lobby
-	 *                     --> join|<name> // in lobby
+	 *                     --> join|<name>(|<ip>) // in lobby (if peer was set)
 	 *                      -> fail|User in lobby
 	 * lock                 -> lock|Success
 	 *                     --> lock|<name> // to everyone in room, can be used 
 	 *                                        to start the game
 	 *                      -> fail|User not room host
+	 * save|<type>|<json>   -> save|<key> // to update data use this key in json
+	 *                      -> fail|Data to large
+	 * load|<type>|<id>     -> load|<json> // use id from list|data|<type>
+	 *                      -> fail|Data not found
 	 * chat|<text>          -> noop
 	 *                     --> chat|<name>|<text>
 	 * data|<data>          -> noop
@@ -277,14 +284,14 @@ public class Stream {
 	}
 	
 	public string[] List(string name) {
-		string list = Send(name, "list");
+		string list = Send(name, "list|room");
 		
 		if(list.StartsWith("fail")) {
 			Console.WriteLine("List fail: " + list + ".");
 			return null;
 		}
 		
-		return list.Substring(list.IndexOf('|') + 1).Split('|');
+		return list.Substring(10).Split('|'); // from 'list|room|'
 	}
 	
 	public bool Join(string name) {

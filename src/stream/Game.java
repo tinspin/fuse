@@ -1,9 +1,11 @@
 package stream;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import se.rupy.http.Async;
@@ -38,7 +40,7 @@ public class Game implements Node {
 		if(message.startsWith("user")) {
 			Async.Work user = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					call.post("/node", "Host:fuse.rupy.se", ("json={\"name\":\"" + name + "\"}&sort=key,name&create").getBytes("utf-8"));
+					call.post("/node", "Host:" + event.query().header("host"), ("json={\"name\":\"" + name + "\"}&sort=key,name&create").getBytes("utf-8"));
 				}
 
 				public void read(String host, String body) throws Exception {
@@ -113,6 +115,7 @@ public class Game implements Node {
 				
 				if(hash.equals(md5)) {
 					User user = new User(name);
+					user.json = json;
 					users.put(user.name, user);
 					user.move(null, lobby);
 					return "auth|Success";
@@ -122,10 +125,16 @@ public class Game implements Node {
 			}
 		}
 		
-		User user = (User) users.get(name);
+		final User user = (User) users.get(name);
 		
 		if(event.query().header("host").equals("fuse.radiomesh.org") && user == null)
 			return "fail|User '" + name + "' not authorized";
+		
+		if(message.startsWith("peer")) {
+			user.peer(event, split[1]);
+
+			return "peer|Success";
+		}
 		
 		if(message.startsWith("room")) {
 			if(user.room.user != null)
@@ -141,15 +150,56 @@ public class Game implements Node {
 		}
 		
 		if(message.startsWith("list")) {
-			Iterator it = rooms.values().iterator();
-			StringBuilder builder = new StringBuilder("list");
+			String what = split[1];
 			
-			while(it.hasNext()) {
-				Room room = (Room) it.next();
-				builder.append("|" + room.user.name + "|" + room.type + "|" + room.users.size());
+			if(what.equals("room")) {
+				StringBuilder builder = new StringBuilder("list|room");
+				Iterator it = rooms.values().iterator();
+			
+				while(it.hasNext()) {
+					Room room = (Room) it.next();
+					builder.append("|" + room.user.name + "|" + room.type + "|" + room.users.size());
+				}
+				
+				return builder.toString();
 			}
 			
-			return builder.toString();
+			if(what.equals("data")) {
+				final String type = split[2];
+				
+				final int from = 0;
+				final int size = 5;
+				
+				Async.Work work = new Async.Work(event) {
+					public void send(Async.Call call) throws Exception {
+						call.get("/link/user/" + type + "/" + user.json.getString("key") + "?from=" + from + "&size=" + size, "Host:" + event.query().header("host"));
+					}
+
+					public void read(String host, String body) throws Exception {
+						StringBuilder builder = new StringBuilder("list|data");
+						final JSONObject result = (JSONObject) new JSONObject(body);
+						JSONArray list = result.getJSONArray("list");
+						
+						for(int i = 0; i < list.length(); i++) {
+							JSONObject item = list.getJSONObject(i);
+							long id = Root.hash(item.getString("key"));							
+							builder.append("|" + id);
+						}
+						
+						event.query().put("data", builder.toString());
+						event.reply().wakeup();
+					}
+
+					public void fail(String host, Exception e) throws Exception {
+						System.out.println("fuse load " + e);
+					}
+				};
+				
+				event.daemon().client().send("localhost", work, 30);
+				return "hold";
+			}
+			
+			return "fail|What can only be 'room' or 'data'";
 		}
 		
 		if(message.startsWith("join")) {
@@ -192,6 +242,68 @@ public class Game implements Node {
 			return "exit|Success";
 		}
 		
+		if(message.startsWith("save")) {
+			if(split[2].length() > 512) {
+				return "fail|Data to large";
+			}
+			
+			final String type = split[1];
+			final JSONObject json = new JSONObject(split[2]);
+			final String key = json.optString("key");
+			
+			Async.Work node = new Async.Work(event) {
+				public void send(Async.Call call) throws Exception {
+					String data = "json=" + json.toString() + "&type=" + type + "&sort=key" + (key.length() > 0 ? "" : "&create");
+					call.post("/node", "Host:" + event.query().header("host"), data.getBytes("utf-8"));
+				}
+
+				public void read(String host, final String body) throws Exception {
+					final JSONObject node = (JSONObject) new JSONObject(body);
+					
+					Async.Work link = new Async.Work(event) {
+						public void send(Async.Call call) throws Exception {
+							call.post("/link", "Host:" + event.query().header("host"), ("pkey=" + user.json.getString("key") + 
+									"&ckey=" + node.getString("key") + 
+									"&ptype=user&ctype=" + type).getBytes("utf-8"));
+						}
+
+						public void read(String host, String body) throws Exception {
+							System.out.println("fuse node " + body);
+							event.query().put("data", "save|" + node.getString("key"));
+							event.reply().wakeup();
+						}
+
+						public void fail(String host, Exception e) throws Exception {
+							System.out.println("fuse link " + e);
+						}
+					};
+
+					event.daemon().client().send(host, link, 30);
+				}
+
+				public void fail(String host, Exception e) throws Exception {
+					System.out.println("fuse save " + e);
+				}
+			};
+
+			event.daemon().client().send("localhost", node, 30);
+			return "hold";
+		}
+		
+		if(message.startsWith("load")) {
+			String type = split[1];
+			long id = Long.parseLong(split[2]);
+			
+			File file = new File(Root.home() + "/node/" + type + "/id" + Root.path(id));
+
+			if(!file.exists()) {
+				System.out.println(file);
+				event.query().put("fail", "fail|Data not found");
+			}
+
+			return "load|" + Root.file(file);
+		}
+		
 		if(message.startsWith("chat")) {
 			if(user == null)
 				lobby.send("chat|" + name + "|" + split[1]);
@@ -214,11 +326,23 @@ public class Game implements Node {
 	}
 
 	public static class User {
+		String[] ip;
+		JSONObject json;
 		String name;
 		Room room;
 		
 		User(String name) {
 			this.name = name;
+		}
+		
+		void peer(Event event, String ip) {
+			this.ip = new String[2];
+			this.ip[0] = ip;
+			this.ip[1] = event.remote();
+		}
+
+		boolean peer() {
+			return ip != null;
 		}
 		
 		Room move(Room from, Room to) throws Exception {
@@ -277,6 +401,13 @@ public class Game implements Node {
 			
 			while(it.hasNext()) {
 				User user = (User) it.next();
+				
+				if(message.startsWith("join") && user.peer()) {
+					if(from.peer() && user.ip[1].equals(from.ip))
+						message += "|" + user.ip[0];
+					else
+						message += "|" + user.ip[1];
+				}
 				
 System.out.println(from + " " + message);
 				
