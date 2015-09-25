@@ -199,7 +199,7 @@ public class Game implements Node {
 				return "hold";
 			}
 			
-			return "fail|What can only be 'room' or 'data'";
+			return "fail|Can only list 'room' or 'data'";
 		}
 		
 		if(message.startsWith("join")) {
@@ -269,7 +269,8 @@ public class Game implements Node {
 
 						public void read(String host, String body) throws Exception {
 							System.out.println("fuse node " + body);
-							event.query().put("data", "save|" + node.getString("key"));
+							String key = node.getString("key");
+							event.query().put("data", "save|" + Root.hash(key) + "|" + key);
 							event.reply().wakeup();
 						}
 

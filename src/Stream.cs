@@ -149,6 +149,7 @@ public class Stream {
 	 *                      -> fail|User not in lobby
 	 * list|room            -> list|<name>|<type>|<size>|<name>|<type>|<size>|...
 	 * list|data|<type>     -> list|<id>|<id>|... // use load to get data
+	 *                      -> fail|Can only list 'room' or 'data'
 	 * join|<name>          -> join|Success
 	 *                     --> join|<name> // in new room OR
 	 *                     --> join|<name>(|<ip>) // (if peer was set)
@@ -167,7 +168,7 @@ public class Stream {
 	 *                     --> lock|<name> // to everyone in room, can be used 
 	 *                                        to start the game
 	 *                      -> fail|User not room host
-	 * save|<type>|<json>   -> save|<key> // to update data use this key in json
+	 * save|<type>|<json>   -> save|<id>|<key> // to update data use this key in json
 	 *                      -> fail|Data to large
 	 * load|<type>|<id>     -> load|<json> // use id from list|data|<type>
 	 *                      -> fail|Data not found
