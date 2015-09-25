@@ -152,7 +152,7 @@ public class Stream {
 	 * list|data|<type>     -> list|<id>|<id>|... // use load to get data
 	 *                      -> fail|can only list 'room' or 'data'
 	 * join|<name>          -> join|ok
-	 *                     --> join|<name>(|<ip>) // in new room all to all (if peer was set)
+	 *                     --> join|<name>(|<ip>) // in new room, all to all (ip if peer was set)
 	 *                     --> exit|<name> // in lobby
 	 *                      -> fail|room not found
 	 *                      -> fail|room is locked
@@ -162,7 +162,7 @@ public class Stream {
 	 *                     --> drop|<name> // in old room when maker leaves 
 	 *                                        then room is dropped and everyone 
 	 *                                        put back in lobby
-	 *                     --> join|<name>(|<ip>) // in lobby all to all (if peer was set)
+	 *                     --> join|<name>(|<ip>) // in lobby, all to all (ip if peer was set)
 	 *                      -> fail|user in lobby
 	 * lock                 -> lock|ok
 	 *                     --> lock|<name> // to everyone in room, can be used 
