@@ -132,7 +132,7 @@ public class Stream {
 		}
 	}
 	
-	/* Protocol:           --> double arrow = broadcast
+	/* Protocol:           --> double arrow = broadcast to Receive()
 	 *                      -> single arrow = direct return
 	 *
 	 * Send()                  Return;
