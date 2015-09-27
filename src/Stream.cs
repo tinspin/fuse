@@ -132,10 +132,8 @@ public class Stream {
 		}
 	}
 	
-	/* Protocol:           --> double arrow = broadcast to Receive()
-	 *                      -> single arrow = direct return
-	 *
-	 * Send()                  Return;
+	/* Protocol:           --> = broadcast to Receive()
+	 *                      -> = direct return on Send()
 	 *
 	 * user                 -> user|<key>
 	 *                      -> fail|<name> contains bad characters

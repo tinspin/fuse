@@ -199,7 +199,15 @@ public class Server extends Service implements Node, Runnable {
 					String message = (String) queue.poll();
 
 					while(message != null) {
-						out.write((message + "\n").getBytes());
+						String accept = queue.event.query().header("accept");
+						
+						if(accept != null && accept.equals("text/event-stream")) {
+							out.print("data: " + message + "\n\n");
+						}
+						else {
+							out.write((message + "\n").getBytes());
+						}
+						
 						message = (String) queue.poll();
 					}
 
