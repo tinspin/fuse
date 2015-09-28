@@ -930,7 +930,31 @@ public class Daemon implements Runnable {
 
 		return false;
 	}
+	
+	/**
+	 * Overwrite dynamic cluster IP range.
+	 * @param ip
+	 * @param from inclusive
+	 * @param to exclusive
+	 * @return success
+	 */
+	public boolean set(String ip, int from, int to) {
+		try {
+			secure();
+			
+			for(int i = from; i < to; i++) {
+				Root.ip[i] = ip;
+			}
+			
+			return true;
+		}
+		catch(Exception e) {
+			// if passport could not be created
+		}
 
+		return false;
+	}
+	
 	/**
 	 * Send inter-cluster-node UDP multicast message.
 	 * @param tail your payload.

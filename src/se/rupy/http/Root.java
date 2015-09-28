@@ -79,6 +79,18 @@ public class Root extends Service {
 		}
 	}
 
+	public static String[] getIp() {
+		return ip;
+	}
+	
+	public static String[] getHost() {
+		return host;
+	}
+	
+	public static String getLocal() {
+		return local;
+	}
+	
 	static String type(String[] type, String name, int selected) {
 		StringBuilder select = new StringBuilder("<select id=\"type\" name=\"" + name + "\">");
 
@@ -152,7 +164,7 @@ public class Root extends Service {
 			return "app/" + archive.host() + "/root";
 		}
 		else {
-			throw new Exception("Home could not be found.");
+			throw new Exception("Home could not be found. (" + loader + ")");
 		}
 	}
 

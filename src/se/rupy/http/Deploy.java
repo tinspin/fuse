@@ -274,18 +274,27 @@ public class Deploy extends Service {
 				permissions.add(new FilePermission(path + "-", "write"));
 				permissions.add(new FilePermission(path + "-", "delete"));
 				permissions.add(new FilePermission("res" + File.separator + "-", "read"));
+				permissions.add(new PropertyPermission("host", "read"));
 				permissions.add(new PropertyPermission("user.dir", "read"));
 				permissions.add(new PropertyPermission("java.version", "read"));
-				permissions.add(new PropertyPermission("host", "read"));
-				permissions.add(new RuntimePermission("accessDeclaredMembers"));
 				permissions.add(new RuntimePermission("getClassLoader"));
 				permissions.add(new RuntimePermission("getStackTrace"));
 
 				if(daemon.domain.equals("host.rupy.se")) {
-					if(host.equals("root.rupy.se")) { // Nasty hardcode, but it will go away with SSD metrics file API.
+					/* These projects require unsecure features.
+					 */
+					if(host.equals("root.rupy.se")) {
 						try {
 							permissions.add(new LinkPermission("hard"));
 							permissions.add(new LinkPermission("symbolic"));
+						}
+						catch(Error e) {}
+					}
+					
+					if(host.equals("bank.rupy.se") || host.equals("www.bitcoinbankbook.com")) {
+						try {
+							permissions.add(new RuntimePermission("accessDeclaredMembers"));
+							permissions.add(new ReflectPermission("suppressAccessChecks"));
 						}
 						catch(Error e) {}
 					}

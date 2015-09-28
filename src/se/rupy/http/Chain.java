@@ -105,7 +105,22 @@ public class Chain extends LinkedList {
 						Thread.currentThread().setContextClassLoader(archive);
 					}
 					catch(AccessControlException e) {
+						// TODO: Seems this can fail sometimes without recursive!
+						/*
+						java.lang.Exception: Home could not be found.
+				        at se.rupy.http.Root.home(Root.java:155)
+				        at se.rupy.http.Root.exists(Root.java:358)
+				        at se.rupy.http.Root.sync(Root.java:320)
+				        at se.rupy.http.Root$Node.async(Root.java:1368)
+				        at se.rupy.http.Root$Node.filter(Root.java:1355)
+				        at se.rupy.http.Chain.filter(Chain.java:112)
+				        at se.rupy.http.Event.service(Event.java:409)
+				        at se.rupy.http.Event.read(Event.java:270)
+				        at se.rupy.http.Worker.run(Worker.java:195)
+				        at java.lang.Thread.run(Thread.java:744
+				        */
 						// recursive chaining fails here, no worries! ;)
+						System.out.println(e.getMessage());
 					}
 				}
 
