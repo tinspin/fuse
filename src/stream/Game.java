@@ -311,7 +311,7 @@ public class Game implements Node {
 			else
 				user.room.send("chat|" + name + "|" + split[1]);
 			
-			return null;
+			return "chat|done";
 		}
 		
 		if(message.startsWith("move")) {
@@ -320,7 +320,7 @@ public class Game implements Node {
 			else
 				user.room.send(user, "move|" + name + "|" + split[1]);
 			
-			return null;
+			return "move|done";
 		}
 		
 		return "main|fail|type '" + split[0] + "' not found";

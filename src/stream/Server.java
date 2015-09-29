@@ -168,13 +168,7 @@ public class Server extends Service implements Node, Runnable {
 				String message = event.string("message");
 				String response = node.push(event, name, message);
 
-				if(response == null) {
-					event.reply().output(4).print("noop");
-				}
-				else if(response.equals("hold")) {
-					// event.hold();
-				}
-				else {
+				if(!response.equals("hold")) {
 					byte[] data = response.getBytes("UTF-8");
 					event.reply().output(data.length).write(data);
 				}

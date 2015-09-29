@@ -135,6 +135,8 @@ public class Stream {
 	/* Protocol:           --> = broadcast to Receive()
 	 *                      -> = direct return on Send()
 	 *
+	 * In sort of chronological order:
+	 * 
 	 * <type>                 <echo>
 	 *
 	 *  -> main|fail|name missing
@@ -150,6 +152,8 @@ public class Stream {
 	 *                      -> user|fail|user not found
 	 *                      -> user|fail|salt not found
 	 *                      -> user|fail|wrong hash
+	 *
+	 *                      <> = here you should call Connect()
 	 *
 	 *  -> main|fail|user '<name>' not authorized
 	 *
