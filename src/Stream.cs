@@ -170,7 +170,7 @@ public class Stream {
 	 *
 	 *                      // join room
 	 *  room|<name>         -> room|done
-	 *                     --> come|<name>(|<ip>)           // in new room, all to all (ip if peer was set)
+	 *                     --> here|<name>(|<ip>)           // in new room, all to all (ip if peer was set)
 	 *                     --> away|<name>                  // in lobby
 	 *                      -> room|fail|room not found
 	 *                      -> room|fail|room is locked
@@ -178,9 +178,9 @@ public class Stream {
 	 *
 	 *                      // exit room
 	 *  exit                -> exit|done
-	 *                     --> come|<name>(|<ip>)           // in lobby, all to all (ip if peer was set)
+	 *                     --> here|<name>(|<ip>)           // in lobby, all to all (ip if peer was set)
 	 *                     --> away|<name>                  // in old room OR
-	 *                     --> drop|<name>                  // in old room when maker leaves 
+	 *                     --> stop|<name>                  // in old room when maker leaves 
 	 *                                                         then room is dropped and everyone 
 	 *                                                         put back in lobby
 	 *                      -> exit|fail|user in lobby
@@ -199,15 +199,21 @@ public class Stream {
 	 *
 	 *                      // chat anywhere
 	 *  chat|<text>         -> chat|done
-	 *                     --> talk|<name>|<text>
+	 *                     --> text|<name>|<text>
 	 *
 	 *                      // real-time gameplay packets
 	 *  move|<data>         -> move|done
-	 *                     --> sent|<name>|<data>
+	 *                     --> data|<name>|<data>
 	 *                      // <data> = <x>&<y>&<z>|<x>&<y>&<z>&<w>|<action>(|<speed>|...)
 	 *                      //          position   |orientation    |key/button
 	 *
 	 *  -> main|fail|type '<type>' not found
+	 *
+	 * <soon>
+	 *
+	 *  pick // select card
+	 *  pull // load cards
+	 *  push // show new cards
 	 */
 
 	// ------------- EXAMPLE USAGE -------------

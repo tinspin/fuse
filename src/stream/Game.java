@@ -224,7 +224,7 @@ public class Game implements Node {
 				return "lock|fail|user in lobby";
 			
 			if(user.room.user == user)
-				user.room.send(null, "lock");
+				user.room.send(null, "link");
 			
 			return "lock|done";
 		}
@@ -359,7 +359,7 @@ public class Game implements Node {
 				from.remove(this);
 				
 				if(from.user != null && from.user.name.equals(name)) {
-					from.send("drop|" + name);
+					from.send("stop|" + name);
 					from.clear();
 					
 					drop = from;
@@ -372,7 +372,7 @@ public class Game implements Node {
 				this.room = to;
 			
 				to.add(this);
-				to.send(this, "come|" + name);
+				to.send(this, "here|" + name);
 			}
 			
 			return drop;
@@ -411,13 +411,13 @@ public class Game implements Node {
 				
 System.out.println(from + " " + message);
 				
-				if(message.startsWith("come")) // send every user in room to joining user
-					node.push(null, from.name, "come|" + user.name + user.peer(from));
+				if(message.startsWith("here")) // send every user in room to joining user
+					node.push(null, from.name, "here|" + user.name + user.peer(from));
 				
 				if(from == null || !from.name.equals(user.name)) // send message from user to room
-					node.push(null, user.name, message.startsWith("come") ? message + from.peer(user) : message);
+					node.push(null, user.name, message.startsWith("here") ? message + from.peer(user) : message);
 				
-				if(message.startsWith("drop")) // eject everyone
+				if(message.startsWith("stop")) // eject everyone
 					user.move(null, lobby);
 			}
 		}
