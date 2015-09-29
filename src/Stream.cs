@@ -211,8 +211,8 @@ public class Stream {
 	 *
 	 * <soon>
 	 *
-	 *  pick // select card
 	 *  pull // load cards
+	 *  pick // select card
 	 *  push // show new cards
 	 */
 
