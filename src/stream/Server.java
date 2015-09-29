@@ -147,7 +147,7 @@ public class Server extends Service implements Node, Runnable {
 			event.query().parse();
 			
 			if(event.push()) {
-				String data = event.query().string("data", null);
+				String data = event.query().string("done", null);
 				String fail = event.query().string("fail", null);
 
 				if(data != null || fail != null) {
@@ -159,7 +159,7 @@ public class Server extends Service implements Node, Runnable {
 					out.finish();
 					out.flush();
 					
-					event.query().put("data", null);
+					event.query().put("done", null);
 					event.query().put("fail", null);
 				}
 			}

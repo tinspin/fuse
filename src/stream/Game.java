@@ -33,11 +33,11 @@ public class Game implements Node {
 		System.err.println(name + " " + message);
 
 		if(name.length() == 0)
-			return "fail|name missing";
+			return "main|fail|name missing";
 		
 		String[] split = message.split("\\|");
 		
-		if(message.startsWith("user")) {
+		if(message.startsWith("join")) {
 			Async.Work user = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.post("/node", "Host:" + event.query().header("host"), ("json={\"name\":\"" + name + "\"}&sort=key,name&create").getBytes("utf-8"));
@@ -52,7 +52,7 @@ public class Game implements Node {
 						System.out.println("Validation " + message);
 						
 						if(message.startsWith("name"))
-							event.query().put("fail", "fail|" + message.substring(message.indexOf("=") + 1) + " contains bad characters");
+							event.query().put("fail", "join|fail|" + message.substring(message.indexOf("=") + 1) + " contains bad characters");
 					}
 					else if(body.indexOf("Collision") > 0) {
 						String message = body.substring(body.indexOf("[") + 1, body.indexOf("]"));
@@ -60,14 +60,14 @@ public class Game implements Node {
 						System.out.println("Collision " + message);
 						
 						if(message.startsWith("name"))
-							event.query().put("fail", "fail|" + message.substring(message.indexOf("=") + 1) + " already registered");
+							event.query().put("fail", "join|fail|" + message.substring(message.indexOf("=") + 1) + " already registered");
 					}
 					else {
 						JSONObject user = new JSONObject(body);
 
 						String key = user.getString("key");
 
-						event.query().put("data", "user|" + key);
+						event.query().put("done", "join|done|" + key);
 					}
 					
 					event.reply().wakeup();
@@ -86,10 +86,10 @@ public class Game implements Node {
 		if(message.startsWith("salt")) {
 			String salt = Event.random(8);
 			salts.put(salt, "");
-			return "salt|" + salt;
+			return "salt|done|" + salt;
 		}
 
-		if(message.startsWith("auth")) {
+		if(message.startsWith("user")) {
 			String salt = split[1];
 			String hash = split[2].toLowerCase();
 			
@@ -98,13 +98,13 @@ public class Game implements Node {
 
 				if(!file.exists()) {
 					System.out.println(file);
-					return "fail|user not found.";
+					return "user|fail|user not found.";
 				}
 
 				JSONObject json = new JSONObject(Root.file(file));
 
 				if(salts.remove(salt) == null) {
-					return "fail|salt not found";
+					return "user|fail|salt not found";
 				}
 				
 				String md5 = Deploy.hash(json.getString("key") + salt, "MD5");
@@ -118,27 +118,27 @@ public class Game implements Node {
 					user.json = json;
 					users.put(user.name, user);
 					user.move(null, lobby);
-					return "auth|ok";
+					return "user|done";
 				}
 				else
-					return "fail|wrong hash";
+					return "user|fail|wrong hash";
 			}
 		}
 		
 		final User user = (User) users.get(name);
 		
 		if(event.query().header("host").equals("fuse.radiomesh.org") && user == null)
-			return "fail|user '" + name + "' not authorized";
+			return "main|fail|user '" + name + "' not authorized";
 		
 		if(message.startsWith("peer")) {
 			user.peer(event, split[1]);
 
-			return "peer|ok";
+			return "peer|done";
 		}
 		
-		if(message.startsWith("room")) {
+		if(message.startsWith("host")) {
 			if(user.room.user != null)
-				return "fail|user not in lobby";
+				return "host|fail|user not in lobby";
 
 			String type = split[1];
 			int size = Integer.parseInt(split[2]);
@@ -146,19 +146,19 @@ public class Game implements Node {
 			rooms.put(room.user.name, room);
 			user.move(lobby, room);
 
-			return "room|ok";
+			return "host|done";
 		}
 		
 		if(message.startsWith("list")) {
 			String what = split[1];
 			
 			if(what.equals("room")) {
-				StringBuilder builder = new StringBuilder("list|room");
+				StringBuilder builder = new StringBuilder("list|room|done");
 				Iterator it = rooms.values().iterator();
 			
 				while(it.hasNext()) {
 					Room room = (Room) it.next();
-					builder.append("|" + room.user.name + "|" + room.type + "|" + room.users.size());
+					builder.append("|" + room.user.name + "&" + room.type + "&" + room.users.size());
 				}
 				
 				return builder.toString();
@@ -176,7 +176,7 @@ public class Game implements Node {
 					}
 
 					public void read(String host, String body) throws Exception {
-						StringBuilder builder = new StringBuilder("list|data");
+						StringBuilder builder = new StringBuilder("list|data|done");
 						final JSONObject result = (JSONObject) new JSONObject(body);
 						JSONArray list = result.getJSONArray("list");
 						
@@ -186,7 +186,7 @@ public class Game implements Node {
 							builder.append("|" + id);
 						}
 						
-						event.query().put("data", builder.toString());
+						event.query().put("done", builder.toString());
 						event.reply().wakeup();
 					}
 
@@ -199,39 +199,39 @@ public class Game implements Node {
 				return "hold";
 			}
 			
-			return "fail|can only list 'room' or 'data'";
+			return "list|fail|can only list 'room' or 'data'";
 		}
 		
-		if(message.startsWith("join")) {
+		if(message.startsWith("room")) {
 			Room room = (Room) rooms.get(split[1]);
 			
 			if(room == null)
-				return "fail|room not found";
+				return "room|fail|room not found";
 			
 			if(room.lock)
-				return "fail|room is locked";
+				return "room|fail|room is locked";
 			
 			if(room.users.size() == room.size)
-				return "fail|room is full";
+				return "room|fail|room is full";
 			
 			user.move(user.room, room);
 			
-			return "join|ok";
+			return "room|done";
 		}
 		
 		if(message.startsWith("lock")) {
 			if(user.room.user == null)
-				return "fail|user in lobby";
+				return "lock|fail|user in lobby";
 			
 			if(user.room.user == user)
 				user.room.send(null, "lock");
 			
-			return "lock|ok";
+			return "lock|done";
 		}
 		
 		if(message.startsWith("exit")) {
 			if(user.room.user == null)
-				return "fail|user in lobby";
+				return "exit|fail|user in lobby";
 			
 			Room room = user.move(user.room, lobby);
 			
@@ -239,12 +239,12 @@ public class Game implements Node {
 				rooms.remove(room.user.name);
 			}
 			
-			return "exit|ok";
+			return "exit|done";
 		}
 		
 		if(message.startsWith("save")) {
 			if(split[2].length() > 512) {
-				return "fail|data to large";
+				return "save|fail|data too large";
 			}
 			
 			final String type = split[1];
@@ -270,7 +270,7 @@ public class Game implements Node {
 						public void read(String host, String body) throws Exception {
 							System.out.println("fuse node " + body);
 							String key = node.getString("key");
-							event.query().put("data", "save|" + Root.hash(key) + "|" + key);
+							event.query().put("done", "save|done|" + Root.hash(key) + "|" + key);
 							event.reply().wakeup();
 						}
 
@@ -299,10 +299,10 @@ public class Game implements Node {
 
 			if(!file.exists()) {
 				System.out.println(file);
-				event.query().put("fail", "fail|data not found");
+				event.query().put("fail", "load|fail|data not found");
 			}
 
-			return "load|" + Root.file(file);
+			return "load|done|" + Root.file(file);
 		}
 		
 		if(message.startsWith("chat")) {
@@ -314,16 +314,16 @@ public class Game implements Node {
 			return null;
 		}
 		
-		if(message.startsWith("data")) {
+		if(message.startsWith("move")) {
 			if(user == null)
-				lobby.send("data|" + name + "|" + split[1]);
+				lobby.send("move|" + name + "|" + split[1]);
 			else
-				user.room.send(user, "data|" + name + "|" + split[1]);
+				user.room.send(user, "move|" + name + "|" + split[1]);
 			
 			return null;
 		}
 		
-		return "fail|method '" + split[0] + "' not found";
+		return "main|fail|type '" + split[0] + "' not found";
 	}
 
 	public static class User {
@@ -365,14 +365,14 @@ public class Game implements Node {
 					drop = from;
 				}
 				else
-					from.send("exit|" + name);
+					from.send("away|" + name);
 			}
 			
 			if(to != null) {
 				this.room = to;
 			
 				to.add(this);
-				to.send(this, "join|" + name);
+				to.send(this, "come|" + name);
 			}
 			
 			return drop;
@@ -411,11 +411,11 @@ public class Game implements Node {
 				
 System.out.println(from + " " + message);
 				
-				if(message.startsWith("join")) // send every user in room to joining user
-					node.push(null, from.name, "join|" + user.name + user.peer(from));
+				if(message.startsWith("come")) // send every user in room to joining user
+					node.push(null, from.name, "come|" + user.name + user.peer(from));
 				
 				if(from == null || !from.name.equals(user.name)) // send message from user to room
-					node.push(null, user.name, message.startsWith("join") ? message + from.peer(user) : message);
+					node.push(null, user.name, message.startsWith("come") ? message + from.peer(user) : message);
 				
 				if(message.startsWith("drop")) // eject everyone
 					user.move(null, lobby);

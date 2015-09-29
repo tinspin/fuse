@@ -14,11 +14,11 @@ using System.Text;
 public class Stream {
 	public string host = "fuse.rupy.se";
 	public int port = 80;
-	
+
 	private Queue<string> queue;
 	private Socket pull, push;
 	private bool connected;
-	
+
 	private class State {
 		public Socket socket = null;
 		public const int size = 32768;
@@ -27,88 +27,88 @@ public class Stream {
 
 	public Stream() {
 		bool policy = true;
-		
+
 		//policy = Security.PrefetchSocketPolicy(host, port); // policy ###
-		
+
 		if(!policy)
 			throw new Exception("Policy (" + host + ":" + port + ") failed.");
 
 		IPAddress address = Dns.Resolve(host).AddressList[0];
 		IPEndPoint remote = new IPEndPoint(address, port);
-		
+
 		//Console.WriteLine("Address: " + address + ".");
-		
+
 		push = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		push.NoDelay = true;
 		push.Connect(remote);
 	}
-	
+
 	public void Connect(string name) {
 		queue = new Queue<string>();
-	
+
 		IPAddress address = Dns.Resolve(host).AddressList[0];
 		IPEndPoint remote = new IPEndPoint(address, port);
-	
+
 		pull = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		pull.NoDelay = true;
 		pull.Connect(remote);
-		
+
 		String data = "GET /pull?name=" + name + " HTTP/1.1\r\n"
-				    + "Host: " + host + "\r\n"
-					+ "Head: less\r\n\r\n"; // enables TCP no delay
-					
+				+ "Host: " + host + "\r\n"
+				+ "Head: less\r\n\r\n"; // enables TCP no delay
+
 		pull.Send(Encoding.ASCII.GetBytes(data));
-		
+
 		State state = new State();
 		state.socket = pull;
-		
+
 		pull.BeginReceive(state.data, 0, State.size, 0, new AsyncCallback(Callback), state);
-		
+
 		connected = true;
 	}
-	
+
 	public string Send(String name, String message) {
 		byte[] data = new byte[1024];
 		String text = "POST /push HTTP/1.1\r\n"
-				    + "Host: " + host + "\r\n"
-					+ "Head: less\r\n\r\n" // enables TCP no delay
-					+ "name=" + name + "&message=" + message;
-		
+				+ "Host: " + host + "\r\n"
+				+ "Head: less\r\n\r\n" // enables TCP no delay
+				+ "name=" + name + "&message=" + message;
+
 		push.Send(Encoding.ASCII.GetBytes(text));
 		int read = push.Receive(data);
 		text = Encoding.ASCII.GetString(data, 0, read);
-		
+
 		//Console.WriteLine("Read: " + read + ".");
 		//Console.WriteLine("Text: " + text + ".");
-		
+
 		string[] split = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
 		return split[2];
 	}
-	
+
 	public string[] Receive() {
 		if(!connected)
 			return null;
-		
+
 		lock(queue) {
 			if(queue.Count > 0) {
 				string[] messages = new string[queue.Count];
-				
+
 				for(int i = 0; i < messages.Length; i++) {
 					messages[i] = queue.Dequeue();
 				}
-				
+
 				return messages;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	private void Callback(IAsyncResult ar) {
 		try {
 			State state = (State) ar.AsyncState;
 			int read = state.socket.EndReceive(ar);
-			
+
 			if(read > 0) {
 				string text = Encoding.ASCII.GetString(state.data, 0, read);
 				string[] split = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
@@ -124,86 +124,123 @@ public class Stream {
 						}
 					}
 				}
-				
+
 				state.socket.BeginReceive(state.data, 0, State.size, 0, new AsyncCallback(Callback), state);
 			}
 		} catch (Exception e) {
 			Console.WriteLine(e.ToString());
 		}
 	}
-	
+
 	/* Protocol:           --> = broadcast to Receive()
 	 *                      -> = direct return on Send()
 	 *
-	 * user                 -> user|<key>
-	 *                      -> fail|<name> contains bad characters
-	 *                      -> fail|<name> already registered
-	 * salt                 -> salt|<salt>
-	 * auth|<salt>|<hash>   -> auth|ok
-	 *                      -> fail|user not found
-	 *                      -> fail|salt not found
-	 *                      -> fail|wrong hash
-	 * peer|<192.168...>    -> peer|ok // store internal and external IP for peer-to-peer.
-	 * room|<type>|<size>   -> room|ok // make and join room
-	 *                      -> fail|user not in lobby
-	 * list|room            -> list|<name>|<type>|<size>|<name>|<type>|<size>|...
-	 * list|data|<type>     -> list|<id>|<id>|... // use load to get data
-	 *                      -> fail|can only list 'room' or 'data'
-	 * join|<name>          -> join|ok
-	 *                     --> join|<name>(|<ip>) // in new room, all to all (ip if peer was set)
-	 *                     --> exit|<name> // in lobby
-	 *                      -> fail|room not found
-	 *                      -> fail|room is locked
-	 *                      -> fail|room is full
-	 * exit                 -> exit|ok
-	 *                     --> exit|<name> // in old room OR
+	 * <type>                 <echo>
+	 *
+	 *  -> main|fail|name missing
+	 *
+	 *                      // register new user
+	 *  join                -> join|done|<key>
+	 *                      -> join|fail|<name> contains bad characters
+	 *                      -> join|fail|<name> already registered
+	 *
+	 *                      // login old user
+	 *  salt                -> salt|done|<salt>
+	 *  user|<salt>|<hash>  -> user|done
+	 *                      -> user|fail|user not found
+	 *                      -> user|fail|salt not found
+	 *                      -> user|fail|wrong hash
+	 *
+	 *  -> main|fail|user '<name>' not authorized
+	 *
+	 *  ally|<name>         -> ally|done
+	 *                      -> ally|fail|user not found
+	 *
+	 *                      // enable peer-to-peer
+	 *  peer|<192.168...>   -> peer|done // send the internal IP
+	 *
+	 *                      // host room
+	 *  host|<type>|<size>  -> host|done
+	 *                      -> host|fail|user not in lobby
+	 *
+	 *                      // list rooms or data
+	 *  list|room           -> list|room|done|<name>&<type>&<size>|<name>&<type>&<size>|...
+	 *  list|data|<type>    -> list|data|done|<id>|<id>|... // use load to get data
+	 *                      -> list|fail|can only list 'room' or 'data'
+	 *
+	 *                      // join room
+	 *  room|<name>         -> room|done
+	 *                     --> come|<name>(|<ip>) // in new room, all to all (ip if peer was set)
+	 *                     --> away|<name> // in lobby
+	 *                      -> room|fail|room not found
+	 *                      -> room|fail|room is locked
+	 *                      -> room|fail|room is full
+	 *
+	 *                      // exit room
+	 *  exit                -> exit|done
+	 *                     --> come|<name>(|<ip>) // in lobby, all to all (ip if peer was set)
+	 *                     --> away|<name> // in old room OR
 	 *                     --> drop|<name> // in old room when maker leaves 
 	 *                                        then room is dropped and everyone 
 	 *                                        put back in lobby
-	 *                     --> join|<name>(|<ip>) // in lobby, all to all (ip if peer was set)
-	 *                      -> fail|user in lobby
-	 * lock                 -> lock|ok
-	 *                     --> lock|<name> // to everyone in room, can be used 
+	 *                      -> exit|fail|user in lobby
+	 *
+	 *                      // lock room before the game starts
+	 *  lock                -> lock|done
+	 *                     --> link|<name> // to everyone in room, can be used 
 	 *                                        to start the game
-	 *                      -> fail|user not room host
-	 * save|<type>|<json>   -> save|<id>|<key> // to update data use this key in json
-	 *                      -> fail|data to large
-	 * load|<type>|<id>     -> load|<json> // use id from list|data|<type>
-	 *                      -> fail|data not found
-	 * chat|<text>          -> noop
-	 *                     --> chat|<name>|<text>
-	 * data|<data>          -> noop
-	 *                     --> data|<name>|<data>
+	 *                      -> lock|fail|user not room host
+	 *
+	 *                      // insert and select data
+	 *  save|<type>|<json>  -> save|done|<id>|<key> // to update data use this key in json
+	 *                      -> save|fail|data too large
+	 *  load|<type>|<id>    -> load|done|<json> // use id from list|data|<type>
+	 *                      -> load|fail|data not found
+	 *
+	 *                      // chat anywhere
+	 *  chat|<text>         -> chat|done
+	 *                     --> talk|<name>|<text>
+	 *
+	 *                      // real-time gameplay packets
+	 *  move|<data>         -> move|done
+	 *                     --> sent|<name>|<data>
+	 *                      // <data> = <x>&<y>&<z>|<x>&<y>&<z>&<w>|<action>|<velocity>
+	 *
+	 *                      // position & orientation = _where_ it's happening
+	 *                      // action =                 _what_ is happening
+	 *                      // velocity =               _how_ it's happening
+	 *
+	 *  -> main|fail|type '<type>' not found
 	 */
-	
+
 	// ------------- EXAMPLE USAGE -------------
-	
+
 	public static void Main() {
 		try {
 			string name = "two";
 			Stream stream = new Stream();
-			
+
 			// if no key is stored try
-			
-			//string key = stream.User(name);
-			
+
+			//string key = stream.Join(name);
+
 			//   then store name and key
 			// otherwise
 			//   get name and key
-			
+
 			string key = "SFwPWQLZcBAES7BZ";
-			
+
 			bool success = false;
-		
+
 			if(key != null) {
-				success = stream.Auth(name, key);
+				success = stream.User(name, key);
 			}
-			
+
 			if(success) {
 				// this will allow you to Stream.Receive();
 				// from MonoBehaviour.Update();
 				stream.Connect(name); 
-		
+
 				// remove in unity ###
 				Thread.Sleep(100);
 				Alpha alpha = new Alpha(stream);
@@ -211,28 +248,30 @@ public class Stream {
 				thread.Start();
 				Thread.Sleep(500);
 				// remove
-		
+
 				stream.Chat(name, "hello");
-				
+
 				Thread.Sleep(500);
-				
-				Console.WriteLine("Room: " + stream.Room(name, "race", 4));
-				
+
+				Console.WriteLine("Host: " + stream.Host(name, "race", 4));
+
 				Thread.Sleep(500);
-				
-				string[] list = stream.List(name);
-				
-				Console.WriteLine("List: " + list.Length / 3);
-				
-				for(int i = 0; i < list.Length; i+=3) {
-					Console.WriteLine(list[i] + " " + list[i + 1] + " (" + list[i + 2] + ")");
+
+				string[] list = stream.ListRoom(name);
+
+				Console.WriteLine("List: " + list.Length);
+
+				for(int i = 0; i < list.Length; i++) {
+					string[] room = list[i].Split('&');
+
+					Console.WriteLine(room[0] + " " + room[1] + " (" + room[2] + ")");
 				}
-				
+
 				Thread.Sleep(500);
-				
+
 				stream.Chat(name, "hello");
 			}
-			
+
 			Console.WriteLine("Login: " + success + ".");
 		}
 		catch(Exception e) {
@@ -240,93 +279,93 @@ public class Stream {
 		}
 	}
 
-	public string User(string name) {
-		string[] user = Send(name, "user").Split('|');
+	public string Join(string name) {
+		string[] join = Send(name, "user").Split('|');
 
-		if(user[0].Equals("fail")) {
-			if(user[1].IndexOf("bad") > 0) {
+		if(join[1].Equals("fail")) {
+			if(join[2].IndexOf("bad") > 0) {
 				// limit characters to alpha numeric.
 			}
-			else if(user[1].IndexOf("already") > 0) {
+			else if(join[2].IndexOf("already") > 0) {
 				// prompt for other name.
 			}
-			
-			Console.WriteLine("User fail: " + user[1] + ".");
+
+			Console.WriteLine("User fail: " + join[2] + ".");
 			return null;
 		}
-		
-		return user[1];
+
+		return join[2];
 	}
-	
-	public bool Auth(string name, string key) {
-		string salt = Send(name, "salt").Split('|')[1];
+
+	public bool User(string name, string key) {
+		string salt = Send(name, "salt").Split('|')[2];
 		string hash = MD5(key + salt);
-		string[] auth = Send(name, "auth|" + salt + "|" + hash).Split('|');
-		
-		if(auth[0].Equals("fail")) {
-			Console.WriteLine("Auth fail: " + auth[1] + ".");
+		string[] user = Send(name, "user|" + salt + "|" + hash).Split('|');
+
+		if(user[1].Equals("fail")) {
+			Console.WriteLine("User fail: " + user[2] + ".");
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	public bool Room(string name, String type, int size) {
-		string[] room = Send(name, "room|" + type + "|" + size).Split('|');
-		
-		if(room[0].Equals("fail")) {
-			Console.WriteLine("Room fail: " + room[1] + ".");
+
+	public bool Host(string name, String type, int size) {
+		string[] host = Send(name, "host|" + type + "|" + size).Split('|');
+
+		if(host[1].Equals("fail")) {
+			Console.WriteLine("Room fail: " + host[2] + ".");
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	public string[] List(string name) {
+
+	public string[] ListRoom(string name) {
 		string list = Send(name, "list|room");
-		
-		if(list.StartsWith("fail")) {
+
+		if(list.StartsWith("list|fail")) {
 			Console.WriteLine("List fail: " + list + ".");
 			return null;
 		}
-		
-		return list.Substring(10).Split('|'); // from 'list|room|'
+
+		return list.Substring(15).Split('|'); // from 'list|room|done|'
 	}
-	
-	public bool Join(string name) {
-		string[] join = Send(name, "join").Split('|');
-		
-		if(join[0].Equals("fail")) {
-			Console.WriteLine("Join fail: " + join[1] + ".");
+
+	public bool Room(string name, string which) {
+		string[] room = Send(name, "room|" + which).Split('|');
+
+		if(room[1].Equals("fail")) {
+			Console.WriteLine("Room fail: " + room[2] + ".");
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	public bool Exit(string name) {
 		string[] exit = Send(name, "exit").Split('|');
-		
-		if(exit[0].Equals("fail")) {
-			Console.WriteLine("Exit fail: " + exit[1] + ".");
+
+		if(exit[1].Equals("fail")) {
+			Console.WriteLine("Exit fail: " + exit[2] + ".");
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	public void Lock(string name, string text) {
 		Send(name, "lock");
 	}
-	
+
 	public void Chat(string name, string text) {
 		Send(name, "chat|" + text);
 	}
-	
+
 	public void Data(string name, string data) {
 		Send(name, "data|" + data);
 	}
-	
+
 	public static string MD5(string input) {
 		MD5 md5 = System.Security.Cryptography.MD5.Create();
 		byte[] bytes = Encoding.ASCII.GetBytes(input);
@@ -347,7 +386,7 @@ public class Alpha {
 	public void Beta() {
 		while(true) {
 			string[] received = stream.Receive();
-			
+
 			if(received != null) {
 				for(int i = 0; i < received.Length; i++) {
 					Console.WriteLine("Received: " + received[i] + ".");
