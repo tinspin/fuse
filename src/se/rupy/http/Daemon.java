@@ -377,7 +377,6 @@ public class Daemon implements Runnable {
 			PermissionCollection permissions = new Permissions();
 			permissions.add(new PropertyPermission("host", "read"));
 			permissions.add(new SocketPermission("*", "resolve,connect"));
-			permissions.add(new FilePermission("/-", "read"));
 			
 			control = new AccessControlContext(new ProtectionDomain[] {
 					new ProtectionDomain(null, permissions)});
