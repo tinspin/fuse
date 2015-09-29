@@ -283,7 +283,7 @@ public class Stream {
 	}
 
 	public string Join(string name) {
-		string[] join = Send(name, "user").Split('|');
+		string[] join = Send(name, "join").Split('|');
 
 		if(join[1].Equals("fail")) {
 			if(join[2].IndexOf("bad") > 0) {
