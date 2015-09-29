@@ -163,7 +163,8 @@ public class Game implements Node {
 			
 				while(it.hasNext()) {
 					Room room = (Room) it.next();
-					builder.append("|" + room.user.name + "&" + room.type + "&" + room.users.size());
+					
+					builder.append("|" + room.user.name + "+" + room.type + "+" + room.users.size());
 				}
 				
 				return builder.toString();

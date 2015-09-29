@@ -172,8 +172,8 @@ public class Stream {
 	 *                      -> host|fail|user not in lobby
 	 *
 	 *                      // list rooms or data
-	 *  list|room           -> list|room|done|<name>&<type>&<size>|<name>&<type>&<size>|...
-	 *  list|data|<type>    -> list|data|done|<id>|<id>|... // use load to get data
+	 *  list|room           -> list|room|done|<name>+<type>+<size>|...
+	 *  list|data|<type>    -> list|data|done|<id>|...      // use load to get data
 	 *                      -> list|fail|can only list 'room' or 'data'
 	 *
 	 *                      // join room
@@ -212,7 +212,7 @@ public class Stream {
 	 *                      // real-time gameplay packets
 	 *  move|<data>         -> move|done
 	 *                     --> data|<name>|<data>
-	 *                      // <data> = <x>&<y>&<z>|<x>&<y>&<z>&<w>|<action>(|<speed>|...)
+	 *                      // <data> = <x>+<y>+<z>|<x>+<y>+<z>+<w>|<action>(|<speed>|...)
 	 *                      //          position   |orientation    |key/button
 	 *
 	 *  -> main|fail|type '<type>' not found
@@ -274,7 +274,7 @@ public class Stream {
 					Console.WriteLine("list " + list.Length);
 
 					for(int i = 0; i < list.Length; i++) {
-						string[] room = list[i].Split('&');
+						string[] room = list[i].Split('+');
 
 						Console.WriteLine(room[0] + " " + room[1] + " (" + room[2] + ")");
 					}
