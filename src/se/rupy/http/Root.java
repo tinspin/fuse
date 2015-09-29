@@ -475,7 +475,7 @@ public class Root extends Service {
 
 			if(value.contains(" ") || key.equals("text"))
 				full = true;
-			else if(value.matches("[0-9]+") || !value.matches("[a-zA-Z0-9/.@\\+]+"))
+			else if(value.matches("[0-9]+") || !value.matches("[a-zA-Z0-9/.@\\-\\+]+"))
 				throw new SortException("Validation [" + key + "=" + json.getString(key) + "]");
 
 			if(full) {
