@@ -157,7 +157,7 @@ public class Stream {
 	 *                      -> ally|fail|user not found
 	 *
 	 *                      // enable peer-to-peer
-	 *  peer|<192.168...>   -> peer|done // send the internal IP
+	 *  peer|<192.168...>   -> peer|done                    // send the internal IP
 	 *
 	 *                      // host room
 	 *  host|<type>|<size>  -> host|done
@@ -170,31 +170,31 @@ public class Stream {
 	 *
 	 *                      // join room
 	 *  room|<name>         -> room|done
-	 *                     --> come|<name>(|<ip>) // in new room, all to all (ip if peer was set)
-	 *                     --> away|<name> // in lobby
+	 *                     --> come|<name>(|<ip>)           // in new room, all to all (ip if peer was set)
+	 *                     --> away|<name>                  // in lobby
 	 *                      -> room|fail|room not found
 	 *                      -> room|fail|room is locked
 	 *                      -> room|fail|room is full
 	 *
 	 *                      // exit room
 	 *  exit                -> exit|done
-	 *                     --> come|<name>(|<ip>) // in lobby, all to all (ip if peer was set)
-	 *                     --> away|<name> // in old room OR
-	 *                     --> drop|<name> // in old room when maker leaves 
-	 *                                        then room is dropped and everyone 
-	 *                                        put back in lobby
+	 *                     --> come|<name>(|<ip>)           // in lobby, all to all (ip if peer was set)
+	 *                     --> away|<name>                  // in old room OR
+	 *                     --> drop|<name>                  // in old room when maker leaves 
+	 *                                                         then room is dropped and everyone 
+	 *                                                         put back in lobby
 	 *                      -> exit|fail|user in lobby
 	 *
 	 *                      // lock room before the game starts
 	 *  lock                -> lock|done
-	 *                     --> link|<name> // to everyone in room, can be used 
-	 *                                        to start the game
+	 *                     --> link|<name>                  // to everyone in room, can be used 
+	 *                                                         to start the game
 	 *                      -> lock|fail|user not room host
 	 *
 	 *                      // insert and select data
-	 *  save|<type>|<json>  -> save|done|<id>|<key> // to update data use this key in json
+	 *  save|<type>|<json>  -> save|done|<id>|<key>         // to update data use this key in json
 	 *                      -> save|fail|data too large
-	 *  load|<type>|<id>    -> load|done|<json> // use id from list|data|<type>
+	 *  load|<type>|<id>    -> load|done|<json>             // use id from list|data|<type>
 	 *                      -> load|fail|data not found
 	 *
 	 *                      // chat anywhere
@@ -204,11 +204,8 @@ public class Stream {
 	 *                      // real-time gameplay packets
 	 *  move|<data>         -> move|done
 	 *                     --> sent|<name>|<data>
-	 *                      // <data> = <x>&<y>&<z>|<x>&<y>&<z>&<w>|<action>|<velocity>
-	 *
-	 *                      // position & orientation = _where_ it's happening
-	 *                      // action =                 _what_ is happening
-	 *                      // velocity =               _how_ it's happening
+	 *                      // <data> = <x>&<y>&<z>|<x>&<y>&<z>&<w>|<action>(|<speed>|...)
+	 *                      //          position   |orientation    |key/button
 	 *
 	 *  -> main|fail|type '<type>' not found
 	 */
