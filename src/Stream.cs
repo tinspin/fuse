@@ -390,7 +390,7 @@ public class Stream {
 		for(int i = 0; i < hash.Length; i++) {
 			sb.Append(hash[i].ToString("X2"));
 		}
-		return sb.ToString();
+		return sb.ToString().ToLower();
 	}
 }
 
