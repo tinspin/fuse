@@ -798,7 +798,7 @@ public class Daemon implements Runnable {
 	/*
 	 * So only the controller can be added as listener since we use this feature to authenticate deployments and DNS.
 	 */
-	private void secure() throws IOException {
+	void secure() throws IOException {
 		if(host) {
 			//TODO: Replace with classloader test.
 
@@ -925,30 +925,6 @@ public class Daemon implements Runnable {
 			return true;
 		}
 		catch(IOException e) {
-			// if passport could not be created
-		}
-
-		return false;
-	}
-	
-	/**
-	 * Overwrite dynamic cluster IP range.
-	 * @param ip
-	 * @param from inclusive
-	 * @param to exclusive
-	 * @return success
-	 */
-	public boolean set(String ip, int from, int to) {
-		try {
-			secure();
-			
-			for(int i = from; i < to; i++) {
-				Root.ip[i] = ip;
-			}
-			
-			return true;
-		}
-		catch(Exception e) {
 			// if passport could not be created
 		}
 
@@ -1713,7 +1689,7 @@ public class Daemon implements Runnable {
 			if(root) {
 				Properties prop = new Properties();
 				prop.load(new FileInputStream("root.txt"));
-				add(this.service, new Root(prop), null);
+				add(this.service, new Root(domain, prop), null);
 				add(this.service, new Root.Node(), null);
 				add(this.service, new Root.Link(), null);
 				add(this.service, new Root.Find(), null);

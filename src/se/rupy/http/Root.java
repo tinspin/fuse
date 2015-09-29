@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.net.InetAddress;
@@ -45,6 +46,9 @@ import se.rupy.http.Service;
  */
 public class Root extends Service {
 	static int LENGTH = 16;
+	/**
+	 *  this is not protected at all and can not be relied on!
+	 */
 	public static String local;
 	static String secret;
 	//static String home;
@@ -60,7 +64,10 @@ public class Root extends Service {
 	final String key = "SWhK6hk5jhQuJJaJ";
 	final String search = "full%20text%20search";
 
-	public Root(Properties prop) {
+	static String domain;
+
+	public Root(String domain, Properties prop) {
+		this.domain = domain;
 		int i = 0;
 		Iterator it = prop.keySet().iterator();
 		ip = new String[prop.size() - 1];
@@ -80,17 +87,37 @@ public class Root extends Service {
 	}
 
 	public static String[] getIp() {
-		return ip;
+		try {
+			secure();
+			return ip;
+		}
+		catch(IOException e) {
+			return null;
+		}
 	}
-	
+
 	public static String[] getHost() {
-		return host;
+		try {
+			secure();
+			return host;
+		}
+		catch(IOException e) {
+			return null;
+		}
 	}
-	
-	public static String getLocal() {
-		return local;
+
+	static void secure() throws IOException {
+		//TODO: Replace with classloader test.
+
+		File pass = new File("app/" + domain + "/passport");
+
+		if(!pass.exists()) {
+			pass.createNewFile();
+		}
+
+		pass.canRead();
 	}
-	
+
 	static String type(String[] type, String name, int selected) {
 		StringBuilder select = new StringBuilder("<select id=\"type\" name=\"" + name + "\">");
 
