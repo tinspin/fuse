@@ -145,20 +145,20 @@ public class Server extends Service implements Node, Runnable {
 	public void filter(Event event) throws Event, Exception {
 		if(event.query().path().equals("/push")) {
 			event.query().parse();
-			
+
 			if(event.push()) {
 				String data = event.query().string("done", null);
 				String fail = event.query().string("fail", null);
 
 				if(data != null || fail != null) {
 					String send = fail == null ? data : fail;
-					
+
 					Output out = event.reply().output(send.length());
 
 					out.print(send);
 					out.finish();
 					out.flush();
-					
+
 					event.query().put("done", null);
 					event.query().put("fail", null);
 				}
@@ -166,10 +166,18 @@ public class Server extends Service implements Node, Runnable {
 			else {
 				String name = event.string("name");
 				String message = event.string("message");
-				String response = node.push(event, name, message);
 
-				if(!response.equals("hold")) {
-					byte[] data = response.getBytes("UTF-8");
+				try {
+					String response = node.push(event, name, message);
+
+					if(!response.equals("hold")) {
+						byte[] data = response.getBytes("UTF-8");
+						event.reply().output(data.length).write(data);
+					}
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+					byte[] data = (message.substring(0, 4) + "|fail|" + e.getClass().getSimpleName()).getBytes("UTF-8");
 					event.reply().output(data.length).write(data);
 				}
 			}
@@ -194,14 +202,14 @@ public class Server extends Service implements Node, Runnable {
 
 					while(message != null) {
 						String accept = queue.event.query().header("accept");
-						
+
 						if(accept != null && accept.equals("text/event-stream")) {
 							out.print("data: " + message + "\n\n");
 						}
 						else {
 							out.write((message + "\n").getBytes());
 						}
-						
+
 						message = (String) queue.poll();
 					}
 

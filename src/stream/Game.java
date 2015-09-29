@@ -125,10 +125,15 @@ public class Game implements Node {
 			}
 		}
 		
-		final User user = (User) users.get(name);
+		User user = (User) users.get(name);
 		
 		if(event.query().header("host").equals("fuse.radiomesh.org") && user == null)
 			return "main|fail|user '" + name + "' not authorized";
+		else if(name.equals("one")) { // TODO: Remove
+			user = new User(name);
+			users.put(user.name, user);
+			user.move(null, lobby);
+		}
 		
 		if(message.startsWith("peer")) {
 			user.peer(event, split[1]);
@@ -169,10 +174,11 @@ public class Game implements Node {
 				
 				final int from = 0;
 				final int size = 5;
+				final String key = user.json.getString("key");
 				
 				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
-						call.get("/link/user/" + type + "/" + user.json.getString("key") + "?from=" + from + "&size=" + size, "Host:" + event.query().header("host"));
+						call.get("/link/user/" + type + "/" + key + "?from=" + from + "&size=" + size, "Host:" + event.query().header("host"));
 					}
 
 					public void read(String host, String body) throws Exception {
@@ -250,6 +256,7 @@ public class Game implements Node {
 			final String type = split[1];
 			final JSONObject json = new JSONObject(split[2]);
 			final String key = json.optString("key");
+			final String user_key = user.json.getString("key");
 			
 			Async.Work node = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
@@ -262,7 +269,7 @@ public class Game implements Node {
 					
 					Async.Work link = new Async.Work(event) {
 						public void send(Async.Call call) throws Exception {
-							call.post("/link", "Host:" + event.query().header("host"), ("pkey=" + user.json.getString("key") + 
+							call.post("/link", "Host:" + event.query().header("host"), ("pkey=" + user_key + 
 									"&ckey=" + node.getString("key") + 
 									"&ptype=user&ctype=" + type).getBytes("utf-8"));
 						}
@@ -365,7 +372,7 @@ public class Game implements Node {
 					drop = from;
 				}
 				else
-					from.send("away|" + name);
+					from.send("gone|" + name);
 			}
 			
 			if(to != null) {

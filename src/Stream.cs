@@ -36,7 +36,7 @@ public class Stream {
 		IPAddress address = Dns.Resolve(host).AddressList[0];
 		IPEndPoint remote = new IPEndPoint(address, port);
 
-		//Console.WriteLine("Address: " + address + ".");
+		//Console.WriteLine("address " + address);
 
 		push = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		push.NoDelay = true;
@@ -78,8 +78,8 @@ public class Stream {
 		int read = push.Receive(data);
 		text = Encoding.ASCII.GetString(data, 0, read);
 
-		//Console.WriteLine("Read: " + read + ".");
-		//Console.WriteLine("Text: " + text + ".");
+		//Console.WriteLine("read " + read);
+		//Console.WriteLine("text " + text);
 
 		string[] split = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
 		return split[2];
@@ -157,8 +157,12 @@ public class Stream {
 	 *
 	 *  -> main|fail|user '<name>' not authorized
 	 *
+	 *                      // add friend
 	 *  ally|<name>         -> ally|done
 	 *                      -> ally|fail|user not found
+	 *
+	 *                      // set status
+	 *  away|<boolean>      -> away|done
 	 *
 	 *                      // enable peer-to-peer
 	 *  peer|<192.168...>   -> peer|done                    // send the internal IP
@@ -175,7 +179,7 @@ public class Stream {
 	 *                      // join room
 	 *  room|<name>         -> room|done
 	 *                     --> here|<name>(|<ip>)           // in new room, all to all (ip if peer was set)
-	 *                     --> away|<name>                  // in lobby
+	 *                     --> gone|<name>                  // in lobby
 	 *                      -> room|fail|room not found
 	 *                      -> room|fail|room is locked
 	 *                      -> room|fail|room is full
@@ -183,7 +187,7 @@ public class Stream {
 	 *                      // exit room
 	 *  exit                -> exit|done
 	 *                     --> here|<name>(|<ip>)           // in lobby, all to all (ip if peer was set)
-	 *                     --> away|<name>                  // in old room OR
+	 *                     --> gone|<name>                  // in old room OR
 	 *                     --> stop|<name>                  // in old room when maker leaves 
 	 *                                                         then room is dropped and everyone 
 	 *                                                         put back in lobby
@@ -260,26 +264,28 @@ public class Stream {
 
 				Thread.Sleep(500);
 
-				Console.WriteLine("Host: " + stream.Host(name, "race", 4));
+				Console.WriteLine("host " + stream.Host(name, "race", 4));
 
 				Thread.Sleep(500);
 
 				string[] list = stream.ListRoom(name);
 
-				Console.WriteLine("List: " + list.Length);
+				if(list != null) {
+					Console.WriteLine("list " + list.Length);
 
-				for(int i = 0; i < list.Length; i++) {
-					string[] room = list[i].Split('&');
+					for(int i = 0; i < list.Length; i++) {
+						string[] room = list[i].Split('&');
 
-					Console.WriteLine(room[0] + " " + room[1] + " (" + room[2] + ")");
+						Console.WriteLine(room[0] + " " + room[1] + " (" + room[2] + ")");
+					}
 				}
-
+				
 				Thread.Sleep(500);
 
 				stream.Chat(name, "hello");
 			}
 
-			Console.WriteLine("Login: " + success + ".");
+			Console.WriteLine("login " + success);
 		}
 		catch(Exception e) {
 			Console.WriteLine(e.ToString());
@@ -297,7 +303,7 @@ public class Stream {
 				// prompt for other name.
 			}
 
-			Console.WriteLine("User fail: " + join[2] + ".");
+			Console.WriteLine("join " + join[2]);
 			return null;
 		}
 
@@ -310,7 +316,7 @@ public class Stream {
 		string[] user = Send(name, "user|" + salt + "|" + hash).Split('|');
 
 		if(user[1].Equals("fail")) {
-			Console.WriteLine("User fail: " + user[2] + ".");
+			Console.WriteLine("user " + user[2]);
 			return false;
 		}
 
@@ -318,59 +324,62 @@ public class Stream {
 	}
 
 	public bool Host(string name, String type, int size) {
-		string[] host = Send(name, "host|" + type + "|" + size).Split('|');
-
-		if(host[1].Equals("fail")) {
-			Console.WriteLine("Room fail: " + host[2] + ".");
-			return false;
-		}
-
-		return true;
+		return BoolPush(name, "host|" + type + "|" + size);
 	}
 
 	public string[] ListRoom(string name) {
 		string list = Send(name, "list|room");
 
 		if(list.StartsWith("list|fail")) {
-			Console.WriteLine("List fail: " + list + ".");
+			Console.WriteLine(name + " " + list);
 			return null;
 		}
 
-		return list.Substring(15).Split('|'); // from 'list|room|done|'
+		if(list.Length > 15)
+			return list.Substring(15).Split('|'); // from 'list|room|done|'
+		else
+			return null;
 	}
 
 	public bool Room(string name, string which) {
-		string[] room = Send(name, "room|" + which).Split('|');
-
-		if(room[1].Equals("fail")) {
-			Console.WriteLine("Room fail: " + room[2] + ".");
-			return false;
-		}
-
-		return true;
+		return BoolPush(name, "room|" + which);
 	}
 
 	public bool Exit(string name) {
-		string[] exit = Send(name, "exit").Split('|');
+		return BoolPush(name, "exit");
+	}
 
-		if(exit[1].Equals("fail")) {
-			Console.WriteLine("Exit fail: " + exit[2] + ".");
+	public void Lock(string name, string text) {
+		Push(name, "lock");
+	}
+
+	public void Chat(string name, string text) {
+		Push(name, "chat|" + text);
+	}
+
+	public void Data(string name, string data) {
+		Push(name, "data|" + data);
+	}
+
+	public bool BoolPush(string name, string message) {
+		string[] push = Push(name, message);
+
+		if(push == null) {
 			return false;
 		}
 
 		return true;
 	}
 
-	public void Lock(string name, string text) {
-		Send(name, "lock");
-	}
-
-	public void Chat(string name, string text) {
-		Send(name, "chat|" + text);
-	}
-
-	public void Data(string name, string data) {
-		Send(name, "data|" + data);
+	public string[] Push(string name, string message) {
+		string[] push = Send(name, message).Split('|');
+		
+		if(push[1].Equals("fail")) {
+			Console.WriteLine(name + " " + message + " " + push[2]);
+			return null;
+		}
+		
+		return push;
 	}
 
 	public static string MD5(string input) {
@@ -396,7 +405,7 @@ public class Alpha {
 
 			if(received != null) {
 				for(int i = 0; i < received.Length; i++) {
-					Console.WriteLine("Received: " + received[i] + ".");
+					Console.WriteLine("received " + received[i]);
 				}
 			}
 		}
