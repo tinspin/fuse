@@ -530,8 +530,8 @@ public class Async implements Runnable {
 			if(work != null) {
 				if(daemon != null && daemon.host) {
 					final Exception ex = e;
-					Deploy.Archive archive = daemon.archive(work.event.host(), true);
-					Thread.currentThread().setContextClassLoader(archive);
+					//Deploy.Archive archive = daemon.archive(work.event.host(), true);
+					Thread.currentThread().setContextClassLoader(work.archive);
 					AccessController.doPrivileged(new PrivilegedExceptionAction() {
 						public Object run() throws Exception {
 							try {
@@ -542,7 +542,7 @@ public class Async implements Runnable {
 							}
 							return null;
 						}
-					}, archive.access());
+					}, work.archive.access());
 				}
 				else {
 					work.fail(host, e);
