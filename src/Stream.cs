@@ -33,7 +33,7 @@ public class Stream {
 		if(!policy)
 			throw new Exception("Policy (" + host + ":" + port + ") failed.");
 
-		IPAddress address = Dns.Resolve(host).AddressList[0];
+		IPAddress address = Dns.GetHostEntry(host).AddressList[0];
 		IPEndPoint remote = new IPEndPoint(address, port);
 
 		//Console.WriteLine("address " + address);
@@ -46,7 +46,7 @@ public class Stream {
 	public void Connect(string name) {
 		queue = new Queue<string>();
 
-		IPAddress address = Dns.Resolve(host).AddressList[0];
+		IPAddress address = Dns.GetHostEntry(host).AddressList[0];
 		IPEndPoint remote = new IPEndPoint(address, port);
 
 		pull = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -153,7 +153,8 @@ public class Stream {
 	 *                      -> user|fail|salt not found
 	 *                      -> user|fail|wrong hash
 	 *
-	 *                      <> = here you should call Connect()
+	 *                      <> = here you should call Connect(<name>) 
+	 *                      with the name you successfully logged in as.
 	 *
 	 *  -> main|fail|user '<name>' not authorized
 	 *
