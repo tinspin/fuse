@@ -129,7 +129,7 @@ public class Game implements Node {
 		
 		if(event.query().header("host").equals("fuse.radiomesh.org") && user == null)
 			return "main|fail|user '" + name + "' not authorized";
-		else if(name.equals("one")) { // TODO: Remove
+		else if(name.equals("one") && user == null) { // TODO: Remove
 			user = new User(name);
 			users.put(user.name, user);
 			user.move(null, lobby);
@@ -314,20 +314,12 @@ public class Game implements Node {
 		}
 		
 		if(message.startsWith("chat")) {
-			if(user == null)
-				lobby.send("chat|" + name + "|" + split[1]);
-			else
-				user.room.send("chat|" + name + "|" + split[1]);
-			
+			user.room.send(user, "chat|" + name + "|" + split[1]);
 			return "chat|done";
 		}
 		
 		if(message.startsWith("move")) {
-			if(user == null)
-				lobby.send("move|" + name + "|" + split[1]);
-			else
-				user.room.send(user, "move|" + name + "|" + split[1]);
-			
+			user.room.send(user, "move|" + name + "|" + split[1]);
 			return "move|done";
 		}
 		
@@ -414,18 +406,21 @@ public class Game implements Node {
 			if(message.startsWith("lock"))
 				lock = true;
 			
+			System.out.println(from + " " + message + " " + this);
+			
 			while(it.hasNext()) {
 				User user = (User) it.next();
 				
-System.out.println(from + " " + message);
-				
-				if(message.startsWith("here")) // send every user in room to joining user
+				//send every user in room to joining user
+				if(message.startsWith("here") && (from == null || !from.name.equals(user.name)))
 					node.push(null, from.name, "here|" + user.name + user.peer(from));
 				
-				if(from == null || !from.name.equals(user.name)) // send message from user to room
+				// send message from user to room
+				if(message.startsWith("chat") || (from == null || !from.name.equals(user.name)))
 					node.push(null, user.name, message.startsWith("here") ? message + from.peer(user) : message);
 				
-				if(message.startsWith("stop")) // eject everyone
+				// eject everyone
+				if(message.startsWith("stop"))
 					user.move(null, lobby);
 			}
 		}
@@ -443,7 +438,7 @@ System.out.println(from + " " + message);
 		}
 		
 		public String toString() {
-			return user.name + " " + type + " " + users;
+			return (user == null ? "lobby" : user.name) + " " + type + " " + users;
 		}
 	}
 	
