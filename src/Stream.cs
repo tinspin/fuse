@@ -36,8 +36,6 @@ public class Stream {
 		IPAddress address = Dns.GetHostEntry(host).AddressList[0];
 		IPEndPoint remote = new IPEndPoint(address, port);
 
-		//Console.WriteLine("address " + address);
-
 		push = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		push.NoDelay = true;
 		push.Connect(remote);
@@ -77,10 +75,6 @@ public class Stream {
 		push.Send(Encoding.ASCII.GetBytes(text));
 		int read = push.Receive(data);
 		text = Encoding.ASCII.GetString(data, 0, read);
-
-		//Console.WriteLine("read " + read);
-		//Console.WriteLine("text " + text);
-
 		string[] split = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
 		return split[2];
 	}
@@ -218,12 +212,23 @@ public class Stream {
 	 *
 	 *  -> main|fail|type '<type>' not found
 	 *
-	 * <soon>
+	 * <soon> // future protocol
 	 *
 	 *  pull // load cards
 	 *  pick // select card
 	 *  push // show new cards
+	 *
+	 * <peer> // peer protocol
+	 *
+	 *  talk // send voice
+	 *  head // send head/body movement
+	 *  hand // send hand movements
 	 */
+
+	// #########################################
+	// YOU CAN DELETE EVERYTHING BELOW THIS LINE
+	// #########################################
+	//   Don't forget the closing } though! ;)
 
 	// ------------- EXAMPLE USAGE -------------
 
