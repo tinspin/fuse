@@ -11,7 +11,7 @@ using System.Text;
  * For unity seach for ###
  * For usage scroll down to main() method.
  */
-public class Stream {
+public class Fuse {
 	public string host = "fuse.rupy.se";
 	public int port = 80;
 
@@ -25,7 +25,7 @@ public class Stream {
 		public byte[] data = new byte[size];
 	}
 
-	public Stream() {
+	public Fuse() {
 		bool policy = true;
 
 		//policy = Security.PrefetchSocketPolicy(host, port); // policy ###
@@ -235,11 +235,11 @@ public class Stream {
 	public static void Main() {
 		try {
 			string name = "two";
-			Stream stream = new Stream();
+			Fuse fuse = new Fuse();
 
 			// if no key is stored try
 
-			//string key = stream.Join(name);
+			//string key = fuse.Join(name);
 
 			//   then store name and key
 			// otherwise
@@ -250,31 +250,31 @@ public class Stream {
 			bool success = false;
 
 			if(key != null) {
-				success = stream.User(name, key);
+				success = fuse.User(name, key);
 			}
 
 			if(success) {
-				// this will allow you to Stream.Receive();
+				// this will allow you to Fuse.Receive();
 				// from MonoBehaviour.Update();
-				stream.Connect(name); 
+				fuse.Connect(name); 
 
 				// remove in unity ###
 				Thread.Sleep(100);
-				Alpha alpha = new Alpha(stream);
+				Alpha alpha = new Alpha(fuse);
 				Thread thread = new Thread(new ThreadStart(alpha.Beta));
 				thread.Start();
 				Thread.Sleep(500);
 				// remove
 
-				stream.Chat(name, "hello");
+				fuse.Chat(name, "hello");
 
 				Thread.Sleep(500);
 
-				Console.WriteLine("host " + stream.Host(name, "race", 4));
+				Console.WriteLine("host " + fuse.Host(name, "race", 4));
 
 				Thread.Sleep(500);
 
-				string[] list = stream.ListRoom(name);
+				string[] list = fuse.ListRoom(name);
 
 				if(list != null) {
 					Console.WriteLine("list " + list.Length);
@@ -288,7 +288,7 @@ public class Stream {
 				
 				Thread.Sleep(500);
 
-				stream.Chat(name, "hello");
+				fuse.Chat(name, "hello");
 			}
 
 			Console.WriteLine("login " + success);
@@ -403,11 +403,11 @@ public class Stream {
 // this is my emulation of MonoBehaviour.Update();
 
 public class Alpha {
-	private Stream stream;
-	public Alpha(Stream stream) { this.stream = stream; }
+	private Fuse fuse;
+	public Alpha(Fuse fuse) { this.fuse = fuse; }
 	public void Beta() {
 		while(true) {
-			string[] received = stream.Receive();
+			string[] received = fuse.Receive();
 
 			if(received != null) {
 				for(int i = 0; i < received.Length; i++) {
