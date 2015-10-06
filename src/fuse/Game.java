@@ -29,7 +29,7 @@ public class Game implements Node {
 	}
 
 	public String push(final Event event, final String name, String message) throws Exception {
-		System.err.println(name + " " + message);
+		System.err.println(">" + name + " " + message + " " + event.index());
 
 		if(name.length() == 0)
 			return "main|fail|name missing";

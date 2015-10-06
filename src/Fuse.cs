@@ -11,6 +11,7 @@ using System.Text;
  * For unity seach for ###
  * For usage scroll down to main() method.
  */
+// TODO: UTF-8?!
 public class Fuse {
 	public string host = "fuse.rupy.se";
 	public int port = 80;
@@ -18,6 +19,8 @@ public class Fuse {
 	private Queue<string> queue;
 	private Socket pull, push;
 	private bool connected;
+
+	private IPEndPoint remote;
 
 	private class State {
 		public Socket socket = null;
@@ -34,7 +37,7 @@ public class Fuse {
 			throw new Exception("Policy (" + host + ":" + port + ") failed.");
 
 		IPAddress address = Dns.GetHostEntry(host).AddressList[0];
-		IPEndPoint remote = new IPEndPoint(address, port);
+		remote = new IPEndPoint(address, port);
 
 		push = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		push.NoDelay = true;
@@ -43,9 +46,6 @@ public class Fuse {
 
 	public void Connect(string name) {
 		queue = new Queue<string>();
-
-		IPAddress address = Dns.GetHostEntry(host).AddressList[0];
-		IPEndPoint remote = new IPEndPoint(address, port);
 
 		pull = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		pull.NoDelay = true;
@@ -67,16 +67,17 @@ public class Fuse {
 
 	public string Send(String name, String message) {
 		byte[] data = new byte[1024];
-		String text = "POST /push HTTP/1.1\r\n"
-				+ "Host: " + host + "\r\n"
-				+ "Head: less\r\n\r\n" // enables TCP no delay
-				+ "name=" + name + "&message=" + message;
+
+		String text = "GET /push?name=" + name + "&message=" + message + " HTTP/1.1\r\n"
+				+ "Accept: text/event-stream\r\n" // enables TCP no delay
+				+ "Host: " + host + "\r\n\r\n";
 
 		push.Send(Encoding.ASCII.GetBytes(text));
 		int read = push.Receive(data);
 		text = Encoding.ASCII.GetString(data, 0, read);
-		string[] split = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
-		return split[2];
+
+		string[] split = text.Split(new string[] { "\r\n\r\n" }, StringSplitOptions.None);
+		return split[1];
 	}
 
 	public string[] Receive() {
@@ -106,6 +107,8 @@ public class Fuse {
 			if(read > 0) {
 				string text = Encoding.ASCII.GetString(state.data, 0, read);
 				string[] split = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+
+				// TODO: Fix this to work with lines split over many chunks!
 
 				if(!split[0].StartsWith("HTTP")) {
 					string[] messages = split[1].Split('\n');
