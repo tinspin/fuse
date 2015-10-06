@@ -9,10 +9,10 @@ import java.util.*;
  */
 public abstract class Output extends OutputStream implements Event.Block {
 	public final static String EOL = "\r\n";
-	private final static byte[] server = ("Server: Rupy/1.3" + EOL).getBytes();
-	private final static byte[] close = ("Connection: Close" + EOL).getBytes();
-	private final static byte[] alive = ("Connection: Keep-Alive" + EOL).getBytes();
-	private final static byte[] chunked = ("Transfer-Encoding: Chunked" + EOL).getBytes();
+	private final static byte[] server = ("Server: rupy/1.3" + EOL).getBytes();
+	private final static byte[] close = ("Connection: close" + EOL).getBytes();
+	private final static byte[] alive = ("Connection: keep-alive" + EOL).getBytes();
+	private final static byte[] chunked = ("Transfer-Encoding: chunked" + EOL).getBytes();
 	private final static byte[] stream = ("Content-Type: text/event-stream" + EOL).getBytes(); 
 
 	private byte[] one = new byte[1];
@@ -156,12 +156,6 @@ public abstract class Output extends OutputStream implements Event.Block {
 				wrote(("Content-Type: " + reply.type() + EOL).getBytes());
 			}
 
-			if (length > -1) {
-				wrote(("Content-Length: " + length + EOL).getBytes());
-			} else {
-				wrote(chunked);
-			}
-
 			if (reply.modified() > 0) {
 				wrote(("Last-Modified: "
 						+ reply.event().worker().date().format(new Date(reply.modified())) + EOL)
@@ -215,6 +209,12 @@ public abstract class Output extends OutputStream implements Event.Block {
 					wrote((name + ": " + value + EOL).getBytes());
 				}
 			}
+		}
+		
+		if (length > -1) {
+			wrote(("Content-Length: " + length + EOL).getBytes());
+		} else {
+			wrote(chunked);
 		}
 
 		wrote(EOL.getBytes());
