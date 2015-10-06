@@ -5,7 +5,6 @@ import java.nio.*;
 
 /**
  * Handles the incoming request data.
- * @author marc.larue
  */
 public abstract class Input extends InputStream implements Event.Block {
 	private byte[] one = new byte[1];

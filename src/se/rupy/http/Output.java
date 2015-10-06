@@ -6,8 +6,6 @@ import java.util.*;
 
 /**
  * Handles the outgoing response data.
- * 
- * @author marc.larue
  */
 public abstract class Output extends OutputStream implements Event.Block {
 	public final static String EOL = "\r\n";

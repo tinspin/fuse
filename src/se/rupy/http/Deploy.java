@@ -27,7 +27,6 @@ import java.util.jar.*;
  * &lt;/java&gt;
  * &lt;/target&gt;
  * </pre>
- * @author marc
  */
 public class Deploy extends Service {
 	protected static String path, pass, cookie;

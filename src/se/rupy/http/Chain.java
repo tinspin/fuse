@@ -11,7 +11,6 @@ import java.util.*;
 
 /**
  * This is the {@link Event} filter chain implementation, it has dynamic size with positional integrity.
- * @author Marc
  */
 public class Chain extends LinkedList {
 	private int next;

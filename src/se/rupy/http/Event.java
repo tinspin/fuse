@@ -31,8 +31,6 @@ import se.rupy.http.Daemon.Lock;
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+-&gt;&nbsp;<a href="http://rupy.se/doc/se/rupy/http/Reply.html" class="not">Reply</a>&nbsp;--&gt;&nbsp;<a href="http://rupy.se/doc/se/rupy/http/Output.html" class="not">Output</a>&nbsp;--&gt;&nbsp;+-----------+<br>
 <br></tt>
  * Where X marks the potential Comet pause point.
- * 
- * @author marc
  */
 public class Event extends Throwable implements Chain.Link {
 	// waste of time it seems. hotspot does this optimisation for me! :)

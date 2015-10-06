@@ -41,8 +41,6 @@ import se.rupy.http.Service;
  * 
  * This solution is "wasteful"; but with 16-digit Base-58 keys and 
  * long ids, collisions should be rare, at least over the network.
- * 
- * @author Marc
  */
 public class Root extends Service {
 	static int LENGTH = 16;

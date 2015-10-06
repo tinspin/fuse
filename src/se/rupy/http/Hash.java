@@ -5,8 +5,6 @@ import java.util.Iterator;
 
 /**
  * Convenience class to avoid casting and parsing everywhere.
- * 
- * @author marc
  */
 public class Hash extends HashMap {
 	protected static int MAX = 4096;

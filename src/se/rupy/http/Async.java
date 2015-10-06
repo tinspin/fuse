@@ -25,7 +25,6 @@ import java.util.Set;
  * - Can't handle Murphy's law.<br>
  * - Rarely blocks forever stuck in sun.misc.Unsafe.park().<br>
  * - Is pretty slow and big (adds ~20-30 ms. and 1.5 MB).<br>
- * @author Marc
  */
 public class Async implements Runnable {
 	private static final int SIZE = 1024;
@@ -614,7 +613,7 @@ public class Async implements Runnable {
 						call.run();
 						call.running = false;
 					}
-					catch (RuntimeException e) {
+					catch(RuntimeException e) {
 						e.printStackTrace();
 					}
 				}

@@ -30,8 +30,6 @@ import javax.net.ssl.X509TrustManager;
  * multiple contained HTTP servers in one application on different ports.<br>
  * <br>
  * See the configurations: {@link #Daemon()}
- * 
- * @author marc
  */
 
 public class Daemon implements Runnable {

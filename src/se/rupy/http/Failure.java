@@ -7,8 +7,6 @@ import java.io.IOException;
  * disconnects the client. Useful if you receive hack attempts or similar
  * unwanted requests. Also used internally to jump the 500 Internal Server Error
  * bridge.
- * 
- * @author marc
  */
 public class Failure extends IOException {
 	public Failure(String message) {

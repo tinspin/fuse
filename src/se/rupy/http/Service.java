@@ -7,8 +7,6 @@ import java.util.HashMap;
  * have to be careful how you write your hot-deployable code, see the wiki for
  * more information. The service becomes a singleton instance on the server, so
  * use of static methods is recommended.
- * 
- * @author marc
  */
 public abstract class Service implements Chain.Link {
 	protected HashMap metric = new HashMap();

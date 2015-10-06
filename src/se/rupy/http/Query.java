@@ -7,8 +7,6 @@ import java.util.*;
 
 /**
  * HTTP request and query in one.
- * 
- * @author marc
  */
 public class Query extends Hash {
 	public final static int GET = 1 << 0, POST = 1 << 1, PUT = 1 << 2, DELETE = 1 << 3, HEAD = 1 << 4;

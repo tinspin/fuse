@@ -6,8 +6,6 @@ import java.util.*;
  * If you save a class that is hot-deployed here it will throw a
  * ClassCastException if you re-deploy the application. We advise to only store
  * bootclasspath loaded classes in the session.
- * 
- * @author Marc
  */
 public class Session extends Hash {
 	private Daemon daemon;

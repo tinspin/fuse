@@ -14,8 +14,6 @@ import java.util.*;
  * {@link #output()} method, the reply will flush output, so then you won't be
  * able to do an asynchronous reply. To wakeup a dormant asynchronous event use
  * {@link #wakeup()}.
- * 
- * @author marc
  */
 public class Reply {
 	/**

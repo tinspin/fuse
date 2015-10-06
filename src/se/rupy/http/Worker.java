@@ -12,8 +12,6 @@ import java.util.TimeZone;
  * Worker gets the job done. The worker holds the in/out/chunk buffers in order to
  * save resources, since the worker is assigned per event until a query is read and 
  * a reply is written.
- * 
- * @author marc
  */
 public class Worker implements Runnable, Chain.Link {
 	private Daemon daemon;
