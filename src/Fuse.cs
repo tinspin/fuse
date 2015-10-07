@@ -69,8 +69,8 @@ public class Fuse {
 		byte[] data = new byte[1024];
 
 		String text = "GET /push?name=" + name + "&message=" + message + " HTTP/1.1\r\n"
-				+ "Accept: text/event-stream\r\n" // enables TCP no delay
-				+ "Host: " + host + "\r\n\r\n";
+				+ "Host: " + host + "\r\n"
+				+ "Head: less\r\n\r\n"; // enables TCP no delay
 
 		push.Send(Encoding.ASCII.GetBytes(text));
 		int read = push.Receive(data);
