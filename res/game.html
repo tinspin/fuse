@@ -9,12 +9,16 @@ function push(name, data) {
   send('push', name, data);
 }
 function send(path, name, data) {
+  var state = (path == 'pull' ? 3 : 4);
   var xhr = new XMLHttpRequest();
   xhr.open('GET', 'http://fuse.rupy.se/' + path + '?name=' + name + '&data=' + data, true);
-  xhr.setRequestHeader('Accept', 'text/event-stream');
+  
+  if(state == 4)
+    xhr.setRequestHeader('Accept', 'text/event-stream');
+
   if(xhr) {
     xhr.onreadystatechange = function() {
-      var state = (path == 'pull' ? 3 : 4);
+      
       if(xhr.readyState == state) {
         if(state == 3) {
           chunk(path, xhr.responseText.substring(length, xhr.responseText.length));
