@@ -13,9 +13,9 @@ function createCORSRequest(method, url) {
   }
   return xhr;
 }
-function chunk(json) {
+function chunk(channel, json) {
   //JSON.parse()
-  document.getElementById('log').innerHTML += json;
+  document.getElementById(channel).innerHTML += json;
 }
 function pull() {
   var xhr = createCORSRequest('GET', 'http://fuse.rupy.se/pull');
@@ -25,7 +25,22 @@ function pull() {
   else {
     xhr.onreadystatechange = function() {
       if(xhr.readyState == 3) {
-        chunk(xhr.responseText.substring(length, xhr.responseText.length));
+        chunk('pull', xhr.responseText.substring(length, xhr.responseText.length));
+        length = xhr.responseText.length;
+      }
+    };
+    xhr.send(null);
+  }
+}
+function push() {
+  var xhr = createCORSRequest('GET', 'http://fuse.rupy.se/push?name=' + name + '&data=' + data);
+  if (!xhr) {
+    // Game will not work!
+  }
+  else {
+    xhr.onreadystatechange = function() {
+      if(xhr.readyState == 3) {
+        chunk('push', xhr.responseText.substring(length, xhr.responseText.length));
         length = xhr.responseText.length;
       }
     };
@@ -38,7 +53,8 @@ function pull() {
 
 <a href="javascript:pull();">test</a>
 
-<div id="log"></div>
+<div id="pull">pull:</div>
+<div id="push">push:</div>
 
 </body>
 </html>

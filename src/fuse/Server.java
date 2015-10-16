@@ -77,11 +77,11 @@ public class Server extends Service implements Node, Runnable {
 
 	public void exit() {}
 
-	public String push(Event event, String name, String message) throws Exception {
+	public String push(Event event, String name, String data) throws Exception {
 		Queue queue = find(name);
 
 		if(queue != null) {
-			queue.add(message);
+			queue.add(data);
 
 			int wakeup = queue.event.reply().wakeup();
 
@@ -96,14 +96,14 @@ public class Server extends Service implements Node, Runnable {
 		return null;
 	}
 
-	public void broadcast(String name, String message) throws Exception {
+	public void broadcast(String name, String data) throws Exception {
 		Iterator it = list.values().iterator();
 
 		while(it.hasNext()) {
 			Queue queue = (Queue) it.next();
 
 			if(name == null || !queue.name.equals(name)) {
-				queue.add(message);
+				queue.add(data);
 
 				int wakeup = queue.event.reply().wakeup();
 
@@ -165,21 +165,22 @@ public class Server extends Service implements Node, Runnable {
 			}
 			else {
 				String name = event.string("name");
-				String message = event.string("message");
-
+				String data = event.string("data");
+				byte[] body = null;
+				
 				try {
-					String response = node.push(event, name, message);
+					String response = node.push(event, name, data);
 
 					if(!response.equals("hold")) {
-						byte[] data = response.getBytes("UTF-8");
-						event.reply().output(data.length).write(data);
+						body = response.getBytes("UTF-8");
 					}
 				}
 				catch(Exception e) {
 					e.printStackTrace();
-					byte[] data = (message.substring(0, 4) + "|fail|" + e.getClass().getSimpleName()).getBytes("UTF-8");
-					event.reply().output(data.length).write(data);
+					body = (data.substring(0, 4) + "|fail|" + e.getClass().getSimpleName()).getBytes("UTF-8");
 				}
+				
+				event.reply().output(body.length).write(body);
 			}
 
 			throw event;
@@ -198,19 +199,19 @@ public class Server extends Service implements Node, Runnable {
 				}
 
 				if(queue != null && !queue.isEmpty()) {
-					String message = (String) queue.poll();
+					String data = (String) queue.poll();
 
-					while(message != null) {
+					while(data != null) {
 						String accept = queue.event.query().header("accept");
 
 						if(accept != null && accept.equals("text/event-stream")) {
-							out.print("data: " + message + "\n\n");
+							out.print("data: " + data + "\n\n");
 						}
 						else {
-							out.write((message + "\n").getBytes());
+							out.write((data + "\n").getBytes());
 						}
 
-						message = (String) queue.poll();
+						data = (String) queue.poll();
 					}
 
 					out.flush();

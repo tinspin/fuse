@@ -65,16 +65,16 @@ public class Fuse {
 		connected = true;
 	}
 
-	public string Send(String name, String message) {
-		byte[] data = new byte[1024];
+	public string Send(String name, String data) {
+		byte[] body = new byte[1024];
 
-		String text = "GET /push?name=" + name + "&message=" + message + " HTTP/1.1\r\n"
+		String text = "GET /push?name=" + name + "&data=" + data + " HTTP/1.1\r\n"
 				+ "Host: " + host + "\r\n"
 				+ "Head: less\r\n\r\n"; // enables TCP no delay
 
 		push.Send(Encoding.UTF8.GetBytes(text));
-		int read = push.Receive(data);
-		text = Encoding.UTF8.GetString(data, 0, read);
+		int read = push.Receive(body);
+		text = Encoding.UTF8.GetString(body, 0, read);
 
 		string[] split = text.Split(new string[] { "\r\n\r\n" }, StringSplitOptions.None);
 		return split[1];
@@ -370,8 +370,8 @@ public class Fuse {
 		Push(name, "data|" + data);
 	}
 
-	public bool BoolPush(string name, string message) {
-		string[] push = Push(name, message);
+	public bool BoolPush(string name, string data) {
+		string[] push = Push(name, data);
 
 		if(push == null) {
 			return false;
@@ -380,11 +380,11 @@ public class Fuse {
 		return true;
 	}
 
-	public string[] Push(string name, string message) {
-		string[] push = Send(name, message).Split('|');
+	public string[] Push(string name, string data) {
+		string[] push = Send(name, data).Split('|');
 		
 		if(push[1].Equals("fail")) {
-			Console.WriteLine(name + " " + message + " " + push[2]);
+			Console.WriteLine(name + " " + data + " " + push[2]);
 			return null;
 		}
 		
