@@ -1,57 +1,34 @@
 <html>
 <head>
 <script type="text/javascript">
-function createCORSRequest(method, url) {
+function pull(name) {
+  send('pull', name, null);
+}
+function push(name, data) {
+  send('push', name, data);
+}
+function send(path, name, data) {
   var xhr = new XMLHttpRequest();
-  if ("withCredentials" in xhr) {
-    xhr.open(method, url, true);
-  } else if (typeof XDomainRequest != "undefined") {
-    xhr = new XDomainRequest();
-    xhr.open(method, url);
-  } else {
-    xhr = null;
+  xhr.open('GET', 'http://fuse.rupy.se/' + path + '?name=' + name + '&data=' + data, true);
+  if(xhr) {
+    xhr.onreadystatechange = function() {
+      if(xhr.readyState == 3) {
+        chunk(path, xhr.responseText.substring(length, xhr.responseText.length));
+        length = xhr.responseText.length;
+      }
+    };
+    xhr.send(null);
   }
-  return xhr;
 }
-function chunk(channel, json) {
+function chunk(path, json) {
   //JSON.parse()
-  document.getElementById(channel).innerHTML += json;
-}
-function pull() {
-  var xhr = createCORSRequest('GET', 'http://fuse.rupy.se/pull');
-  if (!xhr) {
-    // Game will not work!
-  }
-  else {
-    xhr.onreadystatechange = function() {
-      if(xhr.readyState == 3) {
-        chunk('pull', xhr.responseText.substring(length, xhr.responseText.length));
-        length = xhr.responseText.length;
-      }
-    };
-    xhr.send(null);
-  }
-}
-function push() {
-  var xhr = createCORSRequest('GET', 'http://fuse.rupy.se/push?name=' + name + '&data=' + data);
-  if (!xhr) {
-    // Game will not work!
-  }
-  else {
-    xhr.onreadystatechange = function() {
-      if(xhr.readyState == 3) {
-        chunk('push', xhr.responseText.substring(length, xhr.responseText.length));
-        length = xhr.responseText.length;
-      }
-    };
-    xhr.send(null);
-  }
+  document.getElementById(path).innerHTML += json;
 }
 </script>
 </head>
 <body>
 
-<a href="javascript:pull();">test</a>
+<a href="javascript:pull('one');">test</a>
 
 <div id="pull">pull:</div>
 <div id="push">push:</div>
