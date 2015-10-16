@@ -1,0 +1,44 @@
+<html>
+<head>
+<script type="text/javascript">
+function createCORSRequest(method, url) {
+  var xhr = new XMLHttpRequest();
+  if ("withCredentials" in xhr) {
+    xhr.open(method, url, true);
+  } else if (typeof XDomainRequest != "undefined") {
+    xhr = new XDomainRequest();
+    xhr.open(method, url);
+  } else {
+    xhr = null;
+  }
+  return xhr;
+}
+function chunk(json) {
+  //JSON.parse()
+  document.getElementById('log').innerHTML += json;
+}
+function pull() {
+  var xhr = createCORSRequest('GET', 'http://fuse.rupy.se/pull');
+  if (!xhr) {
+    // Game will not work!
+  }
+  else {
+    xhr.onreadystatechange = function() {
+      if(xhr.readyState == 3) {
+        chunk(xhr.responseText.substring(length, xhr.responseText.length));
+        length = xhr.responseText.length;
+      }
+    };
+    xhr.send(null);
+  }
+}
+</script>
+</head>
+<body>
+
+<a href="javascript:pull();">test</a>
+
+<div id="log"></div>
+
+</body>
+</html>

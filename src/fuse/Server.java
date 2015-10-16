@@ -244,7 +244,11 @@ public class Server extends Service implements Node, Runnable {
 				event.reply().type("text/event-stream");
 			}
 
+			//System.out.println(event.query().header());
+			
+			event.reply().header("Access-Control-Allow-Origin", event.query().header("origin"));
 			event.hold();
+			
 			Output out = event.output();
 
 			if(accept != null && accept.equals("text/event-stream")) {

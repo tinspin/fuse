@@ -11,7 +11,7 @@ using System.Text;
  * For unity seach for ###
  * For usage scroll down to main() method.
  */
-// TODO: UTF-8?!
+
 public class Fuse {
 	public string host = "fuse.rupy.se";
 	public int port = 80;
@@ -55,7 +55,7 @@ public class Fuse {
 				+ "Host: " + host + "\r\n"
 				+ "Head: less\r\n\r\n"; // enables TCP no delay
 
-		pull.Send(Encoding.ASCII.GetBytes(data));
+		pull.Send(Encoding.UTF8.GetBytes(data));
 
 		State state = new State();
 		state.socket = pull;
@@ -72,9 +72,9 @@ public class Fuse {
 				+ "Host: " + host + "\r\n"
 				+ "Head: less\r\n\r\n"; // enables TCP no delay
 
-		push.Send(Encoding.ASCII.GetBytes(text));
+		push.Send(Encoding.UTF8.GetBytes(text));
 		int read = push.Receive(data);
-		text = Encoding.ASCII.GetString(data, 0, read);
+		text = Encoding.UTF8.GetString(data, 0, read);
 
 		string[] split = text.Split(new string[] { "\r\n\r\n" }, StringSplitOptions.None);
 		return split[1];
@@ -105,7 +105,7 @@ public class Fuse {
 			int read = state.socket.EndReceive(ar);
 
 			if(read > 0) {
-				string text = Encoding.ASCII.GetString(state.data, 0, read);
+				string text = Encoding.UTF8.GetString(state.data, 0, read);
 				string[] split = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
 
 				// TODO: Fix this to work with lines split over many chunks!
@@ -393,7 +393,7 @@ public class Fuse {
 
 	public static string MD5(string input) {
 		MD5 md5 = System.Security.Cryptography.MD5.Create();
-		byte[] bytes = Encoding.ASCII.GetBytes(input);
+		byte[] bytes = Encoding.UTF8.GetBytes(input);
 		byte[] hash = md5.ComputeHash(bytes);
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < hash.Length; i++) {
