@@ -980,7 +980,7 @@ public class Root extends Service {
 						}
 					}
 					else { // node sort index
-						if(last.matches("[a-zA-Z0-9.@\\+]+"))
+						if(last.matches("[a-zA-Z0-9.@\\-\\+]+"))
 							full = home() + "/node/" + type + "/" + sort + Root.path(last);
 
 						if(last.matches("[0-9]+")) {

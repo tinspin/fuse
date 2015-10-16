@@ -143,6 +143,12 @@ public abstract class Output extends OutputStream implements Event.Block {
 		//wrote(("Query-Path: " + reply.event().query().path() + EOL).getBytes());
 		//wrote(("Event: " + reply.event().index() + EOL).getBytes());
 		
+		if (length > -1) {
+			wrote(("Content-Length: " + length + EOL).getBytes());
+		} else {
+			wrote(chunked);
+		}
+		
 		if(reply.event().headless) {
 			if(reply.type().equals("text/event-stream")) {
 				wrote(stream);
@@ -196,25 +202,19 @@ public abstract class Output extends OutputStream implements Event.Block {
 			}
 			
 			wrote(server);
-			
-			HashMap headers = reply.headers();
-
-			if (headers != null) {
-				Iterator it = headers.keySet().iterator();
-
-				while (it.hasNext()) {
-					String name = (String) it.next();
-					String value = (String) reply.headers().get(name);
-					
-					wrote((name + ": " + value + EOL).getBytes());
-				}
-			}
 		}
 		
-		if (length > -1) {
-			wrote(("Content-Length: " + length + EOL).getBytes());
-		} else {
-			wrote(chunked);
+		HashMap headers = reply.headers();
+
+		if (headers != null) {
+			Iterator it = headers.keySet().iterator();
+
+			while (it.hasNext()) {
+				String name = (String) it.next();
+				String value = (String) reply.headers().get(name);
+				
+				wrote((name + ": " + value + EOL).getBytes());
+			}
 		}
 
 		wrote(EOL.getBytes());

@@ -794,7 +794,7 @@ public class Deploy extends Service {
 	}
 
 	private static void deploy(Event event, final String host, final File file, final String pass, final boolean cluster) throws Exception {
-		Async.Work work = new Async.Work(event) {
+		Async.Work salt = new Async.Work(event) {
 			public void send(Async.Call call) throws Exception {
 				call.get("/deploy", "Host:" + host);
 			}
@@ -802,7 +802,7 @@ public class Deploy extends Service {
 			public void read(final String host, final String body) throws Exception {
 				//System.out.println("cookie " + body);
 
-				Async.Work work = new Async.Work(event) {
+				Async.Work post = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
 						String key = hash(file, pass, body);
 
@@ -832,7 +832,7 @@ public class Deploy extends Service {
 					}
 				};
 
-				event.daemon().client().send(host, work, 30);
+				event.daemon().client().send(host, post, 30);
 			}
 
 			public void fail(String host, Exception e) throws Exception {
@@ -840,7 +840,7 @@ public class Deploy extends Service {
 			}
 		};
 
-		event.daemon().client().send(host, work, 30);
+		event.daemon().client().send(host, salt, 30);
 	}
 
 	private static void deploy(String host, File file, String pass, boolean cluster) throws IOException, NoSuchAlgorithmException {
