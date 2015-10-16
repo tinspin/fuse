@@ -153,6 +153,11 @@ public class Server extends Service implements Node, Runnable {
 				if(data != null || fail != null) {
 					String send = fail == null ? data : fail;
 
+					String origin = event.query().header("origin");
+					
+					if(origin != null)
+						event.reply().header("Access-Control-Allow-Origin", origin);
+					
 					Output out = event.reply().output(send.length());
 
 					out.print(send);
@@ -180,7 +185,14 @@ public class Server extends Service implements Node, Runnable {
 					body = (data.substring(0, 4) + "|fail|" + e.getClass().getSimpleName()).getBytes("UTF-8");
 				}
 				
-				event.reply().output(body.length).write(body);
+				if(body != null) {
+					String origin = event.query().header("origin");
+					
+					if(origin != null)
+						event.reply().header("Access-Control-Allow-Origin", origin);
+					
+					event.reply().output(body.length).write(body);
+				}
 			}
 
 			throw event;
@@ -247,7 +259,11 @@ public class Server extends Service implements Node, Runnable {
 
 			//System.out.println(event.query().header());
 			
-			event.reply().header("Access-Control-Allow-Origin", event.query().header("origin"));
+			String origin = event.query().header("origin");
+			
+			if(origin != null)
+				event.reply().header("Access-Control-Allow-Origin", origin);
+			
 			event.hold();
 			
 			Output out = event.output();

@@ -1,6 +1,7 @@
 <html>
 <head>
-<script type="text/javascript">
+<script>
+var length;
 function pull(name) {
   send('pull', name, null);
 }
@@ -12,23 +13,29 @@ function send(path, name, data) {
   xhr.open('GET', 'http://fuse.rupy.se/' + path + '?name=' + name + '&data=' + data, true);
   if(xhr) {
     xhr.onreadystatechange = function() {
-      if(xhr.readyState == 3) {
-        chunk(path, xhr.responseText.substring(length, xhr.responseText.length));
-        length = xhr.responseText.length;
+      var state = (path == 'pull' ? 3 : 4);
+      if(xhr.readyState == state) {
+        if(state == 3) {
+          chunk(path, xhr.responseText.substring(length, xhr.responseText.length));
+          length = xhr.responseText.length;
+        }
+        else
+          chunk(path, xhr.responseText);
       }
     };
-    xhr.send(null);
+    xhr.send();
   }
 }
-function chunk(path, json) {
-  //JSON.parse()
-  document.getElementById(path).innerHTML += json;
+function chunk(path, data) {
+  document.getElementById(path).innerHTML += data;
 }
 </script>
 </head>
 <body>
 
-<a href="javascript:pull('one');">test</a>
+<a href="javascript:pull('one');">pull</a>
+<a href="javascript:push('one', 'room|two');">room</a>
+<a href="javascript:push('one', 'chat|hi');">chat</a>
 
 <div id="pull">pull:</div>
 <div id="push">push:</div>
