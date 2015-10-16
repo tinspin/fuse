@@ -180,6 +180,7 @@ public class Fuse {
 	 *                     --> gone|<name>                  // in lobby
 	 *                      -> room|fail|room not found
 	 *                      -> room|fail|room is locked
+	 *                      -> room|fail|already in room
 	 *                      -> room|fail|room is full
 	 *
 	 *                      // exit room

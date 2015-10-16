@@ -214,6 +214,9 @@ public class Game implements Node {
 			if(room == null)
 				return "room|fail|room not found";
 			
+			if(user.room.user != null && user.room.user.name.equals(room.user.name))
+				return "room|fail|already in room";
+			
 			if(room.lock)
 				return "room|fail|room is locked";
 			
@@ -358,13 +361,13 @@ public class Game implements Node {
 				from.remove(this);
 				
 				if(from.user != null && from.user.name.equals(name)) {
-					from.send("stop|" + name);
+					from.send(this, "stop|" + name);
 					from.clear();
 					
 					drop = from;
 				}
 				else
-					from.send("gone|" + name);
+					from.send(this, "gone|" + name);
 			}
 			
 			if(to != null) {
@@ -394,33 +397,38 @@ public class Game implements Node {
 			this.user = user;
 			this.size = size;
 		}
-		
-		void send(String data) throws Exception {
-			send(null, data);
-		}
-		
+
 		void send(User from, String data) throws Exception {
 			Iterator it = users.values().iterator();
 			
 			if(data.startsWith("lock"))
 				lock = true;
 			
-			System.out.println(from + " " + data + " " + this);
+			//System.out.println(from + " " + data + " " + this);
 			
 			while(it.hasNext()) {
 				User user = (User) it.next();
 				
-				//send every user in room to joining user
-				if(data.startsWith("here") && (from == null || !from.name.equals(user.name)))
+				// send every user in room to joining user
+				if(data.startsWith("here") && !from.name.equals(user.name)) {
 					node.push(null, from.name, "here|" + user.name + user.peer(from));
+				}
+				
+				// send every user in room to leaving user
+				if(data.startsWith("gone") && !from.name.equals(user.name)) {
+					node.push(null, from.name, "gone|" + user.name + user.peer(from));
+				}
 				
 				// send message from user to room
-				if(data.startsWith("chat") || (from == null || !from.name.equals(user.name)))
+				if(data.startsWith("chat") || !from.name.equals(user.name)) {
+					System.out.println(from + " -> " + user + " " + data);
 					node.push(null, user.name, data.startsWith("here") ? data + from.peer(user) : data);
+				}
 				
 				// eject everyone
-				if(data.startsWith("stop"))
+				if(data.startsWith("stop")) {
 					user.move(null, lobby);
+				}
 			}
 		}
 		
