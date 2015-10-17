@@ -253,11 +253,13 @@ public class Server extends Service implements Node, Runnable {
 
 			String accept = event.query().header("accept");
 
-			if(accept != null && accept.indexOf("text/event-stream") > -1) {
+			boolean stream = accept != null && accept.indexOf("text/event-stream") > -1;
+			
+			if(stream) {
 				event.reply().type("text/event-stream");
 			}
 
-			System.out.println(event.query().header());
+			//System.out.println(event.query().header());
 			
 			String origin = event.query().header("origin");
 			
@@ -268,7 +270,7 @@ public class Server extends Service implements Node, Runnable {
 			
 			Output out = event.output();
 
-			if(accept != null && accept.indexOf("text/event-stream") > -1) {
+			if(stream) {
 				out.print("data: noop\n\n");
 			}
 			else {
