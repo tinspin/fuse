@@ -18,6 +18,8 @@ In sort of chronological order:
                      -> join|fail|<name> already registered
 
                      // login old user
+                     // <hash> is either md5(<key> + <salt>)
+                     //               or md5([pass] + <salt>)
  salt                -> salt|done|<salt>
  user|<salt>|<hash>  -> user|done
                      -> user|fail|user not found
