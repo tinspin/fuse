@@ -51,7 +51,7 @@ In sort of chronological order:
 
                      // join room
  room|<name>         -> room|done
-                    --> here|<name>(|<ip>)           // in new room, all to all
+                    --> here|<name>[|<ip>]           // in new room, all to all
                                                         IP if peer was set
                     --> gone|<name>                  // in lobby
                      -> room|fail|room not found
@@ -61,7 +61,7 @@ In sort of chronological order:
 
                      // exit room
  exit                -> exit|done
-                    --> here|<name>(|<ip>)           // in lobby, all to all
+                    --> here|<name>[|<ip>]           // in lobby, all to all
                                                         IP if peer was set
                     --> gone|<name>                  // in old room OR
                     --> stop|<name>                  // in old room when maker leaves 
