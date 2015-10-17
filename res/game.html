@@ -1,7 +1,8 @@
 <html>
 <head>
 <script>
-var length;
+var size; // mark for pull, will run out of memory at some point
+var name; // for web app it makes sense to get the name and pass
 function pull(name) {
   send('pull', name, null);
 }
@@ -17,8 +18,8 @@ function send(path, name, data) {
       var state = (path == 'pull' ? 3 : 4);
       if(xhr.readyState == state) {
         if(state == 3) {
-          event(path, xhr.responseText.substring(length, xhr.responseText.length));
-          length = xhr.responseText.length;
+          event(path, xhr.responseText.substring(size, xhr.responseText.length));
+          size = xhr.responseText.length;
         }
         else
           event(path, xhr.responseText);
