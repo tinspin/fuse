@@ -216,7 +216,7 @@ public class Server extends Service implements Node, Runnable {
 					while(data != null) {
 						String accept = queue.event.query().header("accept");
 
-						if(accept != null && accept.equals("text/event-stream")) {
+						if(accept != null && accept.indexOf("text/event-stream") > -1) {
 							out.print("data: " + data + "\n\n");
 						}
 						else {
@@ -253,11 +253,11 @@ public class Server extends Service implements Node, Runnable {
 
 			String accept = event.query().header("accept");
 
-			if(accept != null && accept.equals("text/event-stream")) {
+			if(accept != null && accept.indexOf("text/event-stream") > -1) {
 				event.reply().type("text/event-stream");
 			}
 
-			//System.out.println(event.query().header());
+			System.out.println(event.query().header());
 			
 			String origin = event.query().header("origin");
 			
@@ -268,7 +268,7 @@ public class Server extends Service implements Node, Runnable {
 			
 			Output out = event.output();
 
-			if(accept != null && accept.equals("text/event-stream")) {
+			if(accept != null && accept.indexOf("text/event-stream") > -1) {
 				out.print("data: noop\n\n");
 			}
 			else {
