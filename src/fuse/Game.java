@@ -42,7 +42,7 @@ public class Game implements Node {
 					String json = "{\"name\":\"" + name + "\"}";
 
 					if(split.length > 0) {
-						json = "{\"name\":\"" + name + "\",\"pass\":" + split[1] + "}";					
+						json = "{\"name\":\"" + name + "\",\"pass\":\"" + split[1] + "\"}";					
 					}
 					
 					call.post("/node", "Host:" + event.query().header("host"), ("json=" + json + "&sort=key,name&create").getBytes("utf-8"));
