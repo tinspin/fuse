@@ -1,3 +1,4 @@
+```
 Protocol:           --> = broadcast to Receive()
                      -> = direct return on Send()
 
@@ -103,3 +104,4 @@ In sort of chronological order:
  talk // send voice
  head // send head/body movement
  hand // send hand movements
+```
