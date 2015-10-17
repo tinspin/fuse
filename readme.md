@@ -1,6 +1,6 @@
 ```
-Protocol:           --> = broadcast to Receive()
-                     -> = direct return on Send()
+Protocol:           --> = broadcast to Pull() (event(path, data) for XHR)
+                     -> = direct return on Push()
 
 <> = mandatory
 [] = optional
@@ -26,7 +26,7 @@ In sort of chronological order:
                      -> user|fail|salt not found
                      -> user|fail|wrong hash
 
- <pull> = here you should call Connect(<name>) (C#)
+ <pull> = here you should call Pull(<name>) (C#)
           or pull(<name>) (XHR) with the name you
           successfully logged in as.
 

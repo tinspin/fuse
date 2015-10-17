@@ -44,7 +44,7 @@ public class Fuse {
 		push.Connect(remote);
 	}
 
-	public void Connect(string name) {
+	public void Pull(string name) {
 		queue = new Queue<string>();
 
 		pull = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -65,7 +65,7 @@ public class Fuse {
 		connected = true;
 	}
 
-	public string Send(String name, String data) {
+	public string Push(String name, String data) {
 		byte[] body = new byte[1024];
 
 		String text = "GET /push?name=" + name + "&data=" + data + " HTTP/1.1\r\n"
@@ -80,7 +80,7 @@ public class Fuse {
 		return split[1];
 	}
 
-	public string[] Receive() {
+	public string[] Pull() {
 		if(!connected)
 			return null;
 
@@ -158,9 +158,9 @@ public class Fuse {
 			}
 
 			if(success) {
-				// this will allow you to Fuse.Receive();
+				// this will allow you to Fuse.Pull();
 				// from MonoBehaviour.Update();
-				fuse.Connect(name); 
+				fuse.Pull(name); 
 
 				// remove in unity ###
 				Thread.Sleep(100);
@@ -203,7 +203,7 @@ public class Fuse {
 	}
 
 	public string Join(string name) {
-		string[] join = Send(name, "join").Split('|');
+		string[] join = Push(name, "join").Split('|');
 
 		if(join[1].Equals("fail")) {
 			if(join[2].IndexOf("bad") > 0) {
@@ -221,9 +221,9 @@ public class Fuse {
 	}
 
 	public bool User(string name, string key) {
-		string salt = Send(name, "salt").Split('|')[2];
+		string salt = Push(name, "salt").Split('|')[2];
 		string hash = MD5(key + salt);
-		string[] user = Send(name, "user|" + salt + "|" + hash).Split('|');
+		string[] user = Push(name, "user|" + salt + "|" + hash).Split('|');
 
 		if(user[1].Equals("fail")) {
 			Console.WriteLine("user " + user[2]);
@@ -238,7 +238,7 @@ public class Fuse {
 	}
 
 	public string[] ListRoom(string name) {
-		string list = Send(name, "list|room");
+		string list = Push(name, "list|room");
 
 		if(list.StartsWith("list|fail")) {
 			Console.WriteLine(name + " " + list);
@@ -260,19 +260,19 @@ public class Fuse {
 	}
 
 	public void Lock(string name, string text) {
-		Push(name, "lock");
+		EasyPush(name, "lock");
 	}
 
 	public void Chat(string name, string text) {
-		Push(name, "chat|" + text);
+		EasyPush(name, "chat|" + text);
 	}
 
 	public void Data(string name, string data) {
-		Push(name, "data|" + data);
+		EasyPush(name, "data|" + data);
 	}
 
 	public bool BoolPush(string name, string data) {
-		string[] push = Push(name, data);
+		string[] push = EasyPush(name, data);
 
 		if(push == null) {
 			return false;
@@ -281,8 +281,8 @@ public class Fuse {
 		return true;
 	}
 
-	public string[] Push(string name, string data) {
-		string[] push = Send(name, data).Split('|');
+	public string[] EasyPush(string name, string data) {
+		string[] push = Push(name, data).Split('|');
 		
 		if(push[1].Equals("fail")) {
 			Console.WriteLine(name + " " + data + " " + push[2]);
@@ -311,7 +311,7 @@ public class Alpha {
 	public Alpha(Fuse fuse) { this.fuse = fuse; }
 	public void Beta() {
 		while(true) {
-			string[] received = fuse.Receive();
+			string[] received = fuse.Pull();
 
 			if(received != null) {
 				for(int i = 0; i < received.Length; i++) {
