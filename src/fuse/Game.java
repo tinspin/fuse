@@ -34,12 +34,18 @@ public class Game implements Node {
 		if(name.length() == 0)
 			return "main|fail|name missing";
 		
-		String[] split = data.split("\\|");
+		final String[] split = data.split("\\|");
 		
 		if(data.startsWith("join")) {
 			Async.Work user = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					call.post("/node", "Host:" + event.query().header("host"), ("json={\"name\":\"" + name + "\"}&sort=key,name&create").getBytes("utf-8"));
+					String json = "{\"name\":\"" + name + "\"}";
+
+					if(split.length > 0) {
+						json = "{\"name\":\"" + name + "\",\"pass\":" + split[1] + "}";					
+					}
+					
+					call.post("/node", "Host:" + event.query().header("host"), ("json=" + json + "&sort=key,name&create").getBytes("utf-8"));
 				}
 
 				public void read(String host, String body) throws Exception {
@@ -106,12 +112,9 @@ public class Game implements Node {
 					return "user|fail|salt not found";
 				}
 				
-				String md5 = Deploy.hash(json.getString("key") + salt, "MD5");
-				
-				//System.out.println(json);
-				//System.out.println(hash);
-				//System.out.println(md5);
-				
+				String key = json.has("pass") ? json.getString("pass") : json.getString("key");
+				String md5 = Deploy.hash(key + salt, "MD5");
+
 				if(hash.equals(md5)) {
 					User user = new User(name);
 					user.json = json;
