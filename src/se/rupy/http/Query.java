@@ -99,7 +99,7 @@ public class Query extends Hash {
 
 		String accept = header("accept");
 		
-		if(header("head") != null || (accept != null && accept.equals("text/event-stream"))) {
+		if(header("head") != null || (accept != null && accept.indexOf("text/event-stream") > -1)) {
 			input.event().headless = true;
 			input.event().channel().socket().setTcpNoDelay(true);
 			input.event().channel().socket().setKeepAlive(true);
