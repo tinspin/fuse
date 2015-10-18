@@ -59,7 +59,7 @@ public class Game implements Node {
 						
 						if(message.startsWith("name"))
 							event.query().put("fail", "join|fail|" + 
-									message.substring(message.indexOf("=") + 1) + " contains bad characters");
+								message.substring(message.indexOf("=") + 1) + " contains bad characters");
 					}
 					else if(body.indexOf("Collision") > 0) {
 						String message = body.substring(body.indexOf("[") + 1, body.indexOf("]"));
@@ -68,7 +68,7 @@ public class Game implements Node {
 						
 						if(message.startsWith("name"))
 							event.query().put("fail", "join|fail|" + 
-									message.substring(message.indexOf("=") + 1) + " already registered");
+								message.substring(message.indexOf("=") + 1) + " already registered");
 					}
 					else {
 						JSONObject user = new JSONObject(body);
