@@ -87,7 +87,11 @@ In sort of chronological order:
  chat|<text>         -> chat|done
                     --> text|<name>|<text>
 
-                     // real-time gameplay packets
+                     // send any gameplay data
+ send|<data>         -> send|done
+                    --> sent|<name>|<data>
+ 
+                     // motion for 3D MMO games with dynamic here/gone
  move|<data>         -> move|done
                     --> data|<name>|<data>
                      // <data> = <x>+<y>+<z>|<x>+<y>+<z>+<w>|<action>(|<speed>|...)

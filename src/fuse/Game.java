@@ -319,12 +319,17 @@ public class Game implements Node {
 		}
 		
 		if(data.startsWith("chat")) {
-			user.room.send(user, "chat|" + name + "|" + split[1]);
+			user.room.send(user, "text|" + name + "|" + split[1]);
 			return "chat|done";
 		}
 		
+		if(data.startsWith("send")) {
+			user.room.send(user, "sent|" + name + "|" + split[1]);
+			return "send|done";
+		}
+		
 		if(data.startsWith("move")) {
-			user.room.send(user, "move|" + name + "|" + split[1]);
+			user.room.send(user, "data|" + name + "|" + split[1]);
 			return "move|done";
 		}
 		
