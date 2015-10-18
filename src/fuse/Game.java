@@ -428,7 +428,7 @@ public class Game implements Node {
 				}
 				
 				// send message from user to room
-				if(data.startsWith("chat") || !from.name.equals(user.name)) {
+				if(data.startsWith("text") || !from.name.equals(user.name)) {
 					System.out.println(from + " -> " + user + " " + data);
 					node.push(null, user.name, data.startsWith("here") ? data + from.peer(user) : data);
 				}
