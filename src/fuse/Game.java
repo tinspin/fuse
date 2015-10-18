@@ -45,7 +45,8 @@ public class Game implements Node {
 						json = "{\"name\":\"" + name + "\",\"pass\":\"" + split[1] + "\"}";					
 					}
 					
-					call.post("/node", "Host:" + event.query().header("host"), ("json=" + json + "&sort=key,name&create").getBytes("utf-8"));
+					call.post("/node", "Host:" + event.query().header("host"), 
+							("json=" + json + "&sort=key,name&create").getBytes("utf-8"));
 				}
 
 				public void read(String host, String body) throws Exception {
@@ -57,7 +58,8 @@ public class Game implements Node {
 						System.out.println("Validation " + message);
 						
 						if(message.startsWith("name"))
-							event.query().put("fail", "join|fail|" + message.substring(message.indexOf("=") + 1) + " contains bad characters");
+							event.query().put("fail", "join|fail|" + 
+									message.substring(message.indexOf("=") + 1) + " contains bad characters");
 					}
 					else if(body.indexOf("Collision") > 0) {
 						String message = body.substring(body.indexOf("[") + 1, body.indexOf("]"));
@@ -65,7 +67,8 @@ public class Game implements Node {
 						System.out.println("Collision " + message);
 						
 						if(message.startsWith("name"))
-							event.query().put("fail", "join|fail|" + message.substring(message.indexOf("=") + 1) + " already registered");
+							event.query().put("fail", "join|fail|" + 
+									message.substring(message.indexOf("=") + 1) + " already registered");
 					}
 					else {
 						JSONObject user = new JSONObject(body);
@@ -181,7 +184,8 @@ public class Game implements Node {
 				
 				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
-						call.get("/link/user/" + type + "/" + key + "?from=" + from + "&size=" + size, "Host:" + event.query().header("host"));
+						call.get("/link/user/" + type + "/" + key + "?from=" + from + 
+								"&size=" + size, "Host:" + event.query().header("host"));
 					}
 
 					public void read(String host, String body) throws Exception {
@@ -266,7 +270,8 @@ public class Game implements Node {
 			
 			Async.Work node = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					String data = "json=" + json.toString() + "&type=" + type + "&sort=key" + (key.length() > 0 ? "" : "&create");
+					String data = "json=" + json.toString() + "&type=" + type + 
+							"&sort=key" + (key.length() > 0 ? "" : "&create");
 					call.post("/node", "Host:" + event.query().header("host"), data.getBytes("utf-8"));
 				}
 
@@ -275,8 +280,8 @@ public class Game implements Node {
 					
 					Async.Work link = new Async.Work(event) {
 						public void send(Async.Call call) throws Exception {
-							call.post("/link", "Host:" + event.query().header("host"), ("pkey=" + user_key + 
-									"&ckey=" + node.getString("key") + 
+							call.post("/link", "Host:" + event.query().header("host"), 
+									("pkey=" + user_key + "&ckey=" + node.getString("key") + 
 									"&ptype=user&ctype=" + type).getBytes("utf-8"));
 						}
 
