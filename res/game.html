@@ -80,22 +80,44 @@
     if(auth)
       send('push', name, data);
   }
-  function id(name) {
-    return document.getElementById(name).value;
+  function id(name, reset) {
+    var value = document.getElementById(name).value;
+
+    if(reset)
+      document.getElementById(name).value = '';
+      
+    return value;
+  }
+  function login_key(e) {
+    e = e || window.event;
+    var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+    if(unicode == 13) {
+      login();
+    }
+  }
+  function chat_key(e) {
+    e = e || window.event;
+    var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+    if(unicode == 13) {
+      chat();
+    }
+  }
+  function chat() {
+    none('chat|' + id('chat', true));
   }
 </script>
 </head>
 <body>
 
 <div id="user">
-name&nbsp;<input id="name" size="5">&nbsp;pass&nbsp;<input id="pass" type="password" size="5">
+name&nbsp;<input id="name" size="10">&nbsp;pass&nbsp;<input id="pass" type="password" size="10" onkeypress="login_key(event);">
 <a href="javascript:register();">register</a>
 <a href="javascript:login();">login</a>
 </div>
 
 <div id="text">
-text&nbsp;<input id="chat" size="10">
-<a href="javascript:none('chat|' + id('chat'));">chat</a>
+text&nbsp;<input id="chat" size="10" onkeypress="chat_key(event);">
+<a href="javascript:chat();">chat</a>
 </div>
 
 <div id="join">
@@ -105,16 +127,11 @@ text&nbsp;<input id="chat" size="10">
 </div>
 
 <div>
-<img src="svg/blue.svg">
-<img src="svg/blues.svg">
-<img src="svg/green.svg">
-<img src="svg/greens.svg">
-<img src="svg/orange.svg">
-<img src="svg/oranges.svg">
-<img src="svg/purple.svg">
-<img src="svg/purples.svg">
+<img src="svg/blue.svg"><br>
+<img src="svg/green.svg"><br>
+<img src="svg/orange.svg"><br>
+<img src="svg/purple.svg"><br>
 <img src="svg/red.svg">
-<img src="svg/reds.svg">
 </div>
 
 <div id="pushpull">
