@@ -5,8 +5,8 @@
 </style>
 <script src="md5.js"></script>
 <script>
-  var size; // mark for pull, will run out of memory at some point
-  var name = 'one'; // for web app it makes sense to get the name and pass
+  var size = 0;
+  var name = '';
   function pull() {
     send('pull', name, null);
   }
@@ -46,26 +46,25 @@
 </script>
 <script>
   var auth = false;
-  function user(join) {
+  function register() {
     name = id('name');
-    if(join) {
-      var join = push('join|' + id('pass')).split('|');
-      if(join[1] == 'fail')
-        return alert(join[2]);
-      if(join[1] == 'done')
-        auth = true;
-    }
-    else {
-      var salt = push('salt').split('|');
-      if(salt[1] == 'fail')
-        return alert(user[2]);
-      var hash = md5(id('pass') + salt[2]);
-      var user = push('user|' + salt[2] + '|' + hash);
-      if(user[1] == 'fail')
-        return alert(user[2]);
-      if(user[1] == 'done')
-        auth = true;
-    }
+    var join = push('join|' + id('pass')).split('|');
+    if(join[1] == 'fail')
+      return alert(join[2]);
+    if(join[1] == 'done')
+      auth = true;
+  }
+  function login() {
+    name = id('name');
+    var salt = push('salt').split('|');
+    if(salt[1] == 'fail')
+      return alert(user[2]);
+    var hash = md5(id('pass') + salt[2]);
+    var user = push('user|' + salt[2] + '|' + hash);
+    if(user[1] == 'fail')
+      return alert(user[2]);
+    if(user[1] == 'done')
+      auth = true;
   }
   function none(data) {
     send('push', name, data);
@@ -79,8 +78,8 @@
 
 <div id="user">
 name&nbsp;<input id="name" size="5">&nbsp;pass&nbsp;<input id="pass" type="password" size="5">
-<a href="javascript:user(true);">register</a>
-<a href="javascript:user(false);">login</a>
+<a href="javascript:register();">register</a>
+<a href="javascript:login();">login</a>
 </div>
 
 <div id="play">
