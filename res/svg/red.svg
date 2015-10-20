@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 14.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 43363)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="50px" height="50px" viewBox="0 0 50 50" enable-background="new 0 0 50 50" xml:space="preserve">
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="1.3374" y1="-1.2705" x2="48.5563" y2="51.1714">
+	<stop  offset="0" style="stop-color:#C2262E"/>
+	<stop  offset="1" style="stop-color:#ED1C24"/>
+</linearGradient>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_1_)" d="M5.391,0h39.197c2.96,0,5.392,2.43,5.392,5.389V44.59
+	c0,2.979-2.432,5.41-5.392,5.41H5.391C2.431,50,0,47.568,0,44.59V5.389C0,2.43,2.431,0,5.391,0z"/>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="#A92930" d="M5.434,0H44.63C0.042,5.389,5.434,0,0.042,44.59V5.389
+	C0.042,2.43,2.474,0,5.434,0z"/>
+<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="6.9863" y1="4.231" x2="43.2205" y2="45.9136">
+	<stop  offset="0" style="stop-color:#ED1C24"/>
+	<stop  offset="1" style="stop-color:#F58466"/>
+</linearGradient>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_2_)" d="M9.683,5.389h30.698c2.347,0,4.249,1.923,4.249,4.248
+	v30.705c0,2.346-1.902,4.248-4.249,4.248H9.683c-2.325,0-4.249-1.902-4.249-4.248V9.637C5.434,7.312,7.357,5.389,9.683,5.389z"/>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="#F19B7E" d="M39.873,44.59h-28.14c32.96-4.186,28.711,0.063,32.896-33.178
+	v28.422C44.63,42.455,42.495,44.59,39.873,44.59z"/>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="#E31F2A" d="M10.127,5.283h28.14C5.307,9.467,9.556,5.22,5.37,38.461V10.017
+	C5.37,7.417,7.505,5.283,10.127,5.283z"/>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="#EC3E34" d="M44.482,50H11.733C50.063,45.139,45.138,50.084,50,11.412v33.073
+	C50,47.527,47.526,50,44.482,50z"/>
+</svg>

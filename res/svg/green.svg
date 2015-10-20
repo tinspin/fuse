@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 14.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 43363)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="50px" height="50px" viewBox="0 0 50 50" enable-background="new 0 0 50 50" xml:space="preserve">
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="1.48" y1="-1.1216" x2="48.6883" y2="51.3086">
+	<stop  offset="0" style="stop-color:#00A651"/>
+	<stop  offset="1" style="stop-color:#A6CE39"/>
+</linearGradient>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_1_)" d="M5.391,0h39.197c2.96,0,5.392,2.429,5.392,5.408V44.57
+	c0,2.979-2.432,5.408-5.392,5.408H5.391C2.431,49.979,0,47.549,0,44.57V5.407C0,2.429,2.431,0,5.391,0z"/>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="#188C4B" d="M5.434,0H44.63C0.042,5.407,5.434,0,0.042,44.57V5.407
+	C0.042,2.429,2.474,0,5.434,0z"/>
+<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="6.98" y1="4.2183" x2="43.2055" y2="45.891">
+	<stop  offset="0" style="stop-color:#A6CE39"/>
+	<stop  offset="1" style="stop-color:#D2E288"/>
+</linearGradient>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_2_)" d="M9.683,5.407h30.698c2.347,0,4.249,1.901,4.249,4.225
+	v30.714c0,2.324-1.902,4.225-4.249,4.225H9.683c-2.325,0-4.249-1.9-4.249-4.225V9.632C5.434,7.308,7.357,5.407,9.683,5.407z"/>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="#E1E8A7" d="M39.873,44.57h-28.14c32.96-4.161,28.711,0.063,32.896-33.164
+	v28.433C44.63,42.438,42.495,44.57,39.873,44.57z"/>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="#86BD46" d="M10.127,5.28h28.14C5.307,9.463,9.556,5.238,5.37,38.445V10.033
+	C5.37,7.414,7.505,5.28,10.127,5.28z"/>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="#A6CE39" d="M44.482,50H11.733C50.063,45.141,45.138,50.063,50,11.406v33.08
+	C50,47.507,47.526,50,44.482,50z"/>
+</svg>
