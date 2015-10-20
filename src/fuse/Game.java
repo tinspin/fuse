@@ -31,8 +31,11 @@ public class Game implements Node {
 	public String push(final Event event, final String name, String data) throws Exception {
 		System.err.println(">" + name + " " + data + " " + event.index());
 
-		if(name.length() == 0)
+		if(name.length() < 0)
 			return "main|fail|name missing";
+		
+		if(name.length() < 3)
+			return "main|fail|name too short";
 		
 		final String[] split = data.split("\\|");
 		
@@ -435,7 +438,7 @@ public class Game implements Node {
 				// send message from user to room
 				if(data.startsWith("text") || !from.name.equals(user.name)) {
 					System.out.println(from + " -> " + user + " " + data);
-					node.push(null, user.name, data.startsWith("here") ? data + from.peer(user) : data);
+					node.push(null, user.name, data.startsWith("here") || data.startsWith("gone") ? data + from.peer(user) : data);
 				}
 				
 				// eject everyone

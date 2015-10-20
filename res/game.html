@@ -1,54 +1,96 @@
 <html>
 <head>
+<style>
+  div { margin: 3px; }
+</style>
+<script src="md5.js"></script>
 <script>
-var size; // mark for pull, will run out of memory at some point
-var name; // for web app it makes sense to get the name and pass
-function pull(name) {
-  send('pull', name, null);
-}
-function push(name, data) {
-  send('push', name, data);
-}
-function send(path, name, data) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'http://fuse.rupy.se/' + path + '?name=' + name + '&data=' + encodeURIComponent(data), true);
-  xhr.setRequestHeader('Accept', 'text/event-stream');
-  if(xhr) {
-    xhr.onreadystatechange = function() {
-      var state = (path == 'pull' ? 3 : 4);
-      if(xhr.readyState == state) {
-        if(state == 3) {
+  var size; // mark for pull, will run out of memory at some point
+  var name = 'one'; // for web app it makes sense to get the name and pass
+  function pull() {
+    send('pull', name, null);
+  }
+  function push(data) {
+    return send('push', name, data);
+  }
+  function send(path, name, data) {
+    var state = (path == 'pull' ? 3 : 4);
+    var xhr = new XMLHttpRequest();
+    var url = 'http://fuse.rupy.se/' + path + '?name=' + name + '&data=' + encodeURIComponent(data);
+    xhr.open('GET', url, state == 3); // sync is deprecated really? genious!
+    xhr.setRequestHeader('Accept', 'text/event-stream');
+    if(state == 3) {
+      xhr.onreadystatechange = function() {
+        if(xhr.readyState == 3) {
           event(path, xhr.responseText.substring(size, xhr.responseText.length));
           size = xhr.responseText.length;
         }
-        else
-          event(path, xhr.responseText);
-      }
-    };
+      };
+    }
     xhr.send();
+    if(state == 4) {
+      event(path, xhr.responseText);
+      return xhr.responseText;
+    }
   }
-}
-function event(path, data) {
-  var body = data;
+  function event(path, data) {
+    var body = data;
   
-  if(path == 'pull')
-    body = data.substring(5, data.length - 2);
-  else
-    body += '\n';
+    if(path == 'pull')
+      body = data.substring(5, data.length - 2);
+    else
+      body += '\n';
   
-  document.getElementById(path).innerHTML += body;
-}
+    document.getElementById(path).innerHTML += body;
+  }
+</script>
+<script>
+  var auth = false;
+  function user(join) {
+    name = id('name');
+    if(join) {
+      var join = push('join|' + id('pass')).split('|');
+      if(join[1] == 'fail')
+        return alert(join[2]);
+      if(join[1] == 'done')
+        auth = true;
+    }
+    else {
+      var salt = push('salt').split('|');
+      if(salt[1] == 'fail')
+        return alert(user[2]);
+      var hash = md5(id('pass') + salt[2]);
+      var user = push('user|' + salt[2] + '|' + hash);
+      if(user[1] == 'fail')
+        return alert(user[2]);
+      if(user[1] == 'done')
+        auth = true;
+    }
+  }
+  function none(data) {
+    send('push', name, data);
+  }
+  function id(name) {
+    return document.getElementById(name).value;
+  }
 </script>
 </head>
 <body>
 
-<a href="javascript:pull('one');">pull</a>
-<a href="javascript:push('one', 'list|room');">list</a>
-<a href="javascript:push('one', 'room|two');">room</a>
-<a href="javascript:push('one', 'exit');">exit</a>
-<a href="javascript:push('one', 'chat|' + document.getElementById('chat').value);">chat</a>
+<div id="user">
+name&nbsp;<input id="name" size="5">&nbsp;pass&nbsp;<input id="pass" type="password" size="5">
+<a href="javascript:user(true);">register</a>
+<a href="javascript:user(false);">login</a>
+</div>
 
-<input id="chat">
+<div id="play">
+<a href="javascript:pull();">pull</a>
+<a href="javascript:none('list|room');">list</a>
+<a href="javascript:none('room|two');">room</a>
+<a href="javascript:none('exit');">exit</a>
+&nbsp;text&nbsp;<input id="chat" size="10">
+<a href="javascript:none('chat|' + id('chat'));">chat</a>
+</div>
 
 <div id="pull">pull:</div>
 <div id="push">push:</div>

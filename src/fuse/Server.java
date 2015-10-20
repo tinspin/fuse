@@ -173,6 +173,8 @@ public class Server extends Service implements Node, Runnable {
 				String data = event.string("data");
 				byte[] body = null;
 				
+				//System.out.println(event.query().parameters());
+				
 				try {
 					String response = node.push(event, name, data);
 

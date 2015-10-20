@@ -10,6 +10,7 @@ In sort of chronological order:
 <type>                 <echo>
 
  -> main|fail|name missing
+ -> main|fail|name too short
  
                      // register new user
                      // [pass] if your platform cannot persist the key
