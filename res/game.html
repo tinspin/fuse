@@ -48,26 +48,30 @@
   var auth = false;
   function register() {
     name = id('name');
-    var join = push('join|' + id('pass')).split('|');
-    if(join[1] == 'fail')
-      return alert(join[2]);
+    var pass = id('pass');
+    if(pass.length < 3)
+      return;
+    var join = push('join|' + pass).split('|');
+    //if(join[1] == 'fail')
     if(join[1] == 'done')
       auth = true;
   }
   function login() {
     name = id('name');
     var salt = push('salt').split('|');
-    if(salt[1] == 'fail')
-      return alert(user[2]);
+    if(salt[1] === 'fail')
+      return;
     var hash = md5(id('pass') + salt[2]);
-    var user = push('user|' + salt[2] + '|' + hash);
-    if(user[1] == 'fail')
-      return alert(user[2]);
-    if(user[1] == 'done')
+    var user = push('user|' + salt[2] + '|' + hash).split('|');
+    //if(user[1] == 'fail')
+    if(user[1] == 'done') {
       auth = true;
+      pull();
+    }
   }
   function none(data) {
-    send('push', name, data);
+    if(auth)
+      send('push', name, data);
   }
   function id(name) {
     return document.getElementById(name).value;
@@ -82,13 +86,15 @@ name&nbsp;<input id="name" size="5">&nbsp;pass&nbsp;<input id="pass" type="passw
 <a href="javascript:login();">login</a>
 </div>
 
-<div id="play">
-<a href="javascript:pull();">pull</a>
+<div id="chat">
+text&nbsp;<input id="chat" size="10">
+<a href="javascript:none('chat|' + id('chat'));">chat</a>
+</div>
+
+<div id="join">
 <a href="javascript:none('list|room');">list</a>
 <a href="javascript:none('room|two');">room</a>
 <a href="javascript:none('exit');">exit</a>
-&nbsp;text&nbsp;<input id="chat" size="10">
-<a href="javascript:none('chat|' + id('chat'));">chat</a>
 </div>
 
 <div id="pull">pull:</div>

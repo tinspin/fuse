@@ -40,11 +40,14 @@ public class Game implements Node {
 		final String[] split = data.split("\\|");
 		
 		if(data.startsWith("join")) {
+			if(split.length > 1 && split[1].length() < 3)
+				return "join|fail|pass too short";
+			
 			Async.Work user = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					String json = "{\"name\":\"" + name + "\"}";
 
-					if(split.length > 0) {
+					if(split.length > 1) {
 						json = "{\"name\":\"" + name + "\",\"pass\":\"" + split[1] + "\"}";					
 					}
 					

@@ -15,6 +15,7 @@ In sort of chronological order:
                      // register new user
                      // [pass] if your platform cannot persist the key
  join|[pass]         -> join|done|<key>
+                     -> join|fail|pass too short
                      -> join|fail|<name> contains bad characters
                      -> join|fail|<name> already registered
 
