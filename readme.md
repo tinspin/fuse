@@ -13,9 +13,12 @@ In sort of chronological order:
                      // [pass] if your platform cannot persist the key
                      //        preferably this is a hash with salt
                      //        for example we simply use md5(pass + name)
+                     // [mail] is good if you want recovery, set [pass] to 
+                     //        empty string (||) if you want mail without pass
                      // use <id> as name if you want an anonymous registration
- join|[pass]         -> join|done|<key>|<id>
+ join|[pass]|[mail]  -> join|done|<key>|<id>
                      -> join|fail|pass too short
+                     -> join|fail|mail invalid
                      -> join|fail|<name> needs character // numeric is reserved for <id>
                      -> join|fail|<name> contains bad characters
                      -> join|fail|<name> already registered

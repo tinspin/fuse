@@ -41,26 +41,46 @@ public class Game implements Node {
 		final String[] split = data.split("\\|");
 		
 		if(data.startsWith("join")) {
-			if(split.length > 1 && split[1].length() < 3)
+			if(split.length > 1 && split[1].length() > 0 && split[1].length() < 3)
 				return "join|fail|pass too short";
+			
+			if(split.length > 2 && split[2].indexOf("@") < 1)
+				return "join|fail|mail invalid";
 			
 			if(name.matches("[0-9]+"))
 				return "join|fail|" + name + " needs character";
 			
 			Async.Work user = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					String json = "{}";
+					String json = "{";
 					String sort = "";
 					
+					boolean add = false;
+					
 					if(name.length() > 3) {
-						json = "{\"name\":\"" + name + "\"}";
+						json += "\"name\":\"" + name + "\"";
 						sort = ",name";
+						add = true;
 					}
 					
-					if(split.length > 1) {
-						json = "{\"name\":\"" + name + "\",\"pass\":\"" + split[1] + "\"}";
-						sort = ",name";
+					if(split.length > 1 && split[1].length() > 0) {
+						if(add)
+							json += ",";
+						
+						json += "\"pass\":\"" + split[1] + "\"";
+						sort += ",name";
+						add = true;
 					}
+					
+					if(split.length > 2 && split[2].length() > 0) {
+						if(add)
+							json += ",";
+						
+						json += "\"mail\":\"" + split[2] + "\"";
+						sort += ",mail";
+					}
+					
+					json += "}";
 					
 					call.post("/node", "Host:" + event.query().header("host"), 
 							("json=" + json + "&sort=key" + sort + "&create").getBytes("utf-8"));
