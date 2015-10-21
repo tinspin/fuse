@@ -20,16 +20,16 @@ In sort of chronological order:
                      -> join|fail|<name> contains bad characters
                      -> join|fail|<name> already registered
 
-                     // login old user
-                     // <hash> is either md5(<key> + <salt>)
-                     //               or md5([pass] + <salt>)
-                     //        we use md5(md5(pass + name) + <salt>)
-                     //        make sure you keep the case correct
  salt                -> salt|done|<salt>
  
   -> main|fail|name missing
   -> main|fail|name too short
  
+                     // login old user
+                     // <hash> is either md5(<key> + <salt>)
+                     //               or md5([pass] + <salt>)
+                     //        we use md5(md5(pass + name) + <salt>)
+                     //        make sure you keep the case correct
  user|<salt>|<hash>  -> user|done
                      -> user|fail|user not found
                      -> user|fail|salt not found
