@@ -69,7 +69,7 @@
   function register() {
     name = id('name');
     var mail = id('mail');
-    if(mail.indexOf('@') < 0)
+    if(mail.length > 0 && mail.indexOf('@') < 0)
       return;
     var pass = id('pass');
     if(pass.length < 3)
@@ -100,6 +100,7 @@
     display('user', 'none');
     display('join', 'block');
     pull();
+    focus('chat');
   }
   function none(data) {
     send('push', name, data);
@@ -112,6 +113,9 @@
   }
   function display(id, value) {
     document.getElementById(id).style.display = value;
+  }
+  function focus(id) {
+    document.getElementById(id).focus();
   }
   function login_key(e) {
     e = e || window.event;
@@ -135,10 +139,14 @@
 <body>
 
 <div id="user"><table>
-<tr><td>name&nbsp;</td><td><input id="name" size="10"></td></tr>
-<tr><td>mail&nbsp;</td><td><input id="mail" size="10"></td></tr>
-<tr><td>pass&nbsp;</td><td><input id="pass" type="password" size="10" onkeypress="login_key(event);"></td></tr>
-<tr><td></td><td align="right"><a href="javascript:register();">join</a>&nbsp;<a href="javascript:login();">login</a></td></tr>
+<tr><td>name&nbsp;&nbsp;</td><td><input id="name" size="10"></td></tr>
+<tr><td>pass&nbsp;&nbsp;</td>
+    <td><input id="pass" type="password" size="10" onkeypress="login_key(event);"></td>
+    <td><a href="javascript:login();">login</a></td></tr>
+<tr><td>mail*&nbsp;</td>
+    <td><input id="mail" size="10"></td>
+    <td><a href="javascript:register();">join</a></td></tr>
+<tr><td colspan="2">*optional</td></tr>
 </table>
 </div>
 
@@ -162,6 +170,10 @@ text&nbsp;<input id="chat" size="10" onkeypress="chat_key(event);">
 <div id="pull">pull:</div>
 <div id="push">push:</div>
 </div>
+
+<script>
+  focus('name');
+</script>
 
 </body>
 </html>
