@@ -154,7 +154,7 @@ public abstract class Output extends OutputStream implements Event.Block {
 				wrote(stream);
 			}
 			
-			if(!zero() || !reply.type().equals(Reply.HTML)) {
+			if(!reply.type().equals(Reply.HTML)) {
 				wrote(("Content-Type: " + reply.type() + EOL).getBytes());
 			}
 		}
