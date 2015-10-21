@@ -51,10 +51,10 @@ public class Game implements Node {
 				return "join|fail|pass too short";
 			
 			if(!name.matches("[a-zA-Z0-9.]+"))
-				return "join|fail|" + name + " contains bad characters";
+				return "join|fail|name '" + name + "' contains bad characters";
 			
 			if(name.matches("[0-9]+"))
-				return "join|fail|" + name + " needs character";
+				return "join|fail|name '" + name + "' needs alpha character";
 			
 			Async.Work user = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
@@ -89,18 +89,9 @@ public class Game implements Node {
 					
 					json += "}";
 					
-					System.out.println(json);
-					System.out.println(sort);
-					
-					//byte[] post = ("json=" + json + "&create&sort=key" + sort).getBytes("utf-8");
-					byte[] post = ("json=" + json + "&sort=key,name&create").getBytes("utf-8");
-					
-					System.out.println(new String(post));
-					
+					byte[] post = ("json=" + json + "&sort=key" + sort + "&create").getBytes("utf-8");
 					String host = event.query().header("host");
-					
-					System.out.println(host);
-					
+
 					call.post("/node", "Host:" + host, post);
 				}
 
@@ -113,8 +104,12 @@ public class Game implements Node {
 						System.out.println("Validation " + message);
 						
 						if(message.startsWith("name"))
-							event.query().put("fail", "join|fail|" + 
-								message.substring(message.indexOf("=") + 1) + " contains bad characters");
+							event.query().put("fail", "join|fail|name '" + 
+								message.substring(message.indexOf("=") + 1) + "' contains bad characters");
+						
+						if(message.startsWith("mail"))
+							event.query().put("fail", "join|fail|mail '" + 
+								message.substring(message.indexOf("=") + 1) + "' contains bad characters");
 					}
 					else if(body.indexOf("Collision") > 0) {
 						String message = body.substring(body.indexOf("[") + 1, body.indexOf("]"));
@@ -122,8 +117,12 @@ public class Game implements Node {
 						System.out.println("Collision " + message);
 						
 						if(message.startsWith("name"))
-							event.query().put("fail", "join|fail|" + 
-								message.substring(message.indexOf("=") + 1) + " already registered");
+							event.query().put("fail", "join|fail|name '" + 
+								message.substring(message.indexOf("=") + 1) + "' already registered");
+						
+						if(message.startsWith("mail"))
+							event.query().put("fail", "join|fail|mail '" + 
+								message.substring(message.indexOf("=") + 1) + "' already registered");
 					}
 					else {
 						JSONObject user = new JSONObject(body);

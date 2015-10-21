@@ -15,14 +15,16 @@ In sort of chronological order:
                      // [pass] if your platform cannot persist the key 
                      //        preferably this is a hash with salt 
                      //        for example we simply use md5(pass + name)
-                     // use <id> as name if you want an anonymous users
+                     // use <id> as name if you want anonymous users
  join|[mail]|[pass]  -> join|done|<key>|<id>
                      -> join|fail|name too short
                      -> join|fail|pass too short
                      -> join|fail|mail invalid
-                     -> join|fail|<name> needs character // numeric only is reserved for <id>
-                     -> join|fail|<name> contains bad characters // only alphanumeric and .
-                     -> join|fail|<name> already registered
+                     -> join|fail|name '<name>' needs alpha character // numeric only is reserved for <id>
+                     -> join|fail|name '<name>' contains bad characters // only alphanumeric and .
+                     -> join|fail|name '<name>' already registered
+                     -> join|fail|mail '<mail>' contains bad characters // only alphanumeric and /.@-+
+                     -> join|fail|mail '<mail>' already registered
 
  salt                -> salt|done|<salt>
  

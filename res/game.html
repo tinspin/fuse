@@ -58,11 +58,14 @@
 <script>
   function register() {
     name = id('name');
+    var mail = id('mail');
+    if(mail.indexOf('@') < 0)
+      return;
     var pass = id('pass');
     if(pass.length < 3)
       return;
     var hash = md5(pass + name);
-    var join = push('join||' + hash).split('|');
+    var join = push('join|' + mail + '|' + hash).split('|');
     //if(join[1] == 'fail')
     if(join[1] == 'done') {
       authorize();
@@ -71,6 +74,8 @@
   function login() {
     name = id('name');
     var pass = id('pass');
+    if(pass.length < 3)
+      return;
     var salt = push('salt').split('|');
     if(salt[1] === 'fail')
       return;
@@ -121,6 +126,7 @@
 
 <div id="user"><table>
 <tr><td>name&nbsp;</td><td><input id="name" size="10"></td></tr>
+<tr><td>mail&nbsp;</td><td><input id="mail" size="10"></td></tr>
 <tr><td>pass&nbsp;</td><td><input id="pass" type="password" size="10" onkeypress="login_key(event);"></td></tr>
 <tr><td></td><td align="right"><a href="javascript:register();">join</a>&nbsp;<a href="javascript:login();">login</a></td></tr>
 </table>
