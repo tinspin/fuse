@@ -41,11 +41,14 @@ public class Game implements Node {
 		final String[] split = data.split("\\|");
 		
 		if(data.startsWith("join")) {
-			if(split.length > 1 && split[1].length() > 0 && split[1].length() < 3)
+			if(split.length > 1 && split[1].length() > 0 && split[1].indexOf("@") < 1)
+				return "join|fail|mail invalid";
+			
+			if(split.length > 2 && split[2].length() > 0 && split[2].length() < 3)
 				return "join|fail|pass too short";
 			
-			if(split.length > 2 && split[2].indexOf("@") < 1)
-				return "join|fail|mail invalid";
+			if(!name.matches("[a-zA-Z0-9.]+"))
+				return "join|fail|" + name + " contains bad characters";
 			
 			if(name.matches("[0-9]+"))
 				return "join|fail|" + name + " needs character";
@@ -67,17 +70,17 @@ public class Game implements Node {
 						if(add)
 							json += ",";
 						
-						json += "\"pass\":\"" + split[1] + "\"";
-						sort += ",name";
-						add = true;
+						json += "\"mail\":\"" + split[1] + "\"";
+						sort += ",mail";
 					}
 					
 					if(split.length > 2 && split[2].length() > 0) {
 						if(add)
 							json += ",";
 						
-						json += "\"mail\":\"" + split[2] + "\"";
-						sort += ",mail";
+						json += "\"pass\":\"" + split[2] + "\"";
+						sort += ",name";
+						add = true;
 					}
 					
 					json += "}";
