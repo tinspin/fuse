@@ -11,6 +11,7 @@
   }
 </style>
 <script src="md5.js"></script>
+<script src="swipe.js"></script>
 <script>
   var size = 0;
   var name = '';
@@ -42,12 +43,10 @@
   }
   function event(path, data) {
     var body = data;
-  
     if(path == 'pull')
-      body = data.substring(5, data.length - 2);
+      body = data.substring(6, data.length - 1);
     else
       body += '\n';
-  
     document.getElementById(path).innerHTML += body;
   }
 </script>
@@ -118,7 +117,7 @@
 <div id="user"><table>
 <tr><td>name&nbsp;</td><td><input id="name" size="10"></td></tr>
 <tr><td>pass&nbsp;</td><td><input id="pass" type="password" size="10" onkeypress="login_key(event);"></td></tr>
-<tr><td><a href="javascript:register();">join</a></td><td align="right"><a href="javascript:login();">login</a></td></tr>
+<tr><td></td><td align="right"><a href="javascript:register();">join</a>&nbsp;<a href="javascript:login();">login</a></td></tr>
 </table>
 </div>
 
@@ -130,7 +129,7 @@ text&nbsp;<input id="chat" size="10" onkeypress="chat_key(event);">
 <a href="javascript:none('exit');">exit</a>
 </div>
 
-<div>
+<div id="box" ontouchstart="touchStart(event,'box');" ontouchend="touchEnd(event);" ontouchmove="touchMove(event);" ontouchcancel="touchCancel(event);">
 <img src="svg/blue.svg"><br>
 <img src="svg/green.svg"><br>
 <img src="svg/orange.svg"><br>
