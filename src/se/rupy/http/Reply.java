@@ -16,6 +16,8 @@ import java.util.*;
  * {@link #wakeup()}.
  */
 public class Reply {
+	final static String HTML = "text/html; charset=UTF-8";
+	
 	/**
 	 * If the reply has a thread writing already. You have to wait until it finishes. this 
 	 * should not happen on a 1-to-1 wakeup, but when many threads are writing to one reply 
@@ -40,7 +42,7 @@ public class Reply {
 	 */
 	public static int CLOSED = 2;
 	
-	private String type = "text/html; charset=UTF-8";
+	private String type = HTML;
 	private HashMap headers;
 	private Event event;
 	private long modified;
