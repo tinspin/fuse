@@ -52,7 +52,6 @@
   }
 </script>
 <script>
-  var auth = false;
   function register() {
     name = id('name');
     var pass = id('pass');
@@ -61,8 +60,9 @@
     var hash = md5(pass + name);
     var join = push('join|' + hash).split('|');
     //if(join[1] == 'fail')
-    if(join[1] == 'done')
-      auth = true;
+    if(join[1] == 'done') {
+      authorize();
+    }
   }
   function login() {
     name = id('name');
@@ -74,21 +74,25 @@
     var user = push('user|' + salt[2] + '|' + hash).split('|');
     //if(user[1] == 'fail')
     if(user[1] == 'done') {
-      auth = true;
-      pull();
+      authorize();
     }
   }
+  function authorize() {
+    display('user', 'none');
+    display('join', 'block');
+    pull();
+  }
   function none(data) {
-    if(auth)
-      send('push', name, data);
+    send('push', name, data);
   }
   function id(name, reset) {
     var value = document.getElementById(name).value;
-
     if(reset)
       document.getElementById(name).value = '';
-      
     return value;
+  }
+  function display(id, value) {
+    document.getElementById(id).style.display = value;
   }
   function login_key(e) {
     e = e || window.event;
@@ -111,18 +115,16 @@
 </head>
 <body>
 
-<div id="user">
-name&nbsp;<input id="name" size="10">&nbsp;pass&nbsp;<input id="pass" type="password" size="10" onkeypress="login_key(event);">
-<a href="javascript:register();">register</a>
-<a href="javascript:login();">login</a>
+<div id="user"><table>
+<tr><td>name&nbsp;</td><td><input id="name" size="10"></td></tr>
+<tr><td>pass&nbsp;</td><td><input id="pass" type="password" size="10" onkeypress="login_key(event);"></td></tr>
+<tr><td><a href="javascript:register();">join</a></td><td align="right"><a href="javascript:login();">login</a></td></tr>
+</table>
 </div>
 
-<div id="text">
+<div id="join" style="display: none;">
 text&nbsp;<input id="chat" size="10" onkeypress="chat_key(event);">
 <a href="javascript:chat();">chat</a>
-</div>
-
-<div id="join">
 <a href="javascript:none('list|room');">list</a>
 <a href="javascript:none('room|two');">room</a>
 <a href="javascript:none('exit');">exit</a>

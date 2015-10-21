@@ -28,6 +28,13 @@ public class Game implements Node {
 		this.node = node;
 	}
 
+	private void auth(String name, JSONObject json) throws Exception {
+		User user = new User(name);
+		user.json = json;
+		users.put(user.name, user);
+		user.move(null, lobby);
+	}
+	
 	public String push(final Event event, final String name, String data) throws Exception {
 		System.err.println(">" + name + " " + data + " " + event.index());
 
@@ -81,6 +88,8 @@ public class Game implements Node {
 
 						String key = user.getString("key");
 
+						auth(name, user);
+						
 						event.query().put("done", "join|done|" + key);
 					}
 					
@@ -115,20 +124,17 @@ public class Game implements Node {
 					return "user|fail|user not found.";
 				}
 
-				JSONObject json = new JSONObject(Root.file(file));
+				JSONObject user = new JSONObject(Root.file(file));
 
 				if(salts.remove(salt) == null) {
 					return "user|fail|salt not found";
 				}
 				
-				String key = json.has("pass") ? json.getString("pass") : json.getString("key");
+				String key = user.has("pass") ? user.getString("pass") : user.getString("key");
 				String md5 = Deploy.hash(key + salt, "MD5");
 
 				if(hash.equals(md5)) {
-					User user = new User(name);
-					user.json = json;
-					users.put(user.name, user);
-					user.move(null, lobby);
+					auth(name, user);
 					return "user|done";
 				}
 				else
