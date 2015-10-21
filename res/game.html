@@ -58,17 +58,19 @@
     var pass = id('pass');
     if(pass.length < 3)
       return;
-    var join = push('join|' + pass).split('|');
+    var hash = md5(pass + name);
+    var join = push('join|' + hash).split('|');
     //if(join[1] == 'fail')
     if(join[1] == 'done')
       auth = true;
   }
   function login() {
     name = id('name');
+    var pass = id('pass');
     var salt = push('salt').split('|');
     if(salt[1] === 'fail')
       return;
-    var hash = md5(id('pass') + salt[2]);
+    var hash = md5(md5(pass + name) + salt[2]);
     var user = push('user|' + salt[2] + '|' + hash).split('|');
     //if(user[1] == 'fail')
     if(user[1] == 'done') {

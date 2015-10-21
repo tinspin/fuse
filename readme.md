@@ -14,6 +14,8 @@ In sort of chronological order:
  
                      // register new user
                      // [pass] if your platform cannot persist the key
+                     //        preferably this is a hash with salt
+                     //        for example we simply use md5(pass + name)
  join|[pass]         -> join|done|<key>
                      -> join|fail|pass too short
                      -> join|fail|<name> contains bad characters
@@ -22,6 +24,8 @@ In sort of chronological order:
                      // login old user
                      // <hash> is either md5(<key> + <salt>)
                      //               or md5([pass] + <salt>)
+                     //        we use md5(md5(pass + name) + <salt>)
+                     //        make sure you keep the case correct
  salt                -> salt|done|<salt>
  user|<salt>|<hash>  -> user|done
                      -> user|fail|user not found
