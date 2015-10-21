@@ -13,6 +13,11 @@
 <script src="md5.js"></script>
 <script src="swipe.js"></script>
 <script>
+  var host = window.location.search.substring(1);
+  
+  if(!host)
+    host = 'fuse.rupy.se';
+  
   var size = 0;
   var name = '';
   function pull() {
@@ -24,7 +29,7 @@
   function send(path, name, data) {
     var state = (path == 'pull' ? 3 : 4);
     var xhr = new XMLHttpRequest();
-    var url = 'http://fuse.rupy.se/' + path + '?name=' + name + '&data=' + encodeURIComponent(data);
+    var url = 'http://' + host + '/' + path + '?name=' + name + '&data=' + encodeURIComponent(data);
     xhr.open('GET', url, state == 3); // sync is deprecated really? genious!
     xhr.setRequestHeader('Accept', 'text/event-stream');
     if(state == 3) {
@@ -57,7 +62,7 @@
     if(pass.length < 3)
       return;
     var hash = md5(pass + name);
-    var join = push('join|' + hash).split('|');
+    var join = push('join||' + hash).split('|');
     //if(join[1] == 'fail')
     if(join[1] == 'done') {
       authorize();

@@ -1,7 +1,7 @@
 package fuse;
 
 import java.io.File;
-import java.util.HashMap;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,6 +41,9 @@ public class Game implements Node {
 		final String[] split = data.split("\\|");
 		
 		if(data.startsWith("join")) {
+			if(name.length() > 0 && name.length() < 3)
+				return "join|fail|name too short";
+			
 			if(split.length > 1 && split[1].length() > 0 && split[1].indexOf("@") < 1)
 				return "join|fail|mail invalid";
 			
@@ -60,9 +63,10 @@ public class Game implements Node {
 					
 					boolean add = false;
 					
-					if(name.length() > 3) {
+					if(name.length() > 2) {
 						json += "\"name\":\"" + name + "\"";
-						sort = ",name";
+						sort += ",name";
+						
 						add = true;
 					}
 					
@@ -72,6 +76,8 @@ public class Game implements Node {
 						
 						json += "\"mail\":\"" + split[1] + "\"";
 						sort += ",mail";
+						
+						add = true;
 					}
 					
 					if(split.length > 2 && split[2].length() > 0) {
@@ -79,14 +85,23 @@ public class Game implements Node {
 							json += ",";
 						
 						json += "\"pass\":\"" + split[2] + "\"";
-						sort += ",name";
-						add = true;
 					}
 					
 					json += "}";
 					
-					call.post("/node", "Host:" + event.query().header("host"), 
-							("json=" + json + "&sort=key" + sort + "&create").getBytes("utf-8"));
+					System.out.println(json);
+					System.out.println(sort);
+					
+					//byte[] post = ("json=" + json + "&create&sort=key" + sort).getBytes("utf-8");
+					byte[] post = ("json=" + json + "&sort=key,name&create").getBytes("utf-8");
+					
+					System.out.println(new String(post));
+					
+					String host = event.query().header("host");
+					
+					System.out.println(host);
+					
+					call.post("/node", "Host:" + host, post);
 				}
 
 				public void read(String host, String body) throws Exception {

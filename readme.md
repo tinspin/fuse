@@ -17,6 +17,7 @@ In sort of chronological order:
                      //        for example we simply use md5(pass + name)
                      // use <id> as name if you want an anonymous users
  join|[mail]|[pass]  -> join|done|<key>|<id>
+                     -> join|fail|name too short
                      -> join|fail|pass too short
                      -> join|fail|mail invalid
                      -> join|fail|<name> needs character // numeric only is reserved for <id>
