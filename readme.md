@@ -19,12 +19,11 @@ In sort of chronological order:
  join|[mail]|[pass]  -> join|done|<key>|<id>
                      -> join|fail|name too short
                      -> join|fail|pass too short
-                     -> join|fail|mail invalid
-                     -> join|fail|name '<name>' needs alpha character // numeric only is reserved for <id>
-                     -> join|fail|name '<name>' contains bad characters // only alphanumeric and .
-                     -> join|fail|name '<name>' already registered
-                     -> join|fail|mail '<mail>' contains bad characters // only alphanumeric and /.@-+
-                     -> join|fail|mail '<mail>' already registered
+                     -> join|fail|name alpha missing // numeric reserved for <id>
+                     -> join|fail|name invalid // only alphanumeric and .
+                     -> join|fail|mail invalid // only alphanumeric and .@-+
+                     -> join|fail|name already registered
+                     -> join|fail|mail already registered
 
  salt                -> salt|done|<salt>
  
@@ -45,7 +44,7 @@ In sort of chronological order:
           or pull(<name>) (XHR) with the name you
           successfully logged in as.
 
- -> main|fail|user '<name>' not authorized
+ -> main|fail|user not authorized
 
                      // add friend
  ally|<name>         -> ally|done
@@ -64,7 +63,7 @@ In sort of chronological order:
                      // list rooms or data
  list|room           -> list|room|done|<name>+<type>+<size>|...
  list|data|<type>    -> list|data|done|<id>|...      // use load to get data
-                     -> list|fail|can only list 'room' or 'data'
+                     -> list|fail|wrong type
 
                      // join room
  room|<name>         -> room|done
@@ -112,7 +111,7 @@ In sort of chronological order:
                      // <data> = <x>+<y>+<z>|<x>+<y>+<z>+<w>|<action>(|<speed>|...)
                      //          position   |orientation    |key/button
 
- -> main|fail|type '<type>' not found
+ -> main|fail|type not found
 
 <soon> // future protocol
 

@@ -44,17 +44,17 @@ public class Game implements Node {
 			if(name.length() > 0 && name.length() < 3)
 				return "join|fail|name too short";
 			
-			if(split.length > 1 && split[1].length() > 0 && split[1].indexOf("@") < 1)
+			if(split.length > 1 && split[1].length() > 0 && split[1].indexOf("@") < 1 && !name.matches("[a-zA-Z0-9.@\\-\\+]+"))
 				return "join|fail|mail invalid";
 			
 			if(split.length > 2 && split[2].length() > 0 && split[2].length() < 3)
 				return "join|fail|pass too short";
 			
 			if(!name.matches("[a-zA-Z0-9.]+"))
-				return "join|fail|name '" + name + "' contains bad characters";
+				return "join|fail|name invalid";
 			
 			if(name.matches("[0-9]+"))
-				return "join|fail|name '" + name + "' needs alpha character";
+				return "join|fail|name alpha missing";
 			
 			Async.Work user = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
@@ -104,12 +104,10 @@ public class Game implements Node {
 						System.out.println("Validation " + message);
 						
 						if(message.startsWith("name"))
-							event.query().put("fail", "join|fail|name '" + 
-								message.substring(message.indexOf("=") + 1) + "' contains bad characters");
+							event.query().put("fail", "join|fail|name contains bad characters");
 						
 						if(message.startsWith("mail"))
-							event.query().put("fail", "join|fail|mail '" + 
-								message.substring(message.indexOf("=") + 1) + "' contains bad characters");
+							event.query().put("fail", "join|fail|mail contains bad characters");
 					}
 					else if(body.indexOf("Collision") > 0) {
 						String message = body.substring(body.indexOf("[") + 1, body.indexOf("]"));
@@ -117,12 +115,10 @@ public class Game implements Node {
 						System.out.println("Collision " + message);
 						
 						if(message.startsWith("name"))
-							event.query().put("fail", "join|fail|name '" + 
-								message.substring(message.indexOf("=") + 1) + "' already registered");
+							event.query().put("fail", "join|fail|name already registered");
 						
 						if(message.startsWith("mail"))
-							event.query().put("fail", "join|fail|mail '" + 
-								message.substring(message.indexOf("=") + 1) + "' already registered");
+							event.query().put("fail", "join|fail|mail already registered");
 					}
 					else {
 						JSONObject user = new JSONObject(body);
@@ -197,7 +193,7 @@ public class Game implements Node {
 		User user = (User) users.get(name);
 		
 		if(event.query().header("host").equals("fuse.radiomesh.org") && user == null)
-			return "main|fail|user '" + name + "' not authorized";
+			return "main|fail|user not authorized";
 		else if(name.equals("one") && user == null) { // TODO: Remove
 			user = new User(name);
 			users.put(user.name, user);
@@ -276,7 +272,7 @@ public class Game implements Node {
 				return "hold";
 			}
 			
-			return "list|fail|can only list 'room' or 'data'";
+			return "list|fail|wrong type";
 		}
 		
 		if(data.startsWith("room")) {
@@ -402,7 +398,7 @@ public class Game implements Node {
 			return "move|done";
 		}
 		
-		return "main|fail|type '" + split[0] + "' not found";
+		return "main|fail|type not found";
 	}
 
 	public static class User {
