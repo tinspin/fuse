@@ -37,12 +37,6 @@ public class Game implements Node {
 	
 	public String push(final Event event, final String name, String data) throws Exception {
 		System.err.println(">" + name + " " + data + " " + event.index());
-
-		if(name.length() < 0)
-			return "main|fail|name missing";
-		
-		if(name.length() < 3)
-			return "main|fail|name too short";
 		
 		final String[] split = data.split("\\|");
 		
@@ -50,16 +44,26 @@ public class Game implements Node {
 			if(split.length > 1 && split[1].length() < 3)
 				return "join|fail|pass too short";
 			
+			if(name.matches("[0-9]+"))
+				return "join|fail|" + name + " needs character";
+			
 			Async.Work user = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					String json = "{\"name\":\"" + name + "\"}";
-
+					String json = "{}";
+					String sort = "";
+					
+					if(name.length() > 3) {
+						json = "{\"name\":\"" + name + "\"}";
+						sort = ",name";
+					}
+					
 					if(split.length > 1) {
-						json = "{\"name\":\"" + name + "\",\"pass\":\"" + split[1] + "\"}";					
+						json = "{\"name\":\"" + name + "\",\"pass\":\"" + split[1] + "\"}";
+						sort = ",name";
 					}
 					
 					call.post("/node", "Host:" + event.query().header("host"), 
-							("json=" + json + "&sort=key,name&create").getBytes("utf-8"));
+							("json=" + json + "&sort=key" + sort + "&create").getBytes("utf-8"));
 				}
 
 				public void read(String host, String body) throws Exception {
@@ -90,7 +94,7 @@ public class Game implements Node {
 
 						auth(name, user);
 						
-						event.query().put("done", "join|done|" + key);
+						event.query().put("done", "join|done|" + key + "|" + Root.hash(key));
 					}
 					
 					event.reply().wakeup();
@@ -112,14 +116,25 @@ public class Game implements Node {
 			return "salt|done|" + salt;
 		}
 
+		if(name.length() < 0)
+			return "main|fail|name missing";
+		
+		if(name.length() < 3)
+			return "main|fail|name too short";
+		
 		if(data.startsWith("user")) {
 			String salt = split[1];
 			String hash = split[2].toLowerCase();
 			
 			if(name.length() > 0 && hash.length() > 0) {
-				File file = new File(Root.home() + "/node/user/name" + Root.path(name));
+				File file = null;
+				
+				if(name.matches("[0-9]+"))
+					file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
+				else
+					file = new File(Root.home() + "/node/user/name" + Root.path(name));
 
-				if(!file.exists()) {
+				if(file == null || !file.exists()) {
 					System.out.println(file);
 					return "user|fail|user not found.";
 				}

@@ -8,16 +8,15 @@ Protocol:           --> = broadcast to Pull() (event(path, data) for XHR)
 In sort of chronological order:
 
 <type>                 <echo>
-
- -> main|fail|name missing
- -> main|fail|name too short
  
                      // register new user
                      // [pass] if your platform cannot persist the key
                      //        preferably this is a hash with salt
                      //        for example we simply use md5(pass + name)
- join|[pass]         -> join|done|<key>
+                     // use <id> as name if you want an anonymous registration
+ join|[pass]         -> join|done|<key>|<id>
                      -> join|fail|pass too short
+                     -> join|fail|<name> needs character // numeric is reserved for <id>
                      -> join|fail|<name> contains bad characters
                      -> join|fail|<name> already registered
 
@@ -27,6 +26,10 @@ In sort of chronological order:
                      //        we use md5(md5(pass + name) + <salt>)
                      //        make sure you keep the case correct
  salt                -> salt|done|<salt>
+ 
+  -> main|fail|name missing
+  -> main|fail|name too short
+ 
  user|<salt>|<hash>  -> user|done
                      -> user|fail|user not found
                      -> user|fail|salt not found
