@@ -138,7 +138,7 @@ public class Fuse {
 
 	public static void Main() {
 		try {
-			string name = "two";
+			string name = "fuse";
 			Fuse fuse = new Fuse();
 
 			// if no key is stored try
@@ -149,7 +149,7 @@ public class Fuse {
 			// otherwise
 			//   get name and key
 
-			string key = "SFwPWQLZcBAES7BZ";
+			string key = "F9hG7K7Jwe1SmtiQ";
 
 			bool success = false;
 

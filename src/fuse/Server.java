@@ -14,6 +14,8 @@ public class Server extends Service implements Node, Runnable {
 	boolean debug = true;
 	boolean alive;
 
+	StringBuilder padding = new StringBuilder();
+	
 	private Queue find(String name) {
 		Iterator it = list.values().iterator();
 
@@ -46,6 +48,10 @@ public class Server extends Service implements Node, Runnable {
 
 			node = new Game();
 			node.call(daemon, this);
+		}
+		
+		for(int i = 0; i < 100; i++) {
+			padding.append("          ");
 		}
 	}
 
@@ -241,6 +247,7 @@ public class Server extends Service implements Node, Runnable {
 		}
 		else {
 			event.query().parse();
+			boolean ie = event.bit("ie");
 			String name = event.string("name");
 			Queue queue = find(name);
 
@@ -272,11 +279,15 @@ public class Server extends Service implements Node, Runnable {
 			
 			Output out = event.output();
 
+			String padding = ie ? this.padding.toString() : "";
+			
+			System.out.println("ie " + ie + " " + padding.length() + " " + stream);
+			
 			if(stream) {
-				out.print("data: noop\n\n");
+				out.print("data: noop" + padding + "\n\n");
 			}
 			else {
-				out.print("noop\n");
+				out.print("noop" + padding + "\n");
 			}
 
 			out.flush();

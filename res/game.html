@@ -14,10 +14,8 @@
 <script src="swipe.js"></script>
 <script>
   var host = window.location.search.substring(1);
-  
   if(!host)
     host = 'fuse.rupy.se';
-  
   var size = 0;
   var name = '';
   function pull() {
@@ -29,16 +27,25 @@
   function send(path, name, data) {
     var state = (path == 'pull' ? 3 : 4);
     var xhr = new XMLHttpRequest();
-    var url = 'http://' + host + '/' + path + '?name=' + name + '&data=' + encodeURIComponent(data);
+    var ie = false;
+    if(state == 3)
+      try { xhr = new XDomainRequest(); ie = true; } catch(e) {}
+    var url = 'http://' + host + '/' + path + '?name=' + name + '&data=' + encodeURIComponent(data) + (ie ? "&ie" : "");
     xhr.open('GET', url, state == 3); // sync is deprecated really? genious!
-    xhr.setRequestHeader('Accept', 'text/event-stream');
+    try { xhr.setRequestHeader('Accept', 'text/event-stream'); } catch(e) {}
     if(state == 3) {
-      xhr.onreadystatechange = function() {
-        if(xhr.readyState == 3) {
-          event(path, xhr.responseText.substring(size, xhr.responseText.length));
+      if(ie)
+        xhr.onprogress = function() {
+          event_(xhr.responseText.substring(size, xhr.responseText.length));
           size = xhr.responseText.length;
-        }
-      };
+        };
+      else
+        xhr.onreadystatechange = function() {
+          if(xhr.readyState == 3) {
+            event(path, xhr.responseText.substring(size, xhr.responseText.length));
+            size = xhr.responseText.length;
+          }
+        };
     }
     xhr.send();
     if(state == 4) {
@@ -53,6 +60,9 @@
     else
       body += '\n';
     document.getElementById(path).innerHTML += body;
+  }
+  function event_(data) {
+    document.getElementById('pull').innerHTML += data;
   }
 </script>
 <script>
