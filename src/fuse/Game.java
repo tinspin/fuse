@@ -30,8 +30,21 @@ public class Game implements Node {
 
 	private void auth(String name, JSONObject json) throws Exception {
 		User user = new User(name);
+		
+		if(name.length() == 0) {
+			name = String.valueOf(Root.hash(json.getString("key")));
+			user = new User(name);
+		}
+		// can't login with mail because name is salt for pass!
+		//else if(name.indexOf("@") > 0) {
+		//	if(json.has("name"))
+		//		name = json.getString("name");
+		//	else
+		//		user = new User(String.valueOf(Root.hash(json.getString("key"))));
+		//}
+		
 		user.json = json;
-		users.put(user.name, user);
+		users.put(name, user);
 		user.move(null, lobby);
 	}
 	
@@ -50,10 +63,10 @@ public class Game implements Node {
 			if(split.length > 2 && split[2].length() > 0 && split[2].length() < 3)
 				return "join|fail|pass too short";
 			
-			if(!name.matches("[a-zA-Z0-9.]+"))
+			if(name.length() > 0 && !name.matches("[a-zA-Z0-9.]+"))
 				return "join|fail|name invalid";
 			
-			if(name.matches("[0-9]+"))
+			if(name.length() > 0 && name.matches("[0-9]+"))
 				return "join|fail|name alpha missing";
 			
 			Async.Work user = new Async.Work(event) {
@@ -162,6 +175,8 @@ public class Game implements Node {
 			if(name.length() > 0 && hash.length() > 0) {
 				File file = null;
 				
+				if(name.indexOf("@") > 0) // can't login with mail because name is salt for pass!
+					file = null;
 				if(name.matches("[0-9]+"))
 					file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
 				else
@@ -171,14 +186,19 @@ public class Game implements Node {
 					System.out.println(file);
 					return "user|fail|user not found.";
 				}
-
+				
 				JSONObject user = new JSONObject(Root.file(file));
 
+				System.out.println(user);
+				
 				if(salts.remove(salt) == null) {
 					return "user|fail|salt not found";
 				}
 				
 				String key = user.has("pass") ? user.getString("pass") : user.getString("key");
+				
+				System.out.println(key);
+				
 				String md5 = Deploy.hash(key + salt, "MD5");
 
 				if(hash.equals(md5)) {
@@ -186,7 +206,7 @@ public class Game implements Node {
 					return "user|done";
 				}
 				else
-					return "user|fail|wrong hash";
+					return "user|fail|wrong pass";
 			}
 		}
 		

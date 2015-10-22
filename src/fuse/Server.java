@@ -294,6 +294,14 @@ public class Server extends Service implements Node, Runnable {
 		}
 	}
 
+	public static class Redirect extends Service {
+		public String path() { return "/"; }
+		public void filter(Event event) throws Event, Exception {
+			event.reply().header("Location", "game.html");
+			event.reply().code("302 Found");
+		}
+	}
+	
 	/*
 	 * The queue contains the event and the messages 
 	 * to be sent to the client.

@@ -38,7 +38,7 @@ In sort of chronological order:
  user|<salt>|<hash>  -> user|done
                      -> user|fail|user not found
                      -> user|fail|salt not found
-                     -> user|fail|wrong hash
+                     -> user|fail|wrong pass
 
  <pull> = here you should call Pull(<name>) (C#)
           or pull(<name>) (XHR) with the name you

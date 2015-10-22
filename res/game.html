@@ -2,8 +2,11 @@
 <html>
 <head>
 <style>
-  div { font-family: monospace; margin: 3px; }
+  a:link, a:hover, a:active, a:visited { color: #6699ff; }
+  div { font-family: monospace; }
   input { font-family: monospace; }
+  #fail1 { color: #ff3300; }
+  #fail2 { color: #ff3300; }
   #pushpull {
     position: fixed;
     bottom: 0px;
@@ -12,12 +15,14 @@
 </style>
 <script src="md5.js"></script>
 <script src="swipe.js"></script>
+<!-- fuse network code -->
 <script>
   var host = window.location.search.substring(1);
   if(!host)
     host = 'fuse.rupy.se';
-  var size = 0;
+  var show = true;
   var name = '';
+  var size = 0;
   function pull() {
     send('pull', name, null);
   }
@@ -25,6 +30,7 @@
     return send('push', name, data);
   }
   function send(path, name, data) {
+    clear_fail();
     var state = (path == 'pull' ? 3 : 4);
     var xhr = new XMLHttpRequest();
     var ie = false;
@@ -36,62 +42,106 @@
     if(state == 3) {
       if(ie)
         xhr.onprogress = function() {
-          event_(xhr.responseText.substring(size, xhr.responseText.length));
+          xdr_event(xhr.responseText.substring(size, xhr.responseText.length));
           size = xhr.responseText.length;
         };
       else
         xhr.onreadystatechange = function() {
           if(xhr.readyState == 3) {
-            event(path, xhr.responseText.substring(size, xhr.responseText.length));
+            xhr_event(path, xhr.responseText.substring(size, xhr.responseText.length));
             size = xhr.responseText.length;
           }
         };
     }
     xhr.send();
     if(state == 4) {
-      event(path, xhr.responseText);
+      xhr_event(path, xhr.responseText);
       return xhr.responseText;
     }
   }
-  function event(path, data) {
+  function xhr_event(path, data) {
     var body = data;
     if(path == 'pull')
-      body = data.substring(6, data.length - 1);
+      body = data.substring(6, data.length - 2);
     else
-      body += '\n';
-    document.getElementById(path).innerHTML += body;
+      body;
+	chop(body);
+	if(show)
+      element(path).innerHTML += body + '\n';
   }
-  function event_(data) {
-    document.getElementById('pull').innerHTML += data;
+  function xdr_event(data) {
+    var body = data.substring(0, data.length - 1);
+    chop(body);
+    if(show)
+      element('pull').innerHTML += data + '\n';
+  }
+  function chop(body) {
+    var part = body.split('\n');
+    for(var i = 0; i < part.length; i++) {
+      message(part[i]);
+    }
+  }
+  function element(name) {
+    return document.getElementById(name);
   }
 </script>
+<!-- fuse message handling -->
+<script>
+  function message(data) {
+    var split = data.split('|');
+    if(split.length > 1 && split[1] == 'fail') {
+      show_fail(split[2]);
+    }
+  }
+  function clear_fail(text) {
+    element('fail1').innerHTML = '';
+    element('fail2').innerHTML = '';
+  }
+  function show_fail(text) {
+    element('fail1').innerHTML = text;
+    element('fail2').innerHTML = text;
+  }
+</script>
+<!-- fuse view handling -->
 <script>
   function register() {
     name = id('name');
-    var mail = id('mail');
-    if(mail.length > 0 && mail.indexOf('@') < 0)
+    if(name.length < 3) {
+      show_fail('name too short');
       return;
+    }
     var pass = id('pass');
-    if(pass.length < 3)
+    if(pass.length < 3) {
+      show_fail('pass too short');
       return;
+    }
+    var mail = id('mail');
+    if(mail.length > 0 && mail.indexOf('@') < 0) {
+      show_fail('mail invalid');
+      return;
+    }
     var hash = md5(pass + name);
     var join = push('join|' + mail + '|' + hash).split('|');
-    //if(join[1] == 'fail')
     if(join[1] == 'done') {
       authorize();
     }
   }
   function login() {
     name = id('name');
-    var pass = id('pass');
-    if(pass.length < 3)
+    if(name.length < 3) {
+      show_fail('name too short');
       return;
+    }
+    var pass = id('pass');
+    if(pass.length < 3) {
+      show_fail('pass too short');
+      return;
+    }
     var salt = push('salt').split('|');
     if(salt[1] === 'fail')
       return;
     var hash = md5(md5(pass + name) + salt[2]);
     var user = push('user|' + salt[2] + '|' + hash).split('|');
-    //if(user[1] == 'fail')
     if(user[1] == 'done') {
       authorize();
     }
@@ -106,16 +156,16 @@
     send('push', name, data);
   }
   function id(name, reset) {
-    var value = document.getElementById(name).value;
+    var value = element(name).value;
     if(reset)
-      document.getElementById(name).value = '';
+      element(name).value = '';
     return value;
   }
   function display(id, value) {
-    document.getElementById(id).style.display = value;
+    element(id).style.display = value;
   }
   function focus(id) {
-    document.getElementById(id).focus();
+    element(id).focus();
   }
   function login_key(e) {
     e = e || window.event;
@@ -132,30 +182,37 @@
     }
   }
   function chat() {
-    none('chat|' + id('chat', true));
+    var text = id('chat', true)
+    if(text.length > 0)
+      none('chat|' + text);
   }
 </script>
 </head>
 <body>
 
 <div id="user"><table>
+<tr><td colspan="2"><div id="fail1"></div></td></tr>
 <tr><td>name&nbsp;&nbsp;</td><td><input id="name" size="10"></td></tr>
 <tr><td>pass&nbsp;&nbsp;</td>
     <td><input id="pass" type="password" size="10" onkeypress="login_key(event);"></td>
     <td><a href="javascript:login();">login</a></td></tr>
-<tr><td>mail*&nbsp;</td>
+<tr><td><font color="#00cc33">mail*</font>&nbsp;</td>
     <td><input id="mail" size="10"></td>
-    <td><a href="javascript:register();">join</a></td></tr>
-<tr><td colspan="2">*optional</td></tr>
+    <td><a href="javascript:register();">register</a></td></tr>
+<tr><td colspan="2"><font color="#ff9900">*optional</font></td></tr>
 </table>
 </div>
 
-<div id="join" style="display: none;">
+<div id="join" style="display: none;"><table>
+<tr><td colspan="2"><div id="fail2"></div></td></tr>
+<tr><td>
 text&nbsp;<input id="chat" size="10" onkeypress="chat_key(event);">
 <a href="javascript:chat();">chat</a>
 <a href="javascript:none('list|room');">list</a>
 <a href="javascript:none('room|two');">room</a>
 <a href="javascript:none('exit');">exit</a>
+</td></tr>
+</table>
 </div>
 
 <div id="box" ontouchstart="touchStart(event,'box');" ontouchend="touchEnd(event);" ontouchmove="touchMove(event);" ontouchcancel="touchCancel(event);">
