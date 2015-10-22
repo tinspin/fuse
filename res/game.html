@@ -3,14 +3,23 @@
 <head>
 <style>
   a:link, a:hover, a:active, a:visited { color: #6699ff; }
+  img { display: block; }
   div { font-family: monospace; }
   input { font-family: monospace; }
   #fail1 { color: #ff3300; }
   #fail2 { color: #ff3300; }
-  #pushpull {
+  textarea {
+    font-family: monospace;
+    resize: none;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+  #show {
     position: fixed;
-    bottom: 0px;
-    left: 0px;
+    bottom: 5px;
+    left: 5px;
   }
 </style>
 <script src="md5.js"></script>
@@ -36,7 +45,7 @@
     var ie = false;
     if(state == 3)
       try { xhr = new XDomainRequest(); ie = true; } catch(e) {}
-    var url = 'http://' + host + '/' + path + '?name=' + name + '&data=' + encodeURIComponent(data) + (ie ? "&ie" : "");
+    var url = 'http://' + host + '/' + path + '?name=' + name + '&data=' + encodeURIComponent(data) + (ie ? "&ie" : "") + "&time=" + new Date().getTime();
     xhr.open('GET', url, state == 3); // sync is deprecated really? genious!
     try { xhr.setRequestHeader('Accept', 'text/event-stream'); } catch(e) {}
     if(state == 3) {
@@ -65,8 +74,8 @@
       body = data.substring(6, data.length - 2);
     else
       body;
-	chop(body);
-	if(show)
+    chop(body);
+    if(show)
       element(path).innerHTML += body + '\n';
   }
   function xdr_event(data) {
@@ -91,6 +100,9 @@
     var split = data.split('|');
     if(split.length > 1 && split[1] == 'fail') {
       show_fail(split[2]);
+    }
+    if(split.length > 1 && split[0] == 'text') {
+      element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
     }
   }
   function clear_fail(text) {
@@ -138,8 +150,10 @@
       return;
     }
     var salt = push('salt').split('|');
-    if(salt[1] === 'fail')
+    if(salt[1] === 'fail') {
+      show_fail('failed salt');
       return;
+    }
     var hash = md5(md5(pass + name) + salt[2]);
     var user = push('user|' + salt[2] + '|' + hash).split('|');
     if(user[1] == 'done') {
@@ -150,7 +164,7 @@
     display('user', 'none');
     display('join', 'block');
     pull();
-    focus('chat');
+    focus('text');
   }
   function none(data) {
     send('push', name, data);
@@ -182,7 +196,7 @@
     }
   }
   function chat() {
-    var text = id('chat', true)
+    var text = id('text', true)
     if(text.length > 0)
       none('chat|' + text);
   }
@@ -191,7 +205,7 @@
 <body>
 
 <div id="user"><table>
-<tr><td colspan="2"><div id="fail1"></div></td></tr>
+<tr><td colspan="3"><div id="fail1"></div></td></tr>
 <tr><td>name&nbsp;&nbsp;</td><td><input id="name" size="10"></td></tr>
 <tr><td>pass&nbsp;&nbsp;</td>
     <td><input id="pass" type="password" size="10" onkeypress="login_key(event);"></td>
@@ -204,9 +218,14 @@
 </div>
 
 <div id="join" style="display: none;"><table>
-<tr><td colspan="2"><div id="fail2"></div></td></tr>
-<tr><td>
-text&nbsp;<input id="chat" size="10" onkeypress="chat_key(event);">
+<tr><td colspan="3"><div id="fail2"></div></td></tr>
+<tr><td align="center">user</td><td></td>
+    <td align="center">room</td></tr>
+<tr><td><textarea id="user" rows="5" readonly></textarea></td><td></td>
+    <td><textarea id="room" rows="5" readonly></textarea></td></tr>
+<tr><td colspan="3"><textarea id="chat" rows="5" readonly></textarea></td></tr>
+<tr><td colspan="3">
+<input id="text" size="20" onkeypress="chat_key(event);">
 <a href="javascript:chat();">chat</a>
 <a href="javascript:none('list|room');">list</a>
 <a href="javascript:none('room|two');">room</a>
@@ -216,14 +235,14 @@ text&nbsp;<input id="chat" size="10" onkeypress="chat_key(event);">
 </div>
 
 <div id="box" ontouchstart="touchStart(event,'box');" ontouchend="touchEnd(event);" ontouchmove="touchMove(event);" ontouchcancel="touchCancel(event);">
-<img src="svg/blue.svg"><br>
-<img src="svg/green.svg"><br>
-<img src="svg/orange.svg"><br>
-<img src="svg/purple.svg"><br>
+<img src="svg/blue.svg">
+<img src="svg/green.svg">
+<img src="svg/orange.svg">
+<img src="svg/purple.svg">
 <img src="svg/red.svg">
 </div>
 
-<div id="pushpull">
+<div id="show">
 <div id="pull">pull:</div>
 <div id="push">push:</div>
 </div>

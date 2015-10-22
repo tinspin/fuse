@@ -184,7 +184,7 @@ public class Game implements Node {
 
 				if(file == null || !file.exists()) {
 					System.out.println(file);
-					return "user|fail|user not found.";
+					return "user|fail|user not found";
 				}
 				
 				JSONObject user = new JSONObject(Root.file(file));
