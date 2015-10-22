@@ -10,11 +10,18 @@
   #fail2 { color: #ff3300; }
   textarea {
     font-family: monospace;
-    resize: none;
-    width: 100%;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    resize: none;
+    width: 100%;
+  }
+  select {
+    font-family: monospace;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
   }
   #show {
     position: fixed;
@@ -104,6 +111,23 @@
     if(split.length > 1 && split[0] == 'text') {
       element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
     }
+    if(split.length > 0 && split[0] == 'here') {
+      var select = element('ally');
+      var option = document.createElement('option');
+      option.text = split[1];
+      select.options.add(option, select.options[0]);
+    }
+    if(split.length > 0 && split[0] == 'gone') {
+      var select = element('ally');
+      var id = 0;
+      for(var i = 0; i < select.options.length; i++) {
+        if(select.options[i] == split[1]) {
+          id = i;
+          break;
+        }
+      }
+      select.remove(id);
+    }
   }
   function clear_fail(text) {
     element('fail1').innerHTML = '';
@@ -116,7 +140,7 @@
 </script>
 <!-- fuse view handling -->
 <script>
-  function register() {
+  function user() {
     name = id('name');
     if(name.length < 3) {
       show_fail('name too short');
@@ -133,12 +157,12 @@
       return;
     }
     var hash = md5(pass + name);
-    var join = push('join|' + mail + '|' + hash).split('|');
+    var join = push('user|' + mail + '|' + hash).split('|');
     if(join[1] == 'done') {
       authorize();
     }
   }
-  function login() {
+  function open() {
     name = id('name');
     if(name.length < 3) {
       show_fail('name too short');
@@ -155,7 +179,7 @@
       return;
     }
     var hash = md5(md5(pass + name) + salt[2]);
-    var user = push('user|' + salt[2] + '|' + hash).split('|');
+    var user = push('open|' + salt[2] + '|' + hash).split('|');
     if(user[1] == 'done') {
       authorize();
     }
@@ -181,14 +205,14 @@
   function focus(id) {
     element(id).focus();
   }
-  function login_key(e) {
+  function open_code(e) {
     e = e || window.event;
     var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
     if(unicode == 13) {
-      login();
+      open();
     }
   }
-  function chat_key(e) {
+  function chat_code(e) {
     e = e || window.event;
     var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
     if(unicode == 13) {
@@ -208,11 +232,11 @@
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
 <tr><td>name&nbsp;&nbsp;</td><td><input id="name" size="10"></td></tr>
 <tr><td>pass&nbsp;&nbsp;</td>
-    <td><input id="pass" type="password" size="10" onkeypress="login_key(event);"></td>
-    <td><a href="javascript:login();">login</a></td></tr>
+    <td><input id="pass" type="password" size="10" onkeypress="open_code(event);"></td>
+    <td><a href="javascript:open();">login</a></td></tr>
 <tr><td><font color="#00cc33">mail*</font>&nbsp;</td>
     <td><input id="mail" size="10"></td>
-    <td><a href="javascript:register();">register</a></td></tr>
+    <td><a href="javascript:user();">register</a></td></tr>
 <tr><td colspan="2"><font color="#ff9900">*optional</font></td></tr>
 </table>
 </div>
@@ -221,15 +245,17 @@
 <tr><td colspan="3"><div id="fail2"></div></td></tr>
 <tr><td align="center">user</td><td></td>
     <td align="center">room</td></tr>
-<tr><td><textarea id="user" rows="5" readonly></textarea></td><td></td>
-    <td><textarea id="room" rows="5" readonly></textarea></td></tr>
+<tr><td><select id="ally" size="5" multiple></select></td><td></td>
+    <td><select id="room" size="5" multiple></select></td></tr>
+<tr><td><a href="javascript:ally();">ally</a></td><td></td>
+    <td><a href="javascript:room();">room</a> <a href="javascript:join();">join</a></td></tr>
 <tr><td colspan="3"><textarea id="chat" rows="5" readonly></textarea></td></tr>
 <tr><td colspan="3">
-<input id="text" size="20" onkeypress="chat_key(event);">
+<input id="text" size="20" onkeypress="chat_code(event);">
 <a href="javascript:chat();">chat</a>
 <a href="javascript:none('list|room');">list</a>
-<a href="javascript:none('room|two');">room</a>
-<a href="javascript:none('exit');">exit</a>
+<a href="javascript:none('join|two');">room</a>
+<a href="javascript:none('quit');">quit</a>
 </td></tr>
 </table>
 </div>

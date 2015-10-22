@@ -143,7 +143,7 @@ public class Fuse {
 
 			// if no key is stored try
 
-			//string key = fuse.Join(name);
+			//string key = fuse.User(name);
 
 			//   then store name and key
 			// otherwise
@@ -154,7 +154,7 @@ public class Fuse {
 			bool success = false;
 
 			if(key != null) {
-				success = fuse.User(name, key);
+				success = fuse.Open(name, key);
 			}
 
 			if(success) {
@@ -174,7 +174,7 @@ public class Fuse {
 
 				Thread.Sleep(500);
 
-				Console.WriteLine("host " + fuse.Host(name, "race", 4));
+				Console.WriteLine("host " + fuse.Room(name, "race", 4));
 
 				Thread.Sleep(500);
 
@@ -202,39 +202,39 @@ public class Fuse {
 		}
 	}
 
-	public string Join(string name) {
-		string[] join = Push(name, "join").Split('|');
+	public string User(string name) {
+		string[] user = Push(name, "user").Split('|');
 
-		if(join[1].Equals("fail")) {
-			if(join[2].IndexOf("bad") > 0) {
+		if(user[1].Equals("fail")) {
+			if(user[2].IndexOf("bad") > 0) {
 				// limit characters to alpha numeric.
 			}
-			else if(join[2].IndexOf("already") > 0) {
+			else if(user[2].IndexOf("already") > 0) {
 				// prompt for other name.
 			}
 
-			Console.WriteLine("join " + join[2]);
+			Console.WriteLine("user " + user[2]);
 			return null;
 		}
 
-		return join[2];
+		return user[2];
 	}
 
-	public bool User(string name, string key) {
+	public bool Open(string name, string key) {
 		string salt = Push(name, "salt").Split('|')[2];
 		string hash = MD5(key + salt);
-		string[] user = Push(name, "user|" + salt + "|" + hash).Split('|');
+		string[] open = Push(name, "open|" + salt + "|" + hash).Split('|');
 
-		if(user[1].Equals("fail")) {
-			Console.WriteLine("user " + user[2]);
+		if(open[1].Equals("fail")) {
+			Console.WriteLine("open " + open[2]);
 			return false;
 		}
 
 		return true;
 	}
 
-	public bool Host(string name, String type, int size) {
-		return BoolPush(name, "host|" + type + "|" + size);
+	public bool Room(string name, String type, int size) {
+		return BoolPush(name, "room|" + type + "|" + size);
 	}
 
 	public string[] ListRoom(string name) {
@@ -251,8 +251,8 @@ public class Fuse {
 			return null;
 	}
 
-	public bool Room(string name, string which) {
-		return BoolPush(name, "room|" + which);
+	public bool Join(string name, string which) {
+		return BoolPush(name, "join|" + which);
 	}
 
 	public bool Exit(string name) {

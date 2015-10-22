@@ -281,7 +281,7 @@ public class Server extends Service implements Node, Runnable {
 
 			String padding = ie ? this.padding.toString() : "";
 			
-			System.out.println("ie " + ie + " " + padding.length() + " " + stream);
+			//System.out.println("ie " + ie + " " + padding.length() + " " + stream);
 			
 			if(stream) {
 				out.print("data: noop" + padding + "\n\n");
