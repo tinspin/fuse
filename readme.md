@@ -148,7 +148,7 @@ in sort of chronological order:
 -> main|fail|type not found
 
 +----------------+
-| <i>Sketched methods</i> |
+| <i>Sketched rules</i> |
 +----------------+
 
 &lt;peer&gt; // peer protocol
