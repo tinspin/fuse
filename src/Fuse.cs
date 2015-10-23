@@ -324,12 +324,17 @@ public class Alpha {
 	public Alpha(Fuse fuse) { this.fuse = fuse; }
 	public void Beta() {
 		while(true) {
-			string[] received = fuse.Read();
+			try {
+				string[] received = fuse.Read();
 
-			if(received != null) {
-				for(int i = 0; i < received.Length; i++) {
-					Console.WriteLine("Read: " + received[i]);
+				if(received != null) {
+					for(int i = 0; i < received.Length; i++) {
+						Console.WriteLine("Read: " + received[i]);
+					}
 				}
+			}
+			finally {
+				Thread.Sleep(10);
 			}
 		}
 	}

@@ -550,7 +550,7 @@ public class Router implements Node {
 			}
 			
 			// broadcast stop
-			if(data.startsWith("stop")) {
+			if(data.startsWith("quit")) {
 				user.game.send(from, "stop|" + user.name);
 			}
 		}
