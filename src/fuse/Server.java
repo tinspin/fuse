@@ -35,9 +35,14 @@ public class Server extends Service implements Node, Runnable {
 	}
 
 	public void remove(Queue queue, int place) throws Exception {
-		System.err.println("remove " + queue + " " + place);
+		if(place > 1)
+			node.remove(queue.name);
 	}
 
+	public void remove(String name) throws Exception {
+		// OK
+	}
+	
 	public void create(Daemon daemon) throws Exception {
 		if(!alive) {
 			list = new ConcurrentHashMap();

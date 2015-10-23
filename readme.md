@@ -2,9 +2,13 @@
 why yet another multiplayer solution?
 
 support:
-- unity
-- xhr/xdr, 99.9% of browsers, only IE7 missing
-- 100% of firewalls
+- Unity
+  - plugin is only 140 lines of C# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">Fuse.cs</a>
+- XHR/XDR, 99.9% of browsers, only IE7 missing
+  - CORS compliant, static hosting for you.
+- 100% uptime on routing
+- 100% read uptime on data
+- 100% firewall pass-through
 - all gameplay types:
   - from two player turn-based
   - to real-time action MMO
@@ -18,8 +22,8 @@ protocol:
 | RFC |
 +-----+
 
-protocol            --> = broadcasted to read() (c#) or read(data) (xhr)
-                     -> = direct return on push(data)
+protocol            --> = broadcasted to Read() (C#) or read(data) (XHR/XDR)
+                     -> = direct return on Push(data)
 
 < > = mandatory
 [ ] = optional

@@ -582,11 +582,28 @@ public class Router implements Node {
 			this.name = name;
 		}
 	}
-	
-	public void broadcast(String name, String data) {
 
+	public void remove(String name) throws Exception {
+		User user = (User) users.get(name);
+		
+		if(user == null)
+			System.out.println("Remove; User '" + name + "' not found.");
+		else {
+			Room room = user.move(user.room, null);
+			
+			if(room != null) {
+				user.game.rooms.remove(room.user.name);
+			}
+			
+			user.game.send(user, "exit|" + user.name);
+			
+			users.remove(name);
+			
+			if(user.game.users.remove(name) == null)
+				System.out.println("Remove; User '" + name + "' not found in game.");
+		}
 	}
-
+	
 	public void exit() {
 		//daemon.remove(this);
 	}
