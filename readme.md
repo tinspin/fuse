@@ -80,14 +80,8 @@ in sort of chronological order:
 *<b><i>ally</i></b>|&lt;name&gt;         -> ally|done
                      -> ally|fail|user not found
 
-                     // set status
-*<b><i>away</i></b>|&lt;boolean&gt;      -> away|done
-
                      // enable peer-to-peer
  <b><i>peer</i></b>|&lt;ip&gt;           -> peer|done                    // send the internal address (192.168.)
-
-                     // add client as host
-*<b><i>host</i></b>|&lt;port&gt;         -> host|done                    // send the port
 
                      // host room
  <b><i>room</i></b>|&lt;type&gt;|&lt;size&gt;  -> room|done
@@ -159,14 +153,7 @@ in sort of chronological order:
 *<b><i>head</i></b> // send head/body movement
 *<b><i>hand</i></b> // send hand movements
 
-&lt;soon&gt; // future protocol
-
-*<b><i>pull</i></b> // load cards
-*<b><i>pick</i></b> // select card
-*<b><i>push</i></b> // show new cards
-
-*<b><i>hide</i></b>
-*<b><i>show</i></b>
+&lt;soon&gt; // reserved types
 
                      // how many users or rooms does the server host
 *<b><i>info</i></b>|&lt;type&gt;         -> info|done|&lt;user&gt;             // if &lt;type&gt; = 'user'
@@ -178,4 +165,17 @@ in sort of chronological order:
                      // ask server for local time
 *<b><i>time</i></b>                -> time|done|&lt;date&gt;             // ISO 8601 date
                                                      // yyyy-MM-dd'T'HH:mm:ss.SSSZ
+
+                     // set status
+*<b><i>away</i></b>|&lt;boolean&gt;      -> away|done
+
+                     // add client as host
+*<b><i>host</i></b>|&lt;port&gt;         -> host|done                    // send the port
+
+*<b><i>pull</i></b> // load cards
+*<b><i>pick</i></b> // select card
+*<b><i>push</i></b> // show new cards
+
+*<b><i>hide</i></b>
+*<b><i>show</i></b>
 </pre>
