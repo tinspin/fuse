@@ -1,5 +1,24 @@
 <pre>
-protocol            --> = broadcasted to Read() (C#) or read(data) (XHR)
+why yet another multiplayer solution?
+
+support:
+- unity.
+- xhr. 99.9% of browsers, only IE7 left behind.
+- 100% of firewalls.
+- all gameplay types:
+  - from two player turn-based.
+  - to real-time action MMO.
+
+protocol:
+- client/server + peer-to-peer hybrid.
+- scalable multicast UDP server cluster.
+- simple but compact & readable standard.
+
++-----+
+| RFC |
++-----+
+
+protocol            --> = broadcasted to Read() (c#) or read(data) (xhr)
                      -> = direct return on Push()
 
 < > = mandatory
@@ -43,9 +62,9 @@ in sort of chronological order:
 
 -> main|fail|user not open
 
-+---------------------------------------------------+
-| <b><i>here you have to call Pull() (C#) or pull() (XHR)</i></b> |
-+---------------------------------------------------+
++-------------------------------+
+| <i>here you have to call pull()!</i> |
++-------------------------------+
 
                      // join a game
 *<b><i>game</i></b>|&lt;name&gt;         -> game|done

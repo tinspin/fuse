@@ -107,7 +107,7 @@
   var send_game = true;
   function read(data) {
     if(send_game) {
-      setTimeout(function() { push('game|' + game); }, 10);
+      setTimeout(function() { push('game|' + game); }, 1000); // Give IE time to handle 2000kb payload.
       send_game = false;
     }
     var split = data.split('|');
