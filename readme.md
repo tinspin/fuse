@@ -1,5 +1,5 @@
 ```
-protocol            --> = broadcast to Pull() (event(path, data) for XHR)
+protocol            --> = broadcast to Pull() (message(data) for XHR)
                      -> = direct return on Push()
 
 < > = mandatory
@@ -28,8 +28,8 @@ in sort of chronological order:
 
  salt                -> salt|done|<salt>
  
-  -> main|fail|name missing
-  -> main|fail|name too short
+-> main|fail|name missing
+-> main|fail|name too short
  
                      // login
                      // <hash> is either md5(<key> + <salt>)
@@ -45,7 +45,7 @@ in sort of chronological order:
           or pull(<name>) (XHR) with the name you
           successfully logged in as.
 
- -> main|fail|user not authorized
+-> main|fail|user not authorized
 
                      // how many users or rooms does the server host
 *info|<type>         -> info|done|<user>            // if <type> = 'user'
@@ -77,8 +77,8 @@ in sort of chronological order:
                      -> room|fail|user not in lobby
 
                      // list unlocked rooms with space left or data
- list|room           -> list|room|done|<name>+<type>+<size>|...
- list|data|<type>    -> list|data|done|<id>|...      // use load to get data
+ list|room           -> list|done|room|<name>+<type>+<size>|...
+ list|data|<type>    -> list|done|data|<id>|...      // use load to get data
                      -> list|fail|wrong type
 
                      // join room
@@ -108,8 +108,8 @@ in sort of chronological order:
                      -> exit|fail|user in lobby
 
                      // user exit
- exit                -> exit|done
-                    --> exit|<name>
+*exit                -> exit|done
+                    --> kill|<name>
                     
                      // lock room before the game starts
 *lock                -> lock|done
@@ -124,7 +124,7 @@ in sort of chronological order:
                      -> load|fail|data not found
 
                      // chat in any room
- chat|<text>|[name]  -> chat|done                    // [name] of private destination
+ chat|<text>         -> chat|done                    // @[name] of private destination
                     --> text|<name>|<text>
                      -> chat|fail|user not online
 
@@ -138,7 +138,7 @@ in sort of chronological order:
                      // <data> = <x>+<y>+<z>|<x>+<y>+<z>+<w>|<action>(|<speed>|...)
                      //          position   |orientation    |key/button
 
- -> main|fail|type not found
+-> main|fail|type not found
 
 <soon> // future protocol
 

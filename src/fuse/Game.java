@@ -237,13 +237,12 @@ public class Game implements Node {
 			String what = split[1];
 			
 			if(what.equals("room")) {
-				StringBuilder builder = new StringBuilder("list|room|done");
+				StringBuilder builder = new StringBuilder("list|done|room");
 				Iterator it = rooms.values().iterator();
 			
 				while(it.hasNext()) {
 					Room room = (Room) it.next();
-					
-					builder.append("|" + room.user.name + "+" + room.type + "+" + room.users.size());
+					builder.append("|" + room);
 				}
 				
 				return builder.toString();
@@ -263,7 +262,7 @@ public class Game implements Node {
 					}
 
 					public void read(String host, String body) throws Exception {
-						StringBuilder builder = new StringBuilder("list|data|done");
+						StringBuilder builder = new StringBuilder("list|done|data");
 						final JSONObject result = (JSONObject) new JSONObject(body);
 						JSONArray list = result.getJSONArray("list");
 						
@@ -319,9 +318,9 @@ public class Game implements Node {
 			return "lock|done";
 		}
 		
-		if(data.startsWith("exit")) {
+		if(data.startsWith("quit")) {
 			if(user.room.user == null)
-				return "exit|fail|user in lobby";
+				return "quit|fail|user in lobby";
 			
 			Room room = user.move(user.room, lobby);
 			
@@ -329,7 +328,7 @@ public class Game implements Node {
 				rooms.remove(room.user.name);
 			}
 			
-			return "exit|done";
+			return "quit|done";
 		}
 		
 		if(data.startsWith("save")) {
@@ -498,7 +497,7 @@ public class Game implements Node {
 				
 				// send every user in room to joining user
 				if(data.startsWith("here") && !from.name.equals(user.name)) {
-					System.out.println("here " + from.name + " -> " + user.name);
+					//System.out.println("here " + from.name + " -> " + user.name);
 					node.push(null, from.name, "here|" + user.name + user.peer(from));
 				}
 				
@@ -509,7 +508,7 @@ public class Game implements Node {
 				
 				// send message from user to room
 				if(data.startsWith("text") || !from.name.equals(user.name)) {
-					System.out.println(from + " -> " + user + " " + data);
+					//System.out.println(from + " -> " + user + " " + data);
 					node.push(null, user.name, data.startsWith("here") || data.startsWith("gone") ? data + from.peer(user) : data);
 				}
 				
@@ -538,7 +537,7 @@ public class Game implements Node {
 		}
 		
 		public String toString() {
-			return (user == null ? "lobby" : user.name) + " " + type + " " + users;
+			return (user == null ? "lobby" : user.name) + "+" + type + "+" + users.size();
 		}
 	}
 	

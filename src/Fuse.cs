@@ -246,7 +246,7 @@ public class Fuse {
 		}
 
 		if(list.Length > 15)
-			return list.Substring(15).Split('|'); // from 'list|room|done|'
+			return list.Substring(15).Split('|'); // from 'list|done|room|'
 		else
 			return null;
 	}
