@@ -67,7 +67,7 @@ in sort of chronological order:
 -> main|fail|user not open
 
 +-------------------------------+
-| <i>here you have to call pull()!</i> |
+| <i>Here you have to call pull()!</i> |
 +-------------------------------+
 
                      // join a game
