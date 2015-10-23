@@ -77,25 +77,23 @@
     }
   }
   function xhr_event(path, data) {
-    var body = data;
     if(path == 'pull')
-      body = data.substring(6, data.length - 2);
-    else
-      body;
-    chop(body);
-    if(show)
-      element(path).innerHTML += body + '\n';
+      chop(data, '\n\n'); // last \n\n instead
+    else if(show)
+      element('push').innerHTML += data + '\n';
   }
   function xdr_event(data) {
-    var body = data.substring(0, data.length - 1);
-    chop(body);
-    if(show)
-      element('pull').innerHTML += data + '\n';
+    chop(data, '\n'); // last \n instead
   }
-  function chop(body) {
-    var part = body.split('\n');
+  function chop(body, delimiter) {
+    var part = body.split(delimiter);
     for(var i = 0; i < part.length; i++) {
-      read(part[i]);
+      var trim = part[i].trim();
+      if(trim.length > 0)
+        if(trim.indexOf('data: ') == 0)
+          read(trim.substring(6, trim.length));
+        else
+          read(trim);
     }
   }
   function element(name) {
@@ -106,6 +104,8 @@
 <script>
   var send_game = true;
   function read(data) {
+    if(show)
+      element('pull').innerHTML += data + '\n';
     if(send_game) {
       setTimeout(function() { push('game|' + game); }, 1000); // Give IE time to handle 2000kb payload.
       send_game = false;

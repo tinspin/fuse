@@ -39,7 +39,7 @@ In sort of chronological order:
 &lt;rule&gt;                 &lt;echo&gt;
  
                      // register
-                     // [mail] if you want recovery, set [mail] to empty 
+                     // [mail] if you want recovery. set [mail] to empty 
                      //        string (||) if you want pass without mail
                      // [pass] if your platform cannot persist the key 
                      //        preferably this is a hash with salt 
@@ -132,6 +132,7 @@ In sort of chronological order:
                      // insert and select data
  <b><i>save</i></b>|&lt;type&gt;|&lt;json&gt;  -> save|done|&lt;id&gt;|&lt;key&gt;         // to update data use this key in json
                      -> save|fail|data too large
+                     
  <b><i>load</i></b>|&lt;type&gt;|&lt;id&gt;    -> load|done|&lt;json&gt;             // use id from list|data|&lt;type&gt;
                      -> load|fail|data not found
 
