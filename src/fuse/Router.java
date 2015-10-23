@@ -154,17 +154,17 @@ public class Router implements Node {
 			return "hold";
 		}
 
-		if(data.startsWith("salt")) {
-			String salt = Event.random(8);
-			salts.put(salt, "");
-			return "salt|done|" + salt;
-		}
-
 		if(name.length() < 0)
 			return "main|fail|name missing";
 		
 		if(name.length() < 3)
 			return "main|fail|name too short";
+		
+		if(data.startsWith("salt")) {
+			String salt = Event.random(8);
+			salts.put(salt, "");
+			return "salt|done|" + salt;
+		}
 		
 		if(data.startsWith("open")) {
 			String salt = split[1];
