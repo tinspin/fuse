@@ -477,7 +477,7 @@ public class Game implements Node {
 	
 	public static class Room {
 		ConcurrentHashMap users = new ConcurrentHashMap();
-		boolean lock;
+		boolean lock, stop;
 		String type;
 		User user;
 		int size;
@@ -501,7 +501,6 @@ public class Game implements Node {
 				
 				// send every user in room to joining user
 				if(data.startsWith("here") && !from.name.equals(user.name)) {
-					//System.out.println("here " + from.name + " -> " + user.name);
 					node.push(null, from.name, "here|" + user.name + user.peer(from));
 				}
 				
@@ -512,19 +511,18 @@ public class Game implements Node {
 				
 				// send message from user to room
 				if(data.startsWith("text") || !from.name.equals(user.name)) {
-					//System.out.println(from + " -> " + user + " " + data);
 					node.push(null, user.name, data.startsWith("here") || data.startsWith("gone") ? data + from.peer(user) : data);
 				}
 				
 				// eject everyone
-				if(data.startsWith("quit")) {
+				if(data.startsWith("stop")) {
 					user.move(null, lobby);
 				}
 			}
 			
-			// broadcast quit/stop
-			if(data.startsWith("quit")) {
-				lobby.send(from, "halt|" + user.name);
+			// broadcast stop
+			if(data.startsWith("stop")) {
+				lobby.send(from, "stop|" + user.name);
 			}
 		}
 		

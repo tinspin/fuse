@@ -84,8 +84,7 @@ in sort of chronological order:
 
                      // join room
  <b><i>join</i></b>|&lt;name&gt;         -> join|done
-                    --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in new room, all to all
-                                                        IP if peer was set
+                    --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in new room
                     --> <b><i>gone</i></b>|&lt;name&gt;                  // in lobby
                      -> join|fail|room not found
                      -> join|fail|room is locked
@@ -99,13 +98,9 @@ in sort of chronological order:
  
                      // quit room
  <b><i>quit</i></b>                -> quit|done
-                    --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in lobby, all to all
-                                                        IP if peer was set
-                    --> <b><i>gone</i></b>|&lt;name&gt;                  // in old room OR
-                    --> <b><i>stop</i></b>|&lt;name&gt;                  // in old room when maker leaves 
-                                                        then room is dropped and everyone 
-                                                        put back in lobby
-                    --> <b><i>halt</i></b>|&lt;name&gt;                  // in lobby if creator or last user leaves
+                    --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in lobby
+                    --> <b><i>gone</i></b>|&lt;name&gt;                  // in old room
+                    --> <b><i>stop</i></b>|&lt;name&gt;                  // if creator or last user leaves
                      -> exit|fail|user in lobby
 
                      // user exit
@@ -114,8 +109,7 @@ in sort of chronological order:
                     
                      // lock room before the game starts
 *<b><i>lock</i></b>                -> lock|done
-                    --> <b><i>link</i></b>|&lt;name&gt;                  // to everyone in room, can be used 
-                                                        to start the game
+                    --> <b><i>link</i></b>|&lt;name&gt;                  // to everyone, used to start the game
                      -> lock|fail|user not room host
 
                      // insert and select data
@@ -141,15 +135,19 @@ in sort of chronological order:
 
 -> main|fail|type not found
 
-&lt;soon&gt; // future protocol
-
-*<b><i>pull</i></b> // load cards
-*<b><i>pick</i></b> // select card
-*<b><i>push</i></b> // show new cards
-
 &lt;peer&gt; // peer protocol
 
 *<b><i>talk</i></b> // send voice
 *<b><i>head</i></b> // send head/body movement
 *<b><i>hand</i></b> // send hand movements
+
+&lt;soon&gt; // future protocol
+
+*<b><i>stop</i></b>
+*<b><i>halt</i></b>
+*<b><i>hide</i></b>
+*<b><i>show</i></b>
+*<b><i>pull</i></b> // load cards
+*<b><i>pick</i></b> // select card
+*<b><i>push</i></b> // show new cards
 </pre>
