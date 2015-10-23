@@ -5,7 +5,7 @@ support:
 - Unity
   - plugin is only 140 lines of C# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">Fuse.cs</a>
 - XHR/XDR, 99.9% of browsers, only IE7 missing
-  - CORS compliant, static hosting for you: <a href="https://github.com/tinspin/fuse/blob/master/res/game.html">Fuse.cs</a>
+  - CORS compliant, static hosting for you: <a href="https://github.com/tinspin/fuse/blob/master/res/game.html">game.html</a>
 - 100% uptime on routing
 - 100% read uptime on data
 - 100% firewall pass-through
