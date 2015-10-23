@@ -41,8 +41,8 @@ in sort of chronological order:
                      -> open|fail|salt not found
                      -> open|fail|wrong pass
 
-&lt;pull&gt; = here you should call Pull(&lt;name&gt;) (C#)
-         or pull(&lt;name&gt;) (XHR) with the name you
+&lt;pull&gt; = here you should call Pull() (C#)
+         or pull() (XHR) with the name you
          successfully logged in as.
 
 -> main|fail|user not open
