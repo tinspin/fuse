@@ -1,5 +1,5 @@
 <pre>
-protocol            --> = broadcast to Read() (C#) or read(data) (XHR)
+protocol            --> = broadcasted to Read() (C#) or read(data) (XHR)
                      -> = direct return on Push()
 
 < > = mandatory
@@ -43,7 +43,7 @@ in sort of chronological order:
 
 -> main|fail|user not open
 
-<b>here you have to call Pull() (C#) or pull() (XHR)</b>
+<b><i>### here you have to call Pull() (C#) or pull() (XHR)</i></b>
 
                      // join a game
 *<b><i>game</i></b>|&lt;name&gt;         -> game|done
