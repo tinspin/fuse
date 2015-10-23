@@ -66,7 +66,7 @@ in sort of chronological order:
 *<b><i>away</i></b>|&lt;boolean&gt;      -> away|done
 
                      // enable peer-to-peer
- <b><i>peer</i></b>|&lt;ip&gt;         -> peer|done                    // send the internal address (192.168...)
+ <b><i>peer</i></b>|&lt;ip&gt;           -> peer|done                    // send the internal address (192.168...)
 
                      // add client as host
 *<b><i>host</i></b>|&lt;port&gt;         -> host|done                    // send the port
