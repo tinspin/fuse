@@ -19,11 +19,11 @@ protocol:
 - scalable multicast UDP cluster server
 
 +-----+
-| RFC |
+| <i>RFC</i> |
 +-----+
 
-protocol            --> = broadcasted to Read() (C#) or read(data) (XHR/XDR)
-                     -> = direct return on Push(data)
+protocol            --> = async. broadcast to Read() (C#) or read(data) (XHR/XDR)
+                     -> = sync. return on Push(data) or push(data)
 
 < > = mandatory
 [ ] = optional
@@ -31,7 +31,7 @@ protocol            --> = broadcasted to Read() (C#) or read(data) (XHR/XDR)
 
 in sort of chronological order:
 
-&lt;type&gt;                 &lt;echo&gt;
+&lt;rule&gt;                 &lt;echo&gt;
  
                      // register
                      // [mail] if you want recovery, set [mail] to empty 
@@ -146,6 +146,10 @@ in sort of chronological order:
                      //          position   |orientation    |key/button
 
 -> main|fail|type not found
+
++----------------+
+| <i>Sketched methods</i> |
++----------------+
 
 &lt;peer&gt; // peer protocol
 
