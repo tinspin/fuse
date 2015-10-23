@@ -71,21 +71,10 @@ in sort of chronological order:
 +-------------------------------+
 
                      // join a game
-*<b><i>game</i></b>|&lt;name&gt;         -> game|done
+ <b><i>game</i></b>|&lt;name&gt;         -> game|done
                      -> game|fail|name invalid
                      
 -> main|fail|user has no game
-
-                     // how many users or rooms does the server host
-*<b><i>info</i></b>|&lt;type&gt;         -> info|done|&lt;user&gt;             // if &lt;type&gt; = 'user'
-                     -> info|done|&lt;room&gt;             // if &lt;type&gt; = 'room'
-                     
-                     // tcp keep-alive for push socket
-*<b><i>ping</i></b>                -> ping|done
-
-                     // ask server for local time
-*<b><i>time</i></b>                -> time|done|&lt;date&gt;             // ISO 8601 date
-                                                     // yyyy-MM-dd'T'HH:mm:ss.SSSZ
 
                      // add friend
 *<b><i>ally</i></b>|&lt;name&gt;         -> ally|done
@@ -133,7 +122,7 @@ in sort of chronological order:
                      -> exit|fail|user in lobby
 
                      // user exit
-*<b><i>exit</i></b>                -> exit|done
+ <b><i>exit</i></b>                -> exit|done
                     --> <b><i>kill</i></b>|&lt;name&gt;
                     
                      // lock room before the game starts
@@ -178,4 +167,15 @@ in sort of chronological order:
 
 *<b><i>hide</i></b>
 *<b><i>show</i></b>
+
+                     // how many users or rooms does the server host
+*<b><i>info</i></b>|&lt;type&gt;         -> info|done|&lt;user&gt;             // if &lt;type&gt; = 'user'
+                     -> info|done|&lt;room&gt;             // if &lt;type&gt; = 'room'
+                     
+                     // tcp keep-alive for push socket
+*<b><i>ping</i></b>                -> ping|done
+
+                     // ask server for local time
+*<b><i>time</i></b>                -> time|done|&lt;date&gt;             // ISO 8601 date
+                                                     // yyyy-MM-dd'T'HH:mm:ss.SSSZ
 </pre>

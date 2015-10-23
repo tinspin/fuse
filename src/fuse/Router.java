@@ -595,7 +595,7 @@ public class Router implements Node {
 				user.game.rooms.remove(room.user.name);
 			}
 			
-			user.game.send(user, "exit|" + user.name);
+			user.game.send(user, "kill|" + user.name);
 			
 			users.remove(name);
 			
