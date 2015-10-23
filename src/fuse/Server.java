@@ -46,7 +46,7 @@ public class Server extends Service implements Node, Runnable {
 			thread = new Thread(this);
 			thread.start();
 
-			node = new Game();
+			node = new Router();
 			node.call(daemon, this);
 		}
 		

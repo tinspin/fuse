@@ -14,12 +14,11 @@ import se.rupy.http.Deploy;
 import se.rupy.http.Event;
 import se.rupy.http.Root;
 
-public class Game implements Node {
-	ConcurrentHashMap salts = new ConcurrentHashMap();
-	ConcurrentHashMap rooms = new ConcurrentHashMap();
+public class Router implements Node {
 	ConcurrentHashMap users = new ConcurrentHashMap();
+	ConcurrentHashMap salts = new ConcurrentHashMap();
+	ConcurrentHashMap games = new ConcurrentHashMap();
 	
-	static Room lobby = new Room(null, "lobby", 1024);
 	static Daemon daemon;
 	static Node node;
 
@@ -45,7 +44,6 @@ public class Game implements Node {
 		
 		user.json = json;
 		users.put(name, user);
-		user.move(null, lobby);
 	}
 	
 	public String push(final Event event, final String name, String data) throws Exception {
@@ -212,8 +210,29 @@ public class Game implements Node {
 		
 		User user = (User) users.get(name);
 		
-		if(event.query().header("host").equals("fuse.radiomesh.org") && user == null)
-			return "main|fail|user not authorized";
+		if(user == null)
+			return "main|fail|user not open";
+		
+		if(data.startsWith("game")) {
+			if(!split[1].matches("[a-zA-Z]+"))
+				return "game|fail|name invalid";
+			
+			Game game = (Game) games.get(split[1]);
+			
+			if(game == null) {
+				game = new Game(split[1]);
+				games.put(split[1], game);
+			}
+			
+			game.add(user);
+			user.move(null, game);
+			user.game = game;
+			
+			return "game|done";
+		}
+		
+		if(user.game == null)
+			return "main|fail|user has no game";
 		
 		if(data.startsWith("peer")) {
 			user.peer(event, split[1]);
@@ -230,10 +249,13 @@ public class Game implements Node {
 				return "room|fail|type invalid";
 			
 			int size = Integer.parseInt(split[2]);
+			
 			Room room = new Room(user, type, size);
-			rooms.put(room.user.name, room);
-			user.move(lobby, room);
-			lobby.send(user, "made|" + room);
+			
+			user.game.rooms.put(user.name, room);
+			user.game.send(user, "made|" + room);
+			user.move(user.game, room);
+			
 			return "room|done";
 		}
 		
@@ -242,7 +264,7 @@ public class Game implements Node {
 			
 			if(what.equals("room")) {
 				StringBuilder builder = new StringBuilder("list|done|room");
-				Iterator it = rooms.values().iterator();
+				Iterator it = user.game.rooms.values().iterator();
 			
 				while(it.hasNext()) {
 					Room room = (Room) it.next();
@@ -293,7 +315,7 @@ public class Game implements Node {
 		}
 		
 		if(data.startsWith("join")) {
-			Room room = (Room) rooms.get(split[1]);
+			Room room = (Room) user.game.rooms.get(split[1]);
 			
 			if(room == null)
 				return "join|fail|room not found";
@@ -326,10 +348,10 @@ public class Game implements Node {
 			if(user.room.user == null)
 				return "quit|fail|user in lobby";
 			
-			Room room = user.move(user.room, lobby);
+			Room room = user.move(user.room, user.game);
 			
 			if(room != null) {
-				rooms.remove(room.user.name);
+				user.game.rooms.remove(room.user.name);
 			}
 			
 			return "quit|done";
@@ -422,6 +444,7 @@ public class Game implements Node {
 		String[] ip;
 		JSONObject json;
 		String name;
+		Game game;
 		Room room;
 		
 		User(String name) {
@@ -477,10 +500,16 @@ public class Game implements Node {
 	
 	public static class Room {
 		ConcurrentHashMap users = new ConcurrentHashMap();
+		
 		boolean lock, stop;
 		String type;
 		User user;
 		int size;
+		
+		Room(String type, int size) {
+			this.type = type;
+			this.size = size;
+		}
 		
 		Room(User user, String type, int size) {
 			this.type = type;
@@ -516,13 +545,13 @@ public class Game implements Node {
 				
 				// eject everyone
 				if(data.startsWith("stop")) {
-					user.move(null, lobby);
+					user.move(null, user.game);
 				}
 			}
 			
 			// broadcast stop
 			if(data.startsWith("stop")) {
-				lobby.send(from, "stop|" + user.name);
+				user.game.send(from, "stop|" + user.name);
 			}
 		}
 		
@@ -540,6 +569,17 @@ public class Game implements Node {
 		
 		public String toString() {
 			return (user == null ? "lobby" : user.name) + "+" + type + "+" + users.size();
+		}
+	}
+	
+	public static class Game extends Room {
+		ConcurrentHashMap rooms = new ConcurrentHashMap();
+		
+		String name;
+		
+		public Game(String name) {
+			super(null, "game", 1024);
+			this.name = name;
 		}
 	}
 	

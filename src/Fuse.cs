@@ -19,6 +19,7 @@ public class Fuse {
 	private Queue<string> queue;
 	private Socket pull, push;
 	private bool connected;
+	private string name;
 
 	private IPEndPoint remote;
 
@@ -44,7 +45,15 @@ public class Fuse {
 		push.Connect(remote);
 	}
 
-	public void Pull(string name) {
+	public string Name() {
+		return name;
+	}
+	
+	public void Name(string name) {
+		this.name = name;
+	}
+
+	public void Pull() {
 		queue = new Queue<string>();
 
 		pull = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -65,7 +74,7 @@ public class Fuse {
 		connected = true;
 	}
 
-	public string Push(String name, String data) {
+	public string Push(String data) {
 		byte[] body = new byte[1024];
 
 		String text = "GET /push?name=" + name + "&data=" + data + " HTTP/1.1\r\n"
@@ -80,7 +89,7 @@ public class Fuse {
 		return split[1];
 	}
 
-	public string[] Pull() {
+	public string[] Read() {
 		if(!connected)
 			return null;
 
@@ -138,12 +147,12 @@ public class Fuse {
 
 	public static void Main() {
 		try {
-			string name = "fuse";
 			Fuse fuse = new Fuse();
-
+			fuse.Name("fuse");
+			
 			// if no key is stored try
 
-			//string key = fuse.User(name);
+			//string key = fuse.User();
 
 			//   then store name and key
 			// otherwise
@@ -154,13 +163,14 @@ public class Fuse {
 			bool success = false;
 
 			if(key != null) {
-				success = fuse.Open(name, key);
+				success = fuse.Open(key);
 			}
 
 			if(success) {
 				// this will allow you to Fuse.Pull();
 				// from MonoBehaviour.Update();
-				fuse.Pull(name); 
+				fuse.Pull(); 
+				fuse.Game("klossar");
 
 				// remove in unity ###
 				Thread.Sleep(100);
@@ -170,40 +180,39 @@ public class Fuse {
 				Thread.Sleep(500);
 				// remove
 
-				fuse.Chat(name, "hello");
+				fuse.Chat("hello");
 
 				Thread.Sleep(500);
 
-				Console.WriteLine("host " + fuse.Room(name, "race", 4));
+				Console.WriteLine("Room: " + fuse.Room("race", 4));
 
 				Thread.Sleep(500);
 
-				string[] list = fuse.ListRoom(name);
+				string[] list = fuse.ListRoom();
 
 				if(list != null) {
-					Console.WriteLine("list " + list.Length);
+					Console.WriteLine("List: " + list.Length);
 
 					for(int i = 0; i < list.Length; i++) {
 						string[] room = list[i].Split('+');
-
-						Console.WriteLine(room[0] + " " + room[1] + " (" + room[2] + ")");
+						Console.WriteLine("      " + room[0] + " " + room[1] + " (" + room[2] + ")");
 					}
 				}
 				
 				Thread.Sleep(500);
 
-				fuse.Chat(name, "hello");
+				fuse.Chat("hello");
 			}
 
-			Console.WriteLine("login " + success);
+			Console.WriteLine("Open: " + success);
 		}
 		catch(Exception e) {
 			Console.WriteLine(e.ToString());
 		}
 	}
 
-	public string User(string name) {
-		string[] user = Push(name, "user").Split('|');
+	public string User() {
+		string[] user = Push("user").Split('|');
 
 		if(user[1].Equals("fail")) {
 			if(user[2].IndexOf("bad") > 0) {
@@ -220,10 +229,10 @@ public class Fuse {
 		return user[2];
 	}
 
-	public bool Open(string name, string key) {
-		string salt = Push(name, "salt").Split('|')[2];
+	public bool Open(string key) {
+		string salt = Push("salt").Split('|')[2];
 		string hash = MD5(key + salt);
-		string[] open = Push(name, "open|" + salt + "|" + hash).Split('|');
+		string[] open = Push("open|" + salt + "|" + hash).Split('|');
 
 		if(open[1].Equals("fail")) {
 			Console.WriteLine("open " + open[2]);
@@ -233,12 +242,16 @@ public class Fuse {
 		return true;
 	}
 
-	public bool Room(string name, String type, int size) {
-		return BoolPush(name, "room|" + type + "|" + size);
+	public bool Game(string game) {
+		return BoolPush("game|" + game);
 	}
 
-	public string[] ListRoom(string name) {
-		string list = Push(name, "list|room");
+	public bool Room(String type, int size) {
+		return BoolPush("room|" + type + "|" + size);
+	}
+
+	public string[] ListRoom() {
+		string list = Push("list|room");
 
 		if(list.StartsWith("list|fail")) {
 			Console.WriteLine(name + " " + list);
@@ -251,28 +264,28 @@ public class Fuse {
 			return null;
 	}
 
-	public bool Join(string name, string which) {
-		return BoolPush(name, "join|" + which);
+	public bool Join(string which) {
+		return BoolPush("join|" + which);
 	}
 
-	public bool Exit(string name) {
-		return BoolPush(name, "exit");
+	public bool Exit() {
+		return BoolPush("exit");
 	}
 
-	public void Lock(string name, string text) {
-		EasyPush(name, "lock");
+	public void Lock(string text) {
+		EasyPush("lock");
 	}
 
-	public void Chat(string name, string text) {
-		EasyPush(name, "chat|" + text);
+	public void Chat(string text) {
+		EasyPush("chat|" + text);
 	}
 
-	public void Data(string name, string data) {
-		EasyPush(name, "data|" + data);
+	public void Send(string data) {
+		EasyPush("send|" + data);
 	}
 
-	public bool BoolPush(string name, string data) {
-		string[] push = EasyPush(name, data);
+	public bool BoolPush(string data) {
+		string[] push = EasyPush(data);
 
 		if(push == null) {
 			return false;
@@ -281,8 +294,8 @@ public class Fuse {
 		return true;
 	}
 
-	public string[] EasyPush(string name, string data) {
-		string[] push = Push(name, data).Split('|');
+	public string[] EasyPush(string data) {
+		string[] push = Push(data).Split('|');
 		
 		if(push[1].Equals("fail")) {
 			Console.WriteLine(name + " " + data + " " + push[2]);
@@ -311,11 +324,11 @@ public class Alpha {
 	public Alpha(Fuse fuse) { this.fuse = fuse; }
 	public void Beta() {
 		while(true) {
-			string[] received = fuse.Pull();
+			string[] received = fuse.Read();
 
 			if(received != null) {
 				for(int i = 0; i < received.Length; i++) {
-					Console.WriteLine("received " + received[i]);
+					Console.WriteLine("Read: " + received[i]);
 				}
 			}
 		}

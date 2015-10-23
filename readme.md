@@ -1,5 +1,5 @@
 <pre>
-protocol            --> = broadcast to Pull() (message(data) for XHR)
+protocol            --> = broadcast to Read() (C#) or read(data) (XHR)
                      -> = direct return on Push()
 
 < > = mandatory
@@ -45,7 +45,13 @@ in sort of chronological order:
          or pull(&lt;name&gt;) (XHR) with the name you
          successfully logged in as.
 
--> main|fail|user not authorized
+-> main|fail|user not open
+
+                     // join a game
+*<b><i>game</i></b>|&lt;name&gt;         -> game|done
+                     -> game|fail|name invalid
+                     
+-> main|fail|user has no game
 
                      // how many users or rooms does the server host
 *<b><i>info</i></b>|&lt;type&gt;         -> info|done|&lt;user&gt;             // if &lt;type&gt; = 'user'
