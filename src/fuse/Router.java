@@ -216,7 +216,7 @@ public class Router implements Node {
 		if(data.startsWith("game")) {
 			if(!split[1].matches("[a-zA-Z]+"))
 				return "game|fail|name invalid";
-			
+
 			Game game = (Game) games.get(split[1]);
 			
 			if(game == null) {

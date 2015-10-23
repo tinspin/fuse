@@ -170,7 +170,7 @@ public class Fuse {
 				// this will allow you to Fuse.Pull();
 				// from MonoBehaviour.Update();
 				fuse.Pull(); 
-				fuse.Game("klossar");
+				Console.WriteLine("Game: " + fuse.Game("klossar"));
 
 				// remove in unity ###
 				Thread.Sleep(100);

@@ -36,6 +36,7 @@
   var host = window.location.search.substring(1);
   if(!host)
     host = 'fuse.rupy.se';
+  var game = 'klossar';
   var show = true;
   var name = '';
   var size = 0;
@@ -103,7 +104,12 @@
 </script>
 <!-- fuse message handling -->
 <script>
+  var send_game = true;
   function read(data) {
+    if(send_game) {
+      setTimeout(function() { push('game|' + game); }, 10);
+      send_game = false;
+    }
     var split = data.split('|');
     if(split.length > 1 && split[1] == 'fail') {
       show_fail(split[2]);
@@ -188,7 +194,6 @@
     display('user', 'none');
     display('room', 'block');
     pull();
-    push('game|klossar');
     focus('text');
   }
   function none(data) {
