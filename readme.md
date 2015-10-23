@@ -17,7 +17,7 @@ in sort of chronological order:
                      //        preferably this is a hash with salt 
                      //        for example we simply use md5(pass + name)
                      // use <id> as name if you want anonymous users
- user|[mail]|[pass]  -> user|done|<key>|<id>
+ <b>user</b>|[mail]|[pass]  -> user|done|<key>|<id>
                      -> user|fail|name too short
                      -> user|fail|pass too short
                      -> user|fail|name alpha missing // numeric reserved for <id>
@@ -29,14 +29,14 @@ in sort of chronological order:
 -> main|fail|name missing
 -> main|fail|name too short
  
- salt                -> salt|done|<salt>
+ <b><i>salt</i></b>                -> salt|done|<salt>
  
                      // login
                      // <hash> is either md5(<key> + <salt>)
                      //               or md5([pass] + <salt>)
                      //        we use md5(md5(pass + name) + <salt>)
                      //        make sure you keep the case correct
- open|<salt>|<hash>  -> open|done
+ <i>open</i>|<salt>|<hash>  -> open|done
                      -> open|fail|user not found
                      -> open|fail|salt not found
                      -> open|fail|wrong pass
