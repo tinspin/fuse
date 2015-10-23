@@ -21,8 +21,8 @@ in sort of chronological order:
                      -> user|fail|name too short
                      -> user|fail|pass too short
                      -> user|fail|name alpha missing // numeric reserved for &lt;id&gt;
-                     -> user|fail|name invalid // only alphanumeric and .
-                     -> user|fail|mail invalid // only alphanumeric and .@-+
+                     -> user|fail|name invalid       // only alphanumeric and .
+                     -> user|fail|mail invalid       // only alphanumeric and .@-+
                      -> user|fail|name already registered
                      -> user|fail|mail already registered
  
