@@ -48,7 +48,7 @@ in sort of chronological order:
 -> main|fail|user not authorized
 
                      // how many users or rooms does the server host
-*_**info**_|<type>         -> info|done|<user>            // if <type> = 'user'
+***_info_**|<type>         -> info|done|<user>            // if <type> = 'user'
                      -> info|done|<room>            // if <type> = 'room'
                      
                      // tcp keep-alive for push socket
