@@ -225,6 +225,10 @@ public class Game implements Node {
 				return "room|fail|user not in lobby";
 
 			String type = split[1];
+			
+			if(!type.matches("[a-zA-Z]+"))
+				return "room|fail|type invalid";
+			
 			int size = Integer.parseInt(split[2]);
 			Room room = new Room(user, type, size);
 			rooms.put(room.user.name, room);

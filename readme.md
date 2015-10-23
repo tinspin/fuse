@@ -48,15 +48,15 @@ in sort of chronological order:
 -> main|fail|user not authorized
 
                      // how many users or rooms does the server host
-*<b><i>info</i></b>|&lt;type&gt;         -> info|done|&lt;user&gt;            // if &lt;type&gt; = 'user'
-                     -> info|done|&lt;room&gt;            // if &lt;type&gt; = 'room'
+*<b><i>info</i></b>|&lt;type&gt;         -> info|done|&lt;user&gt;             // if &lt;type&gt; = 'user'
+                     -> info|done|&lt;room&gt;             // if &lt;type&gt; = 'room'
                      
                      // tcp keep-alive for push socket
 *<b><i>ping</i></b>                -> ping|done
 
                      // ask server for local time
-*<b><i>time</i></b>                -> time|done|&lt;date&gt;            // ISO 8601 date
-                                                    // yyyy-MM-dd'T'HH:mm:ss.SSSZ
+*<b><i>time</i></b>                -> time|done|&lt;date&gt;             // ISO 8601 date
+                                                     // yyyy-MM-dd'T'HH:mm:ss.SSSZ
 
                      // add friend
 *<b><i>ally</i></b>|&lt;name&gt;         -> ally|done
@@ -75,6 +75,7 @@ in sort of chronological order:
  <b><i>room</i></b>|&lt;type&gt;|&lt;size&gt;  -> room|done
                     --> <b><i>made</i></b>|&lt;name&gt;+&lt;type&gt;+&lt;size&gt;    // in lobby
                      -> room|fail|user not in lobby
+                     -> room|fail|type invalid       // only alpha
 
                      // list unlocked rooms with space left or data
  <b><i>list</i></b>|room           -> list|done|room|&lt;name&gt;+&lt;type&gt;+&lt;size&gt;|...
