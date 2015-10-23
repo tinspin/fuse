@@ -167,7 +167,7 @@ public class Fuse {
 			}
 
 			if(success) {
-				// this will allow you to Fuse.Pull();
+				// this will allow you to Fuse.Read();
 				// from MonoBehaviour.Update();
 				fuse.Pull(); 
 				Console.WriteLine("Game: " + fuse.Game("klossar"));
