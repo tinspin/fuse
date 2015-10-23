@@ -17,7 +17,7 @@ in sort of chronological order:
                      //        preferably this is a hash with salt 
                      //        for example we simply use md5(pass + name)
                      // use <id> as name if you want anonymous users
- user|[mail]|[pass]  -> user|done|<key>|<id>
+ _**user**_|[mail]|[pass]  -> user|done|<key>|<id>
                      -> user|fail|name too short
                      -> user|fail|pass too short
                      -> user|fail|name alpha missing // numeric reserved for <id>
@@ -25,30 +25,30 @@ in sort of chronological order:
                      -> user|fail|mail invalid // only alphanumeric and .@-+
                      -> user|fail|name already registered
                      -> user|fail|mail already registered
-
- salt                -> salt|done|<salt>
  
 -> main|fail|name missing
 -> main|fail|name too short
+ 
+ _**salt**_                -> salt|done|<salt>
  
                      // login
                      // <hash> is either md5(<key> + <salt>)
                      //               or md5([pass] + <salt>)
                      //        we use md5(md5(pass + name) + <salt>)
                      //        make sure you keep the case correct
- open|<salt>|<hash>  -> open|done
+ _**open**_|<salt>|<hash>  -> open|done
                      -> open|fail|user not found
                      -> open|fail|salt not found
                      -> open|fail|wrong pass
 
- <pull> = here you should call Pull(<name>) (C#)
-          or pull(<name>) (XHR) with the name you
-          successfully logged in as.
+<pull> = here you should call Pull(<name>) (C#)
+         or pull(<name>) (XHR) with the name you
+         successfully logged in as.
 
 -> main|fail|user not authorized
 
                      // how many users or rooms does the server host
-*info|<type>         -> info|done|<user>            // if <type> = 'user'
+*_**info**_|<type>         -> info|done|<user>            // if <type> = 'user'
                      -> info|done|<room>            // if <type> = 'room'
                      
                      // tcp keep-alive for push socket

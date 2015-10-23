@@ -46,7 +46,7 @@
     return send('push', name, data);
   }
   function send(path, name, data) {
-    clear_fail();
+    hide_fail();
     var state = (path == 'pull' ? 3 : 4);
     var xhr = new XMLHttpRequest();
     var ie = false;
@@ -129,7 +129,7 @@
       select.remove(id);
     }
   }
-  function clear_fail(text) {
+  function hide_fail(text) {
     element('fail1').innerHTML = '';
     element('fail2').innerHTML = '';
   }
@@ -157,8 +157,8 @@
       return;
     }
     var hash = md5(pass + name);
-    var join = push('user|' + mail + '|' + hash).split('|');
-    if(join[1] == 'done') {
+    var user = push('user|' + mail + '|' + hash).split('|');
+    if(user[1] == 'done') {
       authorize();
     }
   }
@@ -179,14 +179,14 @@
       return;
     }
     var hash = md5(md5(pass + name) + salt[2]);
-    var user = push('open|' + salt[2] + '|' + hash).split('|');
-    if(user[1] == 'done') {
+    var open = push('open|' + salt[2] + '|' + hash).split('|');
+    if(open[1] == 'done') {
       authorize();
     }
   }
   function authorize() {
     display('user', 'none');
-    display('join', 'block');
+    display('room', 'block');
     pull();
     focus('text');
   }
@@ -241,20 +241,19 @@
 </table>
 </div>
 
-<div id="join" style="display: none;"><table>
+<div id="room" style="display: none;"><table>
 <tr><td colspan="3"><div id="fail2"></div></td></tr>
 <tr><td align="center">user</td><td></td>
     <td align="center">room</td></tr>
 <tr><td><select id="ally" size="5" multiple></select></td><td></td>
-    <td><select id="room" size="5" multiple></select></td></tr>
+    <td><select id="join" size="5" multiple></select></td></tr>
 <tr><td><a href="javascript:ally();">ally</a></td><td></td>
     <td><a href="javascript:none('room|klossar|2');">room</a> <a href="javascript:join();">join</a> <a href="javascript:none('quit');">quit</a></td></tr>
 <tr><td colspan="3"><textarea id="chat" rows="5" readonly></textarea></td></tr>
 <tr><td colspan="3">
-<input id="text" size="20" onkeypress="chat_code(event);">
+<input id="text" size="25" onkeypress="chat_code(event);">
 <a href="javascript:chat();">chat</a>
 <a href="javascript:none('list|room');">list</a>
-<a href="javascript:none('join|two');">room</a>
 </td></tr>
 </table>
 </div>
