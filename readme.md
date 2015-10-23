@@ -2,24 +2,24 @@
 why yet another multiplayer solution?
 
 support:
-- unity.
-- xhr. 99.9% of browsers, only IE7 left behind.
-- 100% of firewalls.
+- unity
+- xhr/xdr, 99.9% of browsers, only IE7 missing
+- 100% of firewalls
 - all gameplay types:
-  - from two player turn-based.
-  - to real-time action MMO.
+  - from two player turn-based
+  - to real-time action MMO
 
 protocol:
-- client/server + peer-to-peer hybrid.
-- scalable multicast UDP server cluster.
-- simple but compact & readable standard.
+- client/server HTTP + peer-to-peer UDP hybrid
+- simple but compact & readable standard
+- scalable multicast UDP cluster server
 
 +-----+
 | RFC |
 +-----+
 
-protocol            --> = broadcasted to Read() (c#) or read(data) (xhr)
-                     -> = direct return on Push()
+protocol            --> = broadcasted to read() (c#) or read(data) (xhr)
+                     -> = direct return on push(data)
 
 < > = mandatory
 [ ] = optional
