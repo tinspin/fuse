@@ -73,7 +73,7 @@ in sort of chronological order:
 
                      // host room
  <b><i>room</i></b>|&lt;type&gt;|&lt;size&gt;  -> room|done
-                    --> made|&lt;name&gt;+&lt;type&gt;+&lt;size&gt;    // in lobby
+                    --> <b><i>made</i></b>|&lt;name&gt;+&lt;type&gt;+&lt;size&gt;    // in lobby
                      -> room|fail|user not in lobby
 
                      // list unlocked rooms with space left or data
@@ -83,9 +83,9 @@ in sort of chronological order:
 
                      // join room
  <b><i>join</i></b>|&lt;name&gt;         -> join|done
-                    --> here|&lt;name&gt;[|&lt;ip&gt;]           // in new room, all to all
+                    --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in new room, all to all
                                                         IP if peer was set
-                    --> gone|&lt;name&gt;                  // in lobby
+                    --> <b><i>gone</i></b>|&lt;name&gt;                  // in lobby
                      -> join|fail|room not found
                      -> join|fail|room is locked
                      -> join|fail|already in room
@@ -98,22 +98,22 @@ in sort of chronological order:
  
                      // quit room
  <b><i>quit</i></b>                -> quit|done
-                    --> here|&lt;name&gt;[|&lt;ip&gt;]           // in lobby, all to all
+                    --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in lobby, all to all
                                                         IP if peer was set
-                    --> gone|&lt;name&gt;                  // in old room OR
-                    --> stop|&lt;name&gt;                  // in old room when maker leaves 
+                    --> <b><i>gone</i></b>|&lt;name&gt;                  // in old room OR
+                    --> <b><i>stop</i></b>|&lt;name&gt;                  // in old room when maker leaves 
                                                         then room is dropped and everyone 
                                                         put back in lobby
-                    --> halt|&lt;name&gt;                  // in lobby if creator or last user leaves
+                    --> <b><i>halt</i></b>|&lt;name&gt;                  // in lobby if creator or last user leaves
                      -> exit|fail|user in lobby
 
                      // user exit
 *<b><i>exit</i></b>                -> exit|done
-                    --> kill|&lt;name&gt;
+                    --> <b><i>kill</i></b>|&lt;name&gt;
                     
                      // lock room before the game starts
 *<b><i>lock</i></b>                -> lock|done
-                    --> link|&lt;name&gt;                  // to everyone in room, can be used 
+                    --> <b><i>link</i></b>|&lt;name&gt;                  // to everyone in room, can be used 
                                                         to start the game
                      -> lock|fail|user not room host
 
@@ -125,16 +125,16 @@ in sort of chronological order:
 
                      // chat in any room
  <b><i>chat</i></b>|&lt;text&gt;         -> chat|done                    // @[name] of private destination
-                    --> text|&lt;name&gt;|&lt;text&gt;
+                    --> <b><i>text</i></b>|&lt;name&gt;|&lt;text&gt;
                      -> chat|fail|user not online
 
                      // send any gameplay data to room
  <b><i>send</i></b>|&lt;data&gt;         -> send|done
-                    --> sent|&lt;name&gt;|&lt;data&gt;
+                    --> <b><i>sent</i></b>|&lt;name&gt;|&lt;data&gt;
  
                      // motion for 3D MMO games with dynamic here/gone
 *<b><i>move</i></b>|&lt;data&gt;         -> move|done
-                    --> data|&lt;name&gt;|&lt;data&gt;
+                    --> <b><i>data</i></b>|&lt;name&gt;|&lt;data&gt;
                      // &lt;data&gt; = &lt;x&gt;+&lt;y&gt;+&lt;z&gt;|&lt;x&gt;+&lt;y&gt;+&lt;z&gt;+&lt;w&gt;|&lt;action&gt;(|&lt;speed&gt;|...)
                      //          position   |orientation    |key/button
 
