@@ -66,10 +66,10 @@ in sort of chronological order:
 *<b><i>away</i></b>|&lt;boolean&gt;      -> away|done
 
                      // enable peer-to-peer
- <b><i>peer</i></b>|&lt;192.168...&gt;   -> peer|done                    // send the internal IP
+ <b><i>peer</i></b>|&lt;ip&gt;   -> peer|done                    // send the internal address (192.168...)
 
-                     // add client as IPv6 host
-*<b><i>host</i></b>|&lt;IPv6&gt;         -> host|done                    // send the global IPv6
+                     // add client as host
+*<b><i>host</i></b>|&lt;port&gt;         -> host|done                    // send the port
 
                      // host room
  <b><i>room</i></b>|&lt;type&gt;|&lt;size&gt;  -> room|done
