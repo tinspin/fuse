@@ -8,7 +8,7 @@ protocol            --> = broadcast to Pull() (message(data) for XHR)
 
 in sort of chronological order:
 
-<type>                 <echo>
+&lt;type&gt;                 &lt;echo&gt;
  
                      // register
                      // [mail] if you want recovery, set [mail] to empty 
@@ -16,11 +16,11 @@ in sort of chronological order:
                      // [pass] if your platform cannot persist the key 
                      //        preferably this is a hash with salt 
                      //        for example we simply use md5(pass + name)
-                     // use <id> as name if you want anonymous users
- <b>user</b>|[mail]|[pass]  -> user|done|<key>|<id>
+                     // use &lt;id&gt; as name if you want anonymous users
+ <b><i>user</i></b>|[mail]|[pass]  -> user|done|&lt;key&gt;|&lt;id&gt;
                      -> user|fail|name too short
                      -> user|fail|pass too short
-                     -> user|fail|name alpha missing // numeric reserved for <id>
+                     -> user|fail|name alpha missing // numeric reserved for &lt;id&gt;
                      -> user|fail|name invalid // only alphanumeric and .
                      -> user|fail|mail invalid // only alphanumeric and .@-+
                      -> user|fail|name already registered
@@ -29,126 +29,126 @@ in sort of chronological order:
 -> main|fail|name missing
 -> main|fail|name too short
  
- <b><i>salt</i></b>                -> salt|done|<salt>
+ <b><i>salt</i></b>                -> salt|done|&lt;salt&gt;
  
                      // login
-                     // <hash> is either md5(<key> + <salt>)
-                     //               or md5([pass] + <salt>)
-                     //        we use md5(md5(pass + name) + <salt>)
+                     // &lt;hash&gt; is either md5(&lt;key&gt; + &lt;salt&gt;)
+                     //               or md5([pass] + &lt;salt&gt;)
+                     //        we use md5(md5(pass + name) + &lt;salt&gt;)
                      //        make sure you keep the case correct
- <i>open</i>|<salt>|<hash>  -> open|done
+ <b><i>open</i></b>|&lt;salt&gt;|&lt;hash&gt;  -> open|done
                      -> open|fail|user not found
                      -> open|fail|salt not found
                      -> open|fail|wrong pass
 
-<pull> = here you should call Pull(<name>) (C#)
-         or pull(<name>) (XHR) with the name you
+&lt;pull&gt; = here you should call Pull(&lt;name&gt;) (C#)
+         or pull(&lt;name&gt;) (XHR) with the name you
          successfully logged in as.
 
 -> main|fail|user not authorized
 
                      // how many users or rooms does the server host
-*info|<type>         -> info|done|<user>            // if <type> = 'user'
-                     -> info|done|<room>            // if <type> = 'room'
+*<b><i>info</i></b>|&lt;type&gt;         -> info|done|&lt;user&gt;            // if &lt;type&gt; = 'user'
+                     -> info|done|&lt;room&gt;            // if &lt;type&gt; = 'room'
                      
                      // tcp keep-alive for push socket
-*ping                -> ping|done
+*<b><i>ping</i></b>                -> ping|done
 
                      // ask server for local time
-*time                -> time|done|<date>            // ISO 8601 date
+*<b><i>time</i></b>                -> time|done|&lt;date&gt;            // ISO 8601 date
                                                     // yyyy-MM-dd'T'HH:mm:ss.SSSZ
 
                      // add friend
-*ally|<name>         -> ally|done
+*<b><i>ally</i></b>|&lt;name&gt;         -> ally|done
                      -> ally|fail|user not found
 
                      // set status
-*away|<boolean>      -> away|done
+*<b><i>away</i></b>|&lt;boolean&gt;      -> away|done
 
                      // enable peer-to-peer
- peer|<192.168...>   -> peer|done                    // send the internal IP
+ <b><i>peer</i></b>|&lt;192.168...&gt;   -> peer|done                    // send the internal IP
 
                      // add client as IPv6 host
-*host|<IPv6>         -> host|done                    // send the global IPv6
+*<b><i>host</i></b>|&lt;IPv6&gt;         -> host|done                    // send the global IPv6
 
                      // host room
- room|<type>|<size>  -> room|done
-                    --> made|<name>+<type>+<size>    // in lobby
+ <b><i>room</i></b>|&lt;type&gt;|&lt;size&gt;  -> room|done
+                    --> made|&lt;name&gt;+&lt;type&gt;+&lt;size&gt;    // in lobby
                      -> room|fail|user not in lobby
 
                      // list unlocked rooms with space left or data
- list|room           -> list|done|room|<name>+<type>+<size>|...
- list|data|<type>    -> list|done|data|<id>|...      // use load to get data
+ <b><i>list</i></b>|room           -> list|done|room|&lt;name&gt;+&lt;type&gt;+&lt;size&gt;|...
+ <b><i>list</i></b>|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
                      -> list|fail|wrong type
 
                      // join room
- join|<name>         -> join|done
-                    --> here|<name>[|<ip>]           // in new room, all to all
+ <b><i>join</i></b>|&lt;name&gt;         -> join|done
+                    --> here|&lt;name&gt;[|&lt;ip&gt;]           // in new room, all to all
                                                         IP if peer was set
-                    --> gone|<name>                  // in lobby
+                    --> gone|&lt;name&gt;                  // in lobby
                      -> join|fail|room not found
                      -> join|fail|room is locked
                      -> join|fail|already in room
                      -> join|fail|room is full
 
                      // permanently ban user from room
-*kick|<name>         -> kick|done
+*<b><i>kick</i></b>|&lt;name&gt;         -> kick|done
                      -> kick|fail|not creator
                      -> kick|fail|user not here
  
                      // quit room
- quit                -> quit|done
-                    --> here|<name>[|<ip>]           // in lobby, all to all
+ <b><i>quit</i></b>                -> quit|done
+                    --> here|&lt;name&gt;[|&lt;ip&gt;]           // in lobby, all to all
                                                         IP if peer was set
-                    --> gone|<name>                  // in old room OR
-                    --> stop|<name>                  // in old room when maker leaves 
+                    --> gone|&lt;name&gt;                  // in old room OR
+                    --> stop|&lt;name&gt;                  // in old room when maker leaves 
                                                         then room is dropped and everyone 
                                                         put back in lobby
-                    --> halt|<name>                  // in lobby if creator or last user leaves
+                    --> halt|&lt;name&gt;                  // in lobby if creator or last user leaves
                      -> exit|fail|user in lobby
 
                      // user exit
-*exit                -> exit|done
-                    --> kill|<name>
+*<b><i>exit</i></b>                -> exit|done
+                    --> kill|&lt;name&gt;
                     
                      // lock room before the game starts
-*lock                -> lock|done
-                    --> link|<name>                  // to everyone in room, can be used 
+*<b><i>lock</i></b>                -> lock|done
+                    --> link|&lt;name&gt;                  // to everyone in room, can be used 
                                                         to start the game
                      -> lock|fail|user not room host
 
                      // insert and select data
- save|<type>|<json>  -> save|done|<id>|<key>         // to update data use this key in json
+ <b><i>save</i></b>|&lt;type&gt;|&lt;json&gt;  -> save|done|&lt;id&gt;|&lt;key&gt;         // to update data use this key in json
                      -> save|fail|data too large
- load|<type>|<id>    -> load|done|<json>             // use id from list|data|<type>
+ <b><i>load</i></b>|&lt;type&gt;|&lt;id&gt;    -> load|done|&lt;json&gt;             // use id from list|data|&lt;type&gt;
                      -> load|fail|data not found
 
                      // chat in any room
- chat|<text>         -> chat|done                    // @[name] of private destination
-                    --> text|<name>|<text>
+ <b><i>chat</i></b>|&lt;text&gt;         -> chat|done                    // @[name] of private destination
+                    --> text|&lt;name&gt;|&lt;text&gt;
                      -> chat|fail|user not online
 
                      // send any gameplay data to room
- send|<data>         -> send|done
-                    --> sent|<name>|<data>
+ <b><i>send</i></b>|&lt;data&gt;         -> send|done
+                    --> sent|&lt;name&gt;|&lt;data&gt;
  
                      // motion for 3D MMO games with dynamic here/gone
-*move|<data>         -> move|done
-                    --> data|<name>|<data>
-                     // <data> = <x>+<y>+<z>|<x>+<y>+<z>+<w>|<action>(|<speed>|...)
+*<b><i>move</i></b>|&lt;data&gt;         -> move|done
+                    --> data|&lt;name&gt;|&lt;data&gt;
+                     // &lt;data&gt; = &lt;x&gt;+&lt;y&gt;+&lt;z&gt;|&lt;x&gt;+&lt;y&gt;+&lt;z&gt;+&lt;w&gt;|&lt;action&gt;(|&lt;speed&gt;|...)
                      //          position   |orientation    |key/button
 
 -> main|fail|type not found
 
-<soon> // future protocol
+&lt;soon&gt; // future protocol
 
-*pull // load cards
-*pick // select card
-*push // show new cards
+*<b><i>pull</i></b> // load cards
+*<b><i>pick</i></b> // select card
+*<b><i>push</i></b> // show new cards
 
-<peer> // peer protocol
+&lt;peer&gt; // peer protocol
 
-*talk // send voice
-*head // send head/body movement
-*hand // send hand movements
+*<b><i>talk</i></b> // send voice
+*<b><i>head</i></b> // send head/body movement
+*<b><i>hand</i></b> // send hand movements
 </pre>
