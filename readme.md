@@ -143,11 +143,10 @@ in sort of chronological order:
 
 &lt;soon&gt; // future protocol
 
-*<b><i>stop</i></b>
-*<b><i>halt</i></b>
-*<b><i>hide</i></b>
-*<b><i>show</i></b>
 *<b><i>pull</i></b> // load cards
 *<b><i>pick</i></b> // select card
 *<b><i>push</i></b> // show new cards
+
+*<b><i>hide</i></b>
+*<b><i>show</i></b>
 </pre>
