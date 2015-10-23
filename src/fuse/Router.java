@@ -598,9 +598,6 @@ public class Router implements Node {
 			user.game.send(user, "kill|" + user.name);
 			
 			users.remove(name);
-			
-			if(user.game.users.remove(name) == null)
-				System.out.println("Remove; User '" + name + "' not found in game.");
 		}
 	}
 	

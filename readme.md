@@ -1,35 +1,40 @@
 <pre>
-why yet another multiplayer solution?
++---------------------------------------+
+| <i>Why yet another multiplayer solution?</i> |
++---------------------------------------+
 
-support:
-- Unity
-  - plugin is only 140 lines of C# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">Fuse.cs</a>
-- XHR/XDR, 99.9% of browsers, only IE7 missing
-  - CORS compliant, static hosting for you: <a href="https://github.com/tinspin/fuse/blob/master/res/game.html">game.html</a>
-- 100% uptime on routing
-- 100% read uptime on data
-- 100% firewall pass-through
-- all gameplay types:
-  - from two player turn-based
-  - to real-time action MMO
+Support:
 
-protocol:
-- client/server HTTP + peer-to-peer UDP hybrid
-- simple but compact & readable standard
-- scalable multicast UDP cluster server
+  - Unity
+    - plugin is only 140 lines of C# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">Fuse.cs</a>
+  - XHR/XDR, 99.9% of browsers, only IE7 missing
+    - CORS compliant, static hosting for you: <a href="https://github.com/tinspin/fuse/blob/master/res/game.html">game.html</a>
+  - 100% uptime on routing
+  - 100% read uptime on data
+  - 100% firewall pass-through
+  - all gameplay types:
+    - from two player turn-based
+    - to real-time action MMO
 
-+-----+
-| <i>RFC</i> |
-+-----+
+Protocol:
 
-protocol            --> = async. broadcast to Read() (C#) or read(data) (XHR/XDR)
-                     -> = sync. return on Push(data) or push(data)
+  - client/server HTTP + peer-to-peer UDP hybrid
+  - simple but compact & readable standard
+  - scalable multicast UDP cluster server
+
++-------------------+
+| <i>Work in progress!</i> |
++-------------------+
+
+--> = async. broadcast to Read() (C#) or read(data) (XHR/XDR)
+ -> = sync. return on Push(data) or push(data)
 
 < > = mandatory
 [ ] = optional
+
  *  = not implemented yet
 
-in sort of chronological order:
+In sort of chronological order:
 
 &lt;rule&gt;                 &lt;echo&gt;
  
@@ -151,35 +156,13 @@ in sort of chronological order:
 | <i>Sketched rules</i> |
 +----------------+
 
-&lt;peer&gt; // peer protocol
+// peer protocol
 
 *<b><i>talk</i></b> // send voice
-*<b><i>head</i></b> // send head/body movement
+*<b><i>head</i></b> // send head movement
 *<b><i>hand</i></b> // send hand movements
 
-&lt;soon&gt; // reserved types
+// name pool
 
-                     // how many users or rooms does the server host
-*<b><i>info</i></b>|&lt;type&gt;         -> info|done|&lt;user&gt;             // if &lt;type&gt; = 'user'
-                     -> info|done|&lt;room&gt;             // if &lt;type&gt; = 'room'
-                     
-                     // tcp keep-alive for push socket
-*<b><i>ping</i></b>                -> ping|done
-
-                     // ask server for local time
-*<b><i>time</i></b>                -> time|done|&lt;date&gt;             // ISO 8601 date
-                                                     // yyyy-MM-dd'T'HH:mm:ss.SSSZ
-
-                     // set status
-*<b><i>away</i></b>|&lt;boolean&gt;      -> away|done
-
-                     // add client as host
-*<b><i>host</i></b>|&lt;port&gt;         -> host|done                    // send the port
-
-*<b><i>pull</i></b> // load cards
-*<b><i>pick</i></b> // select card
-*<b><i>push</i></b> // show new cards
-
-*<b><i>hide</i></b>
-*<b><i>show</i></b>
+ <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>away</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>nick</i></b>
 </pre>
