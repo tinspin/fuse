@@ -43,8 +43,9 @@ in sort of chronological order:
 
 -> main|fail|user not open
 
-<b><i>### here you have to call Pull() (C#) or pull() (XHR)</i></b>
-
++----------------------------------------------------+
+| <b><i>here you have to call Pull() (C#) or pull() (XHR)</i></b> |
++----------------------------------------------------+
                      // join a game
 *<b><i>game</i></b>|&lt;name&gt;         -> game|done
                      -> game|fail|name invalid
