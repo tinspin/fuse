@@ -80,6 +80,7 @@ In sort of chronological order:
                             -> game|fail|name invalid
                      
 -> main|fail|user has no game
+-> main|fail|invalid salt
 
                             // add friend
 *<b><i>ally</i></b>|&lt;salt&gt;|&lt;name&gt;         -> ally|done

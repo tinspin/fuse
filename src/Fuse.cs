@@ -19,7 +19,7 @@ public class Fuse {
 	private Queue<string> queue;
 	private Socket pull, push;
 	private bool connected;
-	private string name;
+	private string name, salt;
 
 	private IPEndPoint remote;
 
@@ -74,8 +74,11 @@ public class Fuse {
 		connected = true;
 	}
 
-	public string Push(String data) {
+	public string Push(string data) {
 		byte[] body = new byte[1024];
+
+		if(salt != null)
+			data = data.Substring(0, 5) + salt + '|' + data.Substring(5, data.Length - 5);
 
 		String text = "GET /push?name=" + name + "&data=" + data + " HTTP/1.1\r\n"
 				+ "Host: " + host + "\r\n"
@@ -169,7 +172,7 @@ public class Fuse {
 			if(success) {
 				// this will allow you to Fuse.Read();
 				// from MonoBehaviour.Update();
-				fuse.Pull(); 
+				fuse.Pull();
 				Console.WriteLine("Game: " + fuse.Game("klossar"));
 
 				// remove in unity ###
@@ -226,6 +229,7 @@ public class Fuse {
 			return null;
 		}
 
+		this.salt = user[4];
 		return user[2];
 	}
 
@@ -239,6 +243,7 @@ public class Fuse {
 			return false;
 		}
 
+		this.salt = salt;
 		return true;
 	}
 

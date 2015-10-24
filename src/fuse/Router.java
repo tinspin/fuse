@@ -215,7 +215,7 @@ public class Router implements Node {
 			return "main|fail|user not open";
 		
 		if(!user.salt.equals(split[1]))
-			return "main|fail|wrong salt";
+			return "main|fail|invalid salt";
 		
 		if(data.startsWith("game")) {
 			if(!split[1].matches("[a-zA-Z]+"))
