@@ -48,7 +48,7 @@ public class Router implements Node {
 	}
 	
 	public String push(final Event event, final String name, String data) throws Exception {
-		System.err.println(">" + name + " " + data + " " + event.index());
+		System.err.println("-> " + name + " " + data);
 		
 		final String[] split = data.split("\\|");
 		
@@ -356,6 +356,7 @@ public class Router implements Node {
 			
 			if(room != null) {
 				user.game.rooms.remove(room.user.name);
+				user.game.send(user, "halt|" + user.name);
 			}
 			
 			return "quit|done";
@@ -528,7 +529,7 @@ public class Router implements Node {
 			if(data.startsWith("lock"))
 				lock = true;
 			
-			//System.out.println(from + " " + data + " " + this);
+			System.out.println("<- " + from + " " + data);
 			
 			while(it.hasNext()) {
 				User user = (User) it.next();
@@ -601,7 +602,6 @@ public class Router implements Node {
 			}
 			
 			user.game.send(user, "kill|" + user.name);
-			
 			users.remove(name);
 		}
 	}

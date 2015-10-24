@@ -123,6 +123,7 @@ In sort of chronological order:
                            --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in lobby
                            --> <b><i>gone</i></b>|&lt;name&gt;                  // in old room
                            --> <b><i>stop</i></b>|&lt;name&gt;                  // if creator or last user leaves
+                           --> <b><i>halt</i></b>|&lt;name&gt;                  // in lobby
                             -> exit|fail|user in lobby
 
                             // user exit

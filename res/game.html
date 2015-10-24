@@ -54,7 +54,8 @@
     var ie = false;
     if(state == 3)
       try { xhr = new XDomainRequest(); ie = true; } catch(e) {}
-    if(salt) data = data.substring(0, 5) + salt + '|' + data.substring(5, data.length);
+    if(salt) data = data.substring(0, 4) + '|' + salt + data.substring(4, data.length);
+    try { console.log(data) } catch(e) {}
     var url = 'http://' + host + '/' + path + '?name=' + name + '&data=' + encodeURIComponent(data) + (ie ? "&ie" : "") + "&time=" + new Date().getTime();
     xhr.open('GET', url, state == 3); // sync is deprecated really? genious!
     try { xhr.setRequestHeader('Accept', 'text/event-stream'); } catch(e) {}
@@ -110,22 +111,41 @@
     if(split.length > 1 && split[0] == 'text') {
       element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
     }
-    if(split.length > 0 && split[0] == 'here') {
-      var select = element('ally');
-      var option = document.createElement('option');
-      option.text = split[1];
-      select.options.add(option, select.options[0]);
-    }
-    if(split.length > 0 && split[0] == 'gone') {
-      var select = element('ally');
-      var id = 0;
-      for(var i = 0; i < select.options.length; i++) {
-        if(select.options[i] == split[1]) {
-          id = i;
-          break;
-        }
+    if(split.length > 0) {
+      if(split[0] == 'here') {
+        var select = element('ally');
+        var option = document.createElement('option');
+        option.text = split[1];
+        select.options.add(option, select.options[0]);
       }
-      select.remove(id);
+      if(split[0] == 'gone') {
+        var select = element('ally');
+        var id = 0;
+        for(var i = 0; i < select.options.length; i++) {
+          if(select.options[i] == split[1]) {
+            id = i;
+            break;
+          }
+        }
+        select.remove(id);
+      }
+      if(split[0] == 'made') {
+        var select = element('join');
+        var option = document.createElement('option');
+        option.text = split[1].split("+")[0];
+        select.options.add(option, select.options[0]);
+      }
+      if(split[0] == 'halt') {
+        var select = element('join');
+        var id = 0;
+        for(var i = 0; i < select.options.length; i++) {
+          if(select.options[i] == split[1]) {
+            id = i;
+            break;
+          }
+        }
+        select.remove(id);
+      }
     }
   }
   function hide_fail(text) {

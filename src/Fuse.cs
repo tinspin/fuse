@@ -78,7 +78,7 @@ public class Fuse {
 		byte[] body = new byte[1024];
 
 		if(salt != null)
-			data = data.Substring(0, 5) + salt + '|' + data.Substring(5, data.Length - 5);
+			data = data.Substring(0, 4) + '|' + salt + data.Substring(4, data.Length - 4);
 
 		String text = "GET /push?name=" + name + "&data=" + data + " HTTP/1.1\r\n"
 				+ "Host: " + host + "\r\n"
