@@ -74,12 +74,11 @@ In sort of chronological order:
                             -> open|fail|wrong pass
 
 -> main|fail|user not open
+-> main|fail|invalid salt
 
 +-------------------------------+
 | <i>Here you have to call pull()!</i> |
 +-------------------------------+
-
--> main|fail|invalid salt
 
                             // join a game
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
