@@ -79,12 +79,13 @@ In sort of chronological order:
 | <i>Here you have to call pull()!</i> |
 +-------------------------------+
 
+-> main|fail|invalid salt
+
                             // join a game
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
                             -> game|fail|name invalid
                      
 -> main|fail|user has no game
--> main|fail|invalid salt
 
                             // add friend
 *<b><i>ally</i></b>|&lt;salt&gt;|&lt;name&gt;         -> ally|done
