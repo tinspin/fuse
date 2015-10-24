@@ -22,7 +22,7 @@ Protocol:
 
 Platform:
 
-  - prooven for 5 years
+  - proven for 5 years
   - 100% uptime on routing
   - 100% read uptime on data
 
