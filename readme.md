@@ -1,7 +1,7 @@
 <pre>
-+---------------------------------------+
-| <i>Why yet another multiplayer solution?</i> |
-+---------------------------------------+
++---------------------------+
+| <i>The multiplayer solution.</i> |
++---------------------------+
 
 Support:
 
@@ -9,8 +9,6 @@ Support:
     - plugin is only 140 lines of C# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">Fuse.cs</a>
   - XHR/XDR, 99.9% of browsers, only IE7 missing
     - CORS compliant, static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/game.html">game.html</a>
-  - 100% uptime on routing
-  - 100% read uptime on data
   - 100% firewall pass-through
   - all gameplay types:
     - from two player turn-based
@@ -21,6 +19,12 @@ Protocol:
   - client/server HTTP + peer-to-peer UDP hybrid
   - simple but compact & readable standard
   - scalable multicast UDP cluster server
+
+Platform:
+
+  - prooven for 5 years
+  - 100% uptime on routing
+  - 100% read uptime on data
 
 +-------------------+
 | <i>Work in progress!</i> |
@@ -64,7 +68,7 @@ In sort of chronological order:
                             //               or md5([pass] + &lt;salt&gt;)
                             //        we use md5(md5(pass + name) + &lt;salt&gt;)
                             //        make sure you keep the case correct
- <b><i>open</i></b>|&lt;salt&gt;|&lt;hash&gt;  -> open|done
+ <b><i>open</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> open|done
                             -> open|fail|user not found
                             -> open|fail|salt not found
                             -> open|fail|wrong pass
