@@ -27,12 +27,12 @@ public class Router implements Node {
 		this.node = node;
 	}
 
-	private void auth(String name, JSONObject json) throws Exception {
-		User user = new User(name);
+	private User auth(String name, String salt, JSONObject json) throws Exception {
+		User user = new User(name, salt);
 		
 		if(name.length() == 0) {
 			name = String.valueOf(Root.hash(json.getString("key")));
-			user = new User(name);
+			user = new User(name, salt);
 		}
 		// can't login with mail because name is salt for pass!
 		//else if(name.indexOf("@") > 0) {
@@ -44,6 +44,7 @@ public class Router implements Node {
 		
 		user.json = json;
 		users.put(name, user);
+		return user;
 	}
 	
 	public String push(final Event event, final String name, String data) throws Exception {
@@ -132,13 +133,13 @@ public class Router implements Node {
 							event.query().put("fail", "user|fail|mail already registered");
 					}
 					else {
-						JSONObject user = new JSONObject(body);
+						JSONObject json = new JSONObject(body);
 
-						String key = user.getString("key");
+						String key = json.getString("key");
 
-						auth(name, user);
+						User user = auth(name, Event.random(4), json);
 						
-						event.query().put("done", "user|done|" + key + "|" + Root.hash(key));
+						event.query().put("done", "user|done|" + key + "|" + Root.hash(key) + "|" + user.salt);
 					}
 					
 					event.reply().wakeup();
@@ -161,7 +162,7 @@ public class Router implements Node {
 			return "main|fail|name too short";
 		
 		if(data.startsWith("salt")) {
-			String salt = Event.random(8);
+			String salt = Event.random(4);
 			salts.put(salt, "");
 			return "salt|done|" + salt;
 		}
@@ -185,22 +186,22 @@ public class Router implements Node {
 					return "open|fail|user not found";
 				}
 				
-				JSONObject user = new JSONObject(Root.file(file));
+				JSONObject json = new JSONObject(Root.file(file));
 
-				//System.out.println(user);
+				//System.out.println(json);
 				
 				if(salts.remove(salt) == null) {
 					return "open|fail|salt not found";
 				}
 				
-				String key = user.has("pass") ? user.getString("pass") : user.getString("key");
+				String key = json.has("pass") ? json.getString("pass") : json.getString("key");
 				
 				//System.out.println(key);
 				
 				String md5 = Deploy.hash(key + salt, "MD5");
 
 				if(hash.equals(md5)) {
-					auth(name, user);
+					auth(name, salt, json);
 					return "open|done";
 				}
 				else
@@ -212,6 +213,9 @@ public class Router implements Node {
 		
 		if(user == null)
 			return "main|fail|user not open";
+		
+		if(!user.salt.equals(split[1]))
+			return "main|fail|wrong salt";
 		
 		if(data.startsWith("game")) {
 			if(!split[1].matches("[a-zA-Z]+"))
@@ -243,12 +247,12 @@ public class Router implements Node {
 			if(user.room.user != null)
 				return "room|fail|user not in lobby";
 
-			String type = split[1];
+			String type = split[2];
 			
 			if(!type.matches("[a-zA-Z]+"))
 				return "room|fail|type invalid";
 			
-			int size = Integer.parseInt(split[2]);
+			int size = Integer.parseInt(split[3]);
 			
 			Room room = new Room(user, type, size);
 			
@@ -260,7 +264,7 @@ public class Router implements Node {
 		}
 		
 		if(data.startsWith("list")) {
-			String what = split[1];
+			String what = split[2];
 			
 			if(what.equals("room")) {
 				StringBuilder builder = new StringBuilder("list|done|room");
@@ -275,7 +279,7 @@ public class Router implements Node {
 			}
 			
 			if(what.equals("data")) {
-				final String type = split[2];
+				final String type = split[3];
 				
 				final int from = 0;
 				final int size = 5;
@@ -315,7 +319,7 @@ public class Router implements Node {
 		}
 		
 		if(data.startsWith("join")) {
-			Room room = (Room) user.game.rooms.get(split[1]);
+			Room room = (Room) user.game.rooms.get(split[2]);
 			
 			if(room == null)
 				return "join|fail|room not found";
@@ -363,7 +367,7 @@ public class Router implements Node {
 			}
 			
 			final String type = split[1];
-			final JSONObject json = new JSONObject(split[2]);
+			final JSONObject json = new JSONObject(split[3]);
 			final String key = json.optString("key");
 			final String user_key = user.json.getString("key");
 			
@@ -410,7 +414,7 @@ public class Router implements Node {
 		
 		if(data.startsWith("load")) {
 			String type = split[1];
-			long id = Long.parseLong(split[2]);
+			long id = Long.parseLong(split[3]);
 			
 			File file = new File(Root.home() + "/node/" + type + "/id" + Root.path(id));
 
@@ -423,17 +427,17 @@ public class Router implements Node {
 		}
 		
 		if(data.startsWith("chat")) {
-			user.room.send(user, "text|" + name + "|" + split[1]);
+			user.room.send(user, "text|" + name + "|" + split[2]);
 			return "chat|done";
 		}
 		
 		if(data.startsWith("send")) {
-			user.room.send(user, "sent|" + name + "|" + split[1]);
+			user.room.send(user, "sent|" + name + "|" + split[2]);
 			return "send|done";
 		}
 		
 		if(data.startsWith("move")) {
-			user.room.send(user, "data|" + name + "|" + split[1]);
+			user.room.send(user, "data|" + name + "|" + split[2]);
 			return "move|done";
 		}
 		
@@ -443,12 +447,13 @@ public class Router implements Node {
 	public static class User {
 		String[] ip;
 		JSONObject json;
-		String name;
+		String name, salt;
 		Game game;
 		Room room;
 		
-		User(String name) {
+		User(String name, String salt) {
 			this.name = name;
+			this.salt = salt;
 		}
 		
 		void peer(Event event, String ip) {
