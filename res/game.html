@@ -59,31 +59,26 @@
     if(state == 3) {
       if(ie)
         xhr.onprogress = function() {
-          xdr_event(xhr.responseText.substring(size, xhr.responseText.length));
+          var body = xhr.responseText.substring(size, xhr.responseText.length);
+          chop(body, '\n\n'); // last \n\n instead
+          xdr_event();
           size = xhr.responseText.length;
         };
       else
         xhr.onreadystatechange = function() {
           if(xhr.readyState == 3) {
-            xhr_event(path, xhr.responseText.substring(size, xhr.responseText.length));
+            var body = xhr.responseText.substring(size, xhr.responseText.length);
+            chop(body, '\n'); // last \n instead
             size = xhr.responseText.length;
           }
         };
     }
     xhr.send();
     if(state == 4) {
-      xhr_event(path, xhr.responseText);
+      if(show)
+        element('push').innerHTML += xhr.responseText + '\n';
       return xhr.responseText;
     }
-  }
-  function xhr_event(path, data) {
-    if(path == 'pull')
-      chop(data, '\n\n'); // last \n\n instead
-    else if(show)
-      element('push').innerHTML += data + '\n';
-  }
-  function xdr_event(data) {
-    chop(data, '\n'); // last \n instead
   }
   function chop(body, delimiter) {
     var part = body.split(delimiter);
@@ -111,9 +106,6 @@
       send_game = false;
     }
     var split = data.split('|');
-    if(split.length > 1 && split[1] == 'fail') {
-      show_fail(split[2]);
-    }
     if(split.length > 1 && split[0] == 'text') {
       element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
     }
@@ -164,9 +156,10 @@
     }
     var hash = md5(pass + name);
     var user = push('user|' + mail + '|' + hash).split('|');
-    if(user[1] == 'done') {
+    if(user[1] == 'done')
       authorize();
-    }
+    if(user[1] == 'fail')
+      show_fail(user[2]);
   }
   function open() {
     name = id('name');
@@ -186,9 +179,10 @@
     }
     var hash = md5(md5(pass + name) + salt[2]);
     var open = push('open|' + salt[2] + '|' + hash).split('|');
-    if(open[1] == 'done') {
+    if(open[1] == 'done')
       authorize();
-    }
+    if(open[1] == 'fail')
+      show_fail(open[2]);
   }
   function authorize() {
     display('user', 'none');
