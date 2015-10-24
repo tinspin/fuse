@@ -218,14 +218,14 @@ public class Router implements Node {
 			return "main|fail|invalid salt";
 		
 		if(data.startsWith("game")) {
-			if(!split[1].matches("[a-zA-Z]+"))
+			if(!split[2].matches("[a-zA-Z]+"))
 				return "game|fail|name invalid";
 
-			Game game = (Game) games.get(split[1]);
+			Game game = (Game) games.get(split[2]);
 			
 			if(game == null) {
-				game = new Game(split[1]);
-				games.put(split[1], game);
+				game = new Game(split[2]);
+				games.put(split[2], game);
 			}
 			
 			game.add(user);
@@ -239,7 +239,7 @@ public class Router implements Node {
 			return "main|fail|user has no game";
 		
 		if(data.startsWith("peer")) {
-			user.peer(event, split[1]);
+			user.peer(event, split[2]);
 			return "peer|done";
 		}
 		
@@ -593,7 +593,7 @@ public class Router implements Node {
 		
 		if(user == null)
 			System.out.println("Remove; User '" + name + "' not found.");
-		else {
+		else if(user.salt != null && user.game != null) {
 			Room room = user.move(user.room, null);
 			
 			if(room != null) {
