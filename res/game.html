@@ -63,14 +63,14 @@
       if(ie)
         xhr.onprogress = function() {
           var body = xhr.responseText.substring(size, xhr.responseText.length);
-          chop(body, '\n\n'); // last \n\n instead
+          chop(body, '\n'); // last \n instead
           size = xhr.responseText.length;
         };
       else
         xhr.onreadystatechange = function() {
           if(xhr.readyState == 3) {
             var body = xhr.responseText.substring(size, xhr.responseText.length);
-            chop(body, '\n'); // last \n instead
+            chop(body, '\n\n'); // last \n\n instead
             size = xhr.responseText.length;
           }
         };
@@ -85,6 +85,7 @@
   function chop(body, delimiter) {
     var part = body.split(delimiter);
     for(var i = 0; i < part.length; i++) {
+    try { console.log(part[i]) } catch(e) {}
       var trim = part[i].trim();
       if(trim.length > 0)
         if(trim.indexOf('data: ') == 0)
@@ -101,6 +102,7 @@
 <script>
   var send_game = true;
   function read(data) {
+    try { console.log(data) } catch(e) {}
     if(show)
       element('pull').innerHTML += data + '\n';
     if(send_game) {

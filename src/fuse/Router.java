@@ -533,9 +533,7 @@ public class Router implements Node {
 				lock = true;
 			
 			System.out.println("<- " + from + " " + data);
-			
-			// TODO: when multiple packets to one user, push, push, push then flush!
-			
+
 			boolean wakeup = false;
 			
 			while(it.hasNext()) {

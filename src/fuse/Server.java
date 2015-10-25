@@ -242,7 +242,8 @@ public class Server extends Service implements Node, Runnable {
 
 				if(queue != null && !queue.isEmpty()) {
 					String data = (String) queue.poll();
-
+					//int length = 0;
+					
 					while(data != null) {
 						String accept = queue.event.query().header("accept");
 
@@ -250,9 +251,14 @@ public class Server extends Service implements Node, Runnable {
 							out.print("data: " + data + "\n\n");
 						}
 						else {
-							out.write((data + "\n").getBytes());
+							out.print(data + "\n");
 						}
 
+						//length += data.length();
+						
+						//if(length > 512)
+						//	out.flush();
+						
 						data = (String) queue.poll();
 					}
 
