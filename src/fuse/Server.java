@@ -89,11 +89,18 @@ public class Server extends Service implements Node, Runnable {
 	public void exit() {}
 
 	public String push(Event event, String name, String data) throws Exception {
+		return push(event, name, data, true);
+	}
+	
+	public String push(Event event, String name, String data, boolean wake) throws Exception {
 		Queue queue = find(name);
 
 		if(queue != null) {
 			queue.add(data);
 
+			if(!wake)
+				return null;
+			
 			int wakeup = queue.event.reply().wakeup();
 
 			if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
@@ -105,6 +112,16 @@ public class Server extends Service implements Node, Runnable {
 		}
 
 		return null;
+	}
+	
+	public boolean wakeup(String name) {
+		Queue queue = find(name);
+
+		if(queue != null) {
+			return queue.event.reply().wakeup() == Reply.OK;
+		}
+		
+		return false;
 	}
 
 	public void broadcast(String name, String data) throws Exception {

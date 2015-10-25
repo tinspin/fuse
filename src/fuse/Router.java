@@ -47,6 +47,9 @@ public class Router implements Node {
 		return user;
 	}
 	
+	public String push(Event event, String name, String data, boolean wake) throws Exception { return null; }
+	public boolean wakeup(String name) { return false; }
+	
 	public String push(final Event event, final String name, String data) throws Exception {
 		System.err.println("-> " + name + " " + data);
 		
@@ -531,17 +534,23 @@ public class Router implements Node {
 			
 			System.out.println("<- " + from + " " + data);
 			
+			// TODO: when multiple packets to one user, push, push, push then flush!
+			
+			boolean wakeup = false;
+			
 			while(it.hasNext()) {
 				User user = (User) it.next();
 				
 				// send every user in room to joining user
 				if(data.startsWith("here") && !from.name.equals(user.name)) {
-					node.push(null, from.name, "here|" + user.name + user.peer(from));
+					node.push(null, from.name, "here|" + user.name + user.peer(from), false);
+					wakeup = true;
 				}
 				
 				// send every user in room to leaving user
 				if(data.startsWith("gone") && !from.name.equals(user.name)) {
-					node.push(null, from.name, "gone|" + user.name + user.peer(from));
+					node.push(null, from.name, "gone|" + user.name + user.peer(from), false);
+					wakeup = true;
 				}
 				
 				// send message from user to room
@@ -554,6 +563,9 @@ public class Router implements Node {
 					user.move(null, user.game);
 				}
 			}
+			
+			if(wakeup)
+				node.wakeup(from.name);
 			
 			// broadcast stop
 			if(data.startsWith("quit")) {

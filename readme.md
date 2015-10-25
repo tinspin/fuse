@@ -17,7 +17,6 @@ Support:
 Protocol:
 
   - client/server HTTP + peer-to-peer UDP hybrid
-  - simple but compact & readable standard
   - scalable multicast UDP cluster server
 
 Platform:
