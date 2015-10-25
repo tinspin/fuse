@@ -55,7 +55,6 @@
     if(state == 3)
       try { xhr = new XDomainRequest(); ie = true; } catch(e) {}
     if(salt) data = data.substring(0, 4) + '|' + salt + data.substring(4, data.length);
-    //try { console.log(data) } catch(e) {}
     var url = 'http://' + host + '/' + path + '?name=' + name + '&data=' + encodeURIComponent(data) + (ie ? "&ie" : "") + "&time=" + new Date().getTime();
     xhr.open('GET', url, state == 3); // sync is deprecated really? genious!
     try { xhr.setRequestHeader('Accept', 'text/event-stream'); } catch(e) {}
@@ -85,7 +84,6 @@
   function chop(body, delimiter) {
     var part = body.split(delimiter);
     for(var i = 0; i < part.length; i++) {
-    try { console.log(part[i]) } catch(e) {}
       var trim = part[i].trim();
       if(trim.length > 0)
         if(trim.indexOf('data: ') == 0)
@@ -117,7 +115,6 @@
       if(split[0] == 'here') {
         var select = element('ally');
         for(var i = 0; i < select.options.length; i++) {
-          //try { console.log(select.options[i].text + ' ' + split[1]) } catch(e) {}
           if(select.options[i].text == split[1]) {
             return;
           }
