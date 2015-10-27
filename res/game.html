@@ -45,7 +45,10 @@
     send('pull', name, null);
   }
   function push(data) {
-    return send('push', name, data);
+    var data = send('push', name, data).split('|');
+    if(data[1] == 'fail')
+      show_fail(data[2]);
+    return data;
   }
   function send(path, name, data) {
     hide_fail();
@@ -100,11 +103,11 @@
 <script>
   var send_game = true;
   function read(data) {
-    try { console.log(data) } catch(e) {}
+    //try { console.log(data) } catch(e) {}
     if(show)
       element('pull').innerHTML += data + '\n';
     if(send_game) {
-      setTimeout(function() { push('game|' + game); }, 1000); // Give IE time to handle 2000kb payload.
+      setTimeout(function() { push('game|' + game); list() }, 1000); // Give IE time to handle 2000kb payload.
       send_game = false;
     }
     var split = data.split('|');
@@ -135,16 +138,7 @@
         select.remove(id);
       }
       if(split[0] == 'made') {
-        var name = split[1].split("+")[0];
-        var select = element('join');
-        for(var i = 0; i < select.options.length; i++) {
-          if(select.options[i].text == name) {
-            return;
-          }
-        }
-        var option = document.createElement('option');
-        option.text = name;
-        select.options.add(option, select.options[0]);
+        add_room(split[1]);
       }
       if(split[0] == 'halt') {
         var select = element('join');
@@ -157,6 +151,25 @@
         }
         select.remove(id);
       }
+    }
+  }
+  function add_room(room) {
+    var name = room.split('+')[0];
+    var select = element('join');
+    for(var i = 0; i < select.options.length; i++) {
+      if(select.options[i].text == name) {
+        return;
+      }
+    }
+    var option = document.createElement('option');
+    option.text = name;
+    select.options.add(option, select.options[0]);
+  }
+  function clear() {
+    var select = element('join');
+    var length = select.options.length;
+    for(i = 0; i < length; i++) {
+      select.options[i] = null;
     }
   }
   function hide_fail(text) {
@@ -187,11 +200,9 @@
       return;
     }
     var hash = md5(pass + name);
-    var user = push('user|' + mail + '|' + hash).split('|');
+    var user = push('user|' + mail + '|' + hash);
     if(user[1] == 'done')
       authorize(user[4]);
-    if(user[1] == 'fail')
-      show_fail(user[2]);
   }
   function open() {
     name = id('name');
@@ -204,21 +215,20 @@
       show_fail('pass too short');
       return;
     }
-    var salt = push('salt').split('|');
+    var salt = push('salt');
     if(salt[1] === 'fail') {
       show_fail('failed salt');
       return;
     }
     var hash = md5(md5(pass + name) + salt[2]);
-    var open = push('open|' + salt[2] + '|' + hash).split('|');
+    var open = push('open|' + salt[2] + '|' + hash);
     if(open[1] == 'done')
       authorize(salt[2]);
-    if(open[1] == 'fail')
-      show_fail(open[2]);
   }
   function authorize(salt) {
     display('user', 'none');
     display('room', 'block');
+    display('talk', 'block');
     pull();
     focus('text');
     this.salt = salt;
@@ -257,6 +267,30 @@
     if(text.length > 0)
       none('chat|' + text);
   }
+  function room() {
+    push('room|kloss|2');
+    clear();
+  }
+  function join() {
+    var select = element('join');
+    var index = select.selectedIndex;
+    if(index > -1) {
+      push('join|' + select.options[index].text);
+    }
+    clear();
+  }
+  function quit() {
+    push('quit');
+    //clear();
+    list();
+  }
+  function list() {
+    var list = push('list|room');
+    console.log(list.length);
+    for(var i = 3; i < list.length; i++) {
+      add_room(list[i]);
+    }
+  }
 </script>
 </head>
 <body>
@@ -281,12 +315,18 @@
 <tr><td><select id="ally" size="5" multiple></select></td><td></td>
     <td><select id="join" size="5" multiple></select></td></tr>
 <tr><td><a href="javascript:ally();">ally</a></td><td></td>
-    <td><a href="javascript:none('room|klossar|2');">room</a> <a href="javascript:join();">join</a> <a href="javascript:none('quit');">quit</a></td></tr>
+    <td><a href="javascript:room();">room</a>
+        <a href="javascript:join();">join</a>
+        <a href="javascript:quit();">quit</a>
+        <a href="javascript:list();">list</a></td></tr>
+</table>
+</div>
+
+<div id="talk" style="display: none;"><table>
 <tr><td colspan="3"><textarea id="chat" rows="5" readonly></textarea></td></tr>
 <tr><td colspan="3">
 <input id="text" size="25" onkeypress="chat_code(event);">
 <a href="javascript:chat();">chat</a>
-<a href="javascript:none('list|room');">list</a>
 </td></tr>
 </table>
 </div>

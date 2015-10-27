@@ -65,7 +65,7 @@ public class Router implements Node {
 			if(split.length > 2 && split[2].length() > 0 && split[2].length() < 3)
 				return "user|fail|pass too short";
 			
-			if(name.length() > 0 && !name.matches("[a-zA-Z0-9.]+"))
+			if(name.length() > 0 && !name.matches("[a-zA-Z0-9.\\-]+"))
 				return "user|fail|name invalid";
 			
 			if(name.length() > 0 && name.matches("[0-9]+"))

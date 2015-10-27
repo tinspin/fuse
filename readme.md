@@ -52,7 +52,7 @@ In sort of chronological order:
                             -> user|fail|name too short
                             -> user|fail|pass too short
                             -> user|fail|name alpha missing // numeric reserved for &lt;id&gt;
-                            -> user|fail|name invalid       // only alphanumeric and .
+                            -> user|fail|name invalid       // only alphanumeric and .-
                             -> user|fail|mail invalid       // only alphanumeric and .@-+
                             -> user|fail|name already registered
                             -> user|fail|mail already registered
@@ -130,9 +130,9 @@ In sort of chronological order:
                            --> <b><i>kill</i></b>|&lt;name&gt;
                     
                             // lock room before the game starts
-*<b><i>lock</i></b>|&lt;salt&gt;                -> lock|done
-                           --> <b><i>link</i></b>|&lt;name&gt;                  // to start the game
-                            -> lock|fail|user not room host
+*<b><i>play</i></b>|&lt;salt&gt;                -> play|done
+                           --> <b><i>lock</i></b>|&lt;name&gt;                  // to start the game
+                            -> play|fail|user not room host
 
                             // insert and select data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;json&gt;  -> save|done|&lt;id&gt;|&lt;key&gt;         // use key to update
