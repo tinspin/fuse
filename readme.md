@@ -140,10 +140,11 @@ In sort of chronological order:
                            --> <b><i>lock</i></b>|&lt;name&gt;                  // to start the game
                             -> play|fail|user not room host
 
-                            // insert and select data
+                            // insert data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;json&gt;  -> save|done|&lt;id&gt;|&lt;key&gt;         // use key to update
                             -> save|fail|data too large
-                     
+
+                            // select data
  <b><i>load</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;id&gt;    -> load|done|&lt;json&gt;             // use id from list|data|&lt;type&gt;
                             -> load|fail|data not found
 
