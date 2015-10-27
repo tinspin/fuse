@@ -62,7 +62,7 @@ In sort of chronological order:
  
  <b><i>salt</i></b>                       -> salt|done|&lt;salt&gt;
  
-                             // to get the <id> of a mail to use as <name>
+                             // to get the &lt;id&gt; of a mail to use as <name>
                              // if you want to login with mail instead of name
  <b><i>mail</i></b>                       -> mail|done|&lt;id&gt;
                              -> mail|fail|user not found
