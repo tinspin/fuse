@@ -158,6 +158,18 @@ public class Router implements Node {
 			return "hold";
 		}
 
+		if(data.startsWith("mail")) {
+			File file = new File(Root.home() + "/node/user/mail" + Root.path(split[1]));
+			
+			if(file == null || !file.exists()) {
+				return "mail|fail|user not found";
+			}
+			
+			JSONObject json = new JSONObject(Root.file(file));
+			
+			return "mail|done|" + Root.hash(json.getString("key"));
+		}
+		
 		if(name.length() < 0)
 			return "main|fail|name missing";
 		
@@ -168,18 +180,6 @@ public class Router implements Node {
 			String salt = Event.random(4);
 			salts.put(salt, "");
 			return "salt|done|" + salt;
-		}
-		
-		if(data.startsWith("mail")) {
-			File file = new File(Root.home() + "/node/user/mail" + Root.path(name));
-			
-			if(file == null || !file.exists()) {
-				return "mail|fail|user not found";
-			}
-			
-			JSONObject json = new JSONObject(Root.file(file));
-			
-			return "mail|done|" + Root.hash(json.getString("key"));
 		}
 		
 		if(data.startsWith("open")) {

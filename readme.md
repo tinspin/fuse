@@ -57,15 +57,15 @@ In sort of chronological order:
                             -> user|fail|name already registered
                             -> user|fail|mail already registered
  
+                             // to get the &lt;id&gt; of a mail to use as &lt;name&gt;
+                             // if you want to login with mail instead of name
+ <b><i>mail</i></b>|&lt;mail&gt;                -> mail|done|&lt;id&gt;
+                             -> mail|fail|user not found
+ 
 -> main|fail|name missing
 -> main|fail|name too short
  
  <b><i>salt</i></b>                       -> salt|done|&lt;salt&gt;
- 
-                             // to get the &lt;id&gt; of a mail to use as <name>
-                             // if you want to login with mail instead of name
- <b><i>mail</i></b>                       -> mail|done|&lt;id&gt;
-                             -> mail|fail|user not found
  
                             // login
                             // &lt;hash&gt; is either md5(&lt;key&gt; + &lt;salt&gt;)
