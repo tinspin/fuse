@@ -352,14 +352,14 @@ public class Router implements Node {
 			return "join|done";
 		}
 		
-		if(data.startsWith("lock")) {
+		if(data.startsWith("play")) {
 			if(user.room.user == null)
-				return "lock|fail|user in lobby";
+				return "play|fail|user in lobby";
 			
 			if(user.room.user == user)
-				user.room.send(null, "link");
+				user.room.send(null, "lock");
 			
-			return "lock|done";
+			return "play|done";
 		}
 		
 		if(data.startsWith("quit")) {
