@@ -62,6 +62,11 @@ In sort of chronological order:
  
  <b><i>salt</i></b>                       -> salt|done|&lt;salt&gt;
  
+                             // to get the <id> of a mail to use as <name>
+                             // if you want to login with mail instead of name
+ <b><i>mail</i></b>                       -> mail|done|&lt;id&gt;
+                             -> mail|fail|user not found
+ 
                             // login
                             // &lt;hash&gt; is either md5(&lt;key&gt; + &lt;salt&gt;)
                             //               or md5([pass] + &lt;salt&gt;)

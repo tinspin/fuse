@@ -170,6 +170,18 @@ public class Router implements Node {
 			return "salt|done|" + salt;
 		}
 		
+		if(data.startsWith("mail")) {
+			File file = new File(Root.home() + "/node/user/mail" + Root.path(name));
+			
+			if(file == null || !file.exists()) {
+				return "mail|fail|user not found";
+			}
+			
+			JSONObject json = new JSONObject(Root.file(file));
+			
+			return "mail|done|" + Root.hash(json.getString("key"));
+		}
+		
 		if(data.startsWith("open")) {
 			String salt = split[1];
 			String hash = split[2].toLowerCase();
@@ -185,7 +197,6 @@ public class Router implements Node {
 					file = new File(Root.home() + "/node/user/name" + Root.path(name));
 
 				if(file == null || !file.exists()) {
-					//System.out.println(file);
 					return "open|fail|user not found";
 				}
 				
