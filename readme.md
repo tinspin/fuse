@@ -60,7 +60,7 @@ In sort of chronological order:
                              // to get the &lt;id&gt; of a mail to use as &lt;name&gt;
                              // if you want to login with mail instead of name
  <b><i>mail</i></b>|&lt;mail&gt;                -> mail|done|&lt;id&gt;
-                             -> mail|fail|user not found
+                            -> mail|fail|user not found
  
 -> main|fail|name missing
 -> main|fail|name too short
