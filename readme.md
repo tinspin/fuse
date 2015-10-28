@@ -109,8 +109,8 @@ In sort of chronological order:
                             // to view a ongoing game
 *<b><i>view</i></b>|&lt;name&gt;                -> view|done
                            --> <b><i>sent</i></b>|&lt;name&gt;|&lt;data&gt;
-                            // list unlocked rooms with space left or data
 
+                            // list unlocked rooms with space left or data
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;name&gt;+&lt;type&gt;+&lt;size&gt;|...
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
                             -> list|fail|wrong type
