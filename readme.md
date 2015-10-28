@@ -72,7 +72,10 @@ In sort of chronological order:
                             //               or md5([pass] + &lt;salt&gt;)
                             //        we use md5(md5(pass + name) + &lt;salt&gt;)
                             //        make sure you keep the case correct
- <b><i>open</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> open|done
+                            // if you hash the pass with the mail you can use mail as 
+                            // name if you replace the name with the returned <name> 
+                            // which will be the <id> or <name> if name is stored
+ <b><i>open</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> open|done|[name]             // use name as <name> if appended
                             -> open|fail|user not found
                             -> open|fail|salt not found
                             -> open|fail|wrong pass

@@ -34,13 +34,6 @@ public class Router implements Node {
 			name = String.valueOf(Root.hash(json.getString("key")));
 			user = new User(name, salt);
 		}
-		// can't login with mail because name is salt for pass!
-		//else if(name.indexOf("@") > 0) {
-		//	if(json.has("name"))
-		//		name = json.getString("name");
-		//	else
-		//		user = new User(String.valueOf(Root.hash(json.getString("key"))));
-		//}
 		
 		user.json = json;
 		users.put(name, user);
@@ -188,9 +181,10 @@ public class Router implements Node {
 			
 			if(name.length() > 0 && hash.length() > 0) {
 				File file = null;
+				long id = 0;
 				
-				if(name.indexOf("@") > 0) // can't login with mail because name is salt for pass!
-					file = null;
+				if(name.indexOf("@") > 0)
+					file = new File(Root.home() + "/node/user/mail" + Root.path(name));
 				if(name.matches("[0-9]+"))
 					file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
 				else
@@ -201,22 +195,18 @@ public class Router implements Node {
 				}
 				
 				JSONObject json = new JSONObject(Root.file(file));
-
-				//System.out.println(json);
 				
 				if(salts.remove(salt) == null) {
 					return "open|fail|salt not found";
 				}
 				
 				String key = json.has("pass") ? json.getString("pass") : json.getString("key");
-				
-				//System.out.println(key);
-				
 				String md5 = Deploy.hash(key + salt, "MD5");
 
 				if(hash.equals(md5)) {
-					auth(name, salt, json);
-					return "open|done";
+					String replace = json.has("name") ? json.getString("name") : "" + Root.hash(json.getString("key"));
+					auth(name.indexOf("@") > 0 ? "" : replace, salt, json);
+					return "open|done|" + (name.indexOf("@") > 0 ? replace : "");
 				}
 				else
 					return "open|fail|wrong pass";
