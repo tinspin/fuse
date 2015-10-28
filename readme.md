@@ -136,11 +136,10 @@ In sort of chronological order:
                            --> <b><i>gone</i></b>|&lt;name&gt;                  // in old room
                            --> <b><i>stop</i></b>|&lt;name&gt;                  // in old room if creator leaves
 
-                            -> exit|fail|user in lobby
-
                             // user exit
  <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
                            --> <b><i>kill</i></b>|&lt;name&gt;
+                            -> exit|fail|user in lobby
                     
                             // lock room before the game starts
 *<b><i>play</i></b>|&lt;salt&gt;                -> play|done
