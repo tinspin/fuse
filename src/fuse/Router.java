@@ -348,6 +348,8 @@ public class Router implements Node {
 			
 			if(user.room.user == user)
 				user.room.send(user, "lock");
+			else
+				return "play|fail|user not creator";
 			
 			return "play|done";
 		}
@@ -553,8 +555,8 @@ public class Router implements Node {
 				}
 				
 				// send message from user to room
-				if(data.startsWith("text") || !from.name.equals(user.name)) {
-					node.push(null, user.name, data.startsWith("here") || data.startsWith("gone") ? data + from.peer(user) : data);
+				if(data.startsWith("text") || data.startsWith("lock") || !from.name.equals(user.name)) {
+					node.push(null, user.name, data.startsWith("here") ? data + from.peer(user) : data);
 				}
 				
 				// eject everyone

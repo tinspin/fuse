@@ -111,7 +111,7 @@ In sort of chronological order:
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
                             -> list|fail|wrong type
 
-                            // to view a ongoing game/user
+                            // view an ongoing game
 *<b><i>view</i></b>|&lt;name&gt;                -> view|done
                            --> <b><i>sent</i></b>|&lt;name&gt;|&lt;data&gt;
 
@@ -143,8 +143,9 @@ In sort of chronological order:
                     
                             // lock room before the game starts
 *<b><i>play</i></b>|&lt;salt&gt;                -> play|done
-                           --> <b><i>lock</i></b>|&lt;name&gt;                  // to start the game
+                           --> <b><i>lock</i></b>                         // to start the game
                             -> play|fail|user not room host
+                            -> play|fail|user not creator
 
                             // insert data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;json&gt;  -> save|done|&lt;id&gt;|&lt;key&gt;         // use key to update

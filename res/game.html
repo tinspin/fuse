@@ -130,6 +130,9 @@
       if(split[0] == 'kill') {
         remove('join', split[1]);
       }
+      if(split[0] == 'lock') {
+        start();
+      }
     }
   }
   function remove(type, name) {
@@ -291,17 +294,19 @@
   }
   function play() {
     var play = push('play');
-    if(play[1] == 'done') {
-      display('room', 'none');
-      display('play', 'block');
-      element('talk').style.position = 'absolute';
-      element('talk').style.left = '0px';
-      element('talk').style.top = '300px';
-      for(var i = 0; i < 5; i++) {
-        cubes.push({'name': names[i], 'x': 0, 'y': 0});
-      }
-      setInterval(tick, 1000 / 60);
+    if(play[1] === 'fail')
+      show_fail(play[2]);
+  }
+  function start() {
+    display('room', 'none');
+    display('play', 'block');
+    element('talk').style.position = 'absolute';
+    element('talk').style.left = '0px';
+    element('talk').style.top = '300px';
+    for(var i = 0; i < 5; i++) {
+      cubes.push({'name': names[i], 'x': 0, 'y': 0});
     }
+    setInterval(tick, 1000 / 60);
   }
   var cubes = [];
   var names = ['blue', 'green', 'orange', 'purple', 'red'];
