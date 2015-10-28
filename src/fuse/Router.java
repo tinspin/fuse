@@ -357,7 +357,7 @@ public class Router implements Node {
 				return "play|fail|user in lobby";
 			
 			if(user.room.user == user)
-				user.room.send(null, "lock");
+				user.room.send(user, "lock");
 			
 			return "play|done";
 		}

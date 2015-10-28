@@ -177,5 +177,5 @@ In sort of chronological order:
 
 // name pool
 
- <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>away</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>nick</i></b>
+ <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>away</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>nick</i></b>, <b><i>look</i></b>
 </pre>

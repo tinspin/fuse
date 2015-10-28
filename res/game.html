@@ -36,7 +36,7 @@
   var host = window.location.search.substring(1);
   if(!host)
     host = 'fuse.rupy.se';
-  var game = 'klossar';
+  var game = 'kloss';
   var show = true;
   var name = '';
   var size = 0;
@@ -302,8 +302,28 @@
   }
   function play() {
     var play = push('play');
-    if(play[1] == 'done')
-      alert('play');
+    if(play[1] == 'done') {
+      display('room', 'none');
+      display('play', 'block');
+      element('talk').style.position = 'absolute';
+      element('talk').style.left = '0px';
+      element('talk').style.top = '300px';
+      for(var i = 0; i < 5; i++) {
+        cubes.push({'name': names[i], 'x': 0, 'y': 0});
+      }
+      setInterval(tick, 1000 / 60);
+    }
+  }
+  var cubes = [];
+  var names = ['blue', 'green', 'orange', 'purple', 'red'];
+  function tick() {
+    for(var i = 0; i < cubes.length; i++) {
+      var cube = element(cubes[i].name);
+      cubes[i].y += 1;
+      cube.style.top = cubes[i].y + 'px';
+      if(cubes[i].y > 250)
+        cubes[i].y = 0;
+    }
   }
 </script>
 </head>
@@ -336,6 +356,14 @@
 </table>
 </div>
 
+<div id="play" style="display: none;" ontouchstart="touchStart(event,'box');" ontouchend="touchEnd(event);" ontouchmove="touchMove(event);" ontouchcancel="touchCancel(event);">
+<img id="blue" style="position: absolute; left: 0px;" src="svg/blue.svg">
+<img id="green" style="position: absolute; left: 50px;" src="svg/green.svg">
+<img id="orange" style="position: absolute; left: 100px;" src="svg/orange.svg">
+<img id="purple" style="position: absolute; left: 150px;" src="svg/purple.svg">
+<img id="red" style="position: absolute; left: 200px;" src="svg/red.svg">
+</div>
+
 <div id="talk" style="display: none;"><table>
 <tr><td colspan="3"><textarea id="chat" rows="5" readonly></textarea></td></tr>
 <tr><td colspan="3">
@@ -343,14 +371,6 @@
 <a href="javascript:chat();">chat</a>
 </td></tr>
 </table>
-</div>
-
-<div id="box" ontouchstart="touchStart(event,'box');" ontouchend="touchEnd(event);" ontouchmove="touchMove(event);" ontouchcancel="touchCancel(event);">
-<img src="svg/blue.svg">
-<img src="svg/green.svg">
-<img src="svg/orange.svg">
-<img src="svg/purple.svg">
-<img src="svg/red.svg">
 </div>
 
 <div id="show">
