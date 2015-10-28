@@ -106,14 +106,14 @@ In sort of chronological order:
                             -> room|fail|user not in lobby
                             -> room|fail|type invalid       // only alpha
 
-                            // to view a ongoing game
-*<b><i>view</i></b>|&lt;name&gt;                -> view|done
-                           --> <b><i>sent</i></b>|&lt;name&gt;|&lt;data&gt;
-
-                            // list unlocked rooms with space left or data
+                            // list rooms or data
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;name&gt;+&lt;type&gt;+&lt;size&gt;|...
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
                             -> list|fail|wrong type
+
+                            // to view a ongoing game/user
+*<b><i>view</i></b>|&lt;name&gt;                -> view|done
+                           --> <b><i>sent</i></b>|&lt;name&gt;|&lt;data&gt;
 
                             // join room
  <b><i>join</i></b>|&lt;salt&gt;|&lt;name&gt;         -> join|done
