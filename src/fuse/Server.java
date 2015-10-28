@@ -34,9 +34,9 @@ public class Server extends Service implements Node, Runnable {
 		return "/push:/pull";
 	}
 
-	public void remove(Queue queue, int place) throws Exception {
+	public void remove(String name, int place) throws Exception {
 		if(place > 1)
-			node.remove(queue.name);
+			node.remove(name);
 	}
 
 	public void remove(String name) throws Exception {
@@ -106,9 +106,12 @@ public class Server extends Service implements Node, Runnable {
 			if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
 				//if(debug)
 				//	System.err.println(queue.event.index() + " remove 1");
-				remove(queue, 1);
+				remove(queue.name, 1);
 				list.remove(queue.event);
 			}
+		}
+		else {
+			remove(name, 6);
 		}
 
 		return null;
@@ -138,7 +141,7 @@ public class Server extends Service implements Node, Runnable {
 				if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
 					//if(debug)
 					//	System.err.println(queue.event.index() + " remove 5");
-					remove(queue, 5);
+					remove(name, 5);
 					list.remove(queue.event);
 				}
 			}
@@ -164,7 +167,7 @@ public class Server extends Service implements Node, Runnable {
 			if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
 				//if(debug)
 				//	System.err.println(queue.event.index() + " remove 2");
-				remove(queue, 2);
+				remove(queue.name, 2);
 				it.remove();
 			}
 		}
@@ -268,7 +271,7 @@ public class Server extends Service implements Node, Runnable {
 			catch(Exception e) {
 				//if(debug)
 				//	System.err.println(event.index() + " remove 3");
-				remove(queue, 3);
+				remove(queue.name, 3);
 				list.remove(event);
 				throw e;
 			}
@@ -282,7 +285,7 @@ public class Server extends Service implements Node, Runnable {
 			if(queue != null) {
 				//if(debug)
 				//	System.err.println(event.index() + " remove 4");
-				remove(queue, 4);
+				remove(queue.name, 4);
 				list.remove(queue.event);
 			}
 

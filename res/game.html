@@ -116,46 +116,35 @@
     }
     if(split.length > 0) {
       if(split[0] == 'here') {
-        var select = element('ally');
-        for(var i = 0; i < select.options.length; i++) {
-          if(select.options[i].text == split[1]) {
-            return;
-          }
-        }
-        var option = document.createElement('option');
-        option.text = split[1];
-        select.options.add(option, select.options[0]);
+        add('ally', split[1]);
       }
       if(split[0] == 'gone') {
-        var select = element('ally');
-        var id = 0;
-        for(var i = 0; i < select.options.length; i++) {
-          if(select.options[i].text == split[1]) {
-            id = i;
-            break;
-          }
-        }
-        select.remove(id);
+        remove('ally', split[1]);
       }
       if(split[0] == 'made') {
-        add_room(split[1]);
+        add('join', split[1].split('+')[0]);
       }
       if(split[0] == 'halt') {
-        var select = element('join');
-        var id = 0;
-        for(var i = 0; i < select.options.length; i++) {
-          if(select.options[i].text == split[1]) {
-            id = i;
-            break;
-          }
-        }
-        select.remove(id);
+        remove('join', split[1]);
+      }
+      if(split[0] == 'kill') {
+        remove('join', split[1]);
       }
     }
   }
-  function add_room(room) {
-    var name = room.split('+')[0];
-    var select = element('join');
+  function remove(type, name) {
+    var select = element(type);
+    var id = 0;
+    for(var i = 0; i < select.options.length; i++) {
+      if(select.options[i].text == name) {
+        id = i;
+        break;
+      }
+    }
+    select.remove(id);
+  }
+  function add(type, name) {
+    var select = element(type);
     for(var i = 0; i < select.options.length; i++) {
       if(select.options[i].text == name) {
         return;
@@ -297,7 +286,7 @@
   function list() {
     var list = push('list|room');
     for(var i = 3; i < list.length; i++) {
-      add_room(list[i]);
+      add('join', list[i].split('+')[0]);
     }
   }
   function play() {
