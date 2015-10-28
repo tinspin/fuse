@@ -178,8 +178,10 @@ In sort of chronological order:
 // peer protocol
 
 *<b><i>talk</i></b> // send voice
+*<b><i>look</i></b> // send eye movement
 *<b><i>head</i></b> // send head movement
-*<b><i>hand</i></b> // send hand movements
+*<b><i>body</i></b> // send body movement
+*<b><i>hand</i></b> // send hand movement
 
 // name pool
 
