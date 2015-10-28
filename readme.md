@@ -132,7 +132,7 @@ In sort of chronological order:
                             // quit room
  <b><i>quit</i></b>|&lt;salt&gt;                -> quit|done
                            --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in lobby
-                           --> <b><i>halt</i></b>|&lt;name&gt;                  // in lobby
+                           --> <b><i>halt</i></b>|&lt;name&gt;                  // in lobby if creator leaves
                            --> <b><i>gone</i></b>|&lt;name&gt;                  // in old room
                            --> <b><i>stop</i></b>|&lt;name&gt;                  // in old room if creator leaves
 
@@ -144,7 +144,7 @@ In sort of chronological order:
                             // lock room before the game starts
 *<b><i>play</i></b>|&lt;salt&gt;                -> play|done
                            --> <b><i>lock</i></b>                         // to start the game
-                            -> play|fail|user not room host
+                            -> play|fail|user in lobby
                             -> play|fail|user not creator
 
                             // insert data
