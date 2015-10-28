@@ -206,7 +206,7 @@ public class Router implements Node {
 				if(hash.equals(md5)) {
 					String replace = json.has("name") ? json.getString("name") : "" + Root.hash(json.getString("key"));
 					auth(name.indexOf("@") > 0 ? "" : replace, salt, json);
-					return "open|done|" + (name.indexOf("@") > 0 ? replace : "");
+					return "open|done" + (name.indexOf("@") > 0 ? "|" + replace : "");
 				}
 				else
 					return "open|fail|wrong pass";
