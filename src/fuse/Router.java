@@ -346,6 +346,9 @@ public class Router implements Node {
 			if(user.room.user == null)
 				return "play|fail|user in lobby";
 			
+			if(user.room.users.size() < 2)
+				return "play|fail|only one player";
+			
 			if(user.room.user == user)
 				user.room.send(user, "lock");
 			else

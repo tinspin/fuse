@@ -146,6 +146,7 @@ In sort of chronological order:
                            --> <b><i>lock</i></b>                         // to start the game
                             -> play|fail|user in lobby
                             -> play|fail|user not creator
+                            -> play|fail|only one player
 
                             // insert data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;json&gt;  -> save|done|&lt;id&gt;|&lt;key&gt;         // use key to update
