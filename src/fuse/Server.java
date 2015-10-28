@@ -35,11 +35,10 @@ public class Server extends Service implements Node, Runnable {
 	}
 
 	public void remove(String name, int place) throws Exception {
-		if(place > 1)
-			node.remove(name);
+		node.remove(name, place == 1);
 	}
 
-	public void remove(String name) throws Exception {
+	public void remove(String name, boolean silent) throws Exception {
 		// OK
 	}
 	

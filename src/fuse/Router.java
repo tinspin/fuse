@@ -600,19 +600,16 @@ public class Router implements Node {
 		}
 	}
 
-	public void remove(String name) throws Exception {
+	public void remove(String name, boolean silent) throws Exception {
 		User user = (User) users.get(name);
-		
+
 		if(user == null)
 			System.out.println("Remove; User '" + name + "' not found.");
 		else if(user.salt != null && user.game != null) {
 			Room room = user.move(user.room, null);
-			
-			if(room != null) {
-				user.game.rooms.remove(room.user.name);
-			}
-			
-			user.game.send(user, "kill|" + user.name);
+			user.game.rooms.remove(user.name);
+			if(!silent)
+				user.game.send(user, "kill|" + user.name);
 			users.remove(name);
 		}
 	}
