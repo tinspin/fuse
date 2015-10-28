@@ -106,7 +106,11 @@ In sort of chronological order:
                             -> room|fail|user not in lobby
                             -> room|fail|type invalid       // only alpha
 
+                            // to view a ongoing game
+*<b><i>view</i></b>|&lt;name&gt;                -> view|done
+                           --> <b><i>sent</i></b>|&lt;name&gt;|&lt;data&gt;
                             // list unlocked rooms with space left or data
+
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;name&gt;+&lt;type&gt;+&lt;size&gt;|...
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
                             -> list|fail|wrong type
@@ -180,5 +184,5 @@ In sort of chronological order:
 
 // name pool
 
- <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>away</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>nick</i></b>, <b><i>look</i></b>
+ <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>away</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>nick</i></b>
 </pre>

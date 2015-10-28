@@ -173,7 +173,7 @@ public class Fuse {
 				// this will allow you to Fuse.Read();
 				// from MonoBehaviour.Update();
 				fuse.Pull();
-				Console.WriteLine("Game: " + fuse.Game("klossar"));
+				Console.WriteLine("Game: " + fuse.Game("kloss"));
 
 				// remove in unity ###
 				Thread.Sleep(100);
