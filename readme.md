@@ -112,8 +112,8 @@ In sort of chronological order:
                             -> list|fail|wrong type
 
                             // view an ongoing game
-*<b><i>view</i></b>|&lt;name&gt;                -> view|done
-                           --> <b><i>sent</i></b>|&lt;name&gt;|&lt;data&gt;
+*<b><i>view</i></b>|&lt;salt&gt;|&lt;name&gt;         -> view|done
+                            // work in progress, might be like <b><i>join</i></b>
 
                             // join room
  <b><i>join</i></b>|&lt;salt&gt;|&lt;name&gt;         -> join|done
