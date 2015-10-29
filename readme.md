@@ -119,7 +119,7 @@ In sort of chronological order:
                             // if you join after lock you can only view the game
  <b><i>join</i></b>|&lt;salt&gt;|&lt;name&gt;         -> join|done
                            --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in new room
-                           --> <b><i>gone</i></b>|&lt;name&gt;[|&lt;room&gt;]       // in lobby
+                           --> <b><i>gone</i></b>|&lt;name&gt;|&lt;room&gt;           // in lobby
                             -> join|fail|room not found
                             -> join|fail|already in room
                             -> join|fail|room is full
