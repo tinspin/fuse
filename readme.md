@@ -20,7 +20,7 @@ Protocol:
     - dynamic presence position move packets
   - peer-to-peer UDP, binary physics packets
     - position move and talk, look, head, body, hand packets
-  - multicast text based UDP on cluster for load distribution
+  - multicast UDP on cluster for load distribution
 
 Platform:
 

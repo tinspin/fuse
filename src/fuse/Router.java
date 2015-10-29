@@ -538,7 +538,7 @@ public class Router implements Node {
 			if(data.startsWith("lock"))
 				lock = true;
 			
-			System.out.println("<- " + from + " " + data);
+			System.err.println("<- " + from + " " + data);
 
 			boolean wakeup = false;
 			
