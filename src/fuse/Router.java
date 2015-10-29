@@ -331,11 +331,11 @@ public class Router implements Node {
 			if(user.room.user != null && user.room.user.name.equals(room.user.name))
 				return "join|fail|already in room";
 			
-			// TODO: Add observer!
-			//if(room.lock)
-			
-			if(room.users.size() == room.size)
+			if(room.users.size() == room.size && !room.lock)
 				return "join|fail|room is full";
+			
+			// TODO: Add as observer!
+			//if(room.lock)
 			
 			user.move(user.room, room);
 			
