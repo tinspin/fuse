@@ -16,8 +16,11 @@ Support:
 
 Protocol:
 
-  - client/server HTTP + peer-to-peer UDP hybrid
-  - scalable multicast UDP cluster server
+  - client/server triplex HTTP, \n or \n\n terminated, text based
+    - dynamic presence position move packets
+  - peer-to-peer UDP, binary physics packets
+    - position move and talk, look, head, body, hand packets
+  - multicast text based UDP on cluster for load distribution
 
 Platform:
 
