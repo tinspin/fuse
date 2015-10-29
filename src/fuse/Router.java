@@ -331,8 +331,8 @@ public class Router implements Node {
 			if(user.room.user != null && user.room.user.name.equals(room.user.name))
 				return "join|fail|already in room";
 			
-			if(room.lock)
-				return "join|fail|room is locked";
+			// TODO: Add observer!
+			//if(room.lock)
 			
 			if(room.users.size() == room.size)
 				return "join|fail|room is full";
@@ -485,6 +485,13 @@ public class Router implements Node {
 		Room move(Room from, Room to) throws Exception {
 			Room drop = null;
 			
+			if(to != null) {
+				this.room = to;
+			
+				to.add(this);
+				to.send(this, "here|" + name);
+			}
+			
 			if(from != null) {
 				from.remove(this);
 				
@@ -496,13 +503,6 @@ public class Router implements Node {
 				}
 				else
 					from.send(this, "gone|" + name);
-			}
-			
-			if(to != null) {
-				this.room = to;
-			
-				to.add(this);
-				to.send(this, "here|" + name);
 			}
 			
 			return drop;
@@ -559,7 +559,7 @@ public class Router implements Node {
 				
 				// send message from user to room
 				if(data.startsWith("text") || data.startsWith("lock") || !from.name.equals(user.name)) {
-					node.push(null, user.name, data.startsWith("here") ? data + from.peer(user) : data);
+					node.push(null, user.name, data.startsWith("here") ? data + from.peer(user) : data.startsWith("gone") ? data + "|" + from.room.user.name : data);
 				}
 				
 				// eject everyone

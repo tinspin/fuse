@@ -114,16 +114,13 @@ In sort of chronological order:
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
                             -> list|fail|wrong type
 
-                            // view an ongoing game
-*<b><i>view</i></b>|&lt;salt&gt;|&lt;name&gt;         -> view|done
-                            // work in progress, might be like <b><i>join</i></b>
-
                             // join room
+                            // between full and lock nobody can join
+                            // if you join after lock you can only view the game
  <b><i>join</i></b>|&lt;salt&gt;|&lt;name&gt;         -> join|done
                            --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in new room
-                           --> <b><i>gone</i></b>|&lt;name&gt;                  // in lobby
+                           --> <b><i>gone</i></b>|&lt;name&gt;[|&lt;room&gt;]       // in lobby
                             -> join|fail|room not found
-                            -> join|fail|room is locked
                             -> join|fail|already in room
                             -> join|fail|room is full
 
@@ -190,5 +187,5 @@ In sort of chronological order:
 
 // name pool
 
- <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>away</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>nick</i></b>
+ <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>away</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>nick</i></b>, <b><i>view</i></b>, <b><i>fill</i></b>
 </pre>
