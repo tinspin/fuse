@@ -47,9 +47,9 @@ In sort of chronological order:
                             // register
                             // [name] if you can't store the &lt;id&gt; otherwise set
                             //        to empty string (||)
-                            // [mail] if you want recovery otherwise set 
+                            // [mail] if your users want recovery otherwise set 
                             //        to empty string (||)
-                            // [pass] if you cannot persist the key otherwise set
+                            // [pass] if you can't store the &lt;key&gt; otherwise set
                             //        to empty string (||)
                             //        preferably [pass] is a hash with salt 
                             //        for example we simply use md5(pass + name)
