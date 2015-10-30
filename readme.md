@@ -68,7 +68,7 @@ In sort of chronological order:
  <b><i>mail</i></b>|&lt;mail&gt;                -> mail|done|&lt;id&gt;
                             -> mail|fail|user not found
  
-                            // get salt for &lt;name&gt;, &lt;key&gt; or &lt;id&gt;
+                            // get salt for &lt;name&gt; or &lt;id&gt;
  <b><i>salt</i></b>|&lt;name&gt;/&lt;key&gt;/&lt;id&gt;     -> salt|done|&lt;salt&gt;
                             -> salt|fail|user not found
  
