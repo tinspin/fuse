@@ -69,7 +69,7 @@ In sort of chronological order:
                             -> mail|fail|user not found
  
                             // get salt for &lt;name&gt; or &lt;id&gt;
- <b><i>salt</i></b>|&lt;name&gt;/&lt;key&gt;/&lt;id&gt;     -> salt|done|&lt;salt&gt;
+ <b><i>salt</i></b>|&lt;name&gt;/&lt;id&gt;           -> salt|done|&lt;salt&gt;
                             -> salt|fail|user not found
  
  -> main|fail|invalid salt
