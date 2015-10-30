@@ -220,8 +220,10 @@ public class Router implements Node {
 					user.open = true;
 					return "open|done|" + user.name;
 				}
-				else
+				else {
+					users.remove(user.salt);
 					return "open|fail|wrong pass";
+				}
 			}
 		}
 

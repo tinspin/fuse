@@ -245,8 +245,15 @@ public class Server extends Service implements Node, Runnable {
 			Queue queue = find(salt);
 
 			if(queue != null) {
-				remove(queue.salt, 4);
-				list.remove(new Integer(queue.event.index()));
+				if(queue.event.remote().equals(event.remote())) {
+					remove(queue.salt, 4);
+					list.remove(new Integer(queue.event.index()));
+				}
+				else {
+					System.out.println("### IP fuse hack " + event.remote());
+					event.output().print("salt in use from another IP.");
+					throw event;
+				}
 			}
 
 			list.put(new Integer(event.index()), new Queue(salt, event));
