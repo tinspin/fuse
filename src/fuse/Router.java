@@ -176,12 +176,6 @@ public class Router implements Node {
 			return "mail|done|" + Root.hash(json.getString("key"));
 		}
 
-		//if(name.length() < 0)
-		//	return "main|fail|name missing";
-
-		//if(name.length() < 3)
-		//	return "main|fail|name too short";
-
 		if(data.startsWith("salt")) {
 			String name = split[1];
 			String salt = session();
@@ -204,6 +198,9 @@ public class Router implements Node {
 			return "salt|done|" + salt;
 		}
 
+		if(split.length < 2)
+			return "main|fail|invalid salt";
+		
 		User user = (User) users.get(split[1]);
 
 		if(user == null || !user.salt.equals(split[1]))

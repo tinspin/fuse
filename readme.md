@@ -63,8 +63,8 @@ In sort of chronological order:
                             -> user|fail|name already registered
                             -> user|fail|mail already registered
  
-                            // to get the &lt;id&gt; of a mail to use as &lt;name&gt;
-                            // if you want to login with mail instead of name
+                            // to get the &lt;id&gt; of a mail
+                            // if you want to login with &lt;id&gt; below
  <b><i>mail</i></b>|&lt;mail&gt;                -> mail|done|&lt;id&gt;
                             -> mail|fail|user not found
  
@@ -86,7 +86,7 @@ In sort of chronological order:
                             -> open|fail|user not found
                             -> open|fail|wrong pass
 
--> main|fail|user not open
+ -> main|fail|user not open
 
 +-------------------------------+
 | <i>Here you have to call pull()!</i> |
@@ -96,7 +96,7 @@ In sort of chronological order:
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
                             -> game|fail|name invalid
                      
--> main|fail|user has no game
+ -> main|fail|user has no game
 
                             // add friend
 *<b><i>ally</i></b>|&lt;salt&gt;|&lt;name&gt;         -> ally|done
