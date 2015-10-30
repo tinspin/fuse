@@ -60,8 +60,8 @@ In sort of chronological order:
                             -> user|fail|name already registered
                             -> user|fail|mail already registered
  
-                             // to get the &lt;id&gt; of a mail to use as &lt;name&gt;
-                             // if you want to login with mail instead of name
+                            // to get the &lt;id&gt; of a mail to use as &lt;name&gt;
+                            // if you want to login with mail instead of name
  <b><i>mail</i></b>|&lt;mail&gt;                -> mail|done|&lt;id&gt;
                             -> mail|fail|user not found
  
