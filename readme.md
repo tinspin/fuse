@@ -72,7 +72,7 @@ In sort of chronological order:
  <b><i>salt</i></b>|&lt;name&gt;/&lt;id&gt;           -> salt|done|&lt;salt&gt;
                             -> salt|fail|user not found
  
- -> main|fail|invalid salt
+ <b><i>\/</i></b> anything below          -> main|fail|invalid salt
  
                             // login
                             // &lt;hash&gt; is either md5(&lt;key&gt; + &lt;salt&gt;)
@@ -86,7 +86,7 @@ In sort of chronological order:
                             -> open|fail|user not found
                             -> open|fail|wrong pass
 
- -> main|fail|user not open
+ <b><i>\/</i></b> anything below          -> main|fail|user not open
 
 +-------------------------------+
 | <i>Here you have to call pull()!</i> |
@@ -96,7 +96,7 @@ In sort of chronological order:
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
                             -> game|fail|name invalid
                      
- -> main|fail|user has no game
+ <b><i>\/</i></b> anything below          -> main|fail|user has no game
 
                             // add friend
 *<b><i>ally</i></b>|&lt;salt&gt;|&lt;name&gt;         -> ally|done
@@ -173,7 +173,7 @@ In sort of chronological order:
                             // &lt;data&gt; = &lt;x&gt;+&lt;y&gt;+&lt;z&gt;|&lt;x&gt;+&lt;y&gt;+&lt;z&gt;+&lt;w&gt;|&lt;action&gt;(|&lt;speed&gt;|...)
                             //          position   |orientation    |key/button
 
--> main|fail|type not found
+ <b><i>/\</b></i> type not implemented    -> main|fail|type not found
 
 +----------------+
 | <i>Sketched rules</i> |
