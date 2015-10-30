@@ -56,12 +56,12 @@ In sort of chronological order:
  <b><i>user</i></b>|[name]|[mail]|[pass]  -> user|done|&lt;key&gt;|&lt;id&gt;|&lt;salt&gt;
                             -> user|fail|name too short
                             -> user|fail|name too long
+                            -> user|fail|name already registered
                             -> user|fail|name invalid       // only alphanumeric and .-
                             -> user|fail|name alpha missing // numeric reserved for &lt;id&gt;
                             -> user|fail|mail invalid       // only alphanumeric and .@-+
-                            -> user|fail|pass too short
-                            -> user|fail|name already registered
                             -> user|fail|mail already registered
+                            -> user|fail|pass too short
  
                             // to get the &lt;id&gt; of a mail
                             // if you want to login with &lt;id&gt; below
@@ -83,7 +83,6 @@ In sort of chronological order:
                             // name if you replace the name with the returned &lt;name&gt; 
                             // which will be the &lt;id&gt; or &lt;name&gt; if name is stored
  <b><i>open</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> open|done|&lt;name&gt;
-                            -> open|fail|user not found
                             -> open|fail|wrong pass
 
  <b><i>\/</i></b> anything below          -> main|fail|user not open
