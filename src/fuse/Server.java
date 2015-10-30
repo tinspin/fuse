@@ -16,13 +16,13 @@ public class Server extends Service implements Node, Runnable {
 
 	StringBuilder padding = new StringBuilder();
 	
-	private Queue find(String name) {
+	private Queue find(String salt) {
 		Iterator it = list.values().iterator();
 
 		while(it.hasNext()) {
 			Queue queue = (Queue) it.next();
 
-			if(queue.name.equals(name)) {
+			if(queue.salt.equals(salt)) {
 				return queue;
 			}
 		}
@@ -34,11 +34,11 @@ public class Server extends Service implements Node, Runnable {
 		return "/push:/pull";
 	}
 
-	public void remove(String name, int place) throws Exception {
-		node.remove(name, place == 1);
+	public void remove(String salt, int place) throws Exception {
+		node.remove(salt, place);
 	}
 
-	public void remove(String name, boolean silent) throws Exception {
+	public void remove(String salt, boolean silent) throws Exception {
 		// OK
 	}
 	
@@ -87,13 +87,13 @@ public class Server extends Service implements Node, Runnable {
 
 	public void exit() {}
 
-	public String push(Event event, String name, String data) throws Exception {
-		return push(event, name, data, true);
+	public String push(Event event, String data) throws Exception {
+		throw new Exception("Nope");
 	}
 	
-	public String push(Event event, String name, String data, boolean wake) throws Exception {
-		Queue queue = find(name);
-
+	public String push(String salt, String data, boolean wake) throws Exception {
+		Queue queue = find(salt);
+		
 		if(queue != null) {
 			queue.add(data);
 
@@ -103,48 +103,25 @@ public class Server extends Service implements Node, Runnable {
 			int wakeup = queue.event.reply().wakeup();
 
 			if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
-				//if(debug)
-				//	System.err.println(queue.event.index() + " remove 1");
-				remove(queue.name, 1);
+				remove(queue.salt, 1);
 				list.remove(queue.event);
 			}
 		}
 		else {
-			remove(name, 6);
+			remove(salt, 6);
 		}
 
 		return null;
 	}
 	
-	public boolean wakeup(String name) {
-		Queue queue = find(name);
+	public boolean wakeup(String salt) {
+		Queue queue = find(salt);
 
 		if(queue != null) {
 			return queue.event.reply().wakeup() == Reply.OK;
 		}
 		
 		return false;
-	}
-
-	public void broadcast(String name, String data) throws Exception {
-		Iterator it = list.values().iterator();
-
-		while(it.hasNext()) {
-			Queue queue = (Queue) it.next();
-
-			if(name == null || !queue.name.equals(name)) {
-				queue.add(data);
-
-				int wakeup = queue.event.reply().wakeup();
-
-				if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
-					//if(debug)
-					//	System.err.println(queue.event.index() + " remove 5");
-					remove(name, 5);
-					list.remove(queue.event);
-				}
-			}
-		}
 	}
 
 	private void purge(boolean finish) throws Exception {
@@ -156,17 +133,13 @@ public class Server extends Service implements Node, Runnable {
 			queue.add("noop");
 
 			if(finish) {
-				//if(debug)
-				//	System.err.println(queue.event.index() + " finish 1");
 				queue.finish = true;
 			}
 
 			int wakeup = queue.event.reply().wakeup();
 
 			if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
-				//if(debug)
-				//	System.err.println(queue.event.index() + " remove 2");
-				remove(queue.name, 2);
+				remove(queue.salt, 2);
 				it.remove();
 			}
 		}
@@ -182,8 +155,9 @@ public class Server extends Service implements Node, Runnable {
 
 				if(data != null || fail != null) {
 					String send = fail == null ? data : fail;
-
 					String origin = event.query().header("origin");
+					
+					System.err.println("<- " + data);
 					
 					if(origin != null)
 						event.reply().header("Access-Control-Allow-Origin", origin);
@@ -199,15 +173,14 @@ public class Server extends Service implements Node, Runnable {
 				}
 			}
 			else {
-				String name = event.string("name");
 				String data = event.string("data");
 				byte[] body = null;
 				
-				//System.out.println(event.query().parameters());
-				
 				try {
-					String response = node.push(event, name, data);
+					String response = node.push(event, data);
 
+					System.err.println("<- " + response);
+					
 					if(!response.equals("hold")) {
 						body = response.getBytes("UTF-8");
 					}
@@ -231,21 +204,18 @@ public class Server extends Service implements Node, Runnable {
 		}
 
 		if(event.push()) {
-			Queue queue = (Queue) list.get(event);
+			Queue queue = (Queue) list.get(new Integer(event.index()));
 
 			try {
 				Output out = event.output();
 
 				if(queue == null || queue.finish) {
-					//if(debug)
-					//	System.err.println(event.index() + " finish 2");
 					out.finish();
 				}
 
 				if(queue != null && !queue.isEmpty()) {
 					String data = (String) queue.poll();
-					//int length = 0;
-					
+
 					while(data != null) {
 						String accept = queue.event.query().header("accept");
 
@@ -255,11 +225,6 @@ public class Server extends Service implements Node, Runnable {
 						else {
 							out.print(data + "\n");
 						}
-
-						//length += data.length();
-						
-						//if(length > 512)
-						//	out.flush();
 						
 						data = (String) queue.poll();
 					}
@@ -268,28 +233,24 @@ public class Server extends Service implements Node, Runnable {
 				}
 			}
 			catch(Exception e) {
-				//if(debug)
-				//	System.err.println(event.index() + " remove 3");
-				remove(queue.name, 3);
-				list.remove(event);
+				remove(queue.salt, 3);
+				list.remove(new Integer(event.index()));
 				throw e;
 			}
 		}
 		else {
 			event.query().parse();
 			boolean ie = event.bit("ie");
-			String name = event.string("name");
-			Queue queue = find(name);
+			String salt = event.string("salt");
+			Queue queue = find(salt);
 
 			if(queue != null) {
-				//if(debug)
-				//	System.err.println(event.index() + " remove 4");
-				remove(queue.name, 4);
-				list.remove(queue.event);
+				remove(queue.salt, 4);
+				list.remove(new Integer(queue.event.index()));
 			}
 
-			list.put(event, new Queue(name, event));
-
+			list.put(new Integer(event.index()), new Queue(salt, event));
+			
 			String accept = event.query().header("accept");
 
 			boolean stream = accept != null && accept.indexOf("text/event-stream") > -1;
@@ -298,8 +259,6 @@ public class Server extends Service implements Node, Runnable {
 				event.reply().type("text/event-stream");
 			}
 
-			//System.out.println(event.query().header());
-			
 			String origin = event.query().header("origin");
 			
 			if(origin != null)
@@ -310,8 +269,6 @@ public class Server extends Service implements Node, Runnable {
 			Output out = event.output();
 
 			String padding = ie ? this.padding.toString() : "";
-			
-			//System.out.println("ie " + ie + " " + padding.length() + " " + stream);
 			
 			if(stream) {
 				out.print("data: noop" + padding + "\n\n");
@@ -337,13 +294,17 @@ public class Server extends Service implements Node, Runnable {
 	 * to be sent to the client.
 	 */
 	static class Queue extends ConcurrentLinkedQueue {
-		public String name;
+		public String salt;
 		private Event event;
 		private boolean finish;
 
-		public Queue(String name, Event event) {
-			this.name = name;
+		public Queue(String salt, Event event) {
+			this.salt = salt;
 			this.event = event;
+		}
+		
+		public String toString() {
+			return salt + "(" + event.index() + ")";
 		}
 	}
 }

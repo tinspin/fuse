@@ -45,18 +45,21 @@ In sort of chronological order:
 &lt;rule&gt;                        &lt;echo&gt;
  
                             // register
-                            // [mail] if you want recovery. set [mail] to empty 
-                            //        string (||) if you want pass without mail
-                            // [pass] if your platform cannot persist the key 
-                            //        preferably this is a hash with salt 
+                            // [name] if you can't store the &lt;id&gt; otherwise set
+                            //        to empty string (||)
+                            // [mail] if you want recovery otherwise set 
+                            //        to empty string (||)
+                            // [pass] if you cannot persist the key otherwise set
+                            //        to empty string (||)
+                            //        preferably [pass] is a hash with salt 
                             //        for example we simply use md5(pass + name)
-                            // use &lt;id&gt; as name if you want anonymous users
- <b><i>user</i></b>|[mail]|[pass]         -> user|done|&lt;key&gt;|&lt;id&gt;|&lt;salt&gt;
+ <b><i>user</i></b>|[name]|[mail]|[pass]  -> user|done|&lt;key&gt;|&lt;id&gt;|&lt;salt&gt;
                             -> user|fail|name too short
-                            -> user|fail|pass too short
-                            -> user|fail|name alpha missing // numeric reserved for &lt;id&gt;
+                            -> user|fail|name too long
                             -> user|fail|name invalid       // only alphanumeric and .-
+                            -> user|fail|name alpha missing // numeric reserved for &lt;id&gt;
                             -> user|fail|mail invalid       // only alphanumeric and .@-+
+                            -> user|fail|pass too short
                             -> user|fail|name already registered
                             -> user|fail|mail already registered
  
@@ -65,10 +68,11 @@ In sort of chronological order:
  <b><i>mail</i></b>|&lt;mail&gt;                -> mail|done|&lt;id&gt;
                             -> mail|fail|user not found
  
--> main|fail|name missing
--> main|fail|name too short
+                            // get salt for &lt;name&gt;, &lt;key&gt; or &lt;id&gt;
+ <b><i>salt</i></b>|&lt;name&gt;/&lt;key&gt;/&lt;id&gt;     -> salt|done|&lt;salt&gt;
+                            -> salt|fail|user not found
  
- <b><i>salt</i></b>                       -> salt|done|&lt;salt&gt;
+ -> main|fail|invalid salt
  
                             // login
                             // &lt;hash&gt; is either md5(&lt;key&gt; + &lt;salt&gt;)
@@ -78,13 +82,11 @@ In sort of chronological order:
                             // if you hash the pass with the mail you can use mail as 
                             // name if you replace the name with the returned &lt;name&gt; 
                             // which will be the &lt;id&gt; or &lt;name&gt; if name is stored
- <b><i>open</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> open|done[|name]             // use name as &lt;name&gt; if appended
+ <b><i>open</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> open|done|&lt;name&gt;
                             -> open|fail|user not found
-                            -> open|fail|salt not found
                             -> open|fail|wrong pass
 
 -> main|fail|user not open
--> main|fail|invalid salt
 
 +-------------------------------+
 | <i>Here you have to call pull()!</i> |

@@ -16,7 +16,6 @@ import se.rupy.http.Root;
 
 public class Router implements Node {
 	ConcurrentHashMap users = new ConcurrentHashMap();
-	ConcurrentHashMap salts = new ConcurrentHashMap();
 	ConcurrentHashMap games = new ConcurrentHashMap();
 	
 	static Daemon daemon;
@@ -27,42 +26,56 @@ public class Router implements Node {
 		this.node = node;
 	}
 
-	private User auth(String name, String salt, JSONObject json) throws Exception {
-		User user = new User(name, salt);
+	private synchronized String session() {
+		String salt = Event.random(4);
+
+		while(users.get(salt) != null)
+			salt = Event.random(4);
 		
-		if(name.length() == 0) {
-			name = String.valueOf(Root.hash(json.getString("key")));
-			user = new User(name, salt);
-		}
-		
+		return salt;
+	}
+	
+	private User session(String name, String salt, JSONObject json) throws Exception {
+		User user = new User(name.length() > 0 ? name : "" + Root.hash(json.getString("key")), salt);
 		user.json = json;
-		users.put(name, user);
+		users.put(salt, user);
 		return user;
 	}
 	
-	public String push(Event event, String name, String data, boolean wake) throws Exception { return null; }
+	public String push(String salt, String data, boolean wake) throws Exception {
+		throw new Exception("Nope");
+	}
 	public boolean wakeup(String name) { return false; }
 	
-	public String push(final Event event, final String name, String data) throws Exception {
-		System.err.println("-> " + name + " " + data);
+	public String push(final Event event, String data) throws Exception {
+		System.err.println("-> " + data);
 		
 		final String[] split = data.split("\\|");
 		
 		if(data.startsWith("user")) {
-			if(name.length() > 0 && name.length() < 3)
-				return "user|fail|name too short";
+			final boolean name = split.length > 1 && split[1].length() > 0;
+			final boolean mail = split.length > 2 && split[2].length() > 0;
+			final boolean pass = split.length > 3 && split[3].length() > 0;
 			
-			if(split.length > 1 && split[1].length() > 0 && split[1].indexOf("@") < 1 && !name.matches("[a-zA-Z0-9.@\\-\\+]+"))
+			if(name) {
+				if(split[1].length() < 3)
+					return "user|fail|name too short";
+				
+				if(split[1].length() > 12)
+					return "user|fail|name too long";
+				
+				if(name && !split[1].matches("[a-zA-Z0-9.\\-]+"))
+					return "user|fail|name invalid";
+				
+				if(name && split[1].matches("[0-9]+"))
+					return "user|fail|name alpha missing";
+			}
+			
+			if(mail && split[2].indexOf("@") < 1 && !split[2].matches("[a-zA-Z0-9.@\\-\\+]+"))
 				return "user|fail|mail invalid";
 			
-			if(split.length > 2 && split[2].length() > 0 && split[2].length() < 3)
+			if(pass && split[3].length() < 3)
 				return "user|fail|pass too short";
-			
-			if(name.length() > 0 && !name.matches("[a-zA-Z0-9.\\-]+"))
-				return "user|fail|name invalid";
-			
-			if(name.length() > 0 && name.matches("[0-9]+"))
-				return "user|fail|name alpha missing";
 			
 			Async.Work user = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
@@ -71,28 +84,28 @@ public class Router implements Node {
 					
 					boolean add = false;
 					
-					if(name.length() > 2) {
-						json += "\"name\":\"" + name + "\"";
+					if(name) {
+						json += "\"name\":\"" + split[1] + "\"";
 						sort += ",name";
 						
 						add = true;
 					}
 					
-					if(split.length > 1 && split[1].length() > 0) {
+					if(mail) {
 						if(add)
 							json += ",";
 						
-						json += "\"mail\":\"" + split[1] + "\"";
+						json += "\"mail\":\"" + split[2] + "\"";
 						sort += ",mail";
 						
 						add = true;
 					}
 					
-					if(split.length > 2 && split[2].length() > 0) {
+					if(pass) {
 						if(add)
 							json += ",";
 						
-						json += "\"pass\":\"" + split[2] + "\"";
+						json += "\"pass\":\"" + split[3] + "\"";
 					}
 					
 					json += "}";
@@ -130,10 +143,10 @@ public class Router implements Node {
 					}
 					else {
 						JSONObject json = new JSONObject(body);
-
 						String key = json.getString("key");
-
-						User user = auth(name, Event.random(4), json);
+						
+						User user = session(name ? split[1] : "", session(), json);
+						user.open = true;
 						
 						event.query().put("done", "user|done|" + key + "|" + Root.hash(key) + "|" + user.salt);
 					}
@@ -163,63 +176,59 @@ public class Router implements Node {
 			return "mail|done|" + Root.hash(json.getString("key"));
 		}
 		
-		if(name.length() < 0)
-			return "main|fail|name missing";
+		//if(name.length() < 0)
+		//	return "main|fail|name missing";
 		
-		if(name.length() < 3)
-			return "main|fail|name too short";
+		//if(name.length() < 3)
+		//	return "main|fail|name too short";
 		
 		if(data.startsWith("salt")) {
-			String salt = Event.random(4);
-			salts.put(salt, "");
+			String name = split[1];
+			String salt = session();
+			
+			File file = null;
+			
+			if(name.matches("[0-9]+"))
+				file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
+			else if(name.length() == 16)
+				file = new File(Root.home() + "/node/user/key" + Root.path(name));
+			else
+				file = new File(Root.home() + "/node/user/name" + Root.path(name));
+
+			if(file == null || !file.exists()) {
+				return "salt|fail|user not found";
+			}
+			
+			JSONObject json = new JSONObject(Root.file(file));
+			
+			session(name, salt, json);
+			
 			return "salt|done|" + salt;
 		}
 		
+		User user = (User) users.get(split[1]);
+		
+		if(user == null || !user.salt.equals(split[1]))
+			return "main|fail|invalid salt";
+		
 		if(data.startsWith("open")) {
-			String salt = split[1];
 			String hash = split[2].toLowerCase();
 			
-			if(name.length() > 0 && hash.length() > 0) {
-				File file = null;
-				long id = 0;
-				
-				if(name.indexOf("@") > 0)
-					file = new File(Root.home() + "/node/user/mail" + Root.path(name));
-				if(name.matches("[0-9]+"))
-					file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
-				else
-					file = new File(Root.home() + "/node/user/name" + Root.path(name));
-
-				if(file == null || !file.exists()) {
-					return "open|fail|user not found";
-				}
-				
-				JSONObject json = new JSONObject(Root.file(file));
-				
-				if(salts.remove(salt) == null) {
-					return "open|fail|salt not found";
-				}
-				
-				String key = json.has("pass") ? json.getString("pass") : json.getString("key");
-				String md5 = Deploy.hash(key + salt, "MD5");
+			if(user.name.length() > 0 && hash.length() > 0) {
+				String key = user.json.has("pass") ? user.json.getString("pass") : user.json.getString("key");
+				String md5 = Deploy.hash(key + user.salt, "MD5");
 
 				if(hash.equals(md5)) {
-					String replace = json.has("name") ? json.getString("name") : "" + Root.hash(json.getString("key"));
-					auth(name.indexOf("@") > 0 ? "" : replace, salt, json);
-					return "open|done" + (name.indexOf("@") > 0 ? "|" + replace : "");
+					user.open = true;
+					return "open|done|" + user.name;
 				}
 				else
 					return "open|fail|wrong pass";
 			}
 		}
 		
-		User user = (User) users.get(name);
-		
-		if(user == null)
+		if(!user.open)
 			return "main|fail|user not open";
-		
-		if(!user.salt.equals(split[1]))
-			return "main|fail|invalid salt";
 		
 		if(data.startsWith("game")) {
 			if(!split[2].matches("[a-zA-Z]+"))
@@ -437,17 +446,17 @@ public class Router implements Node {
 		}
 		
 		if(data.startsWith("chat")) {
-			user.room.send(user, "text|" + name + "|" + split[2]);
+			user.room.send(user, "text|" + user.name + "|" + split[2]);
 			return "chat|done";
 		}
 		
 		if(data.startsWith("send")) {
-			user.room.send(user, "sent|" + name + "|" + split[2]);
+			user.room.send(user, "sent|" + user.name + "|" + split[2]);
 			return "send|done";
 		}
 		
 		if(data.startsWith("move")) {
-			user.room.send(user, "data|" + name + "|" + split[2]);
+			user.room.send(user, "data|" + user.name + "|" + split[2]);
 			return "move|done";
 		}
 		
@@ -458,6 +467,7 @@ public class Router implements Node {
 		String[] ip;
 		JSONObject json;
 		String name, salt;
+		boolean open;
 		Game game;
 		Room room;
 		
@@ -509,7 +519,7 @@ public class Router implements Node {
 		}
 		
 		public String toString() {
-			return name;
+			return name + "(" + salt + ")";
 		}
 	}
 	
@@ -538,7 +548,7 @@ public class Router implements Node {
 			if(data.startsWith("lock"))
 				lock = true;
 			
-			System.err.println("<- " + from + " " + data);
+			System.err.println("<-- " + from + " " + data);
 
 			boolean wakeup = false;
 			
@@ -547,19 +557,19 @@ public class Router implements Node {
 				
 				// send every user in room to joining user
 				if(data.startsWith("here") && !from.name.equals(user.name)) {
-					node.push(null, from.name, "here|" + user.name + user.peer(from), false);
+					node.push(from.salt, "here|" + user.name + user.peer(from), false);
 					wakeup = true;
 				}
 				
 				// send every user in room to leaving user
 				if(data.startsWith("gone") && !from.name.equals(user.name)) {
-					node.push(null, from.name, "gone|" + user.name + user.peer(from), false);
+					node.push(from.salt, "gone|" + user.name + user.peer(from), false);
 					wakeup = true;
 				}
 				
 				// send message from user to room
 				if(data.startsWith("text") || data.startsWith("lock") || !from.name.equals(user.name)) {
-					node.push(null, user.name, data.startsWith("here") ? data + from.peer(user) : data.startsWith("gone") ? data + "|" + from.room.user.name : data);
+					node.push(user.salt, data.startsWith("here") ? data + from.peer(user) : data.startsWith("gone") ? data + "|" + from.room.user.name : data, true);
 				}
 				
 				// eject everyone
@@ -605,17 +615,22 @@ public class Router implements Node {
 		}
 	}
 
-	public void remove(String name, boolean silent) throws Exception {
-		User user = (User) users.get(name);
+	public void remove(String salt, int place) throws Exception {
+		User user = (User) users.get(salt);
 
 		if(user == null)
-			System.out.println("Remove; User '" + name + "' not found.");
+			System.err.println("remove; salt '" + salt + "' not found (" + place + ").");
 		else if(user.salt != null && user.game != null) {
 			Room room = user.move(user.room, null);
 			user.game.rooms.remove(user.name);
-			if(!silent)
+			if(place != 1) {
 				user.game.send(user, "kill|" + user.name);
-			users.remove(name);
+				System.err.println("remove; user '" + user + "' killed (" + place + ").");
+			}
+			else {
+				System.err.println("remove; user '" + user + "' removed (" + place + ").");
+			}
+			users.remove(salt);
 		}
 	}
 	

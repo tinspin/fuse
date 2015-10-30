@@ -19,7 +19,7 @@ public class Fuse {
 	private Queue<string> queue;
 	private Socket pull, push;
 	private bool connected;
-	private string name, salt;
+	private string salt;
 
 	private IPEndPoint remote;
 
@@ -28,7 +28,11 @@ public class Fuse {
 		public const int size = 32768;
 		public byte[] data = new byte[size];
 	}
-
+	
+	public void Salt(string salt) {
+		this.salt = salt;
+	}
+	
 	public Fuse() {
 		bool policy = true;
 
@@ -45,14 +49,6 @@ public class Fuse {
 		push.Connect(remote);
 	}
 
-	public string Name() {
-		return name;
-	}
-	
-	public void Name(string name) {
-		this.name = name;
-	}
-
 	public void Pull() {
 		queue = new Queue<string>();
 
@@ -60,7 +56,7 @@ public class Fuse {
 		pull.NoDelay = true;
 		pull.Connect(remote);
 
-		String data = "GET /pull?name=" + name + " HTTP/1.1\r\n"
+		String data = "GET /pull?salt=" + salt + " HTTP/1.1\r\n"
 				+ "Host: " + host + "\r\n"
 				+ "Head: less\r\n\r\n"; // enables TCP no delay
 
@@ -80,7 +76,7 @@ public class Fuse {
 		if(salt != null)
 			data = data.Substring(0, 4) + '|' + salt + data.Substring(4, data.Length - 4);
 
-		String text = "GET /push?name=" + name + "&data=" + data + " HTTP/1.1\r\n"
+		String text = "GET /push?data=" + data + " HTTP/1.1\r\n"
 				+ "Host: " + host + "\r\n"
 				+ "Head: less\r\n\r\n"; // enables TCP no delay
 
@@ -151,11 +147,10 @@ public class Fuse {
 	public static void Main() {
 		try {
 			Fuse fuse = new Fuse();
-			fuse.Name("fuse");
-			
+
 			// if no key is stored try
 
-			//string key = fuse.User();
+			//string key = fuse.User("fuse");
 
 			//   then store name and key
 			// otherwise
@@ -163,13 +158,15 @@ public class Fuse {
 
 			string key = "F9hG7K7Jwe1SmtiQ";
 
-			bool success = false;
+			string salt = null;
 
 			if(key != null) {
-				success = fuse.Open(key);
+				salt = fuse.Open("fuse", key);
 			}
 
-			if(success) {
+			if(salt != null) {
+				fuse.Salt(salt);
+				Console.WriteLine("Salt: " + fuse.salt);
 				// this will allow you to Fuse.Read();
 				// from MonoBehaviour.Update();
 				fuse.Pull();
@@ -207,15 +204,15 @@ public class Fuse {
 				fuse.Chat("hello");
 			}
 
-			Console.WriteLine("Open: " + success);
+			Console.WriteLine("Open: " + salt);
 		}
 		catch(Exception e) {
 			Console.WriteLine(e.ToString());
 		}
 	}
 
-	public string User() {
-		string[] user = Push("user").Split('|');
+	public string User(string name) {
+		string[] user = Push("user|" + name).Split('|');
 
 		if(user[1].Equals("fail")) {
 			if(user[2].IndexOf("bad") > 0) {
@@ -233,18 +230,23 @@ public class Fuse {
 		return user[2];
 	}
 
-	public bool Open(string key) {
-		string salt = Push("salt").Split('|')[2];
-		string hash = MD5(key + salt);
-		string[] open = Push("open|" + salt + "|" + hash).Split('|');
+	public string Open(string name, string key) {
+		string[] salt = Push("salt|" + name).Split('|');
+		
+		if(salt[1].Equals("fail")) {
+			Console.WriteLine("salt " + salt[2]);
+			return null;
+		}
+		
+		string hash = MD5(key + salt[2]);
+		string[] open = Push("open|" + salt[2] + "|" + hash).Split('|');
 
 		if(open[1].Equals("fail")) {
 			Console.WriteLine("open " + open[2]);
-			return false;
+			return null;
 		}
 
-		this.salt = salt;
-		return true;
+		return salt[2];
 	}
 
 	public bool Game(string game) {
@@ -259,7 +261,7 @@ public class Fuse {
 		string list = Push("list|room");
 
 		if(list.StartsWith("list|fail")) {
-			Console.WriteLine(name + " " + list);
+			Console.WriteLine(list);
 			return null;
 		}
 
@@ -303,7 +305,7 @@ public class Fuse {
 		string[] push = Push(data).Split('|');
 		
 		if(push[1].Equals("fail")) {
-			Console.WriteLine(name + " " + data + " " + push[2]);
+			Console.WriteLine(data + " " + push[2]);
 			return null;
 		}
 		

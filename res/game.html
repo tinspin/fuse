@@ -38,27 +38,33 @@
     host = 'fuse.rupy.se';
   var game = 'kloss';
   var show = true;
-  var name = '';
   var size = 0;
   var salt;
   function pull() {
-    send('pull', name, null);
+    send('pull', null);
   }
   function push(data) {
-    var data = send('push', name, data).split('|');
+    var data = send('push', data).split('|');
     if(data[1] == 'fail')
       show_fail(data[2]);
     return data;
   }
-  function send(path, name, data) {
+  function send(path, data) {
     hide_fail();
     var state = (path == 'pull' ? 3 : 4);
     var xhr = new XMLHttpRequest();
     var ie = false;
     if(state == 3)
       try { xhr = new XDomainRequest(); ie = true; } catch(e) {}
-    if(salt) data = data.substring(0, 4) + '|' + salt + data.substring(4, data.length);
-    var url = 'http://' + host + '/' + path + '?name=' + name + '&data=' + encodeURIComponent(data) + (ie ? "&ie" : "") + "&time=" + new Date().getTime();
+    var url = 'http://' + host + '/' + path + '?';
+    if(state == 3)
+      url += 'salt=' + salt + (ie ? "&ie" : "");
+    else {
+      if(salt)
+        data = data.substring(0, 4) + '|' + salt + data.substring(4, data.length);
+      url += 'data=' + encodeURIComponent(data);
+    }
+    url += "&time=" + new Date().getTime();
     xhr.open('GET', url, state == 3); // sync is deprecated really? genious!
     try { xhr.setRequestHeader('Accept', 'text/event-stream'); } catch(e) {}
     if(state == 3) {
@@ -176,7 +182,7 @@
 <!-- fuse view handling -->
 <script>
   function user() {
-    name = id('name');
+    var name = id('name');
     if(name.length < 3) {
       show_fail('name too short');
       return;
@@ -192,12 +198,12 @@
       return;
     }
     var hash = md5(pass + name);
-    var user = push('user|' + mail + '|' + hash);
+    var user = push('user|' + name + '|' + mail + '|' + hash);
     if(user[1] == 'done')
       authorize(user[4]);
   }
   function open() {
-    name = id('name');
+    var name = id('name');
     if(name.length < 3) {
       show_fail('name too short');
       return;
@@ -207,9 +213,9 @@
       show_fail('pass too short');
       return;
     }
-    var salt = push('salt');
+    var salt = push('salt|' + name);
     if(salt[1] === 'fail') {
-      show_fail('failed salt');
+      show_fail(salt[2]);
       return;
     }
     var hash = md5(md5(pass + name) + salt[2]);
@@ -221,12 +227,12 @@
     display('user', 'none');
     display('room', 'block');
     display('talk', 'block');
+    this.salt = salt;
     pull();
     focus('text');
-    this.salt = salt;
   }
   function none(data) {
-    send('push', name, data);
+    push(data);
   }
   function id(name, reset) {
     var value = element(name).value;
