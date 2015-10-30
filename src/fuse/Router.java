@@ -190,8 +190,6 @@ public class Router implements Node {
 
 			if(name.matches("[0-9]+"))
 				file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
-			else if(name.length() == 16)
-				file = new File(Root.home() + "/node/user/key" + Root.path(name));
 			else
 				file = new File(Root.home() + "/node/user/name" + Root.path(name));
 
