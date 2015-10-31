@@ -219,7 +219,7 @@ public class Router implements Node {
 				}
 				else {
 					users.remove(user.salt);
-					return "open|fail|wrong pass";
+					return "open|fail|wrong " + (user.json.has("pass") ? "pass" : "key");
 				}
 			}
 		}

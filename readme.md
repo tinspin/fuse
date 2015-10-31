@@ -84,6 +84,7 @@ In sort of chronological order:
                             // which will be the &lt;id&gt; or &lt;name&gt; if name is stored
  <b><i>open</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> open|done|&lt;name&gt;
                             -> open|fail|wrong pass
+                            -> open|fail|wrong key
 
  <b><i>\/</i></b> anything below          -> main|fail|user not open
 
