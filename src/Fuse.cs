@@ -226,11 +226,14 @@ public class Fuse {
 			return null;
 		}
 
-		this.salt = user[4];
-		return user[2];
+		this.salt = user[2];
+		// for anonymous user
+		//string id = user[4];
+		return user[3];
 	}
 
 	public string Open(string name, string key) {
+		// for anonymous user use <id> instead here
 		string[] salt = Push("salt|" + name).Split('|');
 		
 		if(salt[1].Equals("fail")) {

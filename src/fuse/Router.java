@@ -148,7 +148,7 @@ public class Router implements Node {
 						User user = session(name ? split[1] : "", session(), json);
 						user.open = true;
 
-						event.query().put("done", "user|done|" + key + "|" + Root.hash(key) + "|" + user.salt);
+						event.query().put("done", "user|done|" + user.salt + "|" + key + "|" + Root.hash(key));
 					}
 
 					event.reply().wakeup();

@@ -201,7 +201,7 @@
     var hash = md5(pass + name);
     var user = push('user|' + name + '|' + mail + '|' + hash);
     if(user[1] == 'done')
-      authorize(user[4]);
+      authorize(user[2]);
   }
   function open() {
     var name = id('name');

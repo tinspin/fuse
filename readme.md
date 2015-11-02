@@ -53,7 +53,7 @@ In sort of chronological order:
                             //        to empty string (||)
                             //        preferably [pass] is a hash with salt 
                             //        for example we simply use md5(pass + name)
- <b><i>user</i></b>|[name]|[mail]|[pass]  -> user|done|&lt;key&gt;|&lt;id&gt;|&lt;salt&gt;
+ <b><i>user</i></b>|[name]|[mail]|[pass]  -> user|done|&lt;salt&gt;|&lt;key&gt;|&lt;id&gt;
                             -> user|fail|name too short
                             -> user|fail|name too long
                             -> user|fail|name already registered
