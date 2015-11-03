@@ -18,61 +18,91 @@
     var yUp = event.touches[0].clientY;
     var xDiff = x - xUp;
     var yDiff = y - yUp;
-    if(Math.abs( xDiff ) > Math.abs(yDiff)) {
+    if(Math.abs(xDiff) > Math.abs(yDiff)) {
       if(xDiff > 3) {
-        element('play').style.backgroundColor = 'orange';
+        action(37);
       } else if(xDiff < -3) {
-        element('play').style.backgroundColor = 'green';
+        action(39);
       }
     } else {
       if(yDiff > 3) {
-        element('play').style.backgroundColor = 'blue';
+        action(38);
       } else if(yDiff < -3) {
-        element('play').style.backgroundColor = 'red';
+        action(40);
       }
     }
-    x = event.touches[0].clientX;
-    y = event.touches[0].clientY;                                          
+    x = null;
+    y = null;                                          
   };
+  function keyDown(event) {
+    action(event.keyCode)
+  }
+  function action(key) {
+    if(key == 37)
+      move(current, -50);
+    if(key == 39)
+      move(current, 50);
+    if(key == 40)
+      speed = 20;
+    if(key == 38)
+      speed = 4;
+  }
 </script>
 <script>
   function element(name) {
     return document.getElementById(name);
   }
+  var speed = 3;
+  var current;
   var cubes = [];
   var names = ['blue', 'green', 'orange', 'purple', 'red'];
   start();
   function start() {
-    for(var i = 0; i < 5; i++) {
-      cubes.push({'name': names[i], 'x': 0, 'y': 0});
-    }
-    setInterval(tick, 1000 / 60);
+    setInterval(tick, 33);
   }
   function tick() {
     for(var i = 0; i < cubes.length; i++) {
-      var cube = element(cubes[i].name);
-      cubes[i].y += 1;
-      cube.style.top = cubes[i].y + 'px';
-      if(cubes[i].y > 250)
-        cubes[i].y = 0;
+      var cube = cubes[i];
+      var y = parseInt(cube.style.top, 10) + speed;
+      if(y > 300) y = 0;
+      cube.style.top = y + 'px';
     }
+  }
+  function move(cube, delta) {
+    var x = parseInt(cube.style.left, 10) + delta;
+    cube.style.left = x + 'px';
+    if(x > 200) x = 200;
+    if(x < 0) x = 0;
+    cube.style.left = x + 'px';
+  }
+  function add(color, x) {
+    var img = document.createElement('img');
+    img.src = 'svg/' + color + '.svg';
+    img.style.position = 'absolute';
+    img.style.left = x + 'px';
+    img.style.top = '0px';
+    element('play').appendChild(img);
+    cubes.push(img);
+    current = img;
   }
 </script>
 </head>
 <body style="margin: 0px;">
 
 <div id="play" style="width: 250px; height: 350px; background-color: black;">
-<img id="blue" style="position: absolute; left: 0px;" src="svg/blue.svg">
+<!--img id="blue" style="position: absolute; left: 0px;" src="svg/blue.svg">
 <img id="green" style="position: absolute; left: 50px;" src="svg/green.svg">
 <img id="orange" style="position: absolute; left: 100px;" src="svg/orange.svg">
 <img id="purple" style="position: absolute; left: 150px;" src="svg/purple.svg">
-<img id="red" style="position: absolute; left: 200px;" src="svg/red.svg">
+<img id="red" style="position: absolute; left: 200px;" src="svg/red.svg"-->
 </div>
 
 <script>
   var div = element('play');
+  document.addEventListener("keydown", keyDown);
   div.addEventListener('touchstart', touchStart, false);
   div.addEventListener('touchmove', touchMove, false);
+  add('blue', 100);
 </script>
 
 </body>
