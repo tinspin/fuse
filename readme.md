@@ -141,7 +141,7 @@ In sort of chronological order:
                             -> exit|fail|user in lobby
                     
                             // lock room before the game starts
-*<b><i>play</i></b>|&lt;salt&gt;                -> play|done
+ <b><i>play</i></b>|&lt;salt&gt;                -> play|done
                            --> <b><i>lock</i></b>                         // to start the game
                             -> play|fail|user in lobby
                             -> play|fail|user not creator

@@ -30,7 +30,6 @@
   }
 </style>
 <script src="md5.js"></script>
-<script src="swipe.js"></script>
 <!-- fuse network code -->
 <script>
   var host = window.location.search.substring(1);
@@ -304,6 +303,8 @@
     if(play[1] === 'fail')
       show_fail(play[2]);
   }
+  var cubes = [];
+  var names = ['blue', 'green', 'orange', 'purple', 'red'];
   function start() {
     display('room', 'none');
     display('play', 'block');
@@ -315,8 +316,6 @@
     }
     setInterval(tick, 1000 / 60);
   }
-  var cubes = [];
-  var names = ['blue', 'green', 'orange', 'purple', 'red'];
   function tick() {
     for(var i = 0; i < cubes.length; i++) {
       var cube = element(cubes[i].name);
@@ -357,7 +356,7 @@
 </table>
 </div>
 
-<div id="play" style="display: none;" ontouchstart="touchStart(event,'box');" ontouchend="touchEnd(event);" ontouchmove="touchMove(event);" ontouchcancel="touchCancel(event);">
+<div id="play" style="display: none;">
 <img id="blue" style="position: absolute; left: 0px;" src="svg/blue.svg">
 <img id="green" style="position: absolute; left: 50px;" src="svg/green.svg">
 <img id="orange" style="position: absolute; left: 100px;" src="svg/orange.svg">

@@ -25,7 +25,7 @@ public class Fuse {
 
 	private class State {
 		public Socket socket = null;
-		public const int size = 32768;
+		public const int size = 1024;
 		public byte[] data = new byte[size];
 	}
 	
