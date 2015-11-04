@@ -141,8 +141,8 @@ In sort of chronological order:
                             -> exit|fail|user in lobby
                     
                             // lock room before the game starts
- <b><i>play</i></b>|&lt;salt&gt;                -> play|done
-                           --> <b><i>lock</i></b>                         // to start the game
+ <b><i>play</i></b>|&lt;salt&gt;[|seed]         -> play|done
+                           --> <b><i>lock</i></b>[|seed]                  // to start the game
                             -> play|fail|user in lobby
                             -> play|fail|user not creator
                             -> play|fail|only one player

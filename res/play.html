@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+<script src="seed.js"></script>
 <script>
   var x;
   var y;
@@ -43,9 +44,9 @@
     if(key == 39)
       move(current, 50);
     if(key == 40)
-      speed = 20;
+      current.fuse.speed = 20;
     if(key == 38)
-      speed = 4;
+      current.fuse.speed = 4;
   }
 </script>
 <script>
@@ -54,26 +55,54 @@
   }
   var speed = 3;
   var current;
+  var height = [0, 0, 0, 0, 0];
   var cubes = [];
-  var names = ['blue', 'green', 'orange', 'purple', 'red'];
-  start();
-  function start() {
+  var color = ['blue', 'green', 'orange', 'purple'];
+  start('hej');
+  function start(seed) {
+    Math.seedrandom(seed);
     setInterval(tick, 33);
   }
   function tick() {
     for(var i = 0; i < cubes.length; i++) {
       var cube = cubes[i];
-      var y = parseInt(cube.style.top, 10) + speed;
-      if(y > 300) y = 0;
-      cube.style.top = y + 'px';
+      
+      if(cube.fuse.speed > 0) {
+        var x = parseInt(cube.style.left, 10) / 50;
+        var y = parseInt(cube.style.top, 10) + cube.fuse.speed;
+        if(300 - y < height[x]) {
+          y = 300 - height[x];
+          /*console.log(y);*/
+          if(x == 2 && y < 0) {
+            element('play').innerHTML = '';
+            height = [0, 0, 0, 0, 0];
+            cubes = [];
+          }
+          else {
+            height[x] += 50;
+            cube.fuse.speed = 0;
+          }
+          spawn();
+        }
+        cube.style.top = y + 'px';
+      }
     }
   }
   function move(cube, delta) {
+    var col = parseInt(cube.style.left, 10) / 50
     var x = parseInt(cube.style.left, 10) + delta;
-    cube.style.left = x + 'px';
+    var y = parseInt(cube.style.top, 10);
     if(x > 200) x = 200;
     if(x < 0) x = 0;
-    cube.style.left = x + 'px';
+    /*console.log(height[col + delta / 50] + ' ' + (300 - y));*/
+    if(height[col + delta / 50] < 300 - y)
+      cube.style.left = x + 'px';
+  }
+  var max = 3;
+  var min = 0;
+  function spawn() {
+    var r = Math.floor(Math.random() * (max - min + 1)) + min;
+    add(color[r], 100)
   }
   function add(color, x) {
     var img = document.createElement('img');
@@ -81,6 +110,8 @@
     img.style.position = 'absolute';
     img.style.left = x + 'px';
     img.style.top = '0px';
+    img.fuse = {};
+    img.fuse.speed = 4;
     element('play').appendChild(img);
     cubes.push(img);
     current = img;
@@ -99,10 +130,10 @@
 
 <script>
   var div = element('play');
-  document.addEventListener("keydown", keyDown);
+  document.addEventListener('keydown', keyDown);
   div.addEventListener('touchstart', touchStart, false);
   div.addEventListener('touchmove', touchMove, false);
-  add('blue', 100);
+  spawn();
 </script>
 
 </body>

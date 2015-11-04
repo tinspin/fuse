@@ -349,6 +349,8 @@ public class Router implements Node {
 		}
 
 		if(data.startsWith("play")) {
+			String seed = split[2];
+			
 			if(user.room.user == null)
 				return "play|fail|user in lobby";
 
@@ -356,7 +358,7 @@ public class Router implements Node {
 				return "play|fail|only one player";
 
 			if(user.room.user == user)
-				user.room.send(user, "lock");
+				user.room.send(user, "lock|" + seed);
 			else
 				return "play|fail|user not creator";
 
