@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script src="seed.js"></script>
 <script>
   var x;
   var y;
@@ -53,26 +52,29 @@
   function element(name) {
     return document.getElementById(name);
   }
+  var seed = 1;
   var speed = 3;
   var current;
   var height = [0, 0, 0, 0, 0];
   var cubes = [];
   var color = ['blue', 'green', 'orange', 'purple'];
-  start('hej');
+  start(232423);
+  function random() {
+    var x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+  }
   function start(seed) {
-    Math.seedrandom(seed);
+    this.seed = seed;
     setInterval(tick, 33);
   }
   function tick() {
     for(var i = 0; i < cubes.length; i++) {
       var cube = cubes[i];
-      
       if(cube.fuse.speed > 0) {
         var x = parseInt(cube.style.left, 10) / 50;
         var y = parseInt(cube.style.top, 10) + cube.fuse.speed;
         if(300 - y < height[x]) {
           y = 300 - height[x];
-          /*console.log(y);*/
           if(x == 2 && y < 0) {
             element('play').innerHTML = '';
             height = [0, 0, 0, 0, 0];
@@ -94,14 +96,13 @@
     var y = parseInt(cube.style.top, 10);
     if(x > 200) x = 200;
     if(x < 0) x = 0;
-    /*console.log(height[col + delta / 50] + ' ' + (300 - y));*/
     if(height[col + delta / 50] < 300 - y)
       cube.style.left = x + 'px';
   }
   var max = 3;
   var min = 0;
   function spawn() {
-    var r = Math.floor(Math.random() * (max - min + 1)) + min;
+    var r = Math.floor(random() * (max - min + 1)) + min;
     add(color[r], 100)
   }
   function add(color, x) {
