@@ -19,15 +19,15 @@
     var xDiff = x - xUp;
     var yDiff = y - yUp;
     if(Math.abs(xDiff) > Math.abs(yDiff)) {
-      if(xDiff > 3) {
+      if(xDiff > 0) {
         action(37);
-      } else if(xDiff < -3) {
+      } else if(xDiff < 0) {
         action(39);
       }
     } else {
-      if(yDiff > 3) {
+      if(yDiff > 0) {
         action(38);
-      } else if(yDiff < -3) {
+      } else if(yDiff < 0) {
         action(40);
       }
     }
@@ -39,9 +39,9 @@
   }
   function action(key) {
     if(key == 37)
-      move(current, -50);
+      current.fuse.delta = -50;
     if(key == 39)
-      move(current, 50);
+      current.fuse.delta = 50;
     if(key == 40)
       current.fuse.speed = 20;
     if(key == 38)
@@ -65,39 +65,47 @@
   }
   function start(seed) {
     this.seed = seed;
+    for(var i = 0; i < 3; i++) {
+      var img = document.createElement('img');
+      img.src = 'svg/' + color[i] + '.svg';
+    }
     setInterval(tick, 33);
   }
   function tick() {
     for(var i = 0; i < cubes.length; i++) {
       var cube = cubes[i];
       if(cube.fuse.speed > 0) {
-        var x = parseInt(cube.style.left, 10) / 50;
-        var y = parseInt(cube.style.top, 10) + cube.fuse.speed;
-        if(300 - y < height[x]) {
-          y = 300 - height[x];
-          if(x == 2 && y < 0) {
+        var col = parseInt(cube.style.left, 10) / 50
+        var x = parseInt(cube.style.left, 10) + cube.fuse.delta;
+        var y = parseInt(cube.style.top, 10);
+        var move = false;
+        if(cube.fuse.delta != 0) {
+          if(x > 200) x = 200;
+          if(x < 0) x = 0;
+          if(height[col + cube.fuse.delta / 50] < 300 - y)
+            move = true;
+          cube.fuse.delta = 0;
+        }
+        var y = y + cube.fuse.speed;
+        if(300 - y < height[col]) {
+          y = 300 - height[col];
+          if(col == 2 && y < 0) {
             element('play').innerHTML = '';
             height = [0, 0, 0, 0, 0];
             cubes = [];
           }
           else {
-            height[x] += 50;
+            height[col] += 50;
             cube.fuse.speed = 0;
           }
           spawn();
         }
+        else if(move) {
+          cube.style.left = x + 'px';
+        }
         cube.style.top = y + 'px';
       }
     }
-  }
-  function move(cube, delta) {
-    var col = parseInt(cube.style.left, 10) / 50
-    var x = parseInt(cube.style.left, 10) + delta;
-    var y = parseInt(cube.style.top, 10);
-    if(x > 200) x = 200;
-    if(x < 0) x = 0;
-    if(height[col + delta / 50] < 300 - y)
-      cube.style.left = x + 'px';
   }
   var max = 3;
   var min = 0;
@@ -110,9 +118,10 @@
     img.src = 'svg/' + color + '.svg';
     img.style.position = 'absolute';
     img.style.left = x + 'px';
-    img.style.top = '0px';
+    img.style.top = '-50px';
     img.fuse = {};
     img.fuse.speed = 4;
+    img.fuse.delta = 0;
     element('play').appendChild(img);
     cubes.push(img);
     current = img;
@@ -121,13 +130,7 @@
 </head>
 <body style="margin: 0px;">
 
-<div id="play" style="width: 250px; height: 350px; background-color: black;">
-<!--img id="blue" style="position: absolute; left: 0px;" src="svg/blue.svg">
-<img id="green" style="position: absolute; left: 50px;" src="svg/green.svg">
-<img id="orange" style="position: absolute; left: 100px;" src="svg/orange.svg">
-<img id="purple" style="position: absolute; left: 150px;" src="svg/purple.svg">
-<img id="red" style="position: absolute; left: 200px;" src="svg/red.svg"-->
-</div>
+<div id="play" style="width: 250px; height: 350px; background-color: black;"></div>
 
 <script>
   var div = element('play');
