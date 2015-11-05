@@ -4,38 +4,38 @@
 <script>
   var x;
   var y;
-  function touchStart(event) {
+  function touchstart(event) {
     event.preventDefault();
     x = event.touches[0].clientX;
     y = event.touches[0].clientY;
   }
-  function touchMove(event) {
+  function touchmove(event) {
     if(!x || !y) {
       return;
     }
     event.preventDefault();
-    var xUp = event.touches[0].clientX;
-    var yUp = event.touches[0].clientY;
-    var xDiff = x - xUp;
-    var yDiff = y - yUp;
-    if(Math.abs(xDiff) > Math.abs(yDiff)) {
-      if(xDiff > 0) {
+    var nx = event.touches[0].clientX;
+    var ny = event.touches[0].clientY;
+    var dx = x - nx;
+    var dy = y - ny;
+    if(Math.abs(dx) > Math.abs(dy)) {
+      if(dx > 0) {
         action(37);
-      } else if(xDiff < 0) {
+      } else if(dx < 0) {
         action(39);
       }
     } else {
-      if(yDiff > 0) {
+      if(dy > 0) {
         action(38);
-      } else if(yDiff < 0) {
+      } else if(dy < 0) {
         action(40);
       }
     }
     x = null;
-    y = null;                                          
+    y = null;
   };
-  function keyDown(event) {
-    action(event.keyCode)
+  function keydown(event) {
+    action(event.keyCode);
   }
   function action(key) {
     if(key === 37)
@@ -53,7 +53,6 @@
     return document.getElementById(name);
   }
   var seed = 1;
-  var speed = 3;
   var current;
   var height = [0, 0, 0, 0, 0];
   var grid = [];
@@ -213,9 +212,9 @@
 
 <script>
   var div = element('play');
-  document.addEventListener('keydown', keyDown);
-  div.addEventListener('touchstart', touchStart, false);
-  div.addEventListener('touchmove', touchMove, false);
+  document.addEventListener('keydown', keydown);
+  div.addEventListener('touchstart', touchstart);
+  div.addEventListener('touchmove', touchmove);
   spawn();
 </script>
 
