@@ -97,8 +97,8 @@ In sort of chronological order:
 
                             // pause game
 *<b><i>away</i></b>|&lt;bool&gt;                -> away|done
-                           --> <b><i>gone</b></i>|&lt;name&gt;
-                           --> <b><i>here</b></i>|&lt;name&gt;
+                           --> <b><i>hold</b></i>|&lt;name&gt;
+                           --> <b><i>free</b></i>|&lt;name&gt;
 
                             // add friend
 *<b><i>ally</i></b>|&lt;salt&gt;|&lt;name&gt;         -> ally|done
