@@ -13,13 +13,31 @@
 	<property name="lib" refid="lib"/>
 	<property name="name" value="fuse"/>
 	
+	<target name="check-page">
+		<available property="page-exists" file="../page/build.xml"/> 
+	</target>
+		
+	<target name="page" depends="check-page" if="page-exists">
+		<ant antfile="../page/build.xml" target="build" inheritall="false"/>
+		<copy file="../page/bin/page.jar" todir="lib"/>
+	</target>
+		
 	<target name="check-http">
 		<available property="http-exists" file="../http/build.xml"/> 
 	</target>
-		
+			
 	<target name="http" depends="check-http" if="http-exists">
 		<ant antfile="../http/build.xml" target="build" inheritall="false"/>
 		<copy file="../http/bin/http.jar" todir="lib"/>
+	</target>
+		
+	<target name="check-util">
+		<available property="util-exists" file="../util/build.xml"/> 
+	</target>
+			
+	<target name="util" depends="check-util" if="util-exists">
+		<ant antfile="../util/build.xml" target="build" inheritall="false"/>
+		<copy file="../util/bin/util.jar" todir="lib"/>
 	</target>
 	
 	<target name="check">
@@ -28,7 +46,7 @@
 		</uptodate>
 	</target>
 
-	<target name="build" depends="http, check" unless="required">
+	<target name="build" depends="http, page, util, check" unless="required">
 		<echo>Building (${name})</echo>
 		<mkdir dir="tmp/cls"/>
 		<javac srcdir="src" target="1.5" source="1.5" destdir="tmp/cls" debug="on" deprecation="off" classpath="src;${lib}" encoding="UTF-8"/>
@@ -36,6 +54,16 @@
 		<copy todir="tmp/jar">
 		    <fileset dir="res/"/>
 			<fileset dir="tmp/cls"/>
+		</copy>
+		<java classname="Page" classpath="${lib}">
+			<arg line="bin/${name}.jar"/>
+			<arg line="res"/>
+		</java>
+		<javac srcdir="res" target="1.4" source="1.4" destdir="res" nowarn="on" debug="on" deprecation="off" classpath="${lib};bin" encoding="UTF-8"/>
+		<copy preservelastmodified="true" todir="tmp/jar">
+			<fileset dir="res">
+				<exclude name="**/*.java"/>
+			</fileset>
 		</copy>
 		<jar jarfile="tmp/${root}.jar">
 			<manifest>
@@ -46,26 +74,6 @@
 		<mkdir dir="bin"/>
 		<copy file="tmp/${root}.jar" todir="bin"/>
 		<delete dir="tmp" quiet="yes"/>
-	</target>
-	
-	<target name="build-live" depends="http, check" unless="required">
-		<echo>Building (fuse.radiomesh.org)</echo>
-		<mkdir dir="tmp/cls"/>
-		<javac srcdir="src" target="1.5" source="1.5" destdir="tmp/cls" debug="on" deprecation="off" classpath="src;${lib}" encoding="UTF-8"/>
-		<mkdir dir="tmp/jar"/>
-		<copy todir="tmp/jar">
-		    <fileset file="res/favicon.ico"/>
-			<fileset dir="tmp/cls"/>
-		</copy>
-		<jar jarfile="tmp/fuse.radiomesh.org.jar">
-			<manifest>
-				<attribute name="Built-By" value="${user.name}"/>
-			</manifest>
-			<fileset dir="tmp/jar"/>
-		</jar>
-		<mkdir dir="bin"/>
-		<copy file="tmp/btcx.radiomesh.org.jar" todir="bin"/>
-		<!--delete dir="tmp" quiet="yes"/-->
 	</target>
 	
 	<target name="local" depends="build">

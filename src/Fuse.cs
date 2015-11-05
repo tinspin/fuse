@@ -12,6 +12,9 @@ using System.Text;
  * For usage scroll down to main() method.
  */
 
+// TODO: Fix callback to work with lines split over many chunks.
+// TODO: Add push queue wrapper for async outgoing messages.
+
 public class Fuse {
 	public string host = "fuse.rupy.se";
 	public int port = 80;
@@ -115,8 +118,6 @@ public class Fuse {
 			if(read > 0) {
 				string text = Encoding.UTF8.GetString(state.data, 0, read);
 				string[] split = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
-
-				// TODO: Fix this to work with lines split over many chunks!
 
 				if(!split[0].StartsWith("HTTP")) {
 					string[] messages = split[1].Split('\n');

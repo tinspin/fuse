@@ -1,3 +1,13 @@
+[[	package gen;
+
+import se.rupy.http.*;
+import java.io.*;
+
+public class game extends Service {
+	public String path() { return "/game.html"; }
+	public void filter(Event event) throws Event, Exception {
+		Output out = event.output(); ]]
+
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -6,6 +16,7 @@
   img { display: block; }
   div { font-family: monospace; }
   input { font-family: monospace; }
+  table { margin: 5px; }
   #fail1 { color: #ff3300; }
   #fail2 { color: #ff3300; }
   textarea {
@@ -70,14 +81,14 @@
       if(ie)
         xhr.onprogress = function() {
           var body = xhr.responseText.substring(size, xhr.responseText.length);
-          chop(body, '\n'); // last \n instead
+          chop(body, '\\n'); // last \\n instead
           size = xhr.responseText.length;
         };
       else
         xhr.onreadystatechange = function() {
           if(xhr.readyState == 3) {
             var body = xhr.responseText.substring(size, xhr.responseText.length);
-            chop(body, '\n\n'); // last \n\n instead
+            chop(body, '\\n\\n'); // last \\n\\n instead
             size = xhr.responseText.length;
           }
         };
@@ -85,7 +96,7 @@
     xhr.send();
     if(state == 4) {
       if(show)
-        element('push').innerHTML += xhr.responseText + '\n';
+        element('push').innerHTML += xhr.responseText + '\\n';
       return xhr.responseText;
     }
   }
@@ -110,38 +121,43 @@
   function read(data) {
     //try { console.log(data) } catch(e) {}
     if(show)
-      element('pull').innerHTML += data + '\n';
+      element('pull').innerHTML += data + '\\n';
     if(send_game) {
       setTimeout(function() { push('game|' + game); list() }, 1000); // Give IE time to handle 2000kb payload.
       send_game = false;
     }
     var split = data.split('|');
     if(split.length > 1 && split[0] == 'text') {
-      element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
+      element('chat').value = split[1] + ': ' + split[2] + '\\n' + element('chat').value;
     }
     if(split.length > 0) {
       if(split[0] == 'here') {
-        add('ally', split[1]);
+        add_select('ally', split[1]);
       }
       if(split[0] == 'gone') {
-        remove('ally', split[1]);
+        remove_select('ally', split[1]);
       }
       if(split[0] == 'made') {
-        add('join', split[1].split('+')[0]);
+        add_select('join', split[1].split('+')[0]);
       }
       if(split[0] == 'halt') {
-        remove('join', split[1]);
+        remove_select('join', split[1]);
       }
       if(split[0] == 'kill') {
-        remove('ally', split[1]);
-        remove('join', split[1]);
+        remove_select('ally', split[1]);
+        remove_select('join', split[1]);
       }
       if(split[0] == 'lock') {
-        start();
+        display('room', 'none');
+        display('play', 'block');
+        element('talk').style.position = 'absolute';
+        element('talk').style.left = '0px';
+        element('talk').style.top = '350px';
+        start(split[1]);
       }
     }
   }
-  function remove(type, name) {
+  function remove_select(type, name) {
     var select = element(type);
     var id = 0;
     for(var i = 0; i < select.options.length; i++) {
@@ -152,7 +168,7 @@
     }
     select.remove(id);
   }
-  function add(type, name) {
+  function add_select(type, name) {
     var select = element(type);
     for(var i = 0; i < select.options.length; i++) {
       if(select.options[i].text == name) {
@@ -163,7 +179,7 @@
     option.text = name;
     select.options.add(option, select.options[0]);
   }
-  function clear() {
+  function clear_join() {
     var select = element('join');
     var length = select.options.length;
     for(i = 0; i < length; i++) {
@@ -276,7 +292,7 @@
   }
   function room() {
     push('room|kloss|2');
-    clear();
+    clear_join();
   }
   function join() {
     var select = element('join');
@@ -284,7 +300,7 @@
     if(index > -1) {
       var join = push('join|' + select.options[index].text);
       if(join[1] == 'done')
-        clear();
+        clear_join();
     }
   }
   function quit() {
@@ -295,39 +311,20 @@
   function list() {
     var list = push('list|room');
     for(var i = 3; i < list.length; i++) {
-      add('join', list[i].split('+')[0]);
+      add_select('join', list[i].split('+')[0]);
     }
   }
+  function get_seed(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
   function play() {
-    var play = push('play');
+    var play = push('play|' + get_seed(1, 400000));
     if(play[1] === 'fail')
       show_fail(play[2]);
   }
-  var cubes = [];
-  var names = ['blue', 'green', 'orange', 'purple', 'red'];
-  function start() {
-    display('room', 'none');
-    display('play', 'block');
-    element('talk').style.position = 'absolute';
-    element('talk').style.left = '0px';
-    element('talk').style.top = '300px';
-    for(var i = 0; i < 5; i++) {
-      cubes.push({'name': names[i], 'x': 0, 'y': 0});
-    }
-    setInterval(tick, 1000 / 60);
-  }
-  function tick() {
-    for(var i = 0; i < cubes.length; i++) {
-      var cube = element(cubes[i].name);
-      cubes[i].y += 1;
-      cube.style.top = cubes[i].y + 'px';
-      if(cubes[i].y > 250)
-        cubes[i].y = 0;
-    }
-  }
 </script>
 </head>
-<body>
+<body style="margin: 0px;">
 
 <div id="user"><table>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
@@ -357,11 +354,16 @@
 </div>
 
 <div id="play" style="display: none;">
-<img id="blue" style="position: absolute; left: 0px;" src="svg/blue.svg">
-<img id="green" style="position: absolute; left: 50px;" src="svg/green.svg">
-<img id="orange" style="position: absolute; left: 100px;" src="svg/orange.svg">
-<img id="purple" style="position: absolute; left: 150px;" src="svg/purple.svg">
-<img id="red" style="position: absolute; left: 200px;" src="svg/red.svg">
+
+<!-- play.html contains the game for modularity -->
+
+[[		BufferedReader file = new BufferedReader(new FileReader("app/fuse.rupy.se/play.html"));
+        String line = file.readLine();
+        while(line != null) {
+            out.println(line);
+            line = file.readLine();
+        } ]]
+
 </div>
 
 <div id="talk" style="display: none;"><table>
@@ -384,3 +386,6 @@
 
 </body>
 </html>
+
+[[	}
+} ]]

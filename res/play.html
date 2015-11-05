@@ -1,6 +1,5 @@
 <!DOCTYPE HTML>
-<html>
-<head>
+<style>body{ margin: 0; padding: 0 }</style>
 <script>
   var x;
   var y;
@@ -55,24 +54,28 @@
   var seed = 1;
   var combo = 0;
   var current;
+  var next;
   var height = [0, 0, 0, 0, 0];
   var grid = [];
   var cubes = [];
   var remove = [];
   var color = ['blue', 'green', 'orange', 'purple'];
-  start(232423);
+  for(var i = 0; i < color.length; i++) {
+    var img = document.createElementNS('http://www.w3.org/2000/svg','image');
+    /*var img = document.createElement('img');*/
+    img.src = 'svg/' + color[i] + '.svg';
+  }
   function random() {
     var x = Math.sin(seed++) * 10000;
     return x - Math.floor(x);
   }
+  function limit(min, max) {
+    return Math.floor(random() * (max - min + 1)) + min;
+  }
   function start(seed) {
     this.seed = seed;
-    for(var i = 0; i < color.length; i++) {
-      var img = document.createElement('img');
-      img.src = 'svg/' + color[i] + '.svg';
-    }
-    clear();
     setInterval(tick, 33);
+    spawn();
   }
   function clear() {
     grid = [];
@@ -107,9 +110,10 @@
           }
           if(300 - dy < height[col]) { /* vertical */
             if(col == 2 && y < 0) { /* gameover */
-              element('play').innerHTML = '';
+              element('cube').innerHTML = '';
               height = [0, 0, 0, 0, 0];
               cubes = [];
+              next = null;
               spawn();
             }
             else { /* floor landing */
@@ -131,7 +135,7 @@
             cube.fuse.speed *= 1.4;
             if(cube.fuse.speed < -1000) {
               cubes[cube.fuse.index] = null;
-              element('play').removeChild(cube);
+              element('cube').removeChild(cube);
             }
           }
         }
@@ -154,10 +158,10 @@
             grid[done.fuse.col][done.fuse.row] = null;
             if(block > -1) {
               cubes[done.fuse.index] = null;
-              element('play').removeChild(done);
+              element('cube').removeChild(done);
             }
             else {
-              done.style.zIndex = 1;
+              done.style.zIndex = 2;
               done.fuse.speed = block;
             }
             block--;
@@ -178,7 +182,7 @@
     for(var i = 0; i < grid.length; i++) {
       for(var j = 0; j < grid[i].length; j++) {
         var cube = grid[i][j];
-        if(cube && cube.fuse.speed > -1) {
+        if(cube && cube.fuse.speed > -1 && !cube.fuse.next) {
           cube.fuse.speed = 4;
         }
       }
@@ -212,21 +216,27 @@
   var max = 3;
   var min = 0;
   function spawn() {
-    var r = Math.floor(random() * (max - min + 1)) + min;
-    add(color[r], 100, -50);
+    if(next == null)
+      next = add_cube(color[limit(min, max)], 100, -45);
+    current = next;
+    current.fuse.next = false;
+    current.fuse.speed = 4;
+    current.style.zIndex = 1;
+    next = add_cube(color[limit(min, max)], 100, -45);
   }
-  function add(color, x, y) {
+  function add_cube(color, x, y, speed) {
     var cube = document.createElement('img');
     cube.src = 'svg/' + color + '.svg';
     cube.style.position = 'absolute';
     cube.style.left = x + 'px';
     cube.style.top = y + 'px';
     cube.fuse = {};
-    cube.fuse.speed = 4;
+    cube.fuse.speed = 0;
     cube.fuse.delta = 0;
-    element('play').appendChild(cube);
+    cube.fuse.next = true;
     cube.fuse.index = cubes.push(cube) - 1;
-    current = cube;
+    element('cube').appendChild(cube);
+    return cube;
   }
   function away(event) {
     if(event.type == 'focus') {
@@ -237,20 +247,17 @@
     }
   }
 </script>
-</head>
-<body style="margin: 0px;">
 
-<div id="play" style="width: 250px; height: 350px; background-color: black;"></div>
+<div id="cube" style="width: 250px; height: 350px; background-color: black;"></div>
 
 <script>
-  var div = element('play');
+  var div = element('cube');
   div.addEventListener('touchstart', touchstart);
   div.addEventListener('touchmove', touchmove);
   document.addEventListener('keydown', keydown);
   window.onfocus = away;
   window.onblur = away;
-  spawn();
+  var url = window.location.href.split('/');
+  if(url[url.length - 1] === 'play.html')
+    start(232423);
 </script>
-
-</body>
-</html>
