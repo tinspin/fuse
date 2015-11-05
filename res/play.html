@@ -66,7 +66,7 @@
   }
   function start(seed) {
     this.seed = seed;
-    for(var i = 0; i < 3; i++) {
+    for(var i = 0; i < color.length; i++) {
       var img = document.createElement('img');
       img.src = 'svg/' + color[i] + '.svg';
     }
@@ -96,21 +96,21 @@
           var dx = x + cube.fuse.delta;
           var dy = y + cube.fuse.speed;
           var move = false;
-          if(cube.fuse.delta != 0) {
+          if(cube.fuse.delta != 0) { /* horizontal */
             if(x > 200) x = 200;
             if(x < 0) x = 0;
             if(height[col + cube.fuse.delta / 50] < 300 - dy)
               move = true;
             cube.fuse.delta = 0;
           }
-          if(300 - dy < height[col]) {
-            if(col == 2 && y < 0) {
+          if(300 - dy < height[col]) { /* vertical */
+            if(col == 2 && y < 0) { /* gameover */
               element('play').innerHTML = '';
               height = [0, 0, 0, 0, 0];
               cubes = [];
               spawn();
             }
-            else {
+            else { /* floor landing */
               dy = 300 - height[col];
               height[col] += 50;
               cube.fuse.speed = 0;
@@ -133,7 +133,7 @@
       if(cube) {
         fork(cube);
         /*console.log(cube.fuse.col + ' ' + cube.fuse.row + ' ' + remove.length);*/
-        if(remove.length > 3) {
+        if(remove.length > 3) { /* 4 or more cubes of the same color are touching */
           for(var j = 0; j < remove.length; j++) {
             var done = remove[j];
             cubes[done.fuse.index] = null;
@@ -148,7 +148,7 @@
     if(restart)
       moveAll();
   }
-  function moveAll() {
+  function moveAll() { /* when something was removed reset the whole game area and set everything in motion */
     height = [0, 0, 0, 0, 0];
     for(var i = 0; i < grid.length; i++) {
       for(var j = 0; j < grid[i].length; j++) {
@@ -212,9 +212,9 @@
 
 <script>
   var div = element('play');
-  document.addEventListener('keydown', keydown);
   div.addEventListener('touchstart', touchstart);
   div.addEventListener('touchmove', touchmove);
+  document.addEventListener('keydown', keydown);
   spawn();
 </script>
 
