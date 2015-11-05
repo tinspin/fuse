@@ -95,6 +95,10 @@ In sort of chronological order:
                      
  <b><i>\/</i></b> anything below          -> main|fail|user has no game
 
+                            // pause game
+*<b><i>away</i></b>|&lt;bool&gt;                -> away|done
+                           --> keep|<name>
+
                             // add friend
 *<b><i>ally</i></b>|&lt;salt&gt;|&lt;name&gt;         -> ally|done
                             -> ally|fail|user not found
@@ -186,5 +190,5 @@ In sort of chronological order:
 
 // name pool
 
- <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>away</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>nick</i></b>, <b><i>view</i></b>, <b><i>fill</i></b>
+ <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>nick</i></b>, <b><i>view</i></b>, <b><i>fill</i></b>
 </pre>

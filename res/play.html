@@ -129,7 +129,7 @@
           cube.style.top = dy + 'px';
           if(cube.fuse.speed < 0) {
             cube.fuse.speed *= 1.4;
-            if(cube.fuse.speed < -10000) {
+            if(cube.fuse.speed < -1000) {
               cubes[cube.fuse.index] = null;
               element('play').removeChild(cube);
             }
@@ -228,6 +228,14 @@
     cube.fuse.index = cubes.push(cube) - 1;
     current = cube;
   }
+  function away(event) {
+    if(event.type == 'focus') {
+      /* send away|true */
+    }
+    if(event.type == 'blur') {
+      /* send away|false */
+    }
+  }
 </script>
 </head>
 <body style="margin: 0px;">
@@ -239,6 +247,8 @@
   div.addEventListener('touchstart', touchstart);
   div.addEventListener('touchmove', touchmove);
   document.addEventListener('keydown', keydown);
+  window.onfocus = away;
+  window.onblur = away;
   spawn();
 </script>
 
