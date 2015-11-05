@@ -96,7 +96,7 @@ In sort of chronological order:
  <b><i>\/</i></b> anything below          -> main|fail|user has no game
 
                             // pause game
-*<b><i>away</i></b>|&lt;bool&gt;                -> away|done
+*<b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
                            --> <b><i>hold</b></i>|&lt;name&gt;
                            --> <b><i>free</b></i>|&lt;name&gt;
 
