@@ -53,6 +53,7 @@
     return document.getElementById(name);
   }
   var seed = 1;
+  var combo = 0;
   var current;
   var height = [0, 0, 0, 0, 0];
   var grid = [];
@@ -80,6 +81,7 @@
   }
   function tick() {
     clear();
+    var upgrade = false;
     var landed = [];
     for(var i = 0; i < cubes.length; i++) {
       var cube = cubes[i];
@@ -92,7 +94,7 @@
         cube.fuse.col = col;
         cube.fuse.row = row;
         grid[col][row] = cube;
-        if(cube.fuse.speed > 0) {
+        if(cube.fuse.speed != 0) {
           var dx = x + cube.fuse.delta;
           var dy = y + cube.fuse.speed;
           var move = false;
@@ -117,6 +119,7 @@
               landed.push(cube);
               if(cube === current) {
                 spawn();
+                combo = 0;
               }
             }
           }
@@ -124,22 +127,41 @@
             cube.style.left = dx + 'px';
           }
           cube.style.top = dy + 'px';
+          if(cube.fuse.speed < 0) {
+            cube.fuse.speed *= 1.4;
+            if(cube.fuse.speed < -10000) {
+              cubes[cube.fuse.index] = null;
+              element('play').removeChild(cube);
+            }
+          }
         }
       }
     }
+    /* Multiplayer works like this: Every 3+ block is 
+       sent to the opponent, if you make combos (more 
+       than one send per drop) that is increased to 2+ 
+       for double combo, then 1+ for triple combo and 
+       finally all blocks if you make a four combo! */
     var restart = false;
     for(var i = 0; i < landed.length; i++) {
       var cube = landed[i];
       if(cube) {
         fork(cube);
-        /*console.log(cube.fuse.col + ' ' + cube.fuse.row + ' ' + remove.length);*/
-        if(remove.length > 3) { /* 4 or more cubes of the same color are touching */
+        var block = 2 - combo;
+        if(remove.length > 3) {
           for(var j = 0; j < remove.length; j++) {
             var done = remove[j];
-            cubes[done.fuse.index] = null;
             grid[done.fuse.col][done.fuse.row] = null;
-            element('play').removeChild(done);
+            if(block > -1) {
+              cubes[done.fuse.index] = null;
+              element('play').removeChild(done);
+            }
+            else {
+              done.fuse.speed = block;
+            }
+            block--;
           }
+          combo++;
           restart = true;
         }
         remove = [];
@@ -148,12 +170,14 @@
     if(restart)
       moveAll();
   }
-  function moveAll() { /* when something was removed reset the whole game area and set everything in motion */
+  /* when something was removed reset the whole 
+     game area and set everything in motion */
+  function moveAll() {
     height = [0, 0, 0, 0, 0];
     for(var i = 0; i < grid.length; i++) {
       for(var j = 0; j < grid[i].length; j++) {
         var cube = grid[i][j];
-        if(cube) {
+        if(cube && cube.fuse.speed > -1) {
           cube.fuse.speed = 4;
         }
       }
@@ -167,7 +191,6 @@
   }
   function check(cube, col, row) {
     if(col < 0 || col > 4 || row < 0 || row > 6) {
-      /*console.log('out of bounds! [' + col + '][' + row + ']');*/
       return;
     }
     var other = grid[col][row];
