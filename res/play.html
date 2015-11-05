@@ -38,13 +38,13 @@
     action(event.keyCode)
   }
   function action(key) {
-    if(key == 37)
+    if(key === 37)
       current.fuse.delta = -50;
-    if(key == 39)
+    if(key === 39)
       current.fuse.delta = 50;
-    if(key == 40)
+    if(key === 40)
       current.fuse.speed = 20;
-    if(key == 38)
+    if(key === 38)
       current.fuse.speed = 4;
   }
 </script>
@@ -56,7 +56,9 @@
   var speed = 3;
   var current;
   var height = [0, 0, 0, 0, 0];
+  var grid = [];
   var cubes = [];
+  var remove = [];
   var color = ['blue', 'green', 'orange', 'purple'];
   start(232423);
   function random() {
@@ -69,62 +71,139 @@
       var img = document.createElement('img');
       img.src = 'svg/' + color[i] + '.svg';
     }
+    clear();
     setInterval(tick, 33);
   }
+  function clear() {
+    grid = [];
+    for(var i = 0; i < 5; i++)
+      grid[i] = [];
+  }
   function tick() {
+    clear();
+    var landed = [];
     for(var i = 0; i < cubes.length; i++) {
       var cube = cubes[i];
-      if(cube.fuse.speed > 0) {
-        var col = parseInt(cube.style.left, 10) / 50
-        var x = parseInt(cube.style.left, 10) + cube.fuse.delta;
+      if(cube) {
+        var x = parseInt(cube.style.left, 10);
         var y = parseInt(cube.style.top, 10);
-        var move = false;
-        if(cube.fuse.delta != 0) {
-          if(x > 200) x = 200;
-          if(x < 0) x = 0;
-          if(height[col + cube.fuse.delta / 50] < 300 - y)
-            move = true;
-          cube.fuse.delta = 0;
-        }
-        var y = y + cube.fuse.speed;
-        if(300 - y < height[col]) {
-          y = 300 - height[col];
-          if(col == 2 && y < 0) {
-            element('play').innerHTML = '';
-            height = [0, 0, 0, 0, 0];
-            cubes = [];
+        var col = x / 50;
+        var row = Math.round(y / 50);
+        var top = height[col] / 50;
+        cube.fuse.col = col;
+        cube.fuse.row = row;
+        grid[col][row] = cube;
+        if(cube.fuse.speed > 0) {
+          var dx = x + cube.fuse.delta;
+          var dy = y + cube.fuse.speed;
+          var move = false;
+          if(cube.fuse.delta != 0) {
+            if(x > 200) x = 200;
+            if(x < 0) x = 0;
+            if(height[col + cube.fuse.delta / 50] < 300 - dy)
+              move = true;
+            cube.fuse.delta = 0;
           }
-          else {
-            height[col] += 50;
-            cube.fuse.speed = 0;
+          if(300 - dy < height[col]) {
+            if(col == 2 && y < 0) {
+              element('play').innerHTML = '';
+              height = [0, 0, 0, 0, 0];
+              cubes = [];
+              spawn();
+            }
+            else {
+              dy = 300 - height[col];
+              height[col] += 50;
+              cube.fuse.speed = 0;
+              landed.push(cube);
+              if(cube === current) {
+                spawn();
+              }
+            }
           }
-          spawn();
+          else if(move) {
+            cube.style.left = dx + 'px';
+          }
+          cube.style.top = dy + 'px';
         }
-        else if(move) {
-          cube.style.left = x + 'px';
-        }
-        cube.style.top = y + 'px';
       }
     }
+    var restart = false;
+    for(var i = 0; i < landed.length; i++) {
+      var cube = landed[i];
+      if(cube) {
+        fork(cube);
+        /*console.log(cube.fuse.col + ' ' + cube.fuse.row + ' ' + remove.length);*/
+        if(remove.length > 3) {
+          for(var j = 0; j < remove.length; j++) {
+            var done = remove[j];
+            cubes[done.fuse.index] = null;
+            grid[done.fuse.col][done.fuse.row] = null;
+            element('play').removeChild(done);
+          }
+          restart = true;
+        }
+        remove = [];
+      }
+    }
+    if(restart)
+      moveAll();
+  }
+  function moveAll() {
+    height = [0, 0, 0, 0, 0];
+    for(var i = 0; i < grid.length; i++) {
+      for(var j = 0; j < grid[i].length; j++) {
+        var cube = grid[i][j];
+        if(cube) {
+          cube.fuse.speed = 4;
+        }
+      }
+    }
+  }
+  function fork(cube) {
+    check(cube, cube.fuse.col - 1, cube.fuse.row);
+    check(cube, cube.fuse.col + 1, cube.fuse.row);
+    check(cube, cube.fuse.col, cube.fuse.row - 1);
+    check(cube, cube.fuse.col, cube.fuse.row + 1);
+  }
+  function check(cube, col, row) {
+    if(col < 0 || col > 4 || row < 0 || row > 6) {
+      /*console.log('out of bounds! [' + col + '][' + row + ']');*/
+      return;
+    }
+    var other = grid[col][row];
+    if(other && cube.src === other.src && !contains(remove, other)) {
+      remove.push(other);
+      fork(other);
+    }
+  }
+  function contains(a, obj) {
+    var i = a.length;
+    while(i--) {
+      if(a[i] === obj) {
+        return true;
+      }
+    }
+    return false;
   }
   var max = 3;
   var min = 0;
   function spawn() {
     var r = Math.floor(random() * (max - min + 1)) + min;
-    add(color[r], 100)
+    add(color[r], 100, -50);
   }
-  function add(color, x) {
-    var img = document.createElement('img');
-    img.src = 'svg/' + color + '.svg';
-    img.style.position = 'absolute';
-    img.style.left = x + 'px';
-    img.style.top = '-50px';
-    img.fuse = {};
-    img.fuse.speed = 4;
-    img.fuse.delta = 0;
-    element('play').appendChild(img);
-    cubes.push(img);
-    current = img;
+  function add(color, x, y) {
+    var cube = document.createElement('img');
+    cube.src = 'svg/' + color + '.svg';
+    cube.style.position = 'absolute';
+    cube.style.left = x + 'px';
+    cube.style.top = y + 'px';
+    cube.fuse = {};
+    cube.fuse.speed = 4;
+    cube.fuse.delta = 0;
+    element('play').appendChild(cube);
+    cube.fuse.index = cubes.push(cube) - 1;
+    current = cube;
   }
 </script>
 </head>
