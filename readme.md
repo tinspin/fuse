@@ -5,7 +5,7 @@
 
 Support:
 
-  - Unity
+  - unity
     - plugin is only 140 lines of C# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">Fuse.cs</a>
   - XHR/XDR, 99.9% of browsers, only IE7 missing
     - CORS compliant, static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/game.html">game.html</a>
@@ -16,9 +16,9 @@ Support:
 
 Protocol:
 
-  - client/server triplex HTTP, \n or \n\n terminated, text based
-    - dynamic presence position move packets
-  - peer-to-peer UDP, binary physics packets
+  - client/server triplex HTTP, \n terminated or data: \n\n encapsulated, text based
+    - dynamic presence position move packets for MMO
+  - peer-to-peer UDP, binary physics packets for VR
     - position move and talk, look, head, body, hand packets
   - multicast UDP on cluster for load distribution
 
@@ -30,7 +30,7 @@ Platform:
 
 Example:
 
-  - Multiplayer block building game: <a href="http://fuse.rupy.se">Try it!</a>
+  - multiplayer block-drop game: <a href="http://fuse.rupy.se">try it!</a>
     <img src="https://rawgit.com/tinspin/fuse/master/res/svg/blue.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/green.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/orange.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/purple.svg">
 
 +-------------------+
