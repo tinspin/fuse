@@ -47,7 +47,7 @@ public class game extends Service {
   if(!host)
     host = 'fuse.rupy.se';
   var game = 'kloss';
-  var show = true;
+  var show = false;
   var size = 0;
   var salt;
   function pull() {
@@ -159,12 +159,13 @@ public class game extends Service {
         var user = split[1];
         var data = split[2].split('+');
         var used = [];
-        for(var i = 0; i < data[0]; i++) {
-          var col = limit(0, 4); /* TODO: send col to match opponent cubes! */
-          while(contains(used, col))
-            col = math_random(0, 4);
-          add_cube(data[1], col * 50, -50 - math_random(0, 25), 8);
-          used.push(col);
+        var high = 0;
+        for(var i = 1; i < data.length; i++) {
+          var row = math_random(0, 25);
+          if(contains(used, data[i]))
+            high += 50;
+          add_cube(data[0], data[i] * 50, -50 - high - row, 8);
+          used.push(data[i]);
         }
       }
     }

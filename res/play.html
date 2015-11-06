@@ -153,12 +153,8 @@
       if(cube) {
         fork(cube);
         if(remove.length > 3) {
+          var data = cube.fuse.color;
           var block = 2 - combo;
-          var data = remove.length - block - 1;
-          try {
-            send(data + '+' + cube.fuse.color);
-          }
-          catch(e) {}
           for(var j = 0; j < remove.length; j++) {
             var done = remove[j];
             grid[done.fuse.col][done.fuse.row] = null;
@@ -169,9 +165,14 @@
             else {
               done.style.zIndex = 2;
               done.fuse.speed = block;
+              data += '+' + cube.fuse.col;
             }
             block--;
           }
+          try {
+            send(data);
+          }
+          catch(e) {}
           combo++;
           restart = true;
         }
