@@ -156,7 +156,7 @@
           var block = 2 - combo;
           var data = remove.length - block - 1;
           try {
-            send(data);
+            send(data + '+' + cube.fuse.color);
           }
           catch(e) {}
           for(var j = 0; j < remove.length; j++) {
@@ -240,6 +240,7 @@
     cube.style.left = x + 'px';
     cube.style.top = y + 'px';
     cube.fuse = {};
+    cube.fuse.color = color;
     cube.fuse.speed = speed;
     cube.fuse.delta = 0;
     cube.fuse.index = cubes.push(cube) - 1;

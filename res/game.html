@@ -157,13 +157,13 @@ public class game extends Service {
       }
       if(split[0] == 'sent') {
         var user = split[1];
-        var data = parseInt(split[2]);
+        var data = split[2].split('+');
         var used = [];
-        for(var i = 0; i < data; i++) {
-          var col = limit(0, 5);
+        for(var i = 0; i < data[0]; i++) {
+          var col = limit(0, 4); /* TODO: send col to match opponent cubes! */
           while(contains(used, col))
-            col = limit(0, 4);
-          add_cube(color[limit(min, max)], col * 50, -50 - limit(0, 20), 8);
+            col = math_random(0, 4);
+          add_cube(data[1], col * 50, -50 - math_random(0, 25), 8);
           used.push(col);
         }
       }
@@ -326,11 +326,11 @@ public class game extends Service {
       add_select('join', list[i].split('+')[0]);
     }
   }
-  function get_seed(min, max) {
+  function math_random(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
   function play() {
-    var play = push('play|' + get_seed(1, 400000));
+    var play = push('play|' + math_random(1, 400000));
     if(play[1] === 'fail')
       show_fail(play[2]);
   }
