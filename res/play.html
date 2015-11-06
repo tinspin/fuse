@@ -96,7 +96,8 @@
         var top = height[col] / 50;
         cube.fuse.col = col;
         cube.fuse.row = row;
-        grid[col][row] = cube;
+        if(row > -1)
+          grid[col][row] = cube;
         if(cube.fuse.speed != 0) {
           var dx = x + cube.fuse.delta;
           var dy = y + cube.fuse.speed;
@@ -151,8 +152,13 @@
       var cube = landed[i];
       if(cube) {
         fork(cube);
-        var block = 2 - combo;
         if(remove.length > 3) {
+          var block = 2 - combo;
+          var data = remove.length - block - 1;
+          try {
+            send(data);
+          }
+          catch(e) {}
           for(var j = 0; j < remove.length; j++) {
             var done = remove[j];
             grid[done.fuse.col][done.fuse.row] = null;
@@ -216,13 +222,16 @@
   var max = 3;
   var min = 0;
   function spawn() {
-    if(next == null)
-      next = add_cube(color[limit(min, max)], 100, -45);
+    if(next == null) {
+      next = add_cube(color[limit(min, max)], 100, -45, 0);
+      next.fuse.next = true;
+    }
     current = next;
     current.fuse.next = false;
     current.fuse.speed = 4;
     current.style.zIndex = 1;
-    next = add_cube(color[limit(min, max)], 100, -45);
+    next = add_cube(color[limit(min, max)], 100, -45, 0);
+    next.fuse.next = true;
   }
   function add_cube(color, x, y, speed) {
     var cube = document.createElement('img');
@@ -231,9 +240,8 @@
     cube.style.left = x + 'px';
     cube.style.top = y + 'px';
     cube.fuse = {};
-    cube.fuse.speed = 0;
+    cube.fuse.speed = speed;
     cube.fuse.delta = 0;
-    cube.fuse.next = true;
     cube.fuse.index = cubes.push(cube) - 1;
     element('cube').appendChild(cube);
     return cube;

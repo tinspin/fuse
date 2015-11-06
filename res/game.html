@@ -51,15 +51,15 @@ public class game extends Service {
   var size = 0;
   var salt;
   function pull() {
-    send('pull', null);
+    http('pull', null);
   }
   function push(data) {
-    var data = send('push', data).split('|');
+    var data = http('push', data).split('|');
     if(data[1] == 'fail')
       show_fail(data[2]);
     return data;
   }
-  function send(path, data) {
+  function http(path, data) {
     hide_fail();
     var state = (path == 'pull' ? 3 : 4);
     var xhr = new XMLHttpRequest();
@@ -154,6 +154,18 @@ public class game extends Service {
         element('talk').style.left = '0px';
         element('talk').style.top = '350px';
         start(split[1]);
+      }
+      if(split[0] == 'sent') {
+        var user = split[1];
+        var data = parseInt(split[2]);
+        var used = [];
+        for(var i = 0; i < data; i++) {
+          var col = limit(0, 5);
+          while(contains(used, col))
+            col = limit(0, 4);
+          add_cube(color[limit(min, max)], col * 50, -50 - limit(0, 20), 8);
+          used.push(col);
+        }
       }
     }
   }
@@ -321,6 +333,9 @@ public class game extends Service {
     var play = push('play|' + get_seed(1, 400000));
     if(play[1] === 'fail')
       show_fail(play[2]);
+  }
+  function send(data) {
+    push('send|' + data);
   }
 </script>
 </head>
