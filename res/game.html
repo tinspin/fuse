@@ -61,21 +61,26 @@ public class game extends Service {
   }
   function http(path, data) {
     hide_fail();
+    var async = false;
     var state = (path == 'pull' ? 3 : 4);
     var xhr = new XMLHttpRequest();
     var ie = false;
-    if(state == 3)
-      try { xhr = new XDomainRequest(); ie = true; } catch(e) {}
     var url = 'http://' + host + '/' + path + '?';
-    if(state == 3)
+    if(state == 3) {
+      async = true;
+      try { xhr = new XDomainRequest(); ie = true; } catch(e) {}
       url += 'salt=' + salt + (ie ? "&ie" : "");
+    }
     else {
+      var type = data.substring(0, 4);
+      if(type == 'send')
+        async = true;
       if(salt)
-        data = data.substring(0, 4) + '|' + salt + data.substring(4, data.length);
+        data = type + '|' + salt + data.substring(4, data.length);
       url += 'data=' + encodeURIComponent(data);
     }
     url += "&time=" + new Date().getTime();
-    xhr.open('GET', url, state == 3); // sync is deprecated really? genious!
+    xhr.open('GET', url, async); // sync is deprecated really? genious!
     try { xhr.setRequestHeader('Accept', 'text/event-stream'); } catch(e) {}
     if(state == 3) {
       if(ie)
