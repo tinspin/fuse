@@ -31,10 +31,10 @@ Platform:
 Example:
 
   - Multiplayer block building game: <a href="http://fuse.rupy.se">Try it!</a>
-    <img src="/res/svg/blue.svg?raw=true">
-    <img src="/res/svg/green.svg?raw=true">
-    <img src="/res/svg/orange.svg?raw=true">
-    <img src="/res/svg/purple.svg?raw=true">
+    <img src="https://rawgit.com/tinspin/fuse/master/res/svg/blue.svg">
+    <img src="https://rawgit.com/tinspin/fuse/master/res/svg/green.svg">
+    <img src="https://rawgit.com/tinspin/fuse/master/res/svg/orange.svg">
+    <img src="https://rawgit.com/tinspin/fuse/master/res/svg/purple.svg">
 
 +-------------------+
 | <i>Work in progress!</i> |
