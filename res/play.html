@@ -121,6 +121,7 @@
               dy = 300 - height[col];
               height[col] += 50;
               cube.fuse.speed = 0;
+              cube.fuse.live = false;
               landed.push(cube);
               if(cube === current) {
                 spawn();
@@ -154,7 +155,7 @@
         fork(cube);
         if(remove.length > 3) {
           var data = cube.fuse.color;
-          var block = 2 - combo;
+          var block = 1 - combo;
           for(var j = 0; j < remove.length; j++) {
             var done = remove[j];
             grid[done.fuse.col][done.fuse.row] = null;
@@ -206,7 +207,7 @@
       return;
     }
     var other = grid[col][row];
-    if(other && cube.src === other.src && !contains(remove, other)) {
+    if(other && !other.fuse.live && cube.src === other.src && !contains(remove, other)) {
       remove.push(other);
       fork(other);
     }
@@ -228,6 +229,7 @@
       next.fuse.next = true;
     }
     current = next;
+    current.fuse.live = true;
     current.fuse.next = false;
     current.fuse.speed = 4;
     current.style.zIndex = 1;

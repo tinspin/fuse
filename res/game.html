@@ -169,7 +169,7 @@ public class game extends Service {
           var row = math_random(0, 25);
           if(contains(used, data[i]))
             high += 50;
-          add_cube(data[0], data[i] * 50, -50 - high - row, 8);
+          add_cube(color[math_random(0, 3)], data[i] * 50, -50 - high - row, 8);
           used.push(data[i]);
         }
       }
@@ -349,9 +349,9 @@ public class game extends Service {
 
 <div id="user"><table>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
-<tr><td>name&nbsp;&nbsp;</td><td><input id="name" size="10"></td></tr>
+<tr><td>name&nbsp;&nbsp;</td><td><input id="name" name="name" size="10"></td></tr>
 <tr><td>pass&nbsp;&nbsp;</td>
-    <td><input id="pass" type="password" size="10" onkeypress="open_code(event);"></td>
+    <td><input id="pass" name="pass" type="password" size="10" onkeypress="open_code(event);"></td>
     <td><a href="javascript:open();">login</a></td></tr>
 <tr><td><font color="#00cc33">mail*</font>&nbsp;</td>
     <td><input id="mail" size="10"></td>
@@ -390,7 +390,7 @@ public class game extends Service {
 <div id="talk" style="display: none;"><table>
 <tr><td colspan="3"><textarea id="chat" rows="5" readonly></textarea></td></tr>
 <tr><td colspan="3">
-<input id="text" size="25" onkeypress="chat_code(event);">
+<input id="text" name="text" size="25" onkeypress="chat_code(event);">
 <a href="javascript:chat();">chat</a>
 </td></tr>
 </table>
