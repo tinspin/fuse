@@ -31,10 +31,10 @@ Platform:
 Example:
 
   - Multiplayer block building game: <a href="http://fuse.rupy.se">Try it!</a>
-    <img src="/res/svg/blue.svg">
-    <img src="/res/svg/green">
-    <img src="/res/svg/orange.svg">
-    <img src="/res/svg/purple.svg">
+    <img src="/res/svg/blue.svg?raw=true">
+    <img src="/res/svg/green.svg?raw=true">
+    <img src="/res/svg/orange.svg?raw=true">
+    <img src="/res/svg/purple.svg?raw=true">
 
 +-------------------+
 | <i>Work in progress!</i> |
