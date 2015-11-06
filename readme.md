@@ -28,6 +28,14 @@ Platform:
   - 100% uptime on routing
   - 100% read uptime on data
 
+Example:
+
+  - Multiplayer block building game: <a href="http://fuse.rupy.se">Try it!</a>
+    <img src="/res/svg/blue.svg">
+    <img src="/res/svg/green">
+    <img src="/res/svg/orange.svg">
+    <img src="/res/svg/purple.svg">
+
 +-------------------+
 | <i>Work in progress!</i> |
 +-------------------+
@@ -42,8 +50,10 @@ Platform:
 
 In sort of chronological order:
 
-&lt;rule&gt;                        &lt;echo&gt;
- 
++-----------------------------------+
+| <i>Rule</i>                      -> <i>Echo</i> |
++-----------------------------------+
+
                             // register
                             // [name] if you can't store the &lt;id&gt; otherwise set
                             //        to empty string (||)
