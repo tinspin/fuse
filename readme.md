@@ -28,7 +28,7 @@ Platform:
   - 100% uptime on routing
   - 100% read uptime on data
 
-Example:
+Examples:
 
   - XHR multiplayer block-drop game: <a href="http://fuse.rupy.se">try it!</a>
     <img src="https://rawgit.com/tinspin/fuse/master/res/svg/blue.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/green.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/orange.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/purple.svg">
