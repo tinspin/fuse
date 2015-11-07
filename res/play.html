@@ -142,11 +142,9 @@
         }
       }
     }
-    /* multiplayer will work like this: every 3+ block 
-       is sent to the opponent, if you make combos (more 
-       than one send per drop) that is increased to 2+ 
-       for double combo, then 1+ for triple combo and 
-       finally all blocks if you make a four combo! */
+    /* multiplayer works like this now; every 2+ block 
+       is sent to the opponent, if you make a combo (min. 
+       two sends per drop) that is increased to all blocks. */
     var restart = false;
     for(var i = 0; i < landed.length; i++) {
       var cube = landed[i];
@@ -154,7 +152,7 @@
         fork(cube);
         if(remove.length > 3) {
           var data = cube.fuse.color;
-          var block = 1 - combo;
+          var block = 1 - combo * 2;
           for(var j = 0; j < remove.length; j++) {
             var done = remove[j];
             grid[done.fuse.col][done.fuse.row] = null;
