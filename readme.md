@@ -106,7 +106,8 @@ In sort of chronological order:
 
                             // join a game
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
-                           --> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // avatar if set
+                           --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
+                           --> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;[|&lt;ip&gt;]      // avatar if set
                             -> game|fail|name invalid
                      
  <b><i>\/</i></b> anything below          -> main|fail|user has no game
