@@ -100,9 +100,9 @@ In sort of chronological order:
 | <i>Here you have to call pull()!</i> |
 +-------------------------------+
 
-+-----------------------------------------------------+
-| <i>Below this line &lt;name&gt;/&lt;id&gt; is replaced with &lt;user&gt;</i> |
-+-----------------------------------------------------+
++------------------------------------------------------+
+| <i>Below this line &lt;name&gt;/&lt;id&gt; is replaced with &lt;user&gt;</i>. |
++------------------------------------------------------+
 
                             // join a game
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
@@ -181,14 +181,14 @@ In sort of chronological order:
  <b><i>load</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;id&gt;    -> load|done|&lt;json&gt;             // use id from list|data|&lt;type&gt;
                             -> load|fail|data not found
 
++------------------------------------------------------+
+| <i>These have to be sent in a separate thread from rendering.</i> |
++------------------------------------------------------+
+
                             // chat in any room
  <b><i>chat</i></b>|&lt;salt&gt;|&lt;text&gt;         -> chat|done                    // @[user] of private destination
                            --> <b><i>text</i></b>|&lt;user&gt;|&lt;text&gt;
                             -> chat|fail|user not online
-
-+--------------------------------------------+
-| <i>These have to be sent in a separate thread</i> |
-+--------------------------------------------+
 
                             // send any gameplay data to room
  <b><i>send</i></b>|&lt;salt&gt;|&lt;data&gt;         -> send|done
@@ -202,9 +202,9 @@ In sort of chronological order:
 
  <b><i>/\</b></i> type not implemented    -> main|fail|type not found
 
-+----------------+
-| <i>Sketched rules</i> |
-+----------------+
++-----------------+       
+| <i>Sketched rules.</i> |
++-----------------+
 
 // peer protocol
 
