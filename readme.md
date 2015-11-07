@@ -181,9 +181,9 @@ In sort of chronological order:
  <b><i>load</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;id&gt;    -> load|done|&lt;json&gt;             // use id from list|data|&lt;type&gt;
                             -> load|fail|data not found
 
-+------------------------------------------------------+
++------------------------------------------------------------+
 | <i>These have to be sent in a separate thread from rendering.</i> |
-+------------------------------------------------------+
++------------------------------------------------------------+
 
                             // chat in any room
  <b><i>chat</i></b>|&lt;salt&gt;|&lt;text&gt;         -> chat|done                    // @[user] of private destination
