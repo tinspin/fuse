@@ -186,6 +186,10 @@ In sort of chronological order:
                            --> <b><i>text</i></b>|&lt;user&gt;|&lt;text&gt;
                             -> chat|fail|user not online
 
++--------------------------------------------+
+| <i>These have to be sent in a separate thread</i> |
++--------------------------------------------+
+
                             // send any gameplay data to room
  <b><i>send</i></b>|&lt;salt&gt;|&lt;data&gt;         -> send|done
                            --> <b><i>sent</i></b>|&lt;user&gt;|&lt;data&gt;
