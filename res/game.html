@@ -287,6 +287,13 @@ public class game extends Service {
       open();
     }
   }
+  function user_code(e) {
+    e = e || window.event;
+    var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+    if(unicode == 13) {
+      user();
+    }
+  }
   function chat_code(e) {
     e = e || window.event;
     var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
@@ -349,12 +356,12 @@ public class game extends Service {
 
 <div id="user"><table>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
-<tr><td>name&nbsp;&nbsp;</td><td><input id="name" name="name" size="10"></td></tr>
-<tr><td>pass&nbsp;&nbsp;</td>
+<tr><td>name&nbsp;</td><td><input id="name" name="name" size="10"></td></tr>
+<tr><td>pass&nbsp;</td>
     <td><input id="pass" name="pass" type="password" size="10" onkeypress="open_code(event);"></td>
     <td><a href="javascript:open();">login</a></td></tr>
-<tr><td><font color="#00cc33">mail*</font>&nbsp;</td>
-    <td><input id="mail" size="10"></td>
+<tr><td><font color="#00cc33">mail*</font></td>
+    <td><input id="mail" name="mail" size="10" onkeypress="user_code(event);"></td>
     <td><a href="javascript:user();">register</a></td></tr>
 <tr><td colspan="2"><font color="#ff9900">*optional</font></td></tr>
 </table>
@@ -388,7 +395,7 @@ public class game extends Service {
 </div>
 
 <div id="talk" style="display: none;"><table>
-<tr><td colspan="3"><textarea id="chat" rows="5" readonly></textarea></td></tr>
+<tr><td colspan="3"><textarea id="chat" name="chat" rows="5" readonly></textarea></td></tr>
 <tr><td colspan="3">
 <input id="text" name="text" size="25" onkeypress="chat_code(event);">
 <a href="javascript:chat();">chat</a>
