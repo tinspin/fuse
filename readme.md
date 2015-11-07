@@ -100,60 +100,69 @@ In sort of chronological order:
 | <i>Here you have to call pull()!</i> |
 +-------------------------------+
 
++-----------------------------------------------------+
+| <i>Below this line &lt;name&gt;/&lt;id&gt; is replaced with &lt;user&gt;</i> |
++-----------------------------------------------------+
+
                             // join a game
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
+                           --> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // avatar if set
                             -> game|fail|name invalid
                      
  <b><i>\/</i></b> anything below          -> main|fail|user has no game
 
                             // pause game
 *<b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
-                           --> <b><i>hold</b></i>|&lt;name&gt;
-                           --> <b><i>free</b></i>|&lt;name&gt;
+                           --> <b><i>hold</b></i>|&lt;user&gt;
+                           --> <b><i>free</b></i>|&lt;user&gt;
 
                             // add friend
-*<b><i>ally</i></b>|&lt;salt&gt;|&lt;name&gt;         -> ally|done
+*<b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done
                             -> ally|fail|user not found
+
+                            // set avatar
+*<b><i>body</i></b>|&lt;salt&gt;|&lt;data&gt;         -> body|done
+                           --> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;
 
                             // enable peer-to-peer
  <b><i>peer</i></b>|&lt;salt&gt;|&lt;ip&gt;           -> peer|done                    // send the internal IP
 
                             // host room
  <b><i>room</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;size&gt;  -> room|done
-                           --> <b><i>made</i></b>|&lt;name&gt;+&lt;type&gt;+&lt;size&gt;    // in lobby
+                           --> <b><i>made</i></b>|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;    // in lobby
                             -> room|fail|user not in lobby
                             -> room|fail|type invalid       // only alpha
 
                             // list rooms or data
- <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;name&gt;+&lt;type&gt;+&lt;size&gt;|...
+ <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;|...
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
                             -> list|fail|wrong type
 
                             // join room
                             // between full and lock nobody can join
                             // if you join after lock you can only view the game
- <b><i>join</i></b>|&lt;salt&gt;|&lt;name&gt;         -> join|done
-                           --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in new room
-                           --> <b><i>gone</i></b>|&lt;name&gt;|&lt;room&gt;           // in lobby
+ <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;         -> join|done
+                           --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
+                           --> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
                             -> join|fail|room not found
                             -> join|fail|already in room
                             -> join|fail|room is full
 
                             // permanently ban user from room
-*<b><i>kick</i></b>|&lt;salt&gt;|&lt;name&gt;         -> kick|done
+*<b><i>kick</i></b>|&lt;salt&gt;|&lt;user&gt;         -> kick|done
                             -> kick|fail|not creator
                             -> kick|fail|user not here
  
                             // quit room
  <b><i>quit</i></b>|&lt;salt&gt;                -> quit|done
-                           --> <b><i>here</i></b>|&lt;name&gt;[|&lt;ip&gt;]           // in lobby
-                           --> <b><i>halt</i></b>|&lt;name&gt;                  // in lobby if creator leaves
-                           --> <b><i>gone</i></b>|&lt;name&gt;                  // in old room
-                           --> <b><i>stop</i></b>|&lt;name&gt;                  // in old room if creator leaves
+                           --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in lobby
+                           --> <b><i>halt</i></b>|&lt;user&gt;                  // in lobby if creator leaves
+                           --> <b><i>gone</i></b>|&lt;user&gt;                  // in old room
+                           --> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
 
                             // user exit
  <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
-                           --> <b><i>kill</i></b>|&lt;name&gt;
+                           --> <b><i>kill</i></b>|&lt;user&gt;
                             -> exit|fail|user in lobby
                     
                             // lock room before the game starts
@@ -172,17 +181,17 @@ In sort of chronological order:
                             -> load|fail|data not found
 
                             // chat in any room
- <b><i>chat</i></b>|&lt;salt&gt;|&lt;text&gt;         -> chat|done                    // @[name] of private destination
-                           --> <b><i>text</i></b>|&lt;name&gt;|&lt;text&gt;
+ <b><i>chat</i></b>|&lt;salt&gt;|&lt;text&gt;         -> chat|done                    // @[user] of private destination
+                           --> <b><i>text</i></b>|&lt;user&gt;|&lt;text&gt;
                             -> chat|fail|user not online
 
                             // send any gameplay data to room
  <b><i>send</i></b>|&lt;salt&gt;|&lt;data&gt;         -> send|done
-                           --> <b><i>sent</i></b>|&lt;name&gt;|&lt;data&gt;
+                           --> <b><i>sent</i></b>|&lt;user&gt;|&lt;data&gt;
  
                             // motion for 3D MMO games with dynamic here/gone
 *<b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
-                           --> <b><i>data</i></b>|&lt;name&gt;|&lt;data&gt;
+                           --> <b><i>data</i></b>|&lt;user&gt;|&lt;data&gt;
                             // &lt;data&gt; = &lt;x&gt;+&lt;y&gt;+&lt;z&gt;|&lt;x&gt;+&lt;y&gt;+&lt;z&gt;+&lt;w&gt;|&lt;action&gt;(|&lt;speed&gt;|...)
                             //          position   |orientation    |key/button
 
