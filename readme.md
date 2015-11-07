@@ -32,7 +32,7 @@ Examples:
 
   - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a>
     <img src="https://rawgit.com/tinspin/fuse/master/res/svg/blue.svg">&nbsp;<img src="https://rawgit.com/tinspin/fuse/master/res/svg/green.svg">&nbsp;<img src="https://rawgit.com/tinspin/fuse/master/res/svg/orange.svg">&nbsp;<img src="https://rawgit.com/tinspin/fuse/master/res/svg/purple.svg">
-  - java LWJGL VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a>
+  - java 3D VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a>
     <img src="https://dl.dropboxusercontent.com/u/1352420/aeon_alpha.png">
 
 +-------------------+
