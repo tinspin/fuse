@@ -30,8 +30,10 @@ Platform:
 
 Example:
 
-  - multiplayer block-drop game: <a href="http://fuse.rupy.se">try it!</a>
+  - XHR multiplayer block-drop game: <a href="http://fuse.rupy.se">try it!</a>
     <img src="https://rawgit.com/tinspin/fuse/master/res/svg/blue.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/green.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/orange.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/purple.svg">
+  - Java LWJGL VR MMO: <a href="http://aeonalpha.com">aeon</a>
+    <img src="https://dl.dropboxusercontent.com/u/1352420/aeon_alpha.png">
 
 +-------------------+
 | <i>Work in progress!</i> |
