@@ -121,7 +121,6 @@
               dy = 300 - height[col];
               height[col] += 50;
               cube.fuse.speed = 0;
-              cube.fuse.live = false;
               landed.push(cube);
               if(cube === current) {
                 spawn();
@@ -207,7 +206,7 @@
       return;
     }
     var other = grid[col][row];
-    if(other && !other.fuse.live && cube.src === other.src && !contains(remove, other)) {
+    if(other && other.fuse.speed == 0 && cube.src === other.src && !contains(remove, other)) {
       remove.push(other);
       fork(other);
     }
@@ -229,7 +228,6 @@
       next.fuse.next = true;
     }
     current = next;
-    current.fuse.live = true;
     current.fuse.next = false;
     current.fuse.speed = 4;
     current.style.zIndex = 1;
