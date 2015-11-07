@@ -7,7 +7,7 @@ Support:
 
   - unity
     - plugin is only 140 lines of C# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">Fuse.cs</a>
-  - XHR/XDR, 99.9% of browsers, only IE7 missing
+  - javascript XHR/XDR, 99.9% of browsers, only IE7 missing
     - CORS compliant, static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/game.html">game.html</a>
   - 100% firewall pass-through
   - all gameplay types:
@@ -30,9 +30,9 @@ Platform:
 
 Examples:
 
-  - XHR multiplayer block-drop game: <a href="http://fuse.rupy.se">try it!</a>
+  - javascript multiplayer block-drop game: <a href="http://fuse.rupy.se">cube</a>
     <img src="https://rawgit.com/tinspin/fuse/master/res/svg/blue.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/green.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/orange.svg"><img src="https://rawgit.com/tinspin/fuse/master/res/svg/purple.svg">
-  - Java LWJGL VR MMO: <a href="http://aeonalpha.com">aeon</a>
+  - java LWJGL VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a>
     <img src="https://dl.dropboxusercontent.com/u/1352420/aeon_alpha.png">
 
 +-------------------+
