@@ -619,7 +619,7 @@ public class Router implements Node {
 		}
 
 		public String toString() {
-			return (user == null ? "lobby" : user.name) + "+" + type + "+" + users.size();
+			return (user == null ? "lobby" : user.name) + "+" + type + "+" + users.size() + "+lock";
 		}
 	}
 

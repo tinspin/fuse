@@ -196,7 +196,7 @@ public class Fuse {
 
 					for(int i = 0; i < list.Length; i++) {
 						string[] room = list[i].Split('+');
-						Console.WriteLine("      " + room[0] + " " + room[1] + " (" + room[2] + ")");
+						Console.WriteLine("      " + room[0] + " " + room[1] + " " + room[2] + " " + room[3]);
 					}
 				}
 				

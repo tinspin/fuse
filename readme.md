@@ -135,14 +135,15 @@ In sort of chronological order:
                             -> room|fail|type invalid       // only alpha
 
                             // list allies, rooms or data
+                            // &lt;case&gt; can be <i>join</i>, <i>full</i>, <i>view</i>
 *<b><i>list</i></b>|&lt;salt&gt;|ally           -> list|done|ally|&lt;user&gt;|...
- <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;|...
+ <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;+&lt;case&gt;|...
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
                             -> list|fail|wrong type
 
                             // join room
-                            // between full and lock nobody can join
-                            // if you join after lock you can only view the game
+                            // between full and <b><i>play</i></b> nobody can join
+                            // if you join after <b><i>play</i></b> you can only view the game
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;         -> join|done
                            --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
                            --> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
@@ -221,5 +222,5 @@ In sort of chronological order:
 
 // name pool
 
- <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>nick</i></b>, <b><i>view</i></b>, <b><i>fill</i></b>
+ <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>nick</i></b>, <b><i>fill</i></b>
 </pre>
