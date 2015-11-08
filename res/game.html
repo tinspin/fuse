@@ -68,12 +68,12 @@ public class game extends Service {
     var url = 'http://' + host + '/' + path + '?';
     if(state == 3) {
       async = true;
-      try { xhr = new XDomainRequest(); ie = true; } catch(e) {}
-      url += 'salt=' + salt + (ie ? "&ie" : "");
+      url += 'salt=' + salt;
+      try { xhr = new XDomainRequest(); url += '&ie'; ie = true; } catch(e) {}
     }
     else {
       var type = data.substring(0, 4);
-      if(type == 'send')
+      if(type == 'chat' || type == 'send')
         async = true;
       if(salt)
         data = type + '|' + salt + data.substring(4, data.length);
