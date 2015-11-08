@@ -169,11 +169,11 @@ In sort of chronological order:
 
                             // insert data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;json&gt;  -> save|done|&lt;id&gt;|&lt;key&gt;         // use key to update
-                            -> save|fail|data too large
+                            -> save|fail|too large
 
                             // select data
  <b><i>load</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;id&gt;    -> load|done|&lt;json&gt;             // use id from list|data|&lt;type&gt;
-                            -> load|fail|data not found
+                            -> load|fail|not found
 
                             // start game
  <b><i>play</i></b>|&lt;salt&gt;[|seed]         -> play|done

@@ -390,7 +390,7 @@ public class Router implements Node {
 
 		if(data.startsWith("save")) {
 			if(split[2].length() > 512) {
-				return "save|fail|data too large";
+				return "save|fail|too large";
 			}
 
 			final String type = split[1];
@@ -447,7 +447,7 @@ public class Router implements Node {
 
 			if(!file.exists()) {
 				System.out.println(file);
-				event.query().put("fail", "load|fail|data not found");
+				event.query().put("fail", "load|fail|not found");
 			}
 
 			return "load|done|" + Root.file(file);
