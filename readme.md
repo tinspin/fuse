@@ -90,9 +90,9 @@ In sort of chronological order:
                             //               or md5([pass] + &lt;salt&gt;)
                             //        we use md5(md5(pass + name) + &lt;salt&gt;)
                             //        make sure you keep the case correct
- <b><i>hash</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> open|done|&lt;name&gt;/&lt;id&gt;
-                            -> open|fail|wrong pass
-                            -> open|fail|wrong key
+ <b><i>hash</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> hash|done|&lt;name&gt;/&lt;id&gt;
+                            -> hash|fail|wrong pass
+                            -> hash|fail|wrong key
 
  <b><i>\/</i></b> anything below          -> main|fail|not open
 
