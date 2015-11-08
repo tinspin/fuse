@@ -182,8 +182,8 @@ In sort of chronological order:
                             -> play|fail|only one player
 
                             // game over
- <b><i>over</i></b>|&lt;salt&gt;[|data]         -> over|done                  // insecure, only for development
-                           --> <b><i>tail</b></i>|&lt;user&gt;[|data]          // the session is over
+ <b><i>over</i></b>|&lt;salt&gt;[|data]         -> over|done                    // insecure, only for development
+                           --> <b><i>tail</b></i>|&lt;user&gt;[|data]           // the game is over
 
 +------------------------------------------------------------+
 | <i>These have to be sent in a separate thread from rendering.</i> |

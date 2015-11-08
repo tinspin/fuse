@@ -8,9 +8,7 @@
     setInterval(tick, 33);
     spawn();
   }
-  /* when send(data) is called, contents
-     of split is 'sent|<user>|<data>' */
-  function sent(user, data) {
+  function sent(user, data) { /* when send(data) is called */
     var split = data.split('+');
     var used = [];
     var high = 0;
