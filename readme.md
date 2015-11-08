@@ -134,7 +134,8 @@ In sort of chronological order:
                             -> room|fail|not in lobby
                             -> room|fail|type invalid       // only alpha
 
-                            // list rooms or data
+                            // list allies, rooms or data
+*<b><i>list</i></b>|&lt;salt&gt;|ally           -> list|done|ally|&lt;user&gt;|...
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;|...
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
                             -> list|fail|wrong type
