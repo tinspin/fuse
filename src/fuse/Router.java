@@ -146,7 +146,7 @@ public class Router implements Node {
 						String key = json.getString("key");
 
 						User user = session(name ? split[1] : "", session(), json);
-						user.authenticated = true;
+						user.authorized = true;
 
 						event.query().put("done", "user|done|" + user.salt + "|" + key + "|" + Root.hash(key));
 					}
@@ -214,7 +214,7 @@ public class Router implements Node {
 				String md5 = Deploy.hash(key + user.salt, "MD5");
 
 				if(hash.equals(md5)) {
-					user.authenticated = true;
+					user.authorized = true;
 					return "hash|done|" + user.name;
 				}
 				else {
@@ -224,8 +224,8 @@ public class Router implements Node {
 			}
 		}
 
-		if(!user.authenticated)
-			return "main|fail|user not authenticated";
+		if(!user.authorized)
+			return "main|fail|user not authorized";
 
 		if(data.startsWith("game")) {
 			if(!split[2].matches("[a-zA-Z]+"))
@@ -472,7 +472,7 @@ public class Router implements Node {
 		String[] ip;
 		JSONObject json;
 		String name, salt;
-		boolean authenticated;
+		boolean authorized;
 		Game game;
 		Room room;
 

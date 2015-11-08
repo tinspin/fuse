@@ -94,7 +94,7 @@ In sort of chronological order:
                             -> hash|fail|wrong pass
                             -> hash|fail|wrong key
 
- <b><i>\/</i></b> anything below          -> main|fail|not open
+ <b><i>\/</i></b> anything below          -> main|fail|not authorized
 
 +-------------------------------+
 | <i>Here you have to call pull()!</i> |
