@@ -624,7 +624,7 @@ public class Router implements Node {
 			if(play)
 				kase = "view";
 			
-			return (user == null ? "lobby" : user.name) + "+" + type + "+" + users.size() + "+" + kase;
+			return (user == null ? "lobby" : user.name) + "+" + type + "+" + users.size() + "/" + size + "+" + kase;
 		}
 	}
 
