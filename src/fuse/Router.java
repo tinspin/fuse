@@ -337,11 +337,8 @@ public class Router implements Node {
 			if(user.room.user != null && user.room.user.name.equals(room.user.name))
 				return "join|fail|already here";
 
-			if(room.users.size() == room.size && !room.lock)
+			if(room.users.size() == room.size && !room.play)
 				return "join|fail|is full";
-
-			// TODO: Add as observer!
-			//if(room.lock)
 
 			user.move(user.room, room);
 
@@ -534,7 +531,7 @@ public class Router implements Node {
 	public static class Room {
 		ConcurrentHashMap users = new ConcurrentHashMap();
 
-		boolean lock, stop;
+		boolean play;
 		String type;
 		User user;
 		int size;
@@ -553,8 +550,8 @@ public class Router implements Node {
 		void send(User from, String data) throws Exception {
 			Iterator it = users.values().iterator();
 
-			if(data.startsWith("lock"))
-				lock = true;
+			if(data.startsWith("head"))
+				play = true;
 
 			System.err.println("<-- " + from + " " + data);
 
@@ -619,7 +616,15 @@ public class Router implements Node {
 		}
 
 		public String toString() {
-			return (user == null ? "lobby" : user.name) + "+" + type + "+" + users.size() + "+lock";
+			String kase = "join";
+			
+			if(users.size() == size)
+				kase = "lock";
+			
+			if(play)
+				kase = "view";
+			
+			return (user == null ? "lobby" : user.name) + "+" + type + "+" + users.size() + "+" + kase;
 		}
 	}
 
