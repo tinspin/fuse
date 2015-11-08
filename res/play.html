@@ -3,12 +3,12 @@
 <style>body{ margin: 0; padding: 0 }</style>
 <!-- these methods are called by game.html -->
 <script>
-  function head(seed) { /* start game */
+  function head(seed) { /* play(seed) is broadcasted to N */
     this.seed = seed;
     setInterval(tick, 33);
     spawn();
   }
-  function sent(user, data) { /* when send(data) is called */
+  function sent(user, data) { /* send(data) is broadcasted to N-1 */
     var split = data.split('+');
     var used = [];
     var high = 0;
@@ -20,7 +20,7 @@
     }
   }
   var lost = 1; /* used in over(data) below */
-  function tail(user, data) { /* game over */
+  function tail(user, data) { /* over(data) is broadcasted to N */
     element('chat').value = user + ': lost(' + data + ')\n' + element('chat').value;
   }
 </script>

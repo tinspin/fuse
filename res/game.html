@@ -1,11 +1,15 @@
 [[	package gen;
 
 import se.rupy.http.*;
+import java.net.*;
 import java.io.*;
 
 public class game extends Service {
 	public String path() { return "/game.html"; }
 	public void filter(Event event) throws Event, Exception {
+		event.query().parse();
+		String game = event.query().string("game", "kloss");
+		String path = event.query().string("path", "play.html");
 		Output out = event.output(); ]]
 
 <!DOCTYPE HTML>
@@ -46,7 +50,7 @@ public class game extends Service {
   var host = window.location.search.substring(1);
   if(!host)
     host = 'fuse.rupy.se';
-  var game = 'kloss';
+  var game = '[[ game ]]';
   var show = false;
   var size = 0;
   var salt;
@@ -378,13 +382,28 @@ public class game extends Service {
 
 <div id="play" style="display: none;">
 
-<!-- play.html contains the game for modularity -->
+<!-- play.html contains the game for modularity 
+     of you want to use out lobby with your game 
+     host a file that mimics play.html and call 
+     fuse.rupy.se/game.html?game=<name>&path=URLtoyourplay.html -->
 
-[[		BufferedReader file = new BufferedReader(new FileReader("app/fuse.rupy.se/play.html"));
-		String line = file.readLine();
-		while(line != null) {
-			out.println(line);
-			line = file.readLine();
+[[		if(path.equals("play.html")) {
+			BufferedReader file = new BufferedReader(new FileReader("app/fuse.rupy.se/play.html"));
+			String line = file.readLine();
+			while(line != null) {
+				out.println(line);
+				line = file.readLine();
+			}
+		}
+		else {
+			HttpURLConnection conn = (HttpURLConnection) new URL(path).openConnection();
+			conn.setRequestMethod("GET");
+			int code = conn.getResponseCode();
+			if(code == 200) {
+				InputStream in = conn.getInputStream();
+				int size = Deploy.pipe(in, event.output());
+				in.close();
+			}
 		} ]]
 
 </div>
