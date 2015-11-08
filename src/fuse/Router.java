@@ -373,7 +373,7 @@ public class Router implements Node {
 
 		if(data.startsWith("quit")) {
 			if(user.room.user == null)
-				return "quit|fail|user in lobby";
+				return "quit|fail|in lobby";
 
 			Room room = user.move(user.room, user.game);
 
