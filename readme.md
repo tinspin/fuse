@@ -83,7 +83,7 @@ In sort of chronological order:
  <b><i>salt</i></b>|&lt;name&gt;/&lt;id&gt;           -> salt|done|&lt;salt&gt;
                             -> salt|fail|not found
  
- <b><i>\/</i></b> anything below          -> main|fail|invalid salt
+ <b><i>\/</i></b> anything below          -> main|fail|salt not found
  
                             // login
                             // &lt;hash&gt; is either md5(&lt;key&gt; + &lt;salt&gt;)

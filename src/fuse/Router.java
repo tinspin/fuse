@@ -199,7 +199,7 @@ public class Router implements Node {
 		}
 
 		if(split.length < 2)
-			return "main|fail|salt missing";
+			return "main|fail|salt not found";
 		
 		User user = (User) users.get(split[1]);
 
