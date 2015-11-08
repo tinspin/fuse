@@ -163,7 +163,7 @@ In sort of chronological order:
                            --> <b><i>halt</i></b>|&lt;user&gt;                  // in lobby if creator leaves
                            --> <b><i>gone</i></b>|&lt;user&gt;                  // in old room
                            --> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
-                            -> room|fail|in lobby
+                            -> quit|fail|in lobby
 
                             // user exit
  <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
