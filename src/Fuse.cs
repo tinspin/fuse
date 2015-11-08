@@ -275,16 +275,16 @@ public class Fuse {
 			return null;
 	}
 
-	public bool Join(string which) {
-		return BoolPush("join|" + which);
+	public bool Join(string room) {
+		return BoolPush("join|" + room);
 	}
 
 	public bool Exit() {
 		return BoolPush("exit");
 	}
 
-	public void Lock(string text) {
-		EasyPush("lock");
+	public void play(string seed) {
+		EasyPush("play|" + seed);
 	}
 
 	public void Chat(string text) {

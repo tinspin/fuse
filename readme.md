@@ -32,7 +32,7 @@ Platform:
 Examples:
 
     <img src="https://rawgit.com/tinspin/fuse/master/res/svg/blue.svg">&nbsp;<img src="https://rawgit.com/tinspin/fuse/master/res/svg/green.svg">&nbsp;<img src="https://rawgit.com/tinspin/fuse/master/res/svg/orange.svg">&nbsp;<img src="https://rawgit.com/tinspin/fuse/master/res/svg/purple.svg">
-  - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open source <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>, try single player <a href="http://fuse.rupy.se/play.html">play.html</a>)
+  - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>, try single-player <a href="http://fuse.rupy.se/play.html">play.html</a>)
   
     <img src="https://dl.dropboxusercontent.com/u/1352420/aeon_alpha.png">
   - java 3D VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a> (closed source)
@@ -77,11 +77,11 @@ In sort of chronological order:
                             // to get the &lt;id&gt; of a mail
                             // if you want to login with &lt;id&gt; below
  <b><i>mail</i></b>|&lt;mail&gt;                -> mail|done|&lt;id&gt;
-                            -> mail|fail|user not found
+                            -> mail|fail|not found
  
                             // get salt for &lt;name&gt; or &lt;id&gt;
  <b><i>salt</i></b>|&lt;name&gt;/&lt;id&gt;           -> salt|done|&lt;salt&gt;
-                            -> salt|fail|user not found
+                            -> salt|fail|not found
  
  <b><i>\/</i></b> anything below          -> main|fail|invalid salt
  
@@ -94,7 +94,7 @@ In sort of chronological order:
                             -> open|fail|wrong pass
                             -> open|fail|wrong key
 
- <b><i>\/</i></b> anything below          -> main|fail|user not open
+ <b><i>\/</i></b> anything below          -> main|fail|not open
 
 +-------------------------------+
 | <i>Here you have to call pull()!</i> |
@@ -110,7 +110,7 @@ In sort of chronological order:
                            --> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;[|&lt;ip&gt;]    // if avatar set
                             -> game|fail|name invalid
                      
- <b><i>\/</i></b> anything below          -> main|fail|user has no game
+ <b><i>\/</i></b> anything below          -> main|fail|no game
 
                             // pause game
 *<b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
@@ -119,7 +119,7 @@ In sort of chronological order:
 
                             // add friend
 *<b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done
-                            -> ally|fail|user not found
+                            -> ally|fail|not found
 
                             // set avatar
 *<b><i>body</i></b>|&lt;salt&gt;|&lt;data&gt;         -> body|done
@@ -131,7 +131,7 @@ In sort of chronological order:
                             // host room
  <b><i>room</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;size&gt;  -> room|done
                            --> <b><i>made</i></b>|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;    // in lobby
-                            -> room|fail|user not in lobby
+                            -> room|fail|not in lobby
                             -> room|fail|type invalid       // only alpha
 
                             // list rooms or data
@@ -145,14 +145,14 @@ In sort of chronological order:
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;         -> join|done
                            --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
                            --> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
-                            -> join|fail|room not found
-                            -> join|fail|already in room
-                            -> join|fail|room is full
+                            -> join|fail|not found
+                            -> join|fail|already here
+                            -> join|fail|is full
 
                             // permanently ban user from room
 *<b><i>kick</i></b>|&lt;salt&gt;|&lt;user&gt;         -> kick|done
                             -> kick|fail|not creator
-                            -> kick|fail|user not here
+                            -> kick|fail|not here
  
                             // quit room
  <b><i>quit</i></b>|&lt;salt&gt;                -> quit|done
@@ -164,14 +164,7 @@ In sort of chronological order:
                             // user exit
  <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
                            --> <b><i>kill</i></b>|&lt;user&gt;
-                            -> exit|fail|user in lobby
-                    
-                            // lock room before the game starts
- <b><i>play</i></b>|&lt;salt&gt;[|seed]         -> play|done
-                           --> <b><i>lock</i></b>[|seed]                  // to start the game
-                            -> play|fail|user in lobby
-                            -> play|fail|user not creator
-                            -> play|fail|only one player
+                            -> exit|fail|in lobby
 
                             // insert data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;json&gt;  -> save|done|&lt;id&gt;|&lt;key&gt;         // use key to update
@@ -180,6 +173,17 @@ In sort of chronological order:
                             // select data
  <b><i>load</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;id&gt;    -> load|done|&lt;json&gt;             // use id from list|data|&lt;type&gt;
                             -> load|fail|data not found
+
+                            // start game
+ <b><i>play</i></b>|&lt;salt&gt;[|seed]         -> play|done
+                           --> <b><i>head</i></b>[|seed]                  // to start the game
+                            -> play|fail|in lobby
+                            -> play|fail|not creator
+                            -> play|fail|only one player
+
+                            // game over
+ <b><i>over</i></b>|&lt;salt&gt;[|data]         -> over|done                  // insecure, only for development
+                           --> <b><i>tail</b></i>|&lt;user&gt;[|data]          // the session is over
 
 +------------------------------------------------------------+
 | <i>These have to be sent in a separate thread from rendering.</i> |

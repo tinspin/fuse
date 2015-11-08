@@ -152,26 +152,19 @@ public class game extends Service {
         remove_select('ally', split[1]);
         remove_select('join', split[1]);
       }
-      if(split[0] == 'lock') {
+      if(split[0] == 'head') {
         display('room', 'none');
         display('play', 'block');
         element('talk').style.position = 'absolute';
         element('talk').style.left = '0px';
         element('talk').style.top = '350px';
-        start(split[1]);
+        head(split[1]);
       }
       if(split[0] == 'sent') {
-        var user = split[1];
-        var data = split[2].split('+');
-        var used = [];
-        var high = 0;
-        for(var i = 1; i < data.length; i++) {
-          var row = math_random(0, 25);
-          if(contains(used, data[i]))
-            high += 50;
-          add_cube(color[math_random(0, 3)], data[i] * 50, -50 - high - row, 8);
-          used.push(data[i]);
-        }
+        sent(split[1], split[2]);
+      }
+      if(split[0] == 'tail') {
+        tail(split[1], split.length > 2 ? split[2] : '');
       }
     }
   }
@@ -346,6 +339,9 @@ public class game extends Service {
     var play = push('play|' + math_random(1, 400000));
     if(play[1] === 'fail')
       show_fail(play[2]);
+  }
+  function over(data) {
+    push('over|' + data);
   }
   function send(data) {
     push('send|' + data);

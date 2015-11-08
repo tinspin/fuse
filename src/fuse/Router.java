@@ -168,7 +168,7 @@ public class Router implements Node {
 			File file = new File(Root.home() + "/node/user/mail" + Root.path(split[1]));
 
 			if(file == null || !file.exists()) {
-				return "mail|fail|user not found";
+				return "mail|fail|not found";
 			}
 
 			JSONObject json = new JSONObject(Root.file(file));
@@ -188,7 +188,7 @@ public class Router implements Node {
 				file = new File(Root.home() + "/node/user/name" + Root.path(name));
 
 			if(file == null || !file.exists()) {
-				return "salt|fail|user not found";
+				return "salt|fail|not found";
 			}
 
 			JSONObject json = new JSONObject(Root.file(file));
@@ -246,7 +246,7 @@ public class Router implements Node {
 		}
 
 		if(user.game == null)
-			return "main|fail|user has no game";
+			return "main|fail|no game";
 
 		if(data.startsWith("peer")) {
 			user.peer(event, split[2]);
@@ -255,7 +255,7 @@ public class Router implements Node {
 
 		if(data.startsWith("room")) {
 			if(user.room.user != null)
-				return "room|fail|user not in lobby";
+				return "room|fail|not in lobby";
 
 			String type = split[2];
 
@@ -332,13 +332,13 @@ public class Router implements Node {
 			Room room = (Room) user.game.rooms.get(split[2]);
 
 			if(room == null)
-				return "join|fail|room not found";
+				return "join|fail|not found";
 
 			if(user.room.user != null && user.room.user.name.equals(room.user.name))
-				return "join|fail|already in room";
+				return "join|fail|already here";
 
 			if(room.users.size() == room.size && !room.lock)
-				return "join|fail|room is full";
+				return "join|fail|is full";
 
 			// TODO: Add as observer!
 			//if(room.lock)
@@ -352,17 +352,26 @@ public class Router implements Node {
 			String seed = split[2];
 			
 			if(user.room.user == null)
-				return "play|fail|user in lobby";
+				return "play|fail|in lobby";
 
 			if(user.room.users.size() < 2)
 				return "play|fail|only one player";
 
 			if(user.room.user == user)
-				user.room.send(user, "lock|" + seed);
+				user.room.send(user, "head|" + seed);
 			else
-				return "play|fail|user not creator";
+				return "play|fail|not creator";
 
 			return "play|done";
+		}
+		
+		if(data.startsWith("over")) {
+			if(split.length > 2)
+				user.room.send(user, "tail|" + user.name + '|' + split[2]);
+			else
+				user.room.send(user, "tail|" + user.name);
+
+			return "over|done";
 		}
 
 		if(data.startsWith("quit")) {
@@ -568,7 +577,7 @@ public class Router implements Node {
 					}
 
 					// send message from user to room
-					if(data.startsWith("text") || data.startsWith("lock") || !from.name.equals(user.name)) {
+					if(data.startsWith("text") || data.startsWith("head") || data.startsWith("tail") || !from.name.equals(user.name)) {
 						if(data.startsWith("here"))
 							data += from.peer(user);
 						
