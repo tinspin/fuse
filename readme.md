@@ -17,7 +17,7 @@ Support:
 
 Protocol:
 
-  - client/server triplex HTTP, \n terminated or data: \n\n encapsulated, text based
+  - client/server triplex HTTP, \n terminated or 'data: \n\n' encapsulated
     - dynamic presence position move packets for MMO
   - peer-to-peer UDP, binary physics packets for VR
     - position move and talk, look, head, body, hand packets
