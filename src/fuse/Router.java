@@ -146,7 +146,7 @@ public class Router implements Node {
 						String key = json.getString("key");
 
 						User user = session(name ? split[1] : "", session(), json);
-						user.open = true;
+						user.authenticated = true;
 
 						event.query().put("done", "user|done|" + user.salt + "|" + key + "|" + Root.hash(key));
 					}
@@ -199,14 +199,14 @@ public class Router implements Node {
 		}
 
 		if(split.length < 2)
-			return "main|fail|invalid salt";
+			return "main|fail|salt missing";
 		
 		User user = (User) users.get(split[1]);
 
 		if(user == null || !user.salt.equals(split[1]))
-			return "main|fail|invalid salt";
+			return "main|fail|salt not found";
 
-		if(data.startsWith("open")) {
+		if(data.startsWith("hash")) {
 			String hash = split[2].toLowerCase();
 
 			if(user.name.length() > 0 && hash.length() > 0) {
@@ -214,18 +214,18 @@ public class Router implements Node {
 				String md5 = Deploy.hash(key + user.salt, "MD5");
 
 				if(hash.equals(md5)) {
-					user.open = true;
-					return "open|done|" + user.name;
+					user.authenticated = true;
+					return "hash|done|" + user.name;
 				}
 				else {
 					users.remove(user.salt);
-					return "open|fail|wrong " + (user.json.has("pass") ? "pass" : "key");
+					return "hash|fail|wrong " + (user.json.has("pass") ? "pass" : "key");
 				}
 			}
 		}
 
-		if(!user.open)
-			return "main|fail|user not open";
+		if(!user.authenticated)
+			return "main|fail|user not authenticated";
 
 		if(data.startsWith("game")) {
 			if(!split[2].matches("[a-zA-Z]+"))
@@ -472,7 +472,7 @@ public class Router implements Node {
 		String[] ip;
 		JSONObject json;
 		String name, salt;
-		boolean open;
+		boolean authenticated;
 		Game game;
 		Room room;
 

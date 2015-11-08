@@ -90,7 +90,7 @@ In sort of chronological order:
                             //               or md5([pass] + &lt;salt&gt;)
                             //        we use md5(md5(pass + name) + &lt;salt&gt;)
                             //        make sure you keep the case correct
- <b><i>open</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> open|done|&lt;name&gt;/&lt;id&gt;
+ <b><i>hash</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> open|done|&lt;name&gt;/&lt;id&gt;
                             -> open|fail|wrong pass
                             -> open|fail|wrong key
 
@@ -142,12 +142,12 @@ In sort of chronological order:
                             -> list|fail|wrong type
 
                             // join room
-                            // between full and <b><i>play</i></b> nobody can join
-                            // if you join after <b><i>play</i></b> you can only view the game
+                            // between <i>lock</i> and <i>view</i> nobody can join
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;         -> join|done
                            --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
                            --> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
                            --> <b><i>lock</i></b>|&lt;room&gt;                  // in lobby if room is full
+                           --> <b><i>open</i></b>|&lt;room&gt;                  // in lobby if room is not full
                             -> join|fail|not found
                             -> join|fail|already here
                             -> join|fail|is full

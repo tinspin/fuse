@@ -229,7 +229,7 @@ public class game extends Service {
     if(user[1] == 'done')
       authorize(user[2]);
   }
-  function open() {
+  function hash() {
     var name = id('name');
     if(name.length < 3) {
       show_fail('name too short');
@@ -245,9 +245,8 @@ public class game extends Service {
       show_fail(salt[2]);
       return;
     }
-    var hash = md5(md5(pass + name) + salt[2]);
-    var open = push('open|' + salt[2] + '|' + hash);
-    if(open[1] == 'done')
+    var hash = push('hash|' + salt[2] + '|' + md5(md5(pass + name) + salt[2]));
+    if(hash[1] == 'done')
       authorize(salt[2]);
   }
   function authorize(salt) {
@@ -273,11 +272,11 @@ public class game extends Service {
   function focus(id) {
     element(id).focus();
   }
-  function open_code(e) {
+  function hash_code(e) {
     e = e || window.event;
     var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
     if(unicode == 13) {
-      open();
+      hash();
     }
   }
   function user_code(e) {
@@ -354,8 +353,8 @@ public class game extends Service {
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
 <tr><td>name&nbsp;</td><td><input id="name" name="name" size="10"></td></tr>
 <tr><td>pass&nbsp;</td>
-    <td><input id="pass" name="pass" type="password" size="10" onkeypress="open_code(event);"></td>
-    <td><a href="javascript:open();">login</a></td></tr>
+    <td><input id="pass" name="pass" type="password" size="10" onkeypress="hash_code(event);"></td>
+    <td><a href="javascript:hash();">login</a></td></tr>
 <tr><td><font color="#00cc33">mail*</font></td>
     <td><input id="mail" name="mail" size="10" onkeypress="user_code(event);"></td>
     <td><a href="javascript:user();">register</a></td></tr>

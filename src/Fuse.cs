@@ -162,7 +162,7 @@ public class Fuse {
 			string salt = null;
 
 			if(key != null) {
-				salt = fuse.Open("fuse", key);
+				salt = fuse.Hash("fuse", key);
 			}
 
 			if(salt != null) {
@@ -233,7 +233,7 @@ public class Fuse {
 		return user[3];
 	}
 
-	public string Open(string name, string key) {
+	public string Hash(string name, string key) {
 		// for anonymous user use <id> instead here
 		string[] salt = Push("salt|" + name).Split('|');
 		
@@ -242,11 +242,10 @@ public class Fuse {
 			return null;
 		}
 		
-		string hash = MD5(key + salt[2]);
-		string[] open = Push("open|" + salt[2] + "|" + hash).Split('|');
+		string[] hash = Push("hash|" + salt[2] + "|" + MD5(key + salt[2])).Split('|');
 
-		if(open[1].Equals("fail")) {
-			Console.WriteLine("open " + open[2]);
+		if(hash[1].Equals("fail")) {
+			Console.WriteLine("hash " + hash[2]);
 			return null;
 		}
 
