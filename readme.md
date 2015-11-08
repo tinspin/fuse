@@ -172,7 +172,7 @@ In sort of chronological order:
                             -> save|fail|too large
 
                             // select data
- <b><i>load</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;id&gt;    -> load|done|&lt;json&gt;             // use id from list|data|&lt;type&gt;
+ <b><i>load</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;id&gt;    -> load|done|&lt;json&gt;             // use &lt;id&gt; from list|data|&lt;type&gt;
                             -> load|fail|not found
 
                             // start game
