@@ -148,7 +148,6 @@ In sort of chronological order:
                            --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
                            --> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
                            --> <b><i>lock</i></b>|&lt;room&gt;                  // in lobby if room is full
-                           --> <b><i>view</i></b>|&lt;room&gt;                  // in lobby if room has started
                             -> join|fail|not found
                             -> join|fail|already here
                             -> join|fail|is full
@@ -181,6 +180,7 @@ In sort of chronological order:
                             // start game
  <b><i>play</i></b>|&lt;salt&gt;[|seed]         -> play|done
                            --> <b><i>head</i></b>[|seed]                  // to start the game
+                           --> <b><i>view</i></b>|&lt;room&gt;                  // in lobby if room has started
                             -> play|fail|in lobby
                             -> play|fail|not creator
                             -> play|fail|only one player
