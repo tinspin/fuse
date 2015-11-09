@@ -285,13 +285,13 @@ public class Event extends Throwable implements Chain.Link {
 						if(!service(daemon.root(), false)) {
 							reply.code("404 Not Found");
 							reply.output().print(
-									"<pre>'" + query.path() + "' was not found.</pre>");
+									"<pre>'" + encode(query.path()) + "' was not found.</pre>");
 						}
 					}
 					else if(!service(daemon.chain(this, "null"), false)) {
 						reply.code("404 Not Found");
 						reply.output().print(
-								"<pre>'" + query.path() + "' was not found.</pre>");
+								"<pre>'" + encode(query.path()) + "' was not found.</pre>");
 					}
 				}
 			}
@@ -300,6 +300,25 @@ public class Event extends Throwable implements Chain.Link {
 		finish();
 	}
 
+	/**
+	 * HTML encodes value to avoid XSS attacks.
+	 * & = &amp;
+	 * < = &lt;
+	 * > = &gt;
+	 * " = &quot;
+	 * ' = &#x27;
+	 * / = &#x2F;
+	 */
+	public static String encode(String value) {
+		value = value.replace("&", "&amp;");
+		value = value.replace("<", "&lt;");
+		value = value.replace(">", "&gt;");
+		value = value.replace("\"", "&quot;");
+		value = value.replace("'", "&#x27;");
+		value = value.replace("/", "&#x2F;");
+		return value;
+	}
+	
 	protected String address() {
 		String remote = query.header("x-forwarded-for");
 
