@@ -208,7 +208,7 @@ public class Router implements Node {
 		if(user == null || !user.salt.equals(split[1]))
 			return "main|fail|salt not found";
 
-		if(data.startsWith("hash")) {
+		if(data.startsWith("sign")) {
 			String hash = split[2].toLowerCase();
 
 			if(user.name.length() > 0 && hash.length() > 0) {
@@ -217,11 +217,11 @@ public class Router implements Node {
 
 				if(hash.equals(md5)) {
 					user.authorized = true;
-					return "hash|done|" + user.name;
+					return "sign|done|" + user.name;
 				}
 				else {
 					users.remove(user.salt);
-					return "hash|fail|wrong " + (user.json.has("pass") ? "pass" : "key");
+					return "sign|fail|wrong " + (user.json.has("pass") ? "pass" : "key");
 				}
 			}
 		}
