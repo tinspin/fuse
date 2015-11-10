@@ -113,7 +113,7 @@ In sort of chronological order:
                      
  <b><i>\/</i></b> anything below          -> main|fail|no game
 
-                            // set nickname for users id
+                            // set nickname for user
  <b><i>nick</i></b>|&lt;salt&gt;|&lt;nick&gt;         -> nick|done
                             -> nick|fail|nick invalid       // [a-zA-Z]+
                             
@@ -206,7 +206,7 @@ In sort of chronological order:
                             // chat in any room
  <b><i>chat</i></b>|&lt;salt&gt;|&lt;text&gt;         -> chat|done                    // @[user] of private destination
                            --> <b><i>text</i></b>|&lt;user&gt;|&lt;text&gt;
-                            -> chat|fail|user not online
+                            -> chat|fail|not online
 
                             // send any gameplay data to room
  <b><i>send</i></b>|&lt;salt&gt;|&lt;data&gt;         -> send|done
