@@ -119,7 +119,6 @@ In sort of chronological order:
                             // set nick for user
  <b><i>nick</i></b>|&lt;salt&gt;|&lt;nick&gt;         -> nick|done
                             -> nick|fail|nick invalid       // [a-zA-Z0-9.\\-]+
-                            -> nick|fail|alpha missing      // [0-9]+ reserved for &lt;id&gt;
 
                             // get nick for any id
  <b><i>nick</i></b>|&lt;salt&gt;|&lt;id&gt;           -> nick|done|&lt;nick&gt;
@@ -128,7 +127,6 @@ In sort of chronological order:
                             // set name for user
  <b><i>name</i></b>|&lt;salt&gt;|&lt;name&gt;         -> name|done
                             -> name|fail|nick invalid       // [a-zA-Z0-9.\\-]+
-                            -> user|fail|alpha missing      // [0-9]+ reserved for &lt;id&gt;
                             -> name|fail|taken
 
                             // get name for any id
