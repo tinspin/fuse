@@ -32,10 +32,10 @@ Platform:
 Examples:
 
     <img src="https://rawgit.com/tinspin/fuse/master/res/svg/blue.svg">&nbsp;<img src="https://rawgit.com/tinspin/fuse/master/res/svg/green.svg">&nbsp;<img src="https://rawgit.com/tinspin/fuse/master/res/svg/orange.svg">&nbsp;<img src="https://rawgit.com/tinspin/fuse/master/res/svg/purple.svg">
-  - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>, try single-player <a href="http://fuse.rupy.se/play.html">play.html</a>)
+  - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source, try single-player <a href="http://fuse.rupy.se/play.html">play.html</a>)
   
     <img src="https://dl.dropboxusercontent.com/u/1352420/aeon_alpha.png">
-  - java 3D VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a> (closed source)
+  - java 3D VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a> (closed-source)
 
 +-------------------+
 | <i>Work in progress!</i> |
