@@ -251,7 +251,7 @@ public class game extends Service {
     }
     var sign = push('sign|' + salt[2] + '|' + md5(md5(pass + name) + salt[2]));
     if(sign[1] == 'done')
-      authorize(sign[2]);
+      authorize(salt[2]);
   }
   function authorize(salt) {
     display('user', 'none');
