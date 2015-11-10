@@ -272,7 +272,7 @@ public class Router implements Node {
 				}
 			}
 			else {
-				if(!split[2].matches("[a-zA-Z]+"))
+				if(!split[2].matches("[a-zA-Z0-9.\\-]+"))
 					return rule + "|fail|" + rule + " invalid";
 				
 				if(rule.equals("name"))
