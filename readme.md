@@ -41,9 +41,9 @@ Examples:
 | <i>Work in progress!</i> |
 +-------------------+
 
-<-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) including self
+o-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) including self
 --> = async. broadcast to Read() (C#) or read(data) (XHR/XDR)
-  > = sync. return on Push(data) or push(data)
+ -> = sync. return on Push(data) or push(data)
 
 < > = mandatory
 [ ] = optional
@@ -109,10 +109,10 @@ In sort of chronological order:
                             // join a game
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
                            --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]
-                           <-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
-                           <-> <b><i>name</b></i>|&lt;user&gt;|&lt;name&gt;           // if &lt;id&gt; used and name set
-                           <-> <b><i>nick</b></i>|&lt;user&gt;|&lt;nick&gt;           // if &lt;id&gt; used and nick set
-                           <-> <b><i>flag</b></i>|&lt;user&gt;|&lt;flag&gt;           // country
+                           o-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
+                           o-> <b><i>name</b></i>|&lt;user&gt;|&lt;name&gt;           // if &lt;id&gt; used and name set
+                           o-> <b><i>nick</b></i>|&lt;user&gt;|&lt;nick&gt;           // if &lt;id&gt; used and nick set
+                           o-> <b><i>flag</b></i>|&lt;user&gt;|&lt;flag&gt;           // country
                             -> game|fail|name invalid       // [a-zA-Z]+
 
  <b><i>\/</i></b> anything below          -> main|fail|no game
@@ -202,7 +202,7 @@ In sort of chronological order:
 
                             // start game
  <b><i>play</i></b>|&lt;salt&gt;[|seed]         -> play|done
-                           <-> <b><i>head</i></b>[|seed]                  // to start the game
+                           o-> <b><i>head</i></b>[|seed]                  // to start the game
                            --> <b><i>view</i></b>|&lt;room&gt;                  // in lobby if room has started
                             -> play|fail|in lobby
                             -> play|fail|not creator
@@ -210,7 +210,7 @@ In sort of chronological order:
 
                             // game over
  <b><i>over</i></b>|&lt;salt&gt;[|data]         -> over|done                    // insecure, only for development
-                           <-> <b><i>tail</b></i>|&lt;user&gt;[|data]           // the game is over
+                           o-> <b><i>tail</b></i>|&lt;user&gt;[|data]           // the game is over
 
 +------------------------------------------------------------+
 | <i>These have to be sent in a separate thread from rendering.</i> |
@@ -218,7 +218,7 @@ In sort of chronological order:
 
                             // chat in any room
  <b><i>chat</i></b>|&lt;salt&gt;|&lt;text&gt;         -> chat|done                    // @[user] of private destination
-                           *-> <b><i>text</i></b>|&lt;user&gt;|&lt;text&gt;
+                           o-> <b><i>text</i></b>|&lt;user&gt;|&lt;text&gt;
                             -> chat|fail|not online
 
                             // send any gameplay data to room
