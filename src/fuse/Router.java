@@ -182,13 +182,15 @@ public class Router implements Node {
 
 			File file = null;
 
-			if(name.matches("[0-9]+"))
+			boolean id = name.matches("[0-9]+");
+			
+			if(id)
 				file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
 			else
 				file = new File(Root.home() + "/node/user/name" + Root.path(name));
 
 			if(file == null || !file.exists()) {
-				return "salt|fail|not found";
+				return "salt|fail|" + (id ? "id" : "name") + " not found";
 			}
 
 			JSONObject json = new JSONObject(Root.file(file));

@@ -81,7 +81,8 @@ In sort of chronological order:
  
                             // get salt for &lt;name&gt; or &lt;id&gt;
  <b><i>salt</i></b>|&lt;name&gt;/&lt;id&gt;           -> salt|done|&lt;salt&gt;
-                            -> salt|fail|not found
+                            -> salt|fail|name not found
+                            -> salt|fail|id not found
  
  <b><i>\/</i></b> anything below          -> main|fail|salt not found
  
