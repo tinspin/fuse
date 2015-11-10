@@ -118,7 +118,7 @@ In sort of chronological order:
                             -> nick|fail|nick invalid       // [a-zA-Z]+
                             
                             // get nickname for any id
- <b><i>nick</i></b>|&lt;salt&gt;|&lt;id&gt;         -> nick|done|&lt;nick&gt;
+ <b><i>nick</i></b>|&lt;salt&gt;|&lt;id&gt;           -> nick|done|&lt;nick&gt;
                             -> nick|fail|not found
                             
                             // pause game
