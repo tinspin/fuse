@@ -109,19 +109,32 @@ In sort of chronological order:
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
                            --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]
                            --> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
-                           --> <b><i>name</b></i>|&lt;nick&gt;                  // if nick set
+                           --> <b><i>sign</b></i>|name/nick|&lt;name&gt;/&lt;nick&gt; // if nick set
+                           --> <b><i>flag</b></i>|&lt;land&gt;                 // country
                             -> game|fail|name invalid       // [a-zA-Z]+
-                     
+
  <b><i>\/</i></b> anything below          -> main|fail|no game
 
-                            // set nickname for user
+                            // set nick for user
  <b><i>nick</i></b>|&lt;salt&gt;|&lt;nick&gt;         -> nick|done
-                            -> nick|fail|nick invalid       // [a-zA-Z]+
-                            
-                            // get nickname for any id
+                            -> nick|fail|nick invalid       // [a-zA-Z0-9.\\-]+
+                            -> nick|fail|alpha missing      // [0-9]+ reserved for &lt;id&gt;
+                            -> nick|fail|taken
+
+                            // get nick for any id
  <b><i>nick</i></b>|&lt;salt&gt;|&lt;id&gt;           -> nick|done|&lt;nick&gt;
                             -> nick|fail|not found
-                            
+
+                            // set name for user
+ <b><i>name</i></b>|&lt;salt&gt;|&lt;name&gt;         -> name|done
+                            -> name|fail|nick invalid       // [a-zA-Z0-9.\\-]+
+                            -> user|fail|alpha missing      // [0-9]+ reserved for &lt;id&gt;
+                            -> name|fail|taken
+
+                            // get name for any id
+ <b><i>name</i></b>|&lt;salt&gt;|&lt;id&gt;           -> name|done|&lt;name&gt;
+                            -> name|fail|not found
+
                             // pause game
 *<b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
                            --> <b><i>hold</b></i>|&lt;user&gt;

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import se.rupy.http.Async;
@@ -249,39 +250,64 @@ public class Router implements Node {
 		if(user.game == null)
 			return "main|fail|no game";
 
-		if(data.startsWith("nick")) {
+		if(data.startsWith("name") || data.startsWith("nick")) {
 			File file = null;
+			final String rule = split[0];
 			boolean id = split[2].matches("[0-9]+");
 			
 			if(id) {
 				file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(split[2])));
 
 				if(file == null || !file.exists()) {
-					return "nick|fail|not found";
+					return rule + "|fail|not found";
 				}
 				
 				JSONObject json = new JSONObject(Root.file(file));
 				
-				return "nick|done|" + json.optString("nick");
+				try {
+					return rule + "|done|" + json.getString(rule);
+				}
+				catch(JSONException e) {
+					return rule + "|fail|not found";
+				}
 			}
 			else {
 				if(!split[2].matches("[a-zA-Z]+"))
-					return "nick|fail|nick invalid";
+					return rule + "|fail|" + rule + " invalid";
 				
-				user.json.put("nick", split[2]);
+				if(rule.equals("name"))
+					user.json.put("name", split[2]);
+				else
+					user.json.put("nick", split[2]);
 				
 				final String json = user.json.toString();
 				
 				Async.Work nick = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
-						byte[] post = ("json=" + json).getBytes("utf-8");
+						String sort = "";
+						
+						if(rule.equals("name"))
+							sort = "&sort=name";
+						
+						byte[] post = ("json=" + json + sort).getBytes("utf-8");
 						String host = event.query().header("host");
 						call.post("/node", "Host:" + host, post);
 					}
 
 					public void read(String host, String body) throws Exception {
 						System.out.println(body);
-						event.query().put("done", "nick|done");
+						
+						if(body.indexOf("Collision") > 0) {
+							String message = body.substring(body.indexOf("[") + 1, body.indexOf("]"));
+
+							System.out.println("Collision " + message);
+
+							if(message.startsWith("name"))
+								event.query().put("fail", "name|fail|taken");
+						}
+						else
+							event.query().put("done", rule + "|done");
+						
 						event.reply().wakeup();
 					}
 
