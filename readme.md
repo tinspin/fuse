@@ -109,6 +109,7 @@ In sort of chronological order:
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
                            --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]
                            --> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
+                           --> <b><i>name</b></i>|&lt;nick&gt;                  // if nick set
                             -> game|fail|name invalid       // [a-zA-Z]+
                      
  <b><i>\/</i></b> anything below          -> main|fail|no game
