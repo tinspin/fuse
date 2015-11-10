@@ -249,9 +249,9 @@ public class game extends Service {
       show_fail(salt[2]);
       return;
     }
-    var hash = push('hash|' + salt[2] + '|' + md5(md5(pass + name) + salt[2]));
-    if(hash[1] == 'done')
-      authorize(salt[2]);
+    var sign = push('sign|' + salt[2] + '|' + md5(md5(pass + name) + salt[2]));
+    if(sign[1] == 'done')
+      authorize(sign[2]);
   }
   function authorize(salt) {
     display('user', 'none');

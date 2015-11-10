@@ -92,9 +92,9 @@ In sort of chronological order:
                             //               or md5([pass] + &lt;salt&gt;)
                             //        we use md5(md5(pass + name) + &lt;salt&gt;)
                             //        make sure you keep the case correct
- <b><i>hash</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> hash|done|&lt;name&gt;/&lt;id&gt;
-                            -> hash|fail|wrong pass
-                            -> hash|fail|wrong key
+ <b><i>sign</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> sign|done|&lt;name&gt;/&lt;id&gt;
+                            -> sign|fail|wrong pass
+                            -> sign|fail|wrong key
 
  <b><i>\/</i></b> anything below          -> main|fail|not authorized
 
@@ -110,7 +110,8 @@ In sort of chronological order:
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
                            --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]
                            *-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
-                           *-> <b><i>sign</b></i>|&lt;user&gt;|&lt;name&gt;/&lt;nick&gt;    // if name or nick set
+                           *-> <b><i>name</b></i>|&lt;user&gt;|&lt;name&gt;           // if &lt;id&gt; used and name set
+                           *-> <b><i>nick</b></i>|&lt;user&gt;|&lt;name&gt;           // if &lt;id&gt; used and nick set
                            *-> <b><i>flag</b></i>|&lt;user&gt;|&lt;land&gt;           // country
                             -> game|fail|name invalid       // [a-zA-Z]+
 
