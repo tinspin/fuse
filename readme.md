@@ -119,7 +119,6 @@ In sort of chronological order:
  <b><i>nick</i></b>|&lt;salt&gt;|&lt;nick&gt;         -> nick|done
                             -> nick|fail|nick invalid       // [a-zA-Z0-9.\\-]+
                             -> nick|fail|alpha missing      // [0-9]+ reserved for &lt;id&gt;
-                            -> nick|fail|taken
 
                             // get nick for any id
  <b><i>nick</i></b>|&lt;salt&gt;|&lt;id&gt;           -> nick|done|&lt;nick&gt;
