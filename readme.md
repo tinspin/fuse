@@ -42,7 +42,7 @@ Examples:
 +-------------------+
 
 o-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) including self
---> = async. broadcast to Read() (C#) or read(data) (XHR/XDR)
+x-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) excluding self
  -> = sync. return on Push(data) or push(data)
 
 < > = mandatory
@@ -108,7 +108,7 @@ In sort of chronological order:
 
                             // join a game
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
-                           --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]
+                           x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]
                            o-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
                            o-> <b><i>name</b></i>|&lt;user&gt;|&lt;name&gt;           // if &lt;id&gt; used and name set
                            o-> <b><i>nick</b></i>|&lt;user&gt;|&lt;nick&gt;           // if &lt;id&gt; used and nick set
@@ -136,8 +136,8 @@ In sort of chronological order:
 
                             // pause game
 *<b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
-                           --> <b><i>hold</b></i>|&lt;user&gt;
-                           --> <b><i>free</b></i>|&lt;user&gt;
+                           x-> <b><i>hold</b></i>|&lt;user&gt;
+                           x-> <b><i>free</b></i>|&lt;user&gt;
 
                             // add friend
 *<b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done
@@ -145,14 +145,14 @@ In sort of chronological order:
 
                             // set avatar
 *<b><i>body</i></b>|&lt;salt&gt;|&lt;data&gt;         -> body|done
-                           --> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;
+                           x-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;
 
                             // enable peer-to-peer
  <b><i>peer</i></b>|&lt;salt&gt;|&lt;ip&gt;           -> peer|done                    // send the internal IP
 
                             // host room
  <b><i>room</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;size&gt;  -> room|done
-                           --> <b><i>made</i></b>|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;+&lt;case&gt;
+                           x-> <b><i>made</i></b>|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;+&lt;case&gt;
                             -> room|fail|not in lobby
                             -> room|fail|type invalid       // [a-zA-Z]+
 
@@ -166,10 +166,10 @@ In sort of chronological order:
                             // join room
                             // between <i>lock</i> and <i>view</i> nobody can join
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;         -> join|done
-                           --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
-                           --> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
-                           --> <b><i>lock</i></b>|&lt;room&gt;                  // in lobby if room is full
-                           --> <b><i>open</i></b>|&lt;room&gt;                  // in lobby if room is not full
+                           x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
+                           x-> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
+                           x-> <b><i>lock</i></b>|&lt;room&gt;                  // in lobby if room is full
+                           x-> <b><i>open</i></b>|&lt;room&gt;                  // in lobby if room is not full
                             -> join|fail|not found
                             -> join|fail|already here
                             -> join|fail|is full
@@ -181,15 +181,15 @@ In sort of chronological order:
  
                             // quit room
  <b><i>quit</i></b>|&lt;salt&gt;                -> quit|done
-                           --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in lobby
-                           --> <b><i>halt</i></b>|&lt;user&gt;                  // in lobby if creator leaves
-                           --> <b><i>gone</i></b>|&lt;user&gt;                  // in old room
-                           --> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
+                           x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in lobby
+                           x-> <b><i>halt</i></b>|&lt;user&gt;                  // in lobby if creator leaves
+                           x-> <b><i>gone</i></b>|&lt;user&gt;                  // in old room
+                           x-> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
                             -> quit|fail|in lobby
 
                             // user exit
  <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
-                           --> <b><i>kill</i></b>|&lt;user&gt;
+                           x-> <b><i>kill</i></b>|&lt;user&gt;
                             -> exit|fail|in lobby
 
                             // insert data
@@ -203,7 +203,7 @@ In sort of chronological order:
                             // start game
  <b><i>play</i></b>|&lt;salt&gt;[|seed]         -> play|done
                            o-> <b><i>head</i></b>[|seed]                  // to start the game
-                           --> <b><i>view</i></b>|&lt;room&gt;                  // in lobby if room has started
+                           x-> <b><i>view</i></b>|&lt;room&gt;                  // in lobby if room has started
                             -> play|fail|in lobby
                             -> play|fail|not creator
                             -> play|fail|only one player
@@ -223,11 +223,11 @@ In sort of chronological order:
 
                             // send any gameplay data to room
  <b><i>send</i></b>|&lt;salt&gt;|&lt;data&gt;         -> send|done
-                           --> <b><i>sent</i></b>|&lt;user&gt;|&lt;data&gt;
+                           x-> <b><i>sent</i></b>|&lt;user&gt;|&lt;data&gt;
  
                             // motion for 3D MMO games with dynamic here/gone
 *<b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
-                           --> <b><i>data</i></b>|&lt;user&gt;|&lt;data&gt;
+                           x-> <b><i>data</i></b>|&lt;user&gt;|&lt;data&gt;
                             // &lt;data&gt; = &lt;x&gt;+&lt;y&gt;+&lt;z&gt;|&lt;x&gt;+&lt;y&gt;+&lt;z&gt;+&lt;w&gt;|&lt;action&gt;(|&lt;speed&gt;|...)
                             //          position   |orientation    |key/button
 
