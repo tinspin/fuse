@@ -68,9 +68,9 @@ In sort of chronological order:
                             -> user|fail|name too short
                             -> user|fail|name too long
                             -> user|fail|name already registered
-                            -> user|fail|name invalid       // only alphanumeric and .-
-                            -> user|fail|name alpha missing // numeric reserved for &lt;id&gt;
-                            -> user|fail|mail invalid       // only alphanumeric and .@-+
+                            -> user|fail|name invalid       // only [a-zA-Z0-9.\\-]+
+                            -> user|fail|name alpha missing // [0-9]+ reserved for &lt;id&gt;
+                            -> user|fail|mail invalid       // only [a-zA-Z0-9.@\\-\\+]+
                             -> user|fail|mail already registered
                             -> user|fail|pass too short
  
@@ -109,15 +109,16 @@ In sort of chronological order:
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
                            --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]
                            --> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
-                            -> game|fail|name invalid       // only alpha
+                            -> game|fail|name invalid       // [a-zA-Z]+
                      
  <b><i>\/</i></b> anything below          -> main|fail|no game
 
-                            // set/get nickname for id
-                            // get = nick|&lt;salt|&lt;id&gt; -> nick|done|&lt;nick&gt;
-                            // set = nick|&lt;salt|&lt;nick&gt; -> nick|done
- <b><i>nick</i></b>|&lt;salt&gt;[|&lt;id&gt;][|&lt;nick&gt;]         -> nick|done[|&lt;nick&gt;]
-                            -> nick|fail|nick invalid       // only alpha
+                            // set nickname for users id
+ <b><i>nick</i></b>|&lt;salt&gt;|&lt;nick&gt;         -> nick|done
+                            -> nick|fail|nick invalid       // [a-zA-Z]+
+                            
+                            // get nickname for any id
+ <b><i>nick</i></b>|&lt;salt&gt;|&lt;id&gt;         -> nick|done|&lt;nick&gt;
                             -> nick|fail|not found
                             
                             // pause game
@@ -140,7 +141,7 @@ In sort of chronological order:
  <b><i>room</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;size&gt;  -> room|done
                            --> <b><i>made</i></b>|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;+&lt;case&gt;
                             -> room|fail|not in lobby
-                            -> room|fail|type invalid       // only alpha
+                            -> room|fail|type invalid       // [a-zA-Z]+
 
                             // list allies, rooms or data
                             // &lt;case&gt; can be <i>join</i>, <i>lock</i> or <i>view</i>
