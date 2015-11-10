@@ -112,7 +112,7 @@ In sort of chronological order:
                            *-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
                            *-> <b><i>name</b></i>|&lt;user&gt;|&lt;name&gt;           // if &lt;id&gt; used and name set
                            *-> <b><i>nick</b></i>|&lt;user&gt;|&lt;nick&gt;           // if &lt;id&gt; used and nick set
-                           *-> <b><i>flag</b></i>|&lt;user&gt;|&lt;land&gt;           // country
+                           *-> <b><i>flag</b></i>|&lt;user&gt;|&lt;flag&gt;           // country
                             -> game|fail|name invalid       // [a-zA-Z]+
 
  <b><i>\/</i></b> anything below          -> main|fail|no game
