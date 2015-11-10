@@ -109,10 +109,17 @@ In sort of chronological order:
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
                            --> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]
                            --> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
-                            -> game|fail|name invalid
+                            -> game|fail|name invalid       // only alpha
                      
  <b><i>\/</i></b> anything below          -> main|fail|no game
 
+                            // set/get nickname for id
+                            // get = nick|&lt;salt|&lt;id&gt; -> nick|done|&lt;nick&gt;
+                            // set = nick|&lt;salt|&lt;nick&gt; -> nick|done
+ <b><i>nick</i></b>|&lt;salt&gt;[|&lt;id&gt;][|&lt;nick&gt;]         -> nick|done[|&lt;nick&gt;]
+                            -> nick|fail|nick invalid       // only alpha
+                            -> nick|fail|not found
+                            
                             // pause game
 *<b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
                            --> <b><i>hold</b></i>|&lt;user&gt;

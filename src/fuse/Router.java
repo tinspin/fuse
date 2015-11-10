@@ -160,7 +160,6 @@ public class Router implements Node {
 			};
 
 			event.daemon().client().send("localhost", user, 30);
-
 			return "hold";
 		}
 
@@ -250,6 +249,52 @@ public class Router implements Node {
 		if(user.game == null)
 			return "main|fail|no game";
 
+		if(data.startsWith("nick")) {
+			File file = null;
+			boolean id = split[2].matches("[0-9]+");
+			
+			if(id) {
+				file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(split[2])));
+
+				if(file == null || !file.exists()) {
+					return "nick|fail|not found";
+				}
+				
+				JSONObject json = new JSONObject(Root.file(file));
+				
+				return "nick|done|" + json.optString("nick");
+			}
+			else {
+				if(!split[2].matches("[a-zA-Z]+"))
+					return "nick|fail|nick invalid";
+				
+				user.json.put("nick", split[2]);
+				
+				final String json = user.json.toString();
+				
+				Async.Work nick = new Async.Work(event) {
+					public void send(Async.Call call) throws Exception {
+						byte[] post = ("json=" + json).getBytes("utf-8");
+						String host = event.query().header("host");
+						call.post("/node", "Host:" + host, post);
+					}
+
+					public void read(String host, String body) throws Exception {
+						System.out.println(body);
+						event.query().put("done", "nick|done");
+						event.reply().wakeup();
+					}
+
+					public void fail(String host, Exception e) throws Exception {
+						e.printStackTrace();
+					}
+				};
+
+				event.daemon().client().send("localhost", nick, 30);
+				return "hold";
+			}
+		}
+		
 		if(data.startsWith("peer")) {
 			user.peer(event, split[2]);
 			return "peer|done";
@@ -473,7 +518,7 @@ public class Router implements Node {
 	public static class User {
 		String[] ip;
 		JSONObject json;
-		String name, salt;
+		String name, salt, nick;
 		boolean authorized;
 		Game game;
 		Room room;
