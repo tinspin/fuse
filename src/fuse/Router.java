@@ -715,17 +715,11 @@ public class Router implements Node {
 	public void remove(String salt, int place) throws Exception {
 		User user = (User) users.get(salt);
 
-		if(user == null)
-			System.err.println("remove; salt '" + salt + "' not found (" + place + ").");
-		else if(user.salt != null && user.game != null) {
+		if(user != null && user.salt != null && user.game != null) {
 			Room room = user.move(user.room, null);
 			user.game.rooms.remove(user.name);
 			if(place != 1) {
 				user.game.send(user, "kill|" + user.name);
-				System.err.println("remove; user '" + user + "' killed (" + place + ").");
-			}
-			else {
-				System.err.println("remove; user '" + user + "' removed (" + place + ").");
 			}
 			users.remove(salt);
 		}
