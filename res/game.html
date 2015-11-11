@@ -168,20 +168,24 @@ public class game extends Service {
         sent(split[1], split[2]);
       }
       if(split[0] == 'tail') {
+        display('room', 'block');
+        display('play', 'none');
+        element('talk').style.position = 'static';
         tail(split[1], split.length > 2 ? split[2] : '');
       }
     }
   }
   function remove_select(type, name) {
     var select = element(type);
-    var id = 0;
+    var id = -1;
     for(var i = 0; i < select.options.length; i++) {
       if(select.options[i].text == name) {
         id = i;
         break;
       }
     }
-    select.remove(id);
+    if(id > -1)
+      select.remove(id);
   }
   function add_select(type, name) {
     var select = element(type);

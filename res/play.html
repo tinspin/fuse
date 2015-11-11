@@ -3,9 +3,10 @@
 <style>body{ margin: 0; padding: 0 }</style>
 <!-- these methods are called by game.html -->
 <script>
+  var pid;
   function head(seed) { /* play(seed) is broadcasted to N */
     this.seed = seed;
-    setInterval(tick, 33);
+    pid = setInterval(tick, 33);
     spawn();
   }
   function sent(user, data) { /* send(data) is broadcasted to N-1 */
@@ -21,9 +22,12 @@
   }
   var lost = 1; /* used in over(data) below */
   function tail(user, data) { /* over(data) is broadcasted to N */
+    reset();
     element('chat').value = user + ': lost(' + data + ')\n' + element('chat').value;
+    clearInterval(pid);
   }
 </script>
+<!-- input, touch for phones and tablets, arrow keys for desktop -->
 <script>
   var x;
   var y;
@@ -71,7 +75,15 @@
       current.fuse.speed = 4;
   }
 </script>
+<!-- the game logic -->
 <script>
+  function reset() {
+    element('cube').innerHTML = '';
+    height = [0, 0, 0, 0, 0];
+    cubes = [];
+    next = null;
+    spawn();
+  }
   function element(name) {
     return document.getElementById(name);
   }
@@ -130,15 +142,12 @@
           }
           if(300 - dy < height[col]) { /* vertical */
             if(col == 2 && y < 0) { /* game over */
-              element('cube').innerHTML = '';
-              height = [0, 0, 0, 0, 0];
-              cubes = [];
-              next = null;
               try {
                 over(lost++);
               }
-              catch(e) {}
-              spawn();
+              catch(e) {
+                reset();
+              }
             }
             else { /* floor landing */
               dy = 300 - height[col];
