@@ -82,7 +82,6 @@
     height = [0, 0, 0, 0, 0];
     cubes = [];
     next = null;
-    spawn();
   }
   function element(name) {
     return document.getElementById(name);
@@ -147,6 +146,7 @@
               }
               catch(e) {
                 reset();
+                spawn();
               }
             }
             else { /* floor landing */
