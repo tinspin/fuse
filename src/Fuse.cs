@@ -21,7 +21,7 @@ public class Fuse {
 
 	private Queue<string> queue;
 	private Socket pull, push;
-	private bool connected, first = false;
+	private bool connected, first = true;
 	private string salt;
 
 	private IPEndPoint remote;
@@ -59,14 +59,9 @@ public class Fuse {
 		pull.NoDelay = true;
 		pull.Connect(remote);
 
-		String data = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost: " + host + "\r\n";
+		String text = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost: " + host + "\r\nHead: less\r\n\r\n";
 
-		if(first)
-			data += "Head: less\r\n\r\n"; // enables TCP no delay
-		else
-			data += "\r\n";
-
-		pull.Send(Encoding.UTF8.GetBytes(data));
+		pull.Send(Encoding.UTF8.GetBytes(text));
 
 		State state = new State();
 		state.socket = pull;
@@ -82,9 +77,14 @@ public class Fuse {
 		if(salt != null)
 			data = data.Substring(0, 4) + '|' + salt + data.Substring(4, data.Length - 4);
 
-		String text = "GET /push?data=" + data + " HTTP/1.1\r\n"
-				+ "Host: " + host + "\r\n"
-				+ "Head: less\r\n\r\n"; // enables TCP no delay
+		String text = "GET /push?data=" + data + " HTTP/1.1\r\nHost: " + host + "\r\n";
+
+		if(first) {
+			text += "Head: less\r\n\r\n"; // enables TCP no delay
+			first = false;
+		}
+		else
+			text += "\r\n";
 
 		push.Send(Encoding.UTF8.GetBytes(text));
 		int read = push.Receive(body);
