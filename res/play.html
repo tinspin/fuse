@@ -23,7 +23,6 @@
   var lost = 1; /* used in over(data) below */
   function tail(user, data) { /* over(data) is broadcasted to N */
     reset();
-    element('chat').value = user + ': lost(' + data + ')\n' + element('chat').value;
     clearInterval(pid);
   }
 </script>

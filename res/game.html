@@ -51,6 +51,8 @@ public class game extends Service {
   if(!host)
     host = 'fuse.rupy.se';
   var game = '[[ game ]]';
+  if(game == '[[ game ]]')
+    game = 'kloss';
   var show = false;
   var size = 0;
   var salt;
@@ -90,14 +92,14 @@ public class game extends Service {
       if(ie)
         xhr.onprogress = function() {
           var body = xhr.responseText.substring(size, xhr.responseText.length);
-          chop(body, '\\n'); // last \\n instead
+          chop(body, '\n'); // last \n instead
           size = xhr.responseText.length;
         };
       else
         xhr.onreadystatechange = function() {
           if(xhr.readyState == 3) {
             var body = xhr.responseText.substring(size, xhr.responseText.length);
-            chop(body, '\\n\\n'); // last \\n\\n instead
+            chop(body, '\n\n'); // last \n\n instead
             size = xhr.responseText.length;
           }
         };
@@ -105,7 +107,7 @@ public class game extends Service {
     xhr.send();
     if(state == 4) {
       if(show)
-        element('push').innerHTML += xhr.responseText + '\\n';
+        element('push').innerHTML += xhr.responseText + '\n';
       return xhr.responseText;
     }
   }
@@ -130,14 +132,14 @@ public class game extends Service {
   function read(data) {
     //try { console.log(data) } catch(e) {}
     if(show)
-      element('pull').innerHTML += data + '\\n';
+      element('pull').innerHTML += data + '\n';
     if(send_game) {
       setTimeout(function() { push('game|' + game); list() }, 1000); // Give IE time to handle 2000kb payload.
       send_game = false;
     }
     var split = data.split('|');
     if(split.length > 1 && split[0] == 'text') {
-      element('chat').value = split[1] + ': ' + split[2] + '\\n' + element('chat').value;
+      element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
     }
     if(split.length > 0) {
       if(split[0] == 'here') {
@@ -155,6 +157,9 @@ public class game extends Service {
       if(split[0] == 'kill') {
         remove_select('ally', split[1]);
         remove_select('join', split[1]);
+        var user = split[1];
+        var data = 'quit';
+        stop_game(user, data);
       }
       if(split[0] == 'head') {
         display('room', 'none');
@@ -168,12 +173,18 @@ public class game extends Service {
         sent(split[1], split[2]);
       }
       if(split[0] == 'tail') {
-        display('room', 'block');
-        display('play', 'none');
-        element('talk').style.position = 'static';
-        tail(split[1], split.length > 2 ? split[2] : '');
+        var user = split[1];
+        var data = split.length > 2 ? split[2] : '';
+        stop_game(user, data);
       }
     }
+  }
+  function stop_game(user, data) {
+    display('room', 'block');
+    display('play', 'none');
+    element('talk').style.position = 'static';
+    element('chat').value = user + ': lost(' + data + ')\n' + element('chat').value;
+    tail(user, data);
   }
   function remove_select(type, name) {
     var select = element(type);
@@ -390,7 +401,7 @@ public class game extends Service {
      of you want to use our lobby with your game 
      host a file that mimics play.html and call 
      fuse.rupy.se/game.html?game=<name>&path=URLtoyourplay.html -->
-
+     
 [[		if(path.equals("play.html")) {
 			BufferedReader file = new BufferedReader(new FileReader("app/fuse.rupy.se/play.html"));
 			String line = file.readLine();
