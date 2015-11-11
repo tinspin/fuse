@@ -21,7 +21,7 @@ public class Fuse {
 
 	private Queue<string> queue;
 	private Socket pull, push;
-	private bool connected;
+	private bool connected, first = false;
 	private string salt;
 
 	private IPEndPoint remote;
@@ -59,9 +59,12 @@ public class Fuse {
 		pull.NoDelay = true;
 		pull.Connect(remote);
 
-		String data = "GET /pull?salt=" + salt + " HTTP/1.1\r\n"
-				+ "Host: " + host + "\r\n"
-				+ "Head: less\r\n\r\n"; // enables TCP no delay
+		String data = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost: " + host + "\r\n";
+
+		if(first)
+			data += "Head: less\r\n\r\n"; // enables TCP no delay
+		else
+			data += "\r\n";
 
 		pull.Send(Encoding.UTF8.GetBytes(data));
 
