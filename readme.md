@@ -187,20 +187,20 @@ In sort of chronological order:
                            x-> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
                             -> quit|fail|in lobby
 
-                            // user exit
+                            // user exit from platform
  <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
                            x-> <b><i>kill</i></b>|&lt;user&gt;
                             -> exit|fail|in lobby
 
-                            // insert data
+                            // save data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;json&gt;  -> save|done|&lt;id&gt;|&lt;key&gt;         // use key to update
                             -> save|fail|too large
 
-                            // select data
+                            // load data
  <b><i>load</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;id&gt;    -> load|done|&lt;json&gt;             // use &lt;id&gt; from list|data|&lt;type&gt;
                             -> load|fail|not found
 
-                            // start game
+                            // play game
  <b><i>play</i></b>|&lt;salt&gt;[|seed]         -> play|done
                            o-> <b><i>head</i></b>[|seed]                  // to start the game
                            x-> <b><i>view</i></b>|&lt;room&gt;                  // in lobby if room has started
