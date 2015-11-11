@@ -159,7 +159,7 @@ public class game extends Service {
         remove_select('join', split[1]);
         var user = split[1];
         var data = 'quit';
-        stop_game(user, data);
+        stop_game(user, user + ': exit');
       }
       if(split[0] == 'head') {
         display('room', 'none');
@@ -175,16 +175,16 @@ public class game extends Service {
       if(split[0] == 'tail') {
         var user = split[1];
         var data = split.length > 2 ? split[2] : '';
-        stop_game(user, data);
+        stop_game(user, user + ': lost (' + data + ')');
       }
     }
   }
-  function stop_game(user, data) {
+  function stop_game(user, chat) {
     display('room', 'block');
     display('play', 'none');
     element('talk').style.position = 'static';
-    element('chat').value = user + ': lost(' + data + ')\n' + element('chat').value;
-    tail(user, data);
+    element('chat').value = chat + '\n' + element('chat').value;
+    tail(user);
   }
   function remove_select(type, name) {
     var select = element(type);
