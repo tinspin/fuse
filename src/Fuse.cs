@@ -224,7 +224,6 @@ public class Fuse {
 	}
 	
 	private string Sign(string user, string hide) {
-		// for anonymous user use <id> instead here
 		string[] salt = Push("salt|" + user).Split('|');
 		
 		if(salt[1].Equals("fail")) {
@@ -268,16 +267,16 @@ public class Fuse {
 		return BoolPush("join|" + room);
 	}
 
-	public bool Exit() {
-		return BoolPush("exit");
+	public void Play(string seed) {
+		Async("play|" + seed);
 	}
-
-	public void play(string seed) {
-		EasyPush("play|" + seed);
+	
+	public void Over(string data) {
+		Async("over|" + data);
 	}
 
 	public void Chat(string text) {
-		EasyPush("chat|" + text);
+		Async("chat|" + text);
 	}
 
 	public void Send(string data) {
