@@ -180,17 +180,23 @@ public class Fuse {
 	public static void Main() {
 		try {
 			Fuse fuse = new Fuse();
+			string key;
 
 			// if no key is stored try
-
-			//string key = fuse.User("fuse");
-
+/*
+			try {
+				key = fuse.User("fuse");
+			}
+			catch(Exception e) {
+				Console.WriteLine(e);
+				return;
+			}
+*/
 			//   then store name and key
 			// otherwise
 			//   get name and key
 
-			string key = "F9hG7K7Jwe1SmtiQ";
-
+			key = "F9hG7K7Jwe1SmtiQ";
 			string salt = null;
 
 			if(key != null) {
@@ -248,25 +254,41 @@ public class Fuse {
 		}
 	}
 
+	/* Anonymous user.
+	 * You need to:
+	 * - store both key and id.
+	 * - set and get name (unique) or nick 
+	 * manually if you need lobby.
+	 */
+	public void User() {
+		string[] user = EasyUser("", "", "");
+		string key = user[3];
+		string id = user[4];
+		// TODO: store both key and id
+	}
+	
+	// Returns key to be stored.
 	public string User(string name) {
+		return EasyUser(name, "", "")[3];
+	}
+	
+	public void User(string name, string pass) {
+		User(name, "", pass);
+	}
+	
+	public void User(string name, string mail, string pass) {
+		EasyUser(name, mail, pass);
+	}
+
+	public string[] EasyUser(string name, string mail, string pass) {
 		string[] user = Push("user|" + name).Split('|');
 
 		if(user[1].Equals("fail")) {
-			if(user[2].IndexOf("bad") > 0) {
-				// limit characters to alpha numeric.
-			}
-			else if(user[2].IndexOf("already") > 0) {
-				// prompt for other name.
-			}
-
-			Console.WriteLine("user " + user[2]);
-			return null;
+			throw new Exception(user[2]);
 		}
 
 		this.salt = user[2];
-		// for anonymous user
-		//string id = user[4];
-		return user[3];
+		return user;
 	}
 
 	public string Sign(string name, string key) {
