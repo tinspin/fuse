@@ -33,10 +33,6 @@ public class Fuse {
 		public byte[] data = new byte[size];
 	}
 	
-	public void Salt(string salt) {
-		this.salt = salt;
-	}
-	
 	public Fuse() {
 		bool policy = true;
 
@@ -59,7 +55,9 @@ public class Fuse {
 		push.Connect(remote);
 	}
 
-	public void Pull() {
+	public void Pull(string salt) {
+		this.salt = salt;
+		
 		pull = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		pull.NoDelay = true;
 		pull.Connect(remote);
@@ -190,12 +188,10 @@ public class Fuse {
 		return EasyUser(name, "", "")[3];
 	}
 	
-	// pass should be a hash, we use md5(pass + name)
 	public void User(string name, string pass) {
 		User(name, "", pass);
 	}
 
-	// pass should be a hash, we use md5(pass + name)	
 	public void User(string name, string mail, string pass) {
 		EasyUser(name, mail, MD5(pass + name));
 	}
@@ -344,12 +340,11 @@ public class Fuse {
 			}
 
 			if(salt != null) {
-				fuse.Salt(salt);
-				Console.WriteLine("Salt: " + fuse.salt);
+				Console.WriteLine("Salt: " + salt);
 				// this will allow you to Fuse.Read();
 				// from MonoBehaviour.Update();
-				fuse.Pull();
-				Console.WriteLine("Game: " + fuse.Game("kloss"));
+				fuse.Pull(salt);
+				fuse.Game("kloss");
 
 				// remove in unity ###
 				Thread.Sleep(100);

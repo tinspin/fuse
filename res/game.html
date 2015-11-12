@@ -56,7 +56,8 @@ public class game extends Service {
   var show = false;
   var size = 0;
   var salt;
-  function pull() {
+  function pull(salt) {
+    this.salt = salt;
     http('pull', null);
   }
   function push(data) {
@@ -272,9 +273,8 @@ public class game extends Service {
     display('user', 'none');
     display('room', 'block');
     display('talk', 'block');
-    this.salt = salt;
-    pull();
     focus('text');
+    pull(salt);
   }
   function none(data) {
     push(data);

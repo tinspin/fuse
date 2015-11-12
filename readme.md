@@ -74,9 +74,9 @@ In sort of chronological order:
                             -> user|fail|mail already registered
                             -> user|fail|pass too short
  
-                            // to get the &lt;id&gt; of a mail
-                            // if you want to login with &lt;id&gt; below
- <b><i>mail</i></b>|&lt;mail&gt;                -> mail|done|&lt;id&gt;
+                            // to get the &lt;name&gt;/&lt;id&gt; of a mail
+                            // if you want to login with &lt;name&gt;/&lt;id&gt; below
+ <b><i>mail</i></b>|&lt;mail&gt;                -> mail|done|&lt;name&gt;/&lt;id&gt;
                             -> mail|fail|not found
  
                             // get salt for &lt;name&gt; or &lt;id&gt;

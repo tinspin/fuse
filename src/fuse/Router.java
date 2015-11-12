@@ -173,7 +173,7 @@ public class Router implements Node {
 
 			JSONObject json = new JSONObject(Root.file(file));
 
-			return "mail|done|" + Root.hash(json.getString("key"));
+			return "mail|done|" + (json.has("name") ? json.getString("key") : Root.hash(json.getString("key")));
 		}
 
 		if(data.startsWith("salt")) {
