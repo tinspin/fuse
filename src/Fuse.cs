@@ -291,7 +291,8 @@ public class Fuse {
 		return user;
 	}
 
-	public string Sign(string name, string key) {
+	// user is name or id
+	public string Sign(string user, string key) {
 		// for anonymous user use <id> instead here
 		string[] salt = Push("salt|" + name).Split('|');
 		
