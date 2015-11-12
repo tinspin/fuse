@@ -95,9 +95,10 @@
   var remove = [];
   var color = ['blue', 'green', 'orange', 'purple'];
   for(var i = 0; i < color.length; i++) {
-    var img = document.createElementNS('http://www.w3.org/2000/svg','image');
-    /*var img = document.createElement('img');*/
-    img.src = 'svg/' + color[i] + '.svg';
+    var img1 = document.createElementNS('http://www.w3.org/2000/svg','image');
+    img1.src = 'svg/' + color[i] + '.svg';
+    var img2 = document.createElementNS('http://www.w3.org/2000/svg','image');
+    img2.src = 'svg/' + color[i] + 's.svg';
   }
   function random() {
     var x = Math.sin(seed++) * 10000;
@@ -149,6 +150,7 @@
               }
             }
             else { /* floor landing */
+              cube.src = 'svg/' + cube.fuse.color + '.svg';
               dy = 300 - height[col];
               height[col] += 50;
               cube.fuse.speed = 0;
@@ -205,6 +207,10 @@
           catch(e) {}
           combo++;
           restart = true;
+          pop.play();
+        }
+        else {
+          snap.play();
         }
         remove = [];
       }
@@ -212,6 +218,8 @@
     if(restart)
       moveAll();
   }
+  var pop = new Audio('mp3/pop.mp3');
+  var snap = new Audio('mp3/snap.mp3');
   /* when something was removed reset the whole 
      game area and set everything in motion */
   function moveAll() {
@@ -255,6 +263,7 @@
   function spawn() {
     if(next == null) {
       next = add_cube(color[limit(min, max)], 100, -45, 0);
+      next.src = 'svg/' + next.fuse.color + 's.svg';
       next.fuse.next = true;
     }
     current = next;
@@ -262,6 +271,7 @@
     current.fuse.speed = 4;
     current.style.zIndex = 1;
     next = add_cube(color[limit(min, max)], 100, -45, 0);
+    next.src = 'svg/' + next.fuse.color + 's.svg';
     next.fuse.next = true;
   }
   function add_cube(color, x, y, speed) {
