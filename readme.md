@@ -1,5 +1,5 @@
 <pre>
-<img src="https://rawgit.com/tinspin/fuse/master/res/fuse.svg">
+<img width="130" height="80" src="https://rawgit.com/tinspin/fuse/master/res/fuse.svg">
 
 +---------------------------+
 | <i>The multiplayer solution.</i> |
