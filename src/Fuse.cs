@@ -170,10 +170,147 @@ public class Fuse {
 		}
 	}
 
-	// #########################################
-	// YOU CAN DELETE EVERYTHING BELOW THIS LINE
-	// #########################################
-	//   Don't forget the closing } though! ;)
+	// ------------- PROTOCOL  -------------
+
+	/* Anonymous user.
+	 * You need to:
+	 * - store both key and id.
+	 * - set and get name (unique) or nick 
+	 * manually if you need lobby.
+	 */
+	public void User() {
+		string[] user = EasyUser("", "", "");
+		string key = user[3];
+		string id = user[4];
+		// TODO: store both key and id
+	}
+	
+	// Returns key to be stored.
+	public string User(string name) {
+		return EasyUser(name, "", "")[3];
+	}
+	
+	// pass should be a hash, we use md5(pass + name)
+	public void User(string name, string pass) {
+		User(name, "", pass);
+	}
+
+	// pass should be a hash, we use md5(pass + name)	
+	public void User(string name, string mail, string pass) {
+		EasyUser(name, mail, MD5(pass + name));
+	}
+
+	private string[] EasyUser(string name, string mail, string hash) {
+		string[] user = Push("user|" + name + "|" + mail + "|" + hash).Split('|');
+
+		if(user[1].Equals("fail")) {
+			throw new Exception(user[2]);
+		}
+
+		this.salt = user[2];
+		return user;
+	}
+
+	public string SignIdKey(string id, string key) {
+		return Sign(id, key);
+	}
+
+	public string SignNamePass(string name, string pass) {
+		return Sign(name, MD5(pass + name));
+	}
+	
+	private string Sign(string user, string hide) {
+		// for anonymous user use <id> instead here
+		string[] salt = Push("salt|" + user).Split('|');
+		
+		if(salt[1].Equals("fail")) {
+			Console.WriteLine("salt " + salt[2]);
+			return null;
+		}
+		
+		string[] sign = Push("sign|" + salt[2] + "|" + MD5(hide + salt[2])).Split('|');
+
+		if(sign[1].Equals("fail")) {
+			Console.WriteLine("sign " + sign[2]);
+			return null;
+		}
+
+		return salt[2];
+	}
+
+	public bool Game(string game) {
+		return BoolPush("game|" + game);
+	}
+
+	public bool Room(String type, int size) {
+		return BoolPush("room|" + type + "|" + size);
+	}
+
+	public string[] ListRoom() {
+		string list = Push("list|room");
+
+		if(list.StartsWith("list|fail")) {
+			Console.WriteLine(list);
+			return null;
+		}
+
+		if(list.Length > 15)
+			return list.Substring(15).Split('|'); // from 'list|done|room|'
+		else
+			return null;
+	}
+
+	public bool Join(string room) {
+		return BoolPush("join|" + room);
+	}
+
+	public bool Exit() {
+		return BoolPush("exit");
+	}
+
+	public void play(string seed) {
+		EasyPush("play|" + seed);
+	}
+
+	public void Chat(string text) {
+		EasyPush("chat|" + text);
+	}
+
+	public void Send(string data) {
+		Async("send|" + data);
+	}
+
+	private bool BoolPush(string data) {
+		string[] push = EasyPush(data);
+
+		if(push == null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private string[] EasyPush(string data) {
+		string[] push = Push(data).Split('|');
+		
+		if(push[1].Equals("fail")) {
+			Console.WriteLine(data + " " + push[2]);
+			return null;
+		}
+		
+		return push;
+	}
+
+	public static string MD5(string input) {
+		MD5 md5 = System.Security.Cryptography.MD5.Create();
+		byte[] bytes = Encoding.UTF8.GetBytes(input);
+		byte[] hash = md5.ComputeHash(bytes);
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < hash.Length; i++) {
+			sb.Append(hash[i].ToString("X2"));
+		}
+		return sb.ToString().ToLower();
+	}
 
 	// ------------- EXAMPLE USAGE -------------
 
@@ -252,138 +389,6 @@ public class Fuse {
 		catch(Exception e) {
 			Console.WriteLine(e.ToString());
 		}
-	}
-
-	/* Anonymous user.
-	 * You need to:
-	 * - store both key and id.
-	 * - set and get name (unique) or nick 
-	 * manually if you need lobby.
-	 */
-	public void User() {
-		string[] user = EasyUser("", "", "");
-		string key = user[3];
-		string id = user[4];
-		// TODO: store both key and id
-	}
-	
-	// Returns key to be stored.
-	public string User(string name) {
-		return EasyUser(name, "", "")[3];
-	}
-	
-	public void User(string name, string pass) {
-		User(name, "", pass);
-	}
-	
-	public void User(string name, string mail, string pass) {
-		EasyUser(name, mail, pass);
-	}
-
-	public string[] EasyUser(string name, string mail, string pass) {
-		string[] user = Push("user|" + name).Split('|');
-
-		if(user[1].Equals("fail")) {
-			throw new Exception(user[2]);
-		}
-
-		this.salt = user[2];
-		return user;
-	}
-
-	// user is name or id
-	// hide is pass or key
-	public string Sign(string user, string hide) {
-		// for anonymous user use <id> instead here
-		string[] salt = Push("salt|" + user).Split('|');
-		
-		if(salt[1].Equals("fail")) {
-			Console.WriteLine("salt " + salt[2]);
-			return null;
-		}
-		
-		string[] sign = Push("sign|" + salt[2] + "|" + MD5(hide + salt[2])).Split('|');
-
-		if(sign[1].Equals("fail")) {
-			Console.WriteLine("sign " + sign[2]);
-			return null;
-		}
-
-		return salt[2];
-	}
-
-	public bool Game(string game) {
-		return BoolPush("game|" + game);
-	}
-
-	public bool Room(String type, int size) {
-		return BoolPush("room|" + type + "|" + size);
-	}
-
-	public string[] ListRoom() {
-		string list = Push("list|room");
-
-		if(list.StartsWith("list|fail")) {
-			Console.WriteLine(list);
-			return null;
-		}
-
-		if(list.Length > 15)
-			return list.Substring(15).Split('|'); // from 'list|done|room|'
-		else
-			return null;
-	}
-
-	public bool Join(string room) {
-		return BoolPush("join|" + room);
-	}
-
-	public bool Exit() {
-		return BoolPush("exit");
-	}
-
-	public void play(string seed) {
-		EasyPush("play|" + seed);
-	}
-
-	public void Chat(string text) {
-		EasyPush("chat|" + text);
-	}
-
-	public void Send(string data) {
-		Async("send|" + data);
-	}
-
-	public bool BoolPush(string data) {
-		string[] push = EasyPush(data);
-
-		if(push == null) {
-			return false;
-		}
-
-		return true;
-	}
-
-	public string[] EasyPush(string data) {
-		string[] push = Push(data).Split('|');
-		
-		if(push[1].Equals("fail")) {
-			Console.WriteLine(data + " " + push[2]);
-			return null;
-		}
-		
-		return push;
-	}
-
-	public static string MD5(string input) {
-		MD5 md5 = System.Security.Cryptography.MD5.Create();
-		byte[] bytes = Encoding.UTF8.GetBytes(input);
-		byte[] hash = md5.ComputeHash(bytes);
-		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < hash.Length; i++) {
-			sb.Append(hash[i].ToString("X2"));
-		}
-		return sb.ToString().ToLower();
 	}
 }
 
