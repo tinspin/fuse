@@ -1,4 +1,6 @@
 <pre>
+<img src="https://rawgit.com/tinspin/fuse/master/res/fuse.svg">
+
 +---------------------------+
 | <i>The multiplayer solution.</i> |
 +---------------------------+
