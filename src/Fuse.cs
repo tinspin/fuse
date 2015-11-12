@@ -13,13 +13,14 @@ using System.Text;
  */
 
 // TODO: Fix callback to work with lines split over many chunks.
-// TODO: Add push queue wrapper for async outgoing messages.
+// DONE: Add push queue wrapper for async outgoing messages.
 
 public class Fuse {
 	public string host = "fuse.rupy.se";
 	public int port = 80;
 
-	private Queue<string> queue;
+	private Thread thread;
+	private Queue<string> input, output;
 	private Socket pull, push;
 	private bool connected, first = true;
 	private string salt;
@@ -47,14 +48,18 @@ public class Fuse {
 		IPAddress address = Dns.GetHostEntry(host).AddressList[0];
 		remote = new IPEndPoint(address, port);
 
+		input = new Queue<string>();
+		output = new Queue<string>();
+
+		thread = new Thread(PushAsync);
+		thread.Start();
+
 		push = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		push.NoDelay = true;
 		push.Connect(remote);
 	}
 
 	public void Pull() {
-		queue = new Queue<string>();
-
 		pull = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		pull.NoDelay = true;
 		pull.Connect(remote);
@@ -71,13 +76,37 @@ public class Fuse {
 		connected = true;
 	}
 
+	private void PushAsync() {
+		while(true) {
+			try {
+				lock(output) {
+					while(output.Count > 0) {
+						Push(output.Dequeue());
+					}
+				}
+			}
+			finally {
+				lock(thread)
+					Monitor.Wait(thread);
+			}
+		}
+	}
+
+	public void Async(string data) {
+		lock(output) {
+			output.Enqueue(data);
+			lock(thread)
+				Monitor.Pulse(thread);
+		}
+	}
+
 	public string Push(string data) {
 		byte[] body = new byte[1024];
 
 		if(salt != null)
 			data = data.Substring(0, 4) + '|' + salt + data.Substring(4, data.Length - 4);
 
-		String text = "GET /push?data=" + data + " HTTP/1.1\r\nHost: " + host + "\r\n";
+		String text = "GET /push?data=" + Uri.EscapeDataString(data) + " HTTP/1.1\r\nHost: " + host + "\r\n";
 
 		if(first) {
 			text += "Head: less\r\n\r\n"; // enables TCP no delay
@@ -98,12 +127,12 @@ public class Fuse {
 		if(!connected)
 			return null;
 
-		lock(queue) {
-			if(queue.Count > 0) {
-				string[] messages = new string[queue.Count];
+		lock(input) {
+			if(input.Count > 0) {
+				string[] messages = new string[input.Count];
 
 				for(int i = 0; i < messages.Length; i++) {
-					messages[i] = queue.Dequeue();
+					messages[i] = input.Dequeue();
 				}
 
 				return messages;
@@ -125,10 +154,10 @@ public class Fuse {
 				if(!split[0].StartsWith("HTTP")) {
 					string[] messages = split[1].Split('\n');
 
-					lock(queue) {
+					lock(input) {
 						for(int i = 0; i < messages.Length; i++) {
 							if(messages[i].Length > 0) {
-								queue.Enqueue(messages[i]);
+								input.Enqueue(messages[i]);
 							}
 						}
 					}
@@ -206,6 +235,10 @@ public class Fuse {
 				Thread.Sleep(500);
 
 				fuse.Chat("hello");
+				
+				Thread.Sleep(500);
+				
+				fuse.Send("white+0+0");
 			}
 
 			Console.WriteLine("Open: " + salt);
@@ -294,7 +327,7 @@ public class Fuse {
 	}
 
 	public void Send(string data) {
-		EasyPush("send|" + data);
+		Async("send|" + data);
 	}
 
 	public bool BoolPush(string data) {
