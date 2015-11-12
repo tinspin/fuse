@@ -1,5 +1,5 @@
 <pre>
-<img width="130" height="80" src="https://rawgit.com/tinspin/fuse/master/res/fuse.svg">
+<img width="140" height="80" src="https://rawgit.com/tinspin/fuse/master/res/fuse.svg">
 
 +---------------------------+
 | <i>The multiplayer solution.</i> |
@@ -31,7 +31,7 @@ Platform:
   - 100% uptime on routing
   - 100% read uptime on data
 
-Example:
+Examples:
 
   - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source, try single-player <a href="http://fuse.rupy.se/play.html">play.html</a>)
   - java 3D VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a> (closed-source)
