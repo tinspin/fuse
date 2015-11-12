@@ -3,16 +3,16 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="65px" height="40px" viewBox="0 0 65 40" enable-background="new 0 0 65 40" xml:space="preserve">
-<line fill="none" stroke="#F89922" stroke-width="6" stroke-linecap="round" x1="27.72" y1="30.273" x2="27.72" y2="19.917"/>
-<path fill="none" stroke="#F89922" stroke-width="6" stroke-linecap="round" d="M6.45,13.545c0-4.159,3.365-7.524,7.524-7.524"/>
+<line fill="none" stroke="#45B649" stroke-width="6" stroke-linecap="round" x1="27.72" y1="30.273" x2="27.72" y2="19.917"/>
+<path fill="none" stroke="#EF4025" stroke-width="6" stroke-linecap="round" d="M6.45,13.545c0-4.159,3.365-7.524,7.524-7.524"/>
 <line fill="none" stroke="#EF4024" stroke-width="6" stroke-linecap="round" x1="22.814" y1="34.525" x2="35.773" y2="34.525"/>
 <line fill="none" stroke="#EF3F25" stroke-width="6" stroke-linecap="round" x1="6.45" y1="13.545" x2="6.45" y2="35.117"/>
-<path fill="none" stroke="#45B649" stroke-width="6" stroke-linecap="round" d="M17.91,30.273c0.121,5.869,9.811,5.465,9.811,0"/>
-<line fill="none" stroke="#7392CB" stroke-width="6" stroke-linecap="round" x1="17.822" y1="30.67" x2="17.822" y2="20.313"/>
+<path fill="none" stroke="#45B649" stroke-width="6" stroke-linecap="round" d="M17.91,30.273c0,5.511,9.81,5.687,9.811,0"/>
+<line fill="none" stroke="#7392CB" stroke-width="6" stroke-linecap="round" x1="17.822" y1="29.67" x2="17.822" y2="20.313"/>
 <path fill="none" stroke="#F89922" stroke-width="6" stroke-linecap="round" d="M35.773,27.002c0-4.16,3.363-7.526,7.522-7.526"/>
 <path fill="none" stroke="#EF4024" stroke-width="6" stroke-linecap="round" d="M43.296,27.002c0,4.156-3.364,7.523-7.522,7.523"/>
-<path fill="none" stroke="#7392CB" stroke-width="6" stroke-linecap="round" d="M51.326,27.002c0-4.16,3.365-7.526,7.523-7.526"/>
-<path fill="none" stroke="#F89922" stroke-width="6" stroke-linecap="round" d="M58.852,34.525c-4.16,0-7.524-3.365-7.524-7.523"/>
+<path fill="none" stroke="#F89923" stroke-width="6" stroke-linecap="round" d="M51.326,27.002c0-4.16,3.365-7.526,7.523-7.526"/>
+<path fill="none" stroke="#7392CB" stroke-width="6" stroke-linecap="round" d="M58.852,34.525c-4.16,0-7.524-3.365-7.524-7.523"/>
 <line fill="none" stroke="#7392CB" stroke-width="6" stroke-linecap="round" x1="9.288" y1="20.313" x2="17.822" y2="20.313"/>
-<circle fill="#EF4224" stroke="#EF4124" stroke-width="2" stroke-linecap="round" cx="58.852" cy="27.002" r="2.141"/>
+<circle fill="#7392CB" stroke="#7392CB" stroke-width="2" stroke-linecap="round" cx="58.852" cy="27.002" r="2.141"/>
 </svg>
