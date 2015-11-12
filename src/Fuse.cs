@@ -215,6 +215,10 @@ public class Fuse {
 		return Sign(id, key);
 	}
 
+	public string SignNameKey(string name, string key) {
+		return Sign(name, key);
+	}
+
 	public string SignNamePass(string name, string pass) {
 		return Sign(name, MD5(pass + name));
 	}
@@ -337,7 +341,7 @@ public class Fuse {
 			string salt = null;
 
 			if(key != null) {
-				salt = fuse.Sign("fuse", key);
+				salt = fuse.SignNameKey("fuse", key);
 			}
 
 			if(salt != null) {
