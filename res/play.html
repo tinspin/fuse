@@ -59,8 +59,22 @@
     x = null;
     y = null;
   };
+  function touchend(event) {
+    if(!pop) {
+      pop = new Audio('mp3/pop.mp3');
+      pop.play();
+    }
+    if(!snap) {
+      snap = new Audio('mp3/snap.mp3');
+      snap.play();
+    }
+  }
   function keydown(event) {
     action(event.keyCode);
+    if(!pop)
+      pop = new Audio('mp3/pop.mp3');
+    if(!snap)
+      snap = new Audio('mp3/snap.mp3');
   }
   function action(key) {
     if(key === 37)
@@ -72,6 +86,8 @@
     if(key === 38)
       current.fuse.speed = 4;
   }
+  var pop = new Audio('mp3/pop.mp3');
+  var snap = new Audio('mp3/snap.mp3');
 </script>
 <!-- the game logic -->
 <link rel="prefetch" href="svg/blue.svg"/>
@@ -225,8 +241,6 @@
     if(restart)
       moveAll();
   }
-  var pop = new Audio('mp3/pop.mp3');
-  var snap = new Audio('mp3/snap.mp3');
   /* when something was removed reset the whole 
      game area and set everything in motion */
   function moveAll() {
@@ -311,6 +325,7 @@
   var div = element('cube');
   div.addEventListener('touchstart', touchstart);
   div.addEventListener('touchmove', touchmove);
+  /*div.addEventListener('touchend', touchend);*/
   document.addEventListener('keydown', keydown);
   window.onfocus = away;
   window.onblur = away;
