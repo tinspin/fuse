@@ -292,7 +292,8 @@ public class Fuse {
 	}
 
 	// user is name or id
-	public string Sign(string user, string key) {
+	// hide is pass or key
+	public string Sign(string user, string hide) {
 		// for anonymous user use <id> instead here
 		string[] salt = Push("salt|" + user).Split('|');
 		
@@ -301,7 +302,7 @@ public class Fuse {
 			return null;
 		}
 		
-		string[] sign = Push("sign|" + salt[2] + "|" + MD5(key + salt[2])).Split('|');
+		string[] sign = Push("sign|" + salt[2] + "|" + MD5(hide + salt[2])).Split('|');
 
 		if(sign[1].Equals("fail")) {
 			Console.WriteLine("sign " + sign[2]);
