@@ -68,9 +68,9 @@ In sort of chronological order:
                             -> user|fail|name too short
                             -> user|fail|name too long
                             -> user|fail|name already registered
-                            -> user|fail|name invalid       // only [a-zA-Z0-9.\\-]+
+                            -> user|fail|name invalid       // [a-zA-Z0-9.\\-]+
                             -> user|fail|name alpha missing // [0-9]+ reserved for &lt;id&gt;
-                            -> user|fail|mail invalid       // only [a-zA-Z0-9.@\\-\\+]+
+                            -> user|fail|mail invalid       // [a-zA-Z0-9.@\\-\\+]+
                             -> user|fail|mail already registered
                             -> user|fail|pass too short
  
