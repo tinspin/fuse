@@ -63,7 +63,7 @@ In sort of chronological order:
                             // [pass] if you can't store the &lt;key&gt; otherwise set
                             //        to empty string (||)
                             //        preferably [pass] is a hash with salt 
-                            //        for example we simply use md5(pass + name)
+                            //        we simply use md5(pass + name.toLowerCase())
  <b><i>user</i></b>|[name]|[mail]|[pass]  -> user|done|&lt;salt&gt;|&lt;key&gt;|&lt;id&gt;
                             -> user|fail|name too short
                             -> user|fail|name too long
@@ -89,7 +89,7 @@ In sort of chronological order:
                             // login
                             // &lt;hash&gt; is either md5(&lt;key&gt; + &lt;salt&gt;)
                             //               or md5([pass] + &lt;salt&gt;)
-                            //        we use md5(md5(pass + name) + &lt;salt&gt;)
+                            //        we use md5(md5(pass + name.toLowerCase()) + &lt;salt&gt;)
                             //        make sure you keep the case correct
  <b><i>sign</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> sign|done|&lt;name&gt;/&lt;id&gt;
                             -> sign|fail|wrong pass

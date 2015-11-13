@@ -244,7 +244,7 @@ public class game extends Service {
       show_fail('mail invalid');
       return;
     }
-    var hash = md5(pass + name);
+    var hash = md5(pass + name.toLowerCase());
     var user = push('user|' + name + '|' + mail + '|' + hash);
     if(user[1] == 'done')
       authorize(user[2]);

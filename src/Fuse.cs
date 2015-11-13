@@ -193,7 +193,7 @@ public class Fuse {
 	}
 
 	public void User(string name, string mail, string pass) {
-		EasyUser(name, mail, MD5(pass + name));
+		EasyUser(name, mail, MD5(pass + name.ToLower()));
 	}
 
 	private string[] EasyUser(string name, string mail, string hash) {

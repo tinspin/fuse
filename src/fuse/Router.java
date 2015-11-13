@@ -194,7 +194,7 @@ public class Router implements Node {
 			}
 
 			JSONObject json = new JSONObject(Root.file(file));
-
+			
 			session(name, salt, json);
 
 			return "salt|done|" + salt;
@@ -214,7 +214,7 @@ public class Router implements Node {
 			if(user.name.length() > 0 && hash.length() > 0) {
 				String key = user.json.has("pass") ? user.json.getString("pass") : user.json.getString("key");
 				String md5 = Deploy.hash(key + user.salt, "MD5");
-
+				
 				if(hash.equals(md5)) {
 					user.authorized = true;
 					return "sign|done|" + user.name;
