@@ -319,6 +319,20 @@ public class Event extends Throwable implements Chain.Link {
 		return value;
 	}
 	
+	/**
+	 * Escape JSON.
+	 */
+	private static String escape(String value) {
+		value = value.replace("\"", "\\\"");
+		value = value.replace("\\", "\\\\");
+		value = value.replace("\b", "\\b");
+		value = value.replace("\f", "\\f");
+		value = value.replace("\n", "\\n");
+		value = value.replace("\r", "\\r");
+		value = value.replace("\t", "\\t");
+		return value;
+	}
+	
 	protected String address() {
 		String remote = query.header("x-forwarded-for");
 
@@ -357,7 +371,7 @@ public class Event extends Throwable implements Chain.Link {
 				
 				if(metric == null) {
 					metric = new Daemon.Metric();
-					archive.files().put(query.path(), metric);
+					archive.files().put(query.path(), metric); // TODO: Threadlock.
 				}
 			}
 			

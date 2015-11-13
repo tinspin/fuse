@@ -1408,6 +1408,7 @@ public class Daemon implements Runnable {
 						if (chain != null) {
 							return new Lock(chain, false);
 						}
+						/* COM port proxy stuff, breaks sprout talk
 						else if(wakeup) {
 							chain = (Chain) archive.chain().get("null");
 
@@ -1415,6 +1416,7 @@ public class Daemon implements Runnable {
 								return new Lock(chain, false);
 							}
 						}
+						*/
 					}
 				}
 			}
