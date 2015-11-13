@@ -216,7 +216,7 @@ public class Fuse {
 	}
 
 	public string SignNamePass(string name, string pass) {
-		return Sign(name, MD5(pass + name));
+		return Sign(name, MD5(pass + name.ToLower()));
 	}
 	
 	private string Sign(string user, string hide) {

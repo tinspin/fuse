@@ -265,7 +265,7 @@ public class game extends Service {
       show_fail(salt[2]);
       return;
     }
-    var sign = push('sign|' + salt[2] + '|' + md5(md5(pass + name) + salt[2]));
+    var sign = push('sign|' + salt[2] + '|' + md5(md5(pass + name.toLowerCase()) + salt[2]));
     if(sign[1] == 'done')
       authorize(salt[2]);
   }
