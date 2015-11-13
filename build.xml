@@ -59,7 +59,7 @@
 			<arg line="bin/${name}.jar"/>
 			<arg line="res"/>
 		</java>
-		<javac srcdir="res" target="1.4" source="1.4" destdir="res" nowarn="on" debug="on" deprecation="off" classpath="${lib};bin" encoding="UTF-8"/>
+		<javac srcdir="res" target="1.4" source="1.4" destdir="res" nowarn="on" debug="on" deprecation="off" classpath="${lib};bin;tmp/cls" encoding="UTF-8"/>
 		<copy preservelastmodified="true" todir="tmp/jar">
 			<fileset dir="res">
 				<exclude name="**/*.java"/>

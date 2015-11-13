@@ -1,6 +1,8 @@
 [[	package gen;
 
+import fuse.Router;
 import se.rupy.http.*;
+import java.util.*;
 import java.net.*;
 import java.io.*;
 
@@ -61,10 +63,13 @@ public class game extends Service {
     http('pull', null);
   }
   function push(data) {
-    var data = http('push', data).split('|');
-    if(data[1] == 'fail')
-      show_fail(data[2]);
-    return data;
+    var data = http('push', data);
+    if(data) {
+      var split = data.split('|');
+      if(split[1] == 'fail')
+        show_fail(split[2]);
+      return split;
+    }
   }
   function http(path, data) {
     hide_fail();
@@ -109,7 +114,8 @@ public class game extends Service {
     if(state == 4) {
       if(show)
         element('push').innerHTML += xhr.responseText + '\n';
-      return xhr.responseText;
+      if(!async)
+        return xhr.responseText;
     }
   }
   function chop(body, delimiter) {
@@ -158,9 +164,8 @@ public class game extends Service {
       if(split[0] == 'stop' || split[0] == 'exit') {
         remove_select('ally', split[1]);
         remove_select('join', split[1]);
-        var user = split[1];
-        var data = 'quit';
-        stop_game(user, user + ': ' + split[0]);
+        if(split[0] == 'stop')
+          stop_game(split[1], 'quit');
       }
       if(split[0] == 'head') {
         display('room', 'none');
@@ -174,18 +179,15 @@ public class game extends Service {
         sent(split[1], split[2]);
       }
       if(split[0] == 'tail') {
-        var user = split[1];
-        var data = split.length > 2 ? split[2] : '';
-        stop_game(user, user + ': lost (' + data + ')');
+        stop_game(split[1], 'tail');
       }
     }
   }
-  function stop_game(user, chat) {
+  function stop_game(user, rule) {
     display('room', 'block');
     display('play', 'none');
     element('talk').style.position = 'static';
-    element('chat').value = chat + '\n' + element('chat').value;
-    tail(user);
+    tail(user, rule);
   }
   function remove_select(type, name) {
     var select = element(type);
@@ -228,8 +230,9 @@ public class game extends Service {
 </script>
 <!-- fuse view handling -->
 <script>
+  var name;
   function user() {
-    var name = id('name');
+    name = id('name');
     if(name.length < 3) {
       show_fail('name too short');
       return;
@@ -250,7 +253,7 @@ public class game extends Service {
       authorize(user[2]);
   }
   function hash() {
-    var name = id('name');
+    name = id('name');
     if(name.length < 3) {
       show_fail('name too short');
       return;
@@ -323,6 +326,9 @@ public class game extends Service {
   }
   function chat() {
     var text = id('text', true)
+    send_chat(text);
+  }
+  function send_chat(text) {
     if(text.length > 0)
       none('chat|' + text);
   }
@@ -358,8 +364,8 @@ public class game extends Service {
     if(play[1] === 'fail')
       show_fail(play[2]);
   }
-  function over(data) {
-    push('over|' + data);
+  function over() {
+    push('over');
   }
   function send(data) {
     push('send|' + data);
@@ -380,6 +386,14 @@ public class game extends Service {
     <td><a href="javascript:user();">register</a></td></tr>
 <tr><td colspan="2"><font color="#ff9900">*optional</font></td></tr>
 </table>
+[[	Iterator it = fuse.Router.score.iterator();
+
+	while(it.hasNext()) {
+		String score = (String) it.next(); ]]
+
+&nbsp;[[ score ]]<br>
+
+[[	} ]]
 </div>
 
 <div id="room" style="display: none;"><table>

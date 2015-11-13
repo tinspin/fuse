@@ -19,8 +19,15 @@
       used.push(split[i]);
     }
   }
-  var lost = 1; /* used in over(data) below */
-  function tail(user) { /* over(data) is broadcasted to N */
+  function tail(user, rule) { /* over(data) is broadcasted to N */
+    if(rule == 'quit')
+      element('chat').value = user + ': quit\n' + element('chat').value;
+    if(rule == 'tail') {
+      if(user == name)
+        send_chat('loss (' + lost + ', ' + score + 'x' + combos + ')');
+      else
+        send_chat('gain (' + lost + ', ' + score + 'x' + combos + ')');
+    }
     reset();
     clearInterval(pid);
   }
@@ -104,6 +111,8 @@
     height = [0, 0, 0, 0, 0];
     cubes = [];
     next = null;
+    score = 0;
+    combos = 0;
   }
   function element(name) {
     return document.getElementById(name);
@@ -112,6 +121,9 @@
   var combo = 0;
   var current;
   var next;
+  var lost = 0;
+  var score = 0;
+  var combos = 0;
   var height = [0, 0, 0, 0, 0];
   var grid = [];
   var cubes = [];
@@ -165,7 +177,8 @@
           if(300 - dy < height[col]) { /* vertical */
             if(col == 2 && y < 0) { /* game over */
               try {
-                over(lost++);
+                lost++;
+                over();
               }
               catch(e) {
                 reset();
@@ -177,6 +190,7 @@
               dy = 300 - height[col];
               height[col] += 50;
               cube.fuse.speed = 0;
+              cube.style.zIndex = 0;
               landed.push(cube);
               if(cube === current) {
                 spawn();
@@ -218,9 +232,10 @@
               element('cube').removeChild(done);
             }
             else {
-              done.style.zIndex = 2;
+              done.style.zIndex = 1;
               done.fuse.speed = block;
               data += '+' + done.fuse.col;
+              score++;
             }
             block--;
           }
@@ -229,6 +244,7 @@
           }
           catch(e) {}
           combo++;
+          combos++;
           restart = true;
           pop.play();
         }
@@ -290,7 +306,7 @@
     current = next;
     current.fuse.next = false;
     current.fuse.speed = 4;
-    current.style.zIndex = 1;
+    current.style.zIndex = 2;
     next = add_cube(color[limit(min, max)], 100, -45, 0);
     next.src = 'svg/' + next.fuse.color + 's.svg';
     next.fuse.next = true;
