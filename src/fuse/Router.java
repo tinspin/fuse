@@ -421,6 +421,9 @@ public class Router implements Node {
 		if(data.startsWith("play")) {
 			String seed = split[2];
 			
+			if(user.room.play)
+				return "play|fail|already playing";
+			
 			if(user.room.user == null)
 				return "play|fail|in lobby";
 
@@ -436,6 +439,9 @@ public class Router implements Node {
 		}
 		
 		if(data.startsWith("over")) {
+			if(!user.room.play)
+				return "over|fail|not playing";
+			
 			if(split.length > 2)
 				user.room.send(user, "tail|" + user.name + '|' + split[2]);
 			else
@@ -626,6 +632,9 @@ public class Router implements Node {
 			if(data.startsWith("head"))
 				play = true;
 
+			if(data.startsWith("tail"))
+				play = false;
+			
 			System.err.println("<-- " + from + " " + data);
 
 			boolean wakeup = false;
@@ -719,6 +728,7 @@ public class Router implements Node {
 			Room room = user.move(user.room, null);
 			user.game.rooms.remove(user.name);
 			if(place != 1) {
+				System.err.println("kill|" + user.name);
 				user.game.send(user, "kill|" + user.name);
 			}
 			users.remove(salt);

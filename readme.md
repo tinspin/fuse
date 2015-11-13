@@ -206,10 +206,12 @@ In sort of chronological order:
                             -> play|fail|in lobby
                             -> play|fail|not creator
                             -> play|fail|only one player
+                            -> play|fail|already playing
 
                             // game over
  <b><i>over</i></b>|&lt;salt&gt;[|data]         -> over|done                    // insecure, only for development
                            o-> <b><i>tail</b></i>|&lt;user&gt;[|data]           // the game is over
+                            -> over|fail|not playing
 
 +------------------------------------------------------------+
 | <i>These have to be sent in a separate thread from rendering.</i> |
