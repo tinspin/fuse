@@ -88,7 +88,7 @@ public class game extends Service {
     }
     url += "&time=" + new Date().getTime();
     xhr.open('GET', url, async); // sync is deprecated really? genious!
-    try { xhr.setRequestHeader('Accept', 'text/event-stream'); } catch(e) {}
+    if(!ie) xhr.setRequestHeader('Accept', 'text/event-stream');
     if(state == 3) {
       if(ie)
         xhr.onprogress = function() {
