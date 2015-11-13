@@ -86,7 +86,7 @@ public class Router implements Node {
 					boolean add = false;
 
 					if(name) {
-						json += "\"name\":\"" + split[1] + "\"";
+						json += "\"name\":\"" + split[1].toLowerCase() + "\"";
 						sort += ",name";
 
 						add = true;
@@ -96,7 +96,7 @@ public class Router implements Node {
 						if(add)
 							json += ",";
 
-						json += "\"mail\":\"" + split[2] + "\"";
+						json += "\"mail\":\"" + split[2].toLowerCase() + "\"";
 						sort += ",mail";
 
 						add = true;
@@ -165,7 +165,7 @@ public class Router implements Node {
 		}
 
 		if(data.startsWith("mail")) {
-			File file = new File(Root.home() + "/node/user/mail" + Root.path(split[1]));
+			File file = new File(Root.home() + "/node/user/mail" + Root.path(split[1].toLowerCase()));
 
 			if(file == null || !file.exists()) {
 				return "mail|fail|not found";
@@ -177,7 +177,7 @@ public class Router implements Node {
 		}
 
 		if(data.startsWith("salt")) {
-			String name = split[1];
+			String name = split[1].toLowerCase();
 			String salt = session();
 
 			File file = null;
@@ -233,10 +233,10 @@ public class Router implements Node {
 			if(!split[2].matches("[a-zA-Z]+"))
 				return "game|fail|name invalid";
 
-			Game game = (Game) games.get(split[2]);
+			Game game = (Game) games.get(split[2].toLowerCase());
 
 			if(game == null) {
-				game = new Game(split[2]);
+				game = new Game(split[2].toLowerCase());
 				games.put(split[2], game);
 			}
 
@@ -276,7 +276,7 @@ public class Router implements Node {
 					return rule + "|fail|" + rule + " invalid";
 				
 				if(rule.equals("name"))
-					user.json.put("name", split[2]);
+					user.json.put("name", split[2].toLowerCase());
 				else
 					user.json.put("nick", split[2]);
 				
