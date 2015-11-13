@@ -10,10 +10,10 @@
 <line fill="none" stroke="#EF4125" stroke-width="6" stroke-linecap="round" x1="11.45" y1="13.545" x2="11.45" y2="35.117"/>
 <path fill="none" stroke="#47B649" stroke-width="6" stroke-linecap="round" d="M22.91,30.273c0,5.511,9.81,5.687,9.811,0"/>
 <line fill="none" stroke="#7492CB" stroke-width="6" stroke-linecap="round" x1="22.822" y1="29.67" x2="22.822" y2="20.313"/>
-<path fill="none" stroke="#F89924" stroke-width="6" stroke-linecap="round" d="M40.773,27.002c0-4.16,3.362-7.526,7.521-7.526"/>
+<path fill="none" stroke="#F89924" stroke-width="6" stroke-linecap="round" d="M40.773,27.002c0-4.16,3.361-7.526,7.521-7.526"/>
 <path fill="none" stroke="#EF4224" stroke-width="6" stroke-linecap="round" d="M48.296,27.002c0,4.156-3.364,7.523-7.522,7.523"/>
 <path fill="none" stroke="#F89925" stroke-width="6" stroke-linecap="round" d="M56.326,27.002c0-4.16,3.365-7.526,7.523-7.526"/>
-<path fill="none" stroke="#7492CB" stroke-width="6" stroke-linecap="round" d="M63.852,34.525c-4.16,0-7.523-3.365-7.523-7.523"/>
+<path fill="none" stroke="#7492CB" stroke-width="6" stroke-linecap="round" d="M63.852,34.525c-4.16,0-7.522-3.365-7.522-7.523"/>
 <line fill="none" stroke="#7492CB" stroke-width="6" stroke-linecap="round" x1="14.288" y1="20.313" x2="22.822" y2="20.313"/>
-<circle fill="#7492CB" stroke="#7492CB" stroke-width="2" stroke-linecap="round" cx="63.852" cy="27.002" r="2.141"/>
+<circle fill="#47B649" stroke="#47B649" stroke-width="2" stroke-linecap="round" cx="63.852" cy="27.002" r="2.141"/>
 </svg>
