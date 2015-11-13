@@ -250,7 +250,7 @@ public class Router implements Node {
 		if(user.game == null)
 			return "main|fail|no game";
 
-		if(data.startsWith("name") || data.startsWith("nick")) {
+		if(data.startsWith("name") || data.startsWith("nick") || data.startsWith("pass")) {
 			File file = null;
 			final String rule = split[0];
 			boolean id = split[2].matches("[0-9]+");
@@ -277,12 +277,14 @@ public class Router implements Node {
 				
 				if(rule.equals("name"))
 					user.json.put("name", split[2].toLowerCase());
-				else
+				else if(rule.equals("nick"))
 					user.json.put("nick", split[2]);
+				else
+					user.json.put("pass", split[2]);
 				
 				final String json = user.json.toString();
 				
-				Async.Work nick = new Async.Work(event) {
+				Async.Work update = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
 						String sort = "";
 						
@@ -316,7 +318,7 @@ public class Router implements Node {
 					}
 				};
 
-				event.daemon().client().send("localhost", nick, 30);
+				event.daemon().client().send("localhost", update, 30);
 				return "hold";
 			}
 		}

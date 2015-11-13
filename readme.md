@@ -133,6 +133,9 @@ In sort of chronological order:
  <b><i>name</i></b>|&lt;salt&gt;|&lt;id&gt;           -> name|done|&lt;name&gt;
                             -> name|fail|not found
 
+                            // set pass
+ <b><i>pass</i></b>|&lt;salt&gt;|&lt;pass&gt;           -> pass|done
+
                             // pause game
 *<b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
                            x-> <b><i>hold</b></i>|&lt;user&gt;
