@@ -134,7 +134,7 @@ In sort of chronological order:
                             -> name|fail|not found
 
                             // set pass
- <b><i>pass</i></b>|&lt;salt&gt;|&lt;pass&gt;           -> pass|done
+ <b><i>pass</i></b>|&lt;salt&gt;|&lt;pass&gt;         -> pass|done
 
                             // pause game
 *<b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
