@@ -188,7 +188,7 @@ In sort of chronological order:
 
                             // user exit from platform
  <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
-                           x-> <b><i>kill</i></b>|&lt;user&gt;
+                           x-> <b><i>exit</i></b>|&lt;user&gt;
                             -> exit|fail|in lobby
 
                             // save data

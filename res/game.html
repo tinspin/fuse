@@ -155,12 +155,12 @@ public class game extends Service {
       if(split[0] == 'halt') {
         remove_select('join', split[1]);
       }
-      if(split[0] == 'kill') {
+      if(split[0] == 'stop' || split[0] == 'exit') {
         remove_select('ally', split[1]);
         remove_select('join', split[1]);
         var user = split[1];
         var data = 'quit';
-        stop_game(user, user + ': exit');
+        stop_game(user, user + ': ' + split[0]);
       }
       if(split[0] == 'head') {
         display('room', 'none');

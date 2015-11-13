@@ -728,8 +728,8 @@ public class Router implements Node {
 			Room room = user.move(user.room, null);
 			user.game.rooms.remove(user.name);
 			if(place != 1) {
-				System.err.println("kill|" + user.name);
-				user.game.send(user, "kill|" + user.name);
+				System.err.println("exit|" + user.name);
+				user.game.send(user, "exit|" + user.name);
 			}
 			users.remove(salt);
 		}
