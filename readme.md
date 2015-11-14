@@ -251,25 +251,13 @@ In sort of chronological order:
 
 // name pool
 
- <b><i>cash</i></b>
- <b><i>info</i></b>
- <b><i>ping</i></b>
- <b><i>time</i></b>
- <b><i>host</i></b>
- <b><i>pull</i></b>
- <b><i>pick</i></b>
- <b><i>push</i></b>
- <b><i>hide</i></b>
- <b><i>show</i></b>
- <b><i>fill</i></b>
- <b><i>full</i></b>
- <b><i>slay</i></b>
- <b><i>ruin</i></b>
- <b><i>rise</i></b>
- <b><i>drop</i></b>
- <b><i>made</i></b>
- <b><i>halt</i></b>
- 
+ <b><i>cash</i></b> <b><i>info</i></b> <b><i>ping</i></b>
+ <b><i>time</i></b> <b><i>host</i></b> <b><i>pull</i></b>
+ <b><i>pick</i></b> <b><i>push</i></b> <b><i>hide</i></b>
+ <b><i>show</i></b> <b><i>fill</i></b> <b><i>full</i></b>
+ <b><i>slay</i></b> <b><i>ruin</i></b> <b><i>rise</i></b>
+ <b><i>drop</i></b> <b><i>made</i></b> <b><i>halt</i></b>
+
 // attribution
 
  pop.mp3 - Mark DiAngelo
