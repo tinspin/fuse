@@ -155,10 +155,10 @@ public class game extends Service {
       if(split[0] == 'gone') {
         remove_select('ally', split[1]);
       }
-      if(split[0] == 'made') {
+      if(split[0] == 'make') {
         add_select('join', split[1].split('+')[0]);
       }
-      if(split[0] == 'halt') {
+      if(split[0] == 'drop') {
         remove_select('join', split[1]);
       }
       if(split[0] == 'stop' || split[0] == 'exit') {
@@ -378,7 +378,7 @@ public class game extends Service {
 <body style="margin: 0px;">
 
 <div id="user"><table>
-<tr><td colspan="3"><img width="140" height="80" src="fuse.svg"></td></tr>
+<tr><td colspan="3"><a href="https://github.com/tinspin/fuse"><img border="0" width="140" height="80" src="fuse.svg"></a></td></tr>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
 <tr><td>name&nbsp;</td><td><input id="name" name="name" size="10"></td></tr>
 <tr><td>pass&nbsp;</td>

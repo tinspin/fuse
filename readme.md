@@ -154,7 +154,7 @@ In sort of chronological order:
 
                             // host room
  <b><i>room</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;size&gt;  -> room|done
-                           x-> <b><i>made</i></b>|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;+&lt;case&gt;
+                           x-> <b><i>make</i></b>|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;+&lt;case&gt;
                             -> room|fail|not in lobby
                             -> room|fail|type invalid       // [a-zA-Z]+
 
@@ -184,8 +184,8 @@ In sort of chronological order:
                             // quit room
  <b><i>quit</i></b>|&lt;salt&gt;                -> quit|done
                            x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in lobby
-                           x-> <b><i>halt</i></b>|&lt;user&gt;                  // in lobby if creator leaves
                            x-> <b><i>gone</i></b>|&lt;user&gt;                  // in old room
+                           x-> <b><i>drop</i></b>|&lt;user&gt;                  // in lobby if creator leaves
                            x-> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
                             -> quit|fail|in lobby
 
@@ -251,7 +251,22 @@ In sort of chronological order:
 
 // name pool
 
- <b><i>cash</i></b>, <b><i>info</i></b>, <b><i>ping</i></b>, <b><i>time</i></b>, <b><i>host</i></b>, <b><i>pull</i></b>, <b><i>pick</i></b>, <b><i>push</i></b>, <b><i>hide</i></b>, <b><i>show</i></b>, <b><i>fill</i></b>, <b><i>full</i></b>
+ <b><i>cash</i></b>
+ <b><i>info</i></b>
+ <b><i>ping</i></b>
+ <b><i>time</i></b>
+ <b><i>host</i></b>
+ <b><i>pull</i></b>
+ <b><i>pick</i></b>
+ <b><i>push</i></b>
+ <b><i>hide</i></b>
+ <b><i>show</i></b>
+ <b><i>fill</i></b>
+ <b><i>full</i></b>
+ <b><i>slay</i></b>
+ <b><i>ruin</i></b>
+ <b><i>rise</i></b>
+ <b><i>drop</i></b>
 
 // attribution
 

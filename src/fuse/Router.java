@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -345,7 +344,7 @@ public class Router implements Node {
 			Room room = new Room(user, type, size);
 
 			user.game.rooms.put(user.name, room);
-			user.game.send(user, "made|" + room);
+			user.game.send(user, "make|" + room);
 			user.move(user.game, room);
 
 			return "room|done";
@@ -479,7 +478,7 @@ public class Router implements Node {
 
 			if(room != null) {
 				user.game.rooms.remove(room.user.name);
-				user.game.send(user, "halt|" + user.name);
+				user.game.send(user, "drop|" + user.name);
 			}
 
 			return "quit|done";
