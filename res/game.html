@@ -164,8 +164,10 @@ public class game extends Service {
       if(split[0] == 'stop' || split[0] == 'exit') {
         remove_select('ally', split[1]);
         remove_select('join', split[1]);
-        if(split[0] == 'stop')
-          stop_game(split[1], 'quit');
+        if(split[0] == 'stop') {
+          element('chat').value = split[1] + ': quit\n' + element('chat').value;
+          stop_game();
+        }
       }
       if(split[0] == 'head') {
         display('room', 'none');
@@ -179,15 +181,16 @@ public class game extends Service {
         sent(split[1], split[2]);
       }
       if(split[0] == 'tail') {
-        stop_game(split[1], 'tail');
+        element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
+        stop_game();
       }
     }
   }
-  function stop_game(user, rule) {
+  function stop_game() {
     display('room', 'block');
     display('play', 'none');
     element('talk').style.position = 'static';
-    tail(user, rule);
+    tail();
   }
   function remove_select(type, name) {
     var select = element(type);
@@ -364,8 +367,8 @@ public class game extends Service {
     if(play[1] === 'fail')
       show_fail(play[2]);
   }
-  function over() {
-    push('over');
+  function over(data) {
+    push('over|' + data);
   }
   function send(data) {
     push('send|' + data);
@@ -386,14 +389,16 @@ public class game extends Service {
     <td><a href="javascript:user();">register</a></td></tr>
 <tr><td colspan="2"><font color="#ff9900">*optional</font></td></tr>
 </table>
+<table>
 [[	Iterator it = fuse.Router.score.iterator();
 
 	while(it.hasNext()) {
 		String score = (String) it.next(); ]]
 
-&nbsp;[[ score ]]<br>
+<tr><td>[[ score ]]</td></tr>
 
 [[	} ]]
+</table>
 </div>
 
 <div id="room" style="display: none;"><table>

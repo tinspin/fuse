@@ -1,10 +1,10 @@
 package fuse;
 
 import java.io.File;
-import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,7 +17,7 @@ import se.rupy.http.Event;
 import se.rupy.http.Root;
 
 public class Router implements Node {
-	public static CopyOnWriteArrayList score = new CopyOnWriteArrayList();
+	public static ConcurrentLinkedDeque score = new ConcurrentLinkedDeque();
 	
 	ConcurrentHashMap users = new ConcurrentHashMap();
 	ConcurrentHashMap games = new ConcurrentHashMap();
@@ -452,6 +452,22 @@ public class Router implements Node {
 			else
 				user.room.send(user, "tail|" + user.name);
 
+			user.lost++;
+			
+			Iterator it = user.room.users.values().iterator();
+			
+			while(it.hasNext()) {
+				User other = (User) it.next();
+				
+				if(user.salt != other.salt) {
+					score.add("<font color=\"#ff3300\">" + user.name + "(" + user.lost + ")</font> vs. <font color=\"#00cc33\">" + other.name + "</font>");
+					
+					if(score.size() > 10) {
+						score.poll();
+					}
+				}
+			}
+
 			return "over|done";
 		}
 
@@ -536,10 +552,6 @@ public class Router implements Node {
 
 		if(data.startsWith("chat")) {
 			user.room.send(user, "text|" + user.name + "|" + split[2]);
-			
-			if(split[2].startsWith("loss") || split[2].startsWith("gain"))
-				score.add(user.name + " " + split[2]);
-			
 			return "chat|done";
 		}
 
@@ -563,7 +575,8 @@ public class Router implements Node {
 		boolean authorized;
 		Game game;
 		Room room;
-
+		int lost;
+		
 		User(String name, String salt) {
 			this.name = name;
 			this.salt = salt;
@@ -608,6 +621,8 @@ public class Router implements Node {
 					from.send(this, "gone|" + name);
 			}
 
+			lost = 0;
+			
 			return drop;
 		}
 

@@ -17,17 +17,10 @@
         high += 50;
       add_cube(color[math_random(0, 3)], split[i] * 50, -50 - high, 8);
       used.push(split[i]);
+      drops++;
     }
   }
-  function tail(user, rule) { /* over(data) is broadcasted to N */
-    if(rule == 'quit')
-      element('chat').value = user + ': quit\n' + element('chat').value;
-    if(rule == 'tail') {
-      if(user == name)
-        send_chat('loss (' + lost + ', ' + score + 'x' + combos + ')');
-      else
-        send_chat('gain (' + lost + ', ' + score + 'x' + combos + ')');
-    }
+  function tail() { /* over(data) is broadcasted to N */
     reset();
     clearInterval(pid);
   }
@@ -112,7 +105,7 @@
     cubes = [];
     next = null;
     score = 0;
-    combos = 0;
+    drops = 0;
   }
   function element(name) {
     return document.getElementById(name);
@@ -123,7 +116,7 @@
   var next;
   var lost = 0;
   var score = 0;
-  var combos = 0;
+  var drops = 0;
   var height = [0, 0, 0, 0, 0];
   var grid = [];
   var cubes = [];
@@ -178,7 +171,7 @@
             if(col == 2 && y < 0) { /* game over */
               try {
                 lost++;
-                over();
+                over('lost (' + lost + ',' + score + ',' + drops + ')');
               }
               catch(e) {
                 reset();
@@ -244,7 +237,6 @@
           }
           catch(e) {}
           combo++;
-          combos++;
           restart = true;
           pop.play();
         }

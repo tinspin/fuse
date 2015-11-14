@@ -212,8 +212,8 @@ In sort of chronological order:
                             -> play|fail|already playing
 
                             // game over
- <b><i>over</i></b>|&lt;salt&gt;                -> over|done                    // insecure, only for development
-                           o-> <b><i>tail</b></i>|&lt;user&gt;                  // &lt;user&gt; lost the game
+ <b><i>over</i></b>|&lt;salt&gt;[|data]         -> over|done                    // insecure, only for development
+                           o-> <b><i>tail</b></i>|&lt;user&gt;[|data]           // the game is over
                             -> over|fail|not playing
 
 +------------------------------------------------------------+
