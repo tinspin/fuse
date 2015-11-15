@@ -328,13 +328,15 @@
     head(232423);
 </script>
 
-<div id="load">
-<img id="1" src="svg/blue.svg" onload="element('load').removeChild(element('1'));"/>
-<img id="2" src="svg/green.svg" onload="element('load').removeChild(element('2'));"/>
-<img id="3" src="svg/orange.svg" onload="element('load').removeChild(element('3'));"/>
-<img id="4" src="svg/purple.svg" onload="element('load').removeChild(element('4'));"/>
-<img id="5" src="svg/blues.svg" onload="element('load').removeChild(element('5'));"/>
-<img id="6" src="svg/greens.svg" onload="element('load').removeChild(element('6'));"/>
-<img id="7" src="svg/oranges.svg" onload="element('load').removeChild(element('7'));"/>
-<img id="8" src="svg/purples.svg" onload="element('load').removeChild(element('8'));"/>
+<!-- IE & Android do not load pictures before 
+     they are displayed on the screen -->
+<div id="load" style="position: absolute; left: 200px; top: 0px; z-index: -1;">
+<img id="1" src="svg/blue.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="2" src="svg/green.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="3" src="svg/orange.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="4" src="svg/purple.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="5" src="svg/blues.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="6" src="svg/greens.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="7" src="svg/oranges.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="8" src="svg/purples.svg" style="position: absolute; left: 0px; top: 0px;"/>
 </div>
