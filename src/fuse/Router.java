@@ -78,7 +78,7 @@ public class Router implements Node {
 					return "user|fail|name invalid";
 
 				if(name && split[1].matches("[0-9]+"))
-					return "user|fail|name alpha missing";
+					return "user|fail|name alpha missing"; // [0-9]+ reserved for <id>
 			}
 
 			if(mail && split[2].indexOf("@") < 1 && !split[2].matches("[a-zA-Z0-9.@\\-\\+]+"))
@@ -283,6 +283,9 @@ public class Router implements Node {
 			else {
 				if(!rule.equals("pass") && !split[2].matches("[a-zA-Z0-9.\\-]+"))
 					return rule + "|fail|" + rule + " invalid";
+				
+				if(rule.equals("name") && split[2].matches("[0-9]+"))
+					return "name|fail|name alpha missing"; // [0-9]+ reserved for <id>
 				
 				if(rule.equals("name"))
 					user.json.put("name", split[2].toLowerCase());

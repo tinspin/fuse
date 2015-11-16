@@ -127,6 +127,7 @@ In sort of chronological order:
                             // set name for user
  <b><i>name</i></b>|&lt;salt&gt;|&lt;name&gt;         -> name|done
                             -> name|fail|name invalid       // [a-zA-Z0-9.\\-]+
+                            -> name|fail|name alpha missing // [0-9]+ reserved for &lt;id&gt;
                             -> name|fail|taken
 
                             // get name for any id
