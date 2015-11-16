@@ -45,7 +45,6 @@ public class Router implements Node {
 		
 		// This uses host.rupy.se specific MaxMind GeoLiteCity.dat
 		JSONObject country = new JSONObject((String) daemon.send(null, "{\"type\":\"country\",\"ip\":\"" + event.remote() + "\"}"));
-		System.out.println(country);
 		if(!country.getString("code").equals("--"))
 			user.flag = country.getString("code").toLowerCase();
 		// End
@@ -282,7 +281,7 @@ public class Router implements Node {
 				}
 			}
 			else {
-				if(!split[2].matches("[a-zA-Z0-9.\\-]+"))
+				if(!rule.equals("pass") && !split[2].matches("[a-zA-Z0-9.\\-]+"))
 					return rule + "|fail|" + rule + " invalid";
 				
 				if(rule.equals("name"))
