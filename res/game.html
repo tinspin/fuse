@@ -136,6 +136,8 @@ public class game extends Service {
 </script>
 <!-- fuse message handling -->
 <script>
+  var beep = new Audio('mp3/beep.mp3');
+  var select = new Audio('mp3/select.mp3');
   var send_game = true;
   function read(data) {
     //try { console.log(data) } catch(e) {}
@@ -148,13 +150,16 @@ public class game extends Service {
     var split = data.split('|');
     if(split.length > 1 && split[0] == 'text') {
       element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
+      beep.play();
     }
     if(split.length > 0) {
       if(split[0] == 'here') {
         add_select('ally', split[1], '#00cc33');
+        select.play();
       }
       if(split[0] == 'gone') {
         remove_select('ally', split[1]);
+        stop_game();
       }
       if(split[0] == 'make') {
         add_select('join', split[1].split('+')[0], '#ff9900'); /*#6699ff*/
