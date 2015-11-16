@@ -38,10 +38,18 @@ public class Router implements Node {
 		return salt;
 	}
 
-	private User session(String name, String salt, JSONObject json) throws Exception {
+	private User session(Event event, String name, String salt, JSONObject json) throws Exception {
 		User user = new User(name.length() > 0 ? name : "" + Root.hash(json.getString("key")), salt);
 		user.json = json;
 		users.put(salt, user);
+		
+		// This uses host.rupy.se specific MaxMind GeoLiteCity.dat
+		JSONObject country = new JSONObject((String) daemon.send(null, "{\"type\":\"country\",\"ip\":\"" + event.remote() + "\"}"));
+		System.out.println(country);
+		if(!country.getString("code").equals("--"))
+			user.flag = country.getString("code").toLowerCase();
+		// End
+		
 		return user;
 	}
 
@@ -148,7 +156,7 @@ public class Router implements Node {
 						JSONObject json = new JSONObject(body);
 						String key = json.getString("key");
 
-						User user = session(name ? split[1] : "", session(), json);
+						User user = session(event, name ? split[1] : "", session(), json);
 						user.authorized = true;
 
 						event.query().put("done", "user|done|" + user.salt + "|" + key + "|" + Root.hash(key));
@@ -197,7 +205,7 @@ public class Router implements Node {
 
 			JSONObject json = new JSONObject(Root.file(file));
 			
-			session(name, salt, json);
+			session(event, name, salt, json);
 
 			return "salt|done|" + salt;
 		}
@@ -459,7 +467,19 @@ public class Router implements Node {
 				User other = (User) it.next();
 				
 				if(user.salt != other.salt) {
-					score.add("<font color=\"#ff3300\">" + user.name + "(" + user.lost + ")</font> vs. <font color=\"#00cc33\">" + other.name + "</font>");
+					StringBuilder builder = new StringBuilder();
+					
+					if(user.flag != null)
+						builder.append("<img style=\"display: inline;\" src=\"flag/" + user.flag + ".gif\">&nbsp;");
+					
+					builder.append("<font color=\"#ff3300\">" + user.name + "(" + user.lost + ")</font> vs. ");
+					
+					if(other.flag != null)
+						builder.append("<img style=\"display: inline;\" src=\"flag/" + other.flag + ".gif\">&nbsp;");
+					
+					builder.append("<font color=\"#00cc33\">" + other.name + "</font>");
+					
+					score.add(builder.toString());
 					
 					if(score.size() > 10) {
 						score.poll();
@@ -570,7 +590,7 @@ public class Router implements Node {
 	public static class User {
 		String[] ip;
 		JSONObject json;
-		String name, salt, nick;
+		String name, salt, nick, flag;
 		boolean authorized;
 		Game game;
 		Room room;

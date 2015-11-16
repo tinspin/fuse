@@ -17,6 +17,7 @@ public class game extends Service {
 <!DOCTYPE HTML>
 <html>
 <head>
+<meta name="viewport" content="width=300">
 <style>
   a:link, a:hover, a:active, a:visited { color: #6699ff; }
   img { display: block; }
@@ -150,13 +151,13 @@ public class game extends Service {
     }
     if(split.length > 0) {
       if(split[0] == 'here') {
-        add_select('ally', split[1]);
+        add_select('ally', split[1], '#00cc33');
       }
       if(split[0] == 'gone') {
         remove_select('ally', split[1]);
       }
       if(split[0] == 'make') {
-        add_select('join', split[1].split('+')[0]);
+        add_select('join', split[1].split('+')[0], '#ff9900'); /*#6699ff*/
       }
       if(split[0] == 'drop') {
         remove_select('join', split[1]);
@@ -204,7 +205,7 @@ public class game extends Service {
     if(id > -1)
       select.remove(id);
   }
-  function add_select(type, name) {
+  function add_select(type, name, color) {
     var select = element(type);
     for(var i = 0; i < select.options.length; i++) {
       if(select.options[i].text == name) {
@@ -212,6 +213,7 @@ public class game extends Service {
       }
     }
     var option = document.createElement('option');
+    option.style.color = color;
     option.text = name;
     select.options.add(option, select.options[0]);
   }
@@ -356,7 +358,7 @@ public class game extends Service {
   function list() {
     var list = push('list|room');
     for(var i = 3; i < list.length; i++) {
-      add_select('join', list[i].split('+')[0]);
+      add_select('join', list[i].split('+')[0], '#ff3300');
     }
   }
   function math_random(min, max) {
