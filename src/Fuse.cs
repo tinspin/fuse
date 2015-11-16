@@ -1,4 +1,5 @@
-//using UnityEngine; // policy ###
+//using UnityEngine; // ###
+//using System.Collections; // ###
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -9,12 +10,13 @@ using System.Text;
 
 /* A real-time comet stream plugin for rupy.
  * For unity seach for ###
- * For usage scroll down to main() method.
+ * For usage scroll down to Main() method.
  */
 
 // TODO: Fix callback to work with lines split over many chunks.
 // DONE: Add push queue wrapper for async outgoing messages.
 
+// public class Fuse : MonoBehaviour { ###
 public class Fuse {
 	public string host = "fuse.rupy.se";
 	public int port = 80;
@@ -33,6 +35,12 @@ public class Fuse {
 		public byte[] data = new byte[size];
 	}
 	
+	public static void Log(string message) {
+		//Debug.Log(message); // uncomment ###
+		Console.WriteLine(message); // comment out ###
+	}
+	
+	// Should be replaced with void Start() ###
 	public Fuse() {
 		bool policy = true;
 
@@ -164,7 +172,7 @@ public class Fuse {
 				state.socket.BeginReceive(state.data, 0, State.size, 0, new AsyncCallback(Callback), state);
 			}
 		} catch (Exception e) {
-			Console.WriteLine(e.ToString());
+			Log(e.ToString());
 		}
 	}
 
@@ -223,14 +231,14 @@ public class Fuse {
 		string[] salt = Push("salt|" + user).Split('|');
 		
 		if(salt[1].Equals("fail")) {
-			Console.WriteLine("salt " + salt[2]);
+			Log("salt " + salt[2]);
 			return null;
 		}
 		
 		string[] sign = Push("sign|" + salt[2] + "|" + MD5(hide + salt[2])).Split('|');
 
 		if(sign[1].Equals("fail")) {
-			Console.WriteLine("sign " + sign[2]);
+			Log("sign " + sign[2]);
 			return null;
 		}
 
@@ -249,7 +257,7 @@ public class Fuse {
 		string list = Push("list|room");
 
 		if(list.StartsWith("list|fail")) {
-			Console.WriteLine(list);
+			Log(list);
 			return null;
 		}
 
@@ -293,7 +301,7 @@ public class Fuse {
 		string[] push = Push(data).Split('|');
 		
 		if(push[1].Equals("fail")) {
-			Console.WriteLine(data + " " + push[2]);
+			Log(data + " " + push[2]);
 			return null;
 		}
 		
@@ -311,8 +319,20 @@ public class Fuse {
 		return sb.ToString().ToLower();
 	}
 
-	// ------------- EXAMPLE USAGE -------------
+	// ------------- INCOMING MESSAGES ---------
+/* uncomment ###
+	void Update() {
+		string[] received = Read();
 
+		if(received != null) {
+			for(int i = 0; i < received.Length; i++) {
+				Log("Read: " + received[i]);
+			}
+		}
+	}
+*/
+	// ------------- EXAMPLE USAGE -------------
+	// remove ###
 	public static void Main() {
 		try {
 			Fuse fuse = new Fuse();
@@ -324,7 +344,7 @@ public class Fuse {
 				key = fuse.User("fuse");
 			}
 			catch(Exception e) {
-				Console.WriteLine(e);
+				Log(e);
 				return;
 			}
 */
@@ -340,7 +360,7 @@ public class Fuse {
 			}
 
 			if(salt != null) {
-				Console.WriteLine("Salt: " + salt);
+				Log("Salt: " + salt);
 				// this will allow you to Fuse.Read();
 				// from MonoBehaviour.Update();
 				fuse.Pull(salt);
@@ -358,18 +378,18 @@ public class Fuse {
 
 				Thread.Sleep(500);
 
-				Console.WriteLine("Room: " + fuse.Room("race", 4));
+				Log("Room: " + fuse.Room("race", 4));
 
 				Thread.Sleep(500);
 
 				string[] list = fuse.ListRoom();
 
 				if(list != null) {
-					Console.WriteLine("List: " + list.Length);
+					Log("List: " + list.Length);
 
 					for(int i = 0; i < list.Length; i++) {
 						string[] room = list[i].Split('+');
-						Console.WriteLine("      " + room[0] + " " + room[1] + " " + room[2] + " " + room[3]);
+						Log("      " + room[0] + " " + room[1] + " " + room[2] + " " + room[3]);
 					}
 				}
 				
@@ -382,16 +402,16 @@ public class Fuse {
 				fuse.Send("white+0+0");
 			}
 
-			Console.WriteLine("Open: " + salt);
+			Log("Open: " + salt);
 		}
 		catch(Exception e) {
-			Console.WriteLine(e.ToString());
+			Log(e.ToString());
 		}
 	}
 }
 
 // this is my emulation of MonoBehaviour.Update();
-
+// remove ###
 public class Alpha {
 	private Fuse fuse;
 	public Alpha(Fuse fuse) { this.fuse = fuse; }
@@ -402,7 +422,7 @@ public class Alpha {
 
 				if(received != null) {
 					for(int i = 0; i < received.Length; i++) {
-						Console.WriteLine("Read: " + received[i]);
+						Fuse.Log("Read: " + received[i]);
 					}
 				}
 			}
