@@ -154,18 +154,24 @@ public class game extends Service {
     }
     if(split.length > 0) {
       if(split[0] == 'lock') {
+        update_select('join', split[1], '#ff3300');
+      }
+      if(split[0] == 'open') {
         update_select('join', split[1], '#ff9900');
       }
       if(split[0] == 'here') {
-        add_select('ally', split[1], '#00cc33');
+        add_select('ally', split[1], '#6699ff');
         beep.play();
+      }
+      if(split[0] == 'ally') {
+        update_select('ally', split[1], '#00cc33');
       }
       if(split[0] == 'gone') {
         remove_select('ally', split[1]);
         stop_game();
       }
       if(split[0] == 'room') {
-        add_select('join', split[1].split('+')[0], '#6699ff');
+        add_select('join', split[1].split('+')[0], '#ff9900');
       }
       if(split[0] == 'drop') {
         remove_select('join', split[1]);
@@ -343,7 +349,7 @@ public class game extends Service {
     if(index > -1) {
       var ally = push('ally|' + select.options[index].text);
       if(ally[1] == 'done')
-        alert('ally');
+        alert('done');
     }
   }
   function chat() {
@@ -375,7 +381,7 @@ public class game extends Service {
   function list() {
     var list = push('list|room');
     for(var i = 3; i < list.length; i++) {
-      add_select('join', list[i].split('+')[0], '#ff3300');
+      add_select('join', list[i].split('+')[0], '#ff9900');
     }
   }
   function math_random(min, max) {

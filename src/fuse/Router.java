@@ -1,7 +1,10 @@
 package fuse;
 
 import java.io.File;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -39,8 +42,7 @@ public class Router implements Node {
 	}
 
 	private User session(Event event, String name, String salt, JSONObject json) throws Exception {
-		User user = new User(name.length() > 0 ? name : "" + Root.hash(json.getString("key")), salt);
-		user.json = json;
+		User user = new User(name.length() > 0 ? name : "" + Root.hash(json.getString("key")), salt, json);
 		users.put(salt, user);
 		
 		// This uses host.rupy.se specific MaxMind GeoLiteCity.dat
@@ -190,7 +192,6 @@ public class Router implements Node {
 			String salt = session();
 
 			File file = null;
-
 			boolean id = name.matches("[0-9]+");
 			
 			if(id)
@@ -212,7 +213,7 @@ public class Router implements Node {
 		if(split.length < 2)
 			return "main|fail|salt not found";
 		
-		User user = (User) users.get(split[1]);
+		final User user = (User) users.get(split[1]);
 
 		if(user == null || !user.salt.equals(split[1]))
 			return "main|fail|salt not found";
@@ -333,6 +334,46 @@ public class Router implements Node {
 				event.daemon().client().send("localhost", update, 30);
 				return "hold";
 			}
+		}
+		
+		if(data.startsWith("ally")) {
+			File file = null;
+			String name = split[2];
+			boolean id = name.matches("[0-9]+");
+			
+			if(id)
+				file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
+			else
+				file = new File(Root.home() + "/node/user/name" + Root.path(name));
+
+			if(file == null || !file.exists()) {
+				return "ally|fail|" + (id ? "id" : "name") + " not found";
+			}
+
+			final JSONObject json = new JSONObject(Root.file(file));
+			
+			Async.Work link = new Async.Work(event) {
+				public void send(Async.Call call) throws Exception {
+					call.post("/link", "Host:" + event.query().header("host"), 
+							("pkey=" + user.json.getString("key") + "&ckey=" + json.getString("key") + 
+									"&ptype=user&ctype=user").getBytes("utf-8"));
+				}
+
+				public void read(String host, String body) throws Exception {
+					System.out.println("fuse ally " + body);
+					user.add(Root.hash(json.getString("key")));
+					event.query().put("done", "ally|done");
+					event.reply().wakeup();
+				}
+
+				public void fail(String host, Exception e) throws Exception {
+					System.out.println("fuse ally " + e);
+				}
+			};
+
+			event.daemon().client().send("localhost", link, 30);
+			
+			return "hold";
 		}
 		
 		if(data.startsWith("peer")) {
@@ -601,23 +642,66 @@ public class Router implements Node {
 	public static class User {
 		String[] ip;
 		JSONObject json;
+		LinkedList ally = new LinkedList();
 		String name, salt, nick, flag;
 		boolean authorized;
 		Game game;
 		Room room;
 		int lost;
+		long id;
 		
-		User(String name, String salt) {
+		User(String name, String salt, JSONObject json) throws Exception {
 			this.name = name;
 			this.salt = salt;
+			this.json = json;
+			
+			this.id = Root.hash(json.getString("key"));
+			
+			try {
+				ally();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 
+		private void ally() throws Exception {
+			File file = new File(Root.home() + "/link/user/user" + Root.path(json.getString("key")));
+			
+			if(!file.exists())
+				return;
+			
+			RandomAccessFile raf = new RandomAccessFile(file, "rw");
+
+			int length = (int) raf.length();
+			byte[] data = new byte[length];
+			int read = raf.read(data);
+			ByteBuffer buffer = ByteBuffer.wrap(data); // TODO: add 0, read?
+
+			for(int i = 0; i < length / 8; i++) {
+				if(buffer.remaining() > 0)
+					ally.addFirst(new Long(buffer.getLong()));
+				else
+					break;
+			}
+			
+			raf.close();
+		}
+		
 		void peer(Event event, String ip) {
 			this.ip = new String[2];
 			this.ip[0] = ip;
 			this.ip[1] = event.remote();
 		}
 
+		void add(long ally) {
+			this.ally.add(new Long(ally));
+		}
+		
+		boolean ally(User user) {
+			return ally.contains(new Long(user.id));
+		}
+		
 		String peer(User other) {
 			if(ip != null)
 				if(other.ip != null && ip[1].equals(other.ip[1]))
@@ -700,6 +784,10 @@ public class Router implements Node {
 					// send every user in room to joining user
 					if(data.startsWith("here") && !from.name.equals(user.name)) {
 						node.push(from.salt, "here|" + user.name + user.peer(from), false);
+						
+						if(from.ally(user))
+							node.push(from.salt, "ally|" + user.name, false);
+						
 						wakeup = true;
 					}
 
