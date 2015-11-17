@@ -354,7 +354,7 @@ public class Router implements Node {
 			Room room = new Room(user, type, size);
 
 			user.game.rooms.put(user.name, room);
-			user.game.send(user, "make|" + room);
+			user.game.send(user, "room|" + room);
 			user.move(user.game, room);
 
 			return "room|done";

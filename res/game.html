@@ -164,7 +164,7 @@ public class game extends Service {
         remove_select('ally', split[1]);
         stop_game();
       }
-      if(split[0] == 'make') {
+      if(split[0] == 'room') {
         add_select('join', split[1].split('+')[0], '#6699ff');
       }
       if(split[0] == 'drop') {

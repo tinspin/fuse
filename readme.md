@@ -155,7 +155,7 @@ In sort of chronological order:
 
                             // host room
  <b><i>room</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;size&gt;  -> room|done
-                           x-> <b><i>make</i></b>|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;+&lt;case&gt;
+                           x-> <b><i>room</i></b>|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;+&lt;case&gt;
                             -> room|fail|not in lobby
                             -> room|fail|type invalid       // [a-zA-Z]+
 
@@ -260,6 +260,7 @@ In sort of chronological order:
  <b><i>drop</i></b> <b><i>made</i></b> <b><i>halt</i></b>
  <b><i>body</i></b> <b><i>text</i></b> <b><i>sent</i></b>
  <b><i>data</i></b> <b><i>head</i></b> <b><i>tail</i></b>
+ <b><i>make</i></b>
 
 // attribution
 
