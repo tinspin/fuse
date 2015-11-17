@@ -462,9 +462,9 @@ public class Router implements Node {
 				return "over|fail|not playing";
 			
 			if(split.length > 2)
-				user.room.send(user, "tail|" + user.name + '|' + split[2]);
+				user.room.send(user, "over|" + user.name + '|' + split[2]);
 			else
-				user.room.send(user, "tail|" + user.name);
+				user.room.send(user, "over|" + user.name);
 
 			user.lost++;
 			

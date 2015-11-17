@@ -3,12 +3,12 @@
 <!-- these methods are called by game.html -->
 <script>
   var pid;
-  function play(seed) { /* play(seed) is broadcasted to N */
+  function head(seed) { /* play(seed) is broadcasted to N */
     this.seed = seed;
     pid = setInterval(tick, 33);
     spawn();
   }
-  function send(user, data) { /* send(data) is broadcasted to N-1 */
+  function sent(user, data) { /* send(data) is broadcasted to N-1 */
     var split = data.split('+');
     var used = [];
     var high = 0;
@@ -20,7 +20,7 @@
       drops++;
     }
   }
-  function over() { /* over(data) is broadcasted to N */
+  function tail() { /* over(data) is broadcasted to N */
     clearInterval(pid);
     reset();
   }

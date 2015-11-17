@@ -184,10 +184,10 @@ public class game extends Service {
         element('talk').style.position = 'absolute';
         element('talk').style.left = '0px';
         element('talk').style.top = '350px';
-        play(split[1]);
+        head(split[1]);
       }
       if(split[0] == 'send') {
-        send(split[1], split[2]);
+        sent(split[1], split[2]);
       }
       if(split[0] == 'over') {
         element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
@@ -199,7 +199,7 @@ public class game extends Service {
     display('room', 'block');
     display('play', 'none');
     element('talk').style.position = 'static';
-    over();
+    tail();
   }
   function remove_select(type, name) {
     var select = element(type);
