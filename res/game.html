@@ -56,7 +56,7 @@ public class game extends Service {
   var game = '[[ game ]]';
   if(game == '[[ game ]]')
     game = 'kloss';
-  var show = false;
+  var show = true;
   var size = 0;
   var salt;
   function pull(salt) {
@@ -150,19 +150,22 @@ public class game extends Service {
     var split = data.split('|');
     if(split.length > 1 && split[0] == 'text') {
       element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
-      beep.play();
+      select.play();
     }
     if(split.length > 0) {
+      if(split[0] == 'lock') {
+        update_select('join', split[1], '#ff9900');
+      }
       if(split[0] == 'here') {
         add_select('ally', split[1], '#00cc33');
-        select.play();
+        beep.play();
       }
       if(split[0] == 'gone') {
         remove_select('ally', split[1]);
         stop_game();
       }
       if(split[0] == 'make') {
-        add_select('join', split[1].split('+')[0], '#ff9900'); /*#6699ff*/
+        add_select('join', split[1].split('+')[0], '#6699ff');
       }
       if(split[0] == 'drop') {
         remove_select('join', split[1]);
@@ -221,6 +224,15 @@ public class game extends Service {
     option.style.color = color;
     option.text = name;
     select.options.add(option, select.options[0]);
+  }
+  function update_select(type, name, color) {
+    var select = element(type);
+    for(var i = 0; i < select.options.length; i++) {
+      if(select.options[i].text == name) {
+        select.options[i].style.color = color;
+        return;
+      }
+    }
   }
   function clear_join() {
     var select = element('join');

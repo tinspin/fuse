@@ -428,6 +428,9 @@ public class Router implements Node {
 				return "join|fail|is full";
 
 			user.move(user.room, room);
+			
+			if(room.users.size() == room.size)
+				user.game.send(user, "lock|" + user.room.user.name);
 
 			return "join|done";
 		}
@@ -449,6 +452,8 @@ public class Router implements Node {
 			else
 				return "play|fail|not creator";
 
+			user.game.send(user, "view|" + user.room.user.name);
+			
 			return "play|done";
 		}
 		
@@ -496,13 +501,17 @@ public class Router implements Node {
 			if(user.room.user == null)
 				return "quit|fail|in lobby";
 
-			Room room = user.move(user.room, user.game);
-
-			if(room != null) {
-				user.game.rooms.remove(room.user.name);
-				user.game.send(user, "drop|" + user.name);
+			Room room = user.room;
+			boolean full = room.users.size() == room.size;
+			Room drop = user.move(user.room, user.game);
+			
+			if(drop != null) {
+				user.game.rooms.remove(drop.user.name);
+				user.game.send(user, "drop|" + drop.user.name);
 			}
-
+			else if(full)
+				user.game.send(user, "open|" + room.user.name);
+			
 			return "quit|done";
 		}
 

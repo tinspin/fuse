@@ -142,8 +142,8 @@ In sort of chronological order:
                            x-> <b><i>hold</b></i>|&lt;user&gt;
                            x-> <b><i>free</b></i>|&lt;user&gt;
 
-                            // add friend
-*<b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done
+                            // add/remove friend
+*<b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done|&lt;bool&gt;
                             -> ally|fail|not found
 
                             // set avatar
