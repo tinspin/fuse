@@ -147,7 +147,7 @@ In sort of chronological order:
                             -> ally|fail|not found
 
                             // set avatar
-*<b><i>body</i></b>|&lt;salt&gt;|&lt;data&gt;         -> body|done
+*<b><i>self</i></b>|&lt;salt&gt;|&lt;data&gt;         -> self|done
                            x-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;
 
                             // enable peer-to-peer
@@ -172,7 +172,6 @@ In sort of chronological order:
                            x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
                            x-> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
                            x-> <b><i>lock</i></b>|&lt;room&gt;                  // in lobby if room is full
-                           x-> <b><i>open</i></b>|&lt;room&gt;                  // in lobby if room is not full
                             -> join|fail|not found
                             -> join|fail|already here
                             -> join|fail|is full
@@ -188,6 +187,7 @@ In sort of chronological order:
                            x-> <b><i>gone</i></b>|&lt;user&gt;                  // in old room
                            x-> <b><i>drop</i></b>|&lt;user&gt;                  // in lobby if creator leaves
                            x-> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
+                           x-> <b><i>open</i></b>|&lt;room&gt;                  // in lobby if room is not full
                             -> quit|fail|in lobby
 
                             // user exit from platform
@@ -205,7 +205,7 @@ In sort of chronological order:
 
                             // play game
  <b><i>play</i></b>|&lt;salt&gt;[|seed]         -> play|done
-                           o-> <b><i>head</i></b>[|seed]                  // to start the game
+                           o-> <b><i>play</i></b>[|seed]                  // to start the game
                            x-> <b><i>view</i></b>|&lt;room&gt;                  // in lobby if room has started
                             -> play|fail|in lobby
                             -> play|fail|not creator
@@ -214,7 +214,7 @@ In sort of chronological order:
 
                             // game over
  <b><i>over</i></b>|&lt;salt&gt;[|data]         -> over|done                    // insecure, only for development
-                           o-> <b><i>tail</b></i>|&lt;user&gt;[|data]           // the game is over
+                           o-> <b><i>over</b></i>|&lt;user&gt;[|data]           // the game is over
                             -> over|fail|not playing
 
 +------------------------------------------------------------+
@@ -223,16 +223,16 @@ In sort of chronological order:
 
                             // chat in any room
  <b><i>chat</i></b>|&lt;salt&gt;|&lt;text&gt;         -> chat|done                    // @[user] of private destination
-                           o-> <b><i>text</i></b>|&lt;user&gt;|&lt;text&gt;
+                           o-> <b><i>chat</i></b>|&lt;user&gt;|&lt;text&gt;
                             -> chat|fail|not online
 
                             // send any gameplay data to room
  <b><i>send</i></b>|&lt;salt&gt;|&lt;data&gt;         -> send|done
-                           x-> <b><i>sent</i></b>|&lt;user&gt;|&lt;data&gt;
+                           x-> <b><i>send</i></b>|&lt;user&gt;|&lt;data&gt;
  
                             // motion for 3D MMO games with dynamic here/gone
 *<b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
-                           x-> <b><i>data</i></b>|&lt;user&gt;|&lt;data&gt;
+                           x-> <b><i>move</i></b>|&lt;user&gt;|&lt;data&gt;
                             // &lt;data&gt; = &lt;x&gt;+&lt;y&gt;+&lt;z&gt;|&lt;x&gt;+&lt;y&gt;+&lt;z&gt;+&lt;w&gt;|&lt;action&gt;(|&lt;speed&gt;|...)
                             //          position   |orientation    |key/button
 
@@ -258,6 +258,8 @@ In sort of chronological order:
  <b><i>show</i></b> <b><i>fill</i></b> <b><i>full</i></b>
  <b><i>slay</i></b> <b><i>ruin</i></b> <b><i>rise</i></b>
  <b><i>drop</i></b> <b><i>made</i></b> <b><i>halt</i></b>
+ <b><i>body</i></b> <b><i>text</i></b> <b><i>sent</i></b>
+ <b><i>data</i></b> <b><i>head</i></b> <b><i>tail</i></b>
 
 // attribution
 

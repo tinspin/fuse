@@ -448,7 +448,7 @@ public class Router implements Node {
 				return "play|fail|only one player";
 
 			if(user.room.user == user)
-				user.room.send(user, "head|" + seed);
+				user.room.send(user, "play|" + seed);
 			else
 				return "play|fail|not creator";
 
@@ -581,17 +581,17 @@ public class Router implements Node {
 		}
 
 		if(data.startsWith("chat")) {
-			user.room.send(user, "text|" + user.name + "|" + split[2]);
+			user.room.send(user, "chat|" + user.name + "|" + split[2]);
 			return "chat|done";
 		}
 
 		if(data.startsWith("send")) {
-			user.room.send(user, "sent|" + user.name + "|" + split[2]);
+			user.room.send(user, "send|" + user.name + "|" + split[2]);
 			return "send|done";
 		}
 
 		if(data.startsWith("move")) {
-			user.room.send(user, "data|" + user.name + "|" + split[2]);
+			user.room.send(user, "move|" + user.name + "|" + split[2]);
 			return "move|done";
 		}
 
@@ -683,10 +683,10 @@ public class Router implements Node {
 		void send(User from, String data) throws Exception {
 			Iterator it = users.values().iterator();
 
-			if(data.startsWith("head"))
+			if(data.startsWith("play"))
 				play = true;
 
-			if(data.startsWith("tail"))
+			if(data.startsWith("over"))
 				play = false;
 			
 			System.err.println("<-- " + from + " " + data);
@@ -710,7 +710,7 @@ public class Router implements Node {
 					}
 
 					// send message from user to room
-					if(data.startsWith("text") || data.startsWith("head") || data.startsWith("tail") || !from.name.equals(user.name)) {
+					if(data.startsWith("chat") || data.startsWith("play") || data.startsWith("over") || !from.name.equals(user.name)) {
 						if(data.startsWith("here"))
 							data += from.peer(user);
 						
