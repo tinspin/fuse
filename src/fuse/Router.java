@@ -175,7 +175,7 @@ public class Router implements Node {
 			return "hold";
 		}
 
-		if(data.startsWith("mail")) {
+		if(data.startsWith("mail") && split[1].contains("@")) {
 			File file = new File(Root.home() + "/node/user/mail" + Root.path(split[1].toLowerCase()));
 
 			if(file == null || !file.exists()) {
@@ -260,11 +260,11 @@ public class Router implements Node {
 		if(user.game == null)
 			return "main|fail|no game";
 
-		if(data.startsWith("name") || data.startsWith("nick") || data.startsWith("pass")) {
+		if(data.startsWith("name") || data.startsWith("nick") || data.startsWith("pass") || data.startsWith("mail")) {
 			File file = null;
 			final String rule = split[0];
 			boolean id = split[2].matches("[0-9]+");
-			
+
 			if(id) {
 				file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(split[2])));
 
@@ -282,7 +282,10 @@ public class Router implements Node {
 				}
 			}
 			else {
-				if(!rule.equals("pass") && !split[2].matches("[a-zA-Z0-9.\\-]+"))
+				if(rule.equals("mail") && split[2].indexOf("@") < 1 && !split[2].matches("[a-zA-Z0-9.@\\-\\+]+"))
+					return "mail|fail|mail invalid";
+				
+				if((rule.equals("name") || rule.equals("nick")) && !split[2].matches("[a-zA-Z0-9.\\-]+"))
 					return rule + "|fail|" + rule + " invalid";
 				
 				if(rule.equals("name") && split[2].matches("[0-9]+"))
@@ -292,8 +295,10 @@ public class Router implements Node {
 					user.json.put("name", split[2].toLowerCase());
 				else if(rule.equals("nick"))
 					user.json.put("nick", split[2]);
-				else
+				else if(rule.equals("pass"))
 					user.json.put("pass", split[2]);
+				else
+					user.json.put("mail", split[2]);
 				
 				final String json = user.json.toString();
 				

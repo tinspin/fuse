@@ -137,6 +137,10 @@ In sort of chronological order:
 
                             // set pass
  <b><i>pass</i></b>|&lt;salt&gt;|&lt;pass&gt;         -> pass|done
+ 
+                            // set mail
+ <b><i>mail</i></b>|&lt;salt&gt;|&lt;mail&gt;         -> pass|done
+                            -> mail|fail|mail invalid       // [a-zA-Z0-9.@\\-\\+]+
 
                             // pause game
 *<b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
