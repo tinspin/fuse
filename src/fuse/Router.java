@@ -158,7 +158,7 @@ public class Router implements Node {
 						String key = json.getString("key");
 
 						User user = session(event, name ? split[1] : "", session(), json);
-						user.authorized = true;
+						user.sign = true;
 
 						event.query().put("done", "user|done|" + user.salt + "|" + key + "|" + Root.hash(key));
 					}
@@ -226,7 +226,7 @@ public class Router implements Node {
 				String md5 = Deploy.hash(key + user.salt, "MD5");
 				
 				if(hash.equals(md5)) {
-					user.authorized = true;
+					user.sign = true;
 					return "sign|done|" + user.name;
 				}
 				else {
@@ -236,7 +236,7 @@ public class Router implements Node {
 			}
 		}
 
-		if(!user.authorized)
+		if(!user.sign)
 			return "main|fail|user not authorized";
 
 		if(data.startsWith("game")) {
@@ -344,10 +344,15 @@ public class Router implements Node {
 		if(data.startsWith("away")) {
 			boolean away = Boolean.parseBoolean(split[2]);
 			
-			if(away)
+			if(away) {
+				user.away = true;
 				user.room.send(user, "hold|" + user.name, true);
-			else
-				user.room.send(user, "free|" + user.name, true);
+			}
+			else {
+				user.away = false;
+				if(!user.room.away())
+					user.room.send(user, "free|" + user.name, true);
+			}
 			
 			return "away|done";
 		}
@@ -494,6 +499,9 @@ public class Router implements Node {
 
 		if(data.startsWith("play")) {
 			String seed = split[2];
+			
+			if(user.room.away())
+				return "play|fail|someone is away";
 			
 			if(user.room.play)
 				return "play|fail|already playing";
@@ -660,7 +668,7 @@ public class Router implements Node {
 		JSONObject json;
 		LinkedList ally = new LinkedList();
 		String name, salt, nick, flag;
-		boolean authorized;
+		boolean sign, away;
 		Game game;
 		Room room;
 		int lost;
@@ -780,6 +788,19 @@ public class Router implements Node {
 			this.size = size;
 		}
 
+		boolean away() {
+			Iterator it = users.values().iterator();
+			
+			while(it.hasNext()) {
+				User user = (User) it.next();
+				
+				if(user.away)
+					return true;
+			}
+			
+			return false;
+		}
+		
 		void send(User from, String data) throws Exception {
 			send(from, data, false);
 		}

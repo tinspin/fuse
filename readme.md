@@ -217,6 +217,7 @@ In sort of chronological order:
                             -> play|fail|not creator
                             -> play|fail|only one player
                             -> play|fail|already playing
+                            -> play|fail|someone is away
 
                             // game over
  <b><i>over</i></b>|&lt;salt&gt;[|data]         -> over|done                    // insecure, only for development
