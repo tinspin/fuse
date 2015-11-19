@@ -1,24 +1,23 @@
-//using UnityEngine; // ###
-//using System.Collections; // ###
+//using UnityEngine; // ### 1
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Text;
 
-/* A real-time comet stream plugin for rupy.
- * For unity seach for ###
+/* A real-time comet stream plugin for unity.
+ * For unity search for the 4 ### and change.
  * For usage scroll down to Main() method.
  */
 
 // TODO: Fix callback to work with lines split over many chunks.
 // DONE: Add push queue wrapper for async outgoing messages.
 
-// public class Fuse : MonoBehaviour { ###
-public class Fuse {
-	public static Fuse Instance;
+public class Fuse { // : MonoBehaviour { ### 2
+	public static Fuse instance;
 	public string host = "fuse.rupy.se";
 	public int port = 80;
 
@@ -37,20 +36,23 @@ public class Fuse {
 	}
 	
 	public static void Log(string message) {
-		//Debug.Log(message); // uncomment ###
-		Console.WriteLine(message); // comment out ###
+		//Debug.Log(message); // uncomment ### 3
+		Console.WriteLine(message); // comment out ### 3
 	}
 	
 	void Awake() {
-		DontDestroyOnLoad(transform.gameObject);
+		//DontDestroyOnLoad(gameObject);
+	}
+
+	public Fuse() {
+		Start();
 	}
 	
-	// Should be replaced with void Start() ###
-	public Fuse() {
-		Instance = this;
+	void Start() {
+		instance = this;
 		bool policy = true;
 
-		//policy = Security.PrefetchSocketPolicy(host, port); // policy ###
+		//policy = Security.PrefetchSocketPolicy(host, port); // not needed for most cases ### 4
 
 		if(!policy)
 			throw new Exception("Policy (" + host + ":" + port + ") failed.");
@@ -323,7 +325,6 @@ public class Fuse {
 	}
 
 	// ------------- INCOMING MESSAGES ---------
-/* uncomment ###
 	void Update() {
 		string[] received = Read();
 
@@ -333,9 +334,8 @@ public class Fuse {
 			}
 		}
 	}
-*/
+
 	// ------------- EXAMPLE USAGE -------------
-	// remove ###
 	public static void Main() {
 		try {
 			Fuse fuse = new Fuse();
@@ -368,20 +368,18 @@ public class Fuse {
 				}
 			}
 
+			Log("Sign: " + salt);
+
 			if(salt != null) {
-				Log("Salt: " + salt);
-				// this will allow you to Fuse.Read();
-				// from MonoBehaviour.Update();
 				fuse.Pull(salt);
 				fuse.Game("kloss");
 
-				// remove in unity ###
 				Thread.Sleep(100);
-				Alpha alpha = new Alpha(fuse);
-				Thread thread = new Thread(new ThreadStart(alpha.Beta));
+				
+				Thread thread = new Thread(FakeLoop);
 				thread.Start();
+				
 				Thread.Sleep(500);
-				// remove
 
 				fuse.Chat("hello");
 
@@ -410,34 +408,21 @@ public class Fuse {
 				
 				fuse.Send("white+0+0");
 			}
-
-			Log("Open: " + salt);
 		}
 		catch(Exception e) {
 			Log(e.ToString());
 		}
 	}
-}
-
-// this is my emulation of MonoBehaviour.Update();
-// remove ###
-public class Alpha {
-	private Fuse fuse;
-	public Alpha(Fuse fuse) { this.fuse = fuse; }
-	public void Beta() {
+	
+	// ------------- UPDATE EMULATION -------------
+	static void FakeLoop() {
 		while(true) {
 			try {
-				string[] received = fuse.Read();
-
-				if(received != null) {
-					for(int i = 0; i < received.Length; i++) {
-						Fuse.Log("Read: " + received[i]);
-					}
-				}
+				instance.Update();
 			}
 			finally {
 				Thread.Sleep(10);
 			}
 		}
 	}
-};
+}
