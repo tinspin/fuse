@@ -18,6 +18,7 @@ using System.Text;
 
 // public class Fuse : MonoBehaviour { ###
 public class Fuse {
+	public static Fuse Instance;
 	public string host = "fuse.rupy.se";
 	public int port = 80;
 
@@ -42,6 +43,7 @@ public class Fuse {
 	
 	// Should be replaced with void Start() ###
 	public Fuse() {
+		Instance = this;
 		bool policy = true;
 
 		//policy = Security.PrefetchSocketPolicy(host, port); // policy ###
