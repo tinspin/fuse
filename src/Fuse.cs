@@ -41,6 +41,10 @@ public class Fuse {
 		Console.WriteLine(message); // comment out ###
 	}
 	
+	void Awake() {
+		DontDestroyOnLoad(transform.gameObject);
+	}
+	
 	// Should be replaced with void Start() ###
 	public Fuse() {
 		Instance = this;
