@@ -230,8 +230,7 @@ public class Fuse {
 		string[] salt = Push("salt|" + user).Split('|');
 		
 		if(salt[1].Equals("fail")) {
-			Log("salt " + salt[2]);
-			return null;
+			throw new Exception(salt[2]);
 		}
 		
 		string[] sign = Push("sign|" + salt[2] + "|" + MD5(hide + salt[2])).Split('|');
