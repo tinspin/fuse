@@ -9,14 +9,14 @@ using System.Threading;
 using System.Text;
 
 /* A real-time comet stream plugin for unity.
- * For unity search for the 4 ### and change.
+ * For unity search for the 5 ### and change.
  * For usage scroll down to Main() method.
  */
 
 // TODO: Fix callback to work with lines split over many chunks.
 // DONE: Add push queue wrapper for async outgoing messages.
 
-public class Fuse { // : MonoBehaviour { ### 2
+public class Fuse { // : MonoBehaviour { // ### 2
 	public static Fuse instance;
 	public string host = "fuse.rupy.se";
 	public int port = 80;
@@ -37,22 +37,22 @@ public class Fuse { // : MonoBehaviour { ### 2
 	
 	public static void Log(string message) {
 		//Debug.Log(message); // uncomment ### 3
-		Console.WriteLine(message); // comment out ### 3
+		Console.WriteLine(message); // comment ### 3
+	}
+	
+	public Fuse() {
+		Start();
 	}
 	
 	void Awake() {
-		//DontDestroyOnLoad(gameObject);
-	}
-
-	public Fuse() {
-		Start();
+		//DontDestroyOnLoad(gameObject); // ### 4
 	}
 	
 	void Start() {
 		instance = this;
 		bool policy = true;
 
-		//policy = Security.PrefetchSocketPolicy(host, port); // not needed for most cases ### 4
+		//policy = Security.PrefetchSocketPolicy(host, port); // not needed for most cases ### 5
 
 		if(!policy)
 			throw new Exception("Policy (" + host + ":" + port + ") failed.");
