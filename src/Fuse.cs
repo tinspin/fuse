@@ -237,8 +237,7 @@ public class Fuse {
 		string[] sign = Push("sign|" + salt[2] + "|" + MD5(hide + salt[2])).Split('|');
 
 		if(sign[1].Equals("fail")) {
-			Log("sign " + sign[2]);
-			return null;
+			throw new Exception(sign[2]);
 		}
 
 		return salt[2];
@@ -343,7 +342,7 @@ public class Fuse {
 				key = fuse.User("fuse");
 			}
 			catch(Exception e) {
-				Log(e);
+				Log(e.Message);
 				return;
 			}
 */
@@ -355,7 +354,13 @@ public class Fuse {
 			string salt = null;
 
 			if(key != null) {
-				salt = fuse.SignNameKey("fuse", key);
+				try {
+					salt = fuse.SignNameKey("fuse", key);
+				}
+				catch(Exception e) {
+					Log(e.Message);
+					return;
+				}
 			}
 
 			if(salt != null) {
@@ -388,7 +393,7 @@ public class Fuse {
 
 					for(int i = 0; i < list.Length; i++) {
 						string[] room = list[i].Split('+');
-						Log("      " + room[0] + " " + room[1] + " " + room[2] + " " + room[3]);
+						Log("      " + room[0] + " " + room[1] + " " + room[2]);
 					}
 				}
 				
