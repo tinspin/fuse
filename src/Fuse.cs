@@ -99,11 +99,10 @@ public class Fuse {
 	}
 
 	public void Async(string data) {
-		lock(output) {
+		lock(output)
 			output.Enqueue(data);
-			lock(thread)
-				Monitor.Pulse(thread);
-		}
+		lock(thread)
+			Monitor.Pulse(thread);
 	}
 
 	public string Push(string data) {
