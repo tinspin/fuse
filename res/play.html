@@ -20,6 +20,12 @@
       drops++;
     }
   }
+  function pause(hold) {
+    if(hold)
+      clearInterval(pid);
+    else
+      pid = setInterval(tick, 33);
+  }
   function tail() { /* over(data) is broadcasted to N */
     clearInterval(pid);
     reset();
@@ -59,16 +65,6 @@
     x = null;
     y = null;
   };
-  function touchend(event) {
-    if(!pop) {
-      pop = new Audio('mp3/pop.mp3');
-      pop.play();
-    }
-    if(!snap) {
-      snap = new Audio('mp3/snap.mp3');
-      snap.play();
-    }
-  }
   function keydown(event) {
     action(event.keyCode);
     if(!pop)
@@ -303,14 +299,6 @@
     element('cube').appendChild(cube);
     return cube;
   }
-  function away(event) {
-    if(event.type == 'focus') {
-      /* send away|true */
-    }
-    if(event.type == 'blur') {
-      /* send away|false */
-    }
-  }
 </script>
 
 <div id="cube" style="width: 250px; height: 350px; background-color: black;"></div>
@@ -319,10 +307,7 @@
   var div = element('cube');
   div.addEventListener('touchstart', touchstart);
   div.addEventListener('touchmove', touchmove);
-  /*div.addEventListener('touchend', touchend);*/
   document.addEventListener('keydown', keydown);
-  window.onfocus = away;
-  window.onblur = away;
   var url = window.location.href.split('/');
   if(url[url.length - 1] === 'play.html')
     head(232423);

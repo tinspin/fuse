@@ -56,7 +56,7 @@ public class game extends Service {
   var game = '[[ game ]]';
   if(game == '[[ game ]]')
     game = 'kloss';
-  var show = false;
+  var show = true;
   var size = 0;
   var salt;
   function pull(salt) {
@@ -139,6 +139,7 @@ public class game extends Service {
   var beep = new Audio('mp3/beep.mp3');
   var select = new Audio('mp3/select.mp3');
   var send_game = true;
+  var game_play = false;
   function read(data) {
     //try { console.log(data) } catch(e) {}
     if(show)
@@ -191,6 +192,7 @@ public class game extends Service {
         element('talk').style.left = '0px';
         element('talk').style.top = '350px';
         head(split[1]);
+        game_play = true;
       }
       if(split[0] == 'send') {
         sent(split[1], split[2]);
@@ -199,6 +201,16 @@ public class game extends Service {
         element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
         stop_game();
       }
+      if(split[0] == 'hold') {
+        update_select('ally', split[1], '#ff3300');
+        if(game_play)
+      	  pause(true);
+      }
+      if(split[0] == 'free') {
+        update_select('ally', split[1], '#6699ff');
+        if(game_play)
+          pause(false);
+      }
     }
   }
   function stop_game() {
@@ -206,6 +218,7 @@ public class game extends Service {
     display('play', 'none');
     element('talk').style.position = 'static';
     tail();
+    game_play = false;
   }
   function remove_select(type, name) {
     var select = element(type);
@@ -398,6 +411,14 @@ public class game extends Service {
   function send(data) {
     push('send|' + data);
   }
+  function away(event) {
+    if(!salt)
+      return;
+    if(event.type == 'focus')
+      push('away|false');
+    if(event.type == 'blur')
+      push('away|true');
+  }
 </script>
 </head>
 <body style="margin: 0px;">
@@ -484,6 +505,8 @@ public class game extends Service {
 
 <script>
   focus('name');
+  window.onfocus = away;
+  window.onblur = away;
 </script>
 
 </body>

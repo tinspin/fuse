@@ -143,12 +143,12 @@ In sort of chronological order:
                             -> mail|fail|mail invalid       // [a-zA-Z0-9.@\\-\\+]+
 
                             // pause game
-*<b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
+ <b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
                            x-> <b><i>hold</b></i>|&lt;user&gt;
                            x-> <b><i>free</b></i>|&lt;user&gt;
 
                             // add/remove friend
-*<b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done|&lt;bool&gt;
+ <b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done|&lt;bool&gt;
                             -> ally|fail|name not found
                             -> ally|fail|id not found
 
@@ -165,10 +165,8 @@ In sort of chronological order:
                             -> room|fail|not in lobby
                             -> room|fail|type invalid       // [a-zA-Z]+
 
-                            // list allies, rooms or data
-                            // &lt;case&gt; can be <i>join</i>, <i>lock</i> or <i>view</i>
-*<b><i>list</i></b>|&lt;salt&gt;|ally           -> list|done|ally|&lt;user&gt;|...
- <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;+&lt;case&gt;|...
+                            // list rooms or data
+ <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;|...
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
                             -> list|fail|wrong type
 

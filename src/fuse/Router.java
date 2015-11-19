@@ -341,6 +341,17 @@ public class Router implements Node {
 			}
 		}
 		
+		if(data.startsWith("away")) {
+			boolean away = Boolean.parseBoolean(split[2]);
+			
+			if(away)
+				user.room.send(user, "hold|" + user.name, true);
+			else
+				user.room.send(user, "free|" + user.name, true);
+			
+			return "away|done";
+		}
+		
 		if(data.startsWith("ally")) {
 			File file = null;
 			String name = split[2];
@@ -494,7 +505,7 @@ public class Router implements Node {
 				return "play|fail|only one player";
 
 			if(user.room.user == user)
-				user.room.send(user, "play|" + seed);
+				user.room.send(user, "play|" + seed, true);
 			else
 				return "play|fail|not creator";
 
@@ -508,9 +519,9 @@ public class Router implements Node {
 				return "over|fail|not playing";
 			
 			if(split.length > 2)
-				user.room.send(user, "over|" + user.name + '|' + split[2]);
+				user.room.send(user, "over|" + user.name + '|' + split[2], true);
 			else
-				user.room.send(user, "over|" + user.name);
+				user.room.send(user, "over|" + user.name, true);
 
 			user.lost++;
 			
@@ -627,7 +638,7 @@ public class Router implements Node {
 		}
 
 		if(data.startsWith("chat")) {
-			user.room.send(user, "chat|" + user.name + "|" + split[2]);
+			user.room.send(user, "chat|" + user.name + "|" + split[2], true);
 			return "chat|done";
 		}
 
@@ -770,6 +781,10 @@ public class Router implements Node {
 		}
 
 		void send(User from, String data) throws Exception {
+			send(from, data, false);
+		}
+		
+		void send(User from, String data, boolean all) throws Exception {
 			Iterator it = users.values().iterator();
 
 			if(data.startsWith("play"))
@@ -803,7 +818,7 @@ public class Router implements Node {
 					}
 
 					// send message from user to room
-					if(data.startsWith("chat") || data.startsWith("play") || data.startsWith("over") || !from.name.equals(user.name)) {
+					if(all || !from.name.equals(user.name)) {
 						if(data.startsWith("here"))
 							data += from.peer(user);
 						
@@ -845,15 +860,7 @@ public class Router implements Node {
 		}
 
 		public String toString() {
-			String kase = "join";
-			
-			if(users.size() == size)
-				kase = "lock";
-			
-			if(play)
-				kase = "view";
-			
-			return (user == null ? "lobby" : user.name) + "+" + type + "+" + users.size() + "/" + size + "+" + kase;
+			return (user == null ? "lobby" : user.name) + "+" + type + "+" + size;
 		}
 	}
 
