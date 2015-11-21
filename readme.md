@@ -259,15 +259,13 @@ In sort of chronological order:
 
 // name pool
 
- <b><i>cash</i></b> <b><i>info</i></b> <b><i>ping</i></b>
- <b><i>time</i></b> <b><i>host</i></b> <b><i>pull</i></b>
- <b><i>pick</i></b> <b><i>push</i></b> <b><i>hide</i></b>
- <b><i>show</i></b> <b><i>fill</i></b> <b><i>full</i></b>
- <b><i>slay</i></b> <b><i>ruin</i></b> <b><i>rise</i></b>
- <b><i>drop</i></b> <b><i>made</i></b> <b><i>halt</i></b>
- <b><i>body</i></b> <b><i>text</i></b> <b><i>sent</i></b>
- <b><i>data</i></b> <b><i>head</i></b> <b><i>tail</i></b>
- <b><i>make</i></b> <b><i>hold</i></b> <b><i>free</i></b>
+ cash info ping data
+ time host pull head
+ pick push hide tail
+ show fill full make
+ slay ruin rise hold
+ drop made halt free
+ body text sent
 
 // attribution
 
