@@ -109,6 +109,7 @@ In sort of chronological order:
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
                            x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]
                            x-> <b><i>ally</i></b>|&lt;user&gt;
+                           x-> <b><i>away</b></i>|&lt;user&gt;
                            o-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
                            o-> <b><i>name</b></i>|&lt;user&gt;|&lt;name&gt;           // if &lt;id&gt; used and name set
                            o-> <b><i>nick</b></i>|&lt;user&gt;|&lt;nick&gt;           // if &lt;id&gt; used and nick set

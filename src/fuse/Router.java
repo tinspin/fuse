@@ -249,9 +249,8 @@ public class Router implements Node {
 				game = new Game(split[2].toLowerCase());
 				games.put(split[2], game);
 			}
-
-			game.add(user);
-			user.move(null, game);
+			
+			user.move(user.game, game);
 			user.game = game;
 
 			return "game|done";
@@ -832,6 +831,9 @@ public class Router implements Node {
 						
 						if(from.ally(user))
 							node.push(from.salt, "ally|" + user.name, false);
+						
+						if(user.away)
+							node.push(from.salt, "away|" + user.name, false);
 						
 						wakeup = true;
 					}
