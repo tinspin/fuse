@@ -181,7 +181,6 @@ In sort of chronological order:
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;         -> join|done
                            x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
                            x-> <b><i>ally</i></b>|&lt;user&gt;
-                           x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK
                            x-> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
                            x-> <b><i>lock</i></b>|&lt;room&gt;                  // in lobby if room is full
                             -> join|fail|not found
@@ -197,7 +196,7 @@ In sort of chronological order:
  <b><i>quit</i></b>|&lt;salt&gt;                -> quit|done
                            x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in lobby
                            x-> <b><i>ally</i></b>|&lt;user&gt;
-                           x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK
+                           x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK, in lobby if creator quit
                            x-> <b><i>gone</i></b>|&lt;user&gt;                  // in old room
                            x-> <b><i>drop</i></b>|&lt;user&gt;                  // in lobby if creator leaves
                            x-> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
