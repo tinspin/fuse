@@ -143,12 +143,12 @@ In sort of chronological order:
  <b><i>mail</i></b>|&lt;salt&gt;|&lt;mail&gt;         -> pass|done
                             -> mail|fail|mail invalid       // [a-zA-Z0-9.@\\-\\+]+
 
-                            // pause game
+                            // AFK
  <b><i>away</i></b>|&lt;salt&gt;                -> away|done
                            x-> <b><i>away</b></i>|&lt;user&gt;
                            o-> <b><i>hold</b></i>                         // pause
 
-                            // unpause game
+                            // back
  <b><i>back</i></b>|&lt;salt&gt;                -> back|done
                            x-> <b><i>back</b></i>|&lt;user&gt;
                            o-> <b><i>free</b></i>                         // unpause
