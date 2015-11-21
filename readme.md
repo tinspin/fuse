@@ -145,6 +145,9 @@ In sort of chronological order:
                             // pause game
  <b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
                            x-> <b><i>away</b></i>|&lt;user&gt;
+                           
+                            // unpause game
+ <b><i>back</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> back|done
                            x-> <b><i>back</b></i>|&lt;user&gt;
 
                             // add/remove friend

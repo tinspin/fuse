@@ -417,9 +417,9 @@ public class game extends Service {
     if(!salt)
       return;
     if(event.type == 'focus')
-      push('away|false');
+      push('back');
     if(event.type == 'blur')
-      push('away|true');
+      push('away');
   }
 </script>
 </head>
