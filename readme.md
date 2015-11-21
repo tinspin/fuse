@@ -197,7 +197,7 @@ In sort of chronological order:
                            x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in lobby
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK, in lobby if creator quit
-                           x-> <b><i>gone</i></b>|&lt;user&gt;                  // in old room
+                           x-> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;         // in old room
                            x-> <b><i>drop</i></b>|&lt;user&gt;                  // in lobby if creator leaves
                            x-> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
                            x-> <b><i>open</i></b>|&lt;room&gt;                  // in lobby if room is not full

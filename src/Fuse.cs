@@ -12,10 +12,6 @@ using System.Text;
  * For unity search for the 5 ### and change.
  * For usage scroll down to Main() method.
  */
-
-// TODO: Fix callback to work with lines split over many chunks.
-// DONE: Add push queue wrapper for async outgoing messages.
-
 public class Fuse { // : MonoBehaviour { // ### 2
 	public static Fuse instance;
 	public string host = "fuse.rupy.se";
@@ -325,6 +321,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	// ------------- INCOMING MESSAGES ---------
+	
 	void Update() {
 		string[] received = Read();
 
@@ -336,6 +333,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	// ------------- EXAMPLE USAGE -------------
+	
 	public static void Main() {
 		try {
 			Fuse fuse = new Fuse();
@@ -345,6 +343,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 /*
 			try {
 				key = fuse.User("fuse");
+				Log("User: " + key);
 			}
 			catch(Exception e) {
 				Log(e.Message);

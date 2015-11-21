@@ -341,7 +341,7 @@ public class Router implements Node {
 		}
 		
 		if(data.startsWith("away")) {
-			if(!user.room.away())
+			if(!user.room.away() && user.room.play)
 				user.room.send(user, "hold", true);
 			
 			user.away = true;
