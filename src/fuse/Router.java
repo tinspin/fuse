@@ -346,12 +346,12 @@ public class Router implements Node {
 			
 			if(away) {
 				user.away = true;
-				user.room.send(user, "hold|" + user.name, true);
+				user.room.send(user, "away|" + user.name, true);
 			}
 			else {
 				user.away = false;
 				if(!user.room.away())
-					user.room.send(user, "free|" + user.name, true);
+					user.room.send(user, "back|" + user.name, true);
 			}
 			
 			return "away|done";

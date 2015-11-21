@@ -144,8 +144,8 @@ In sort of chronological order:
 
                             // pause game
  <b><i>away</i></b>|&lt;salt&gt;|&lt;bool&gt;         -> away|done
-                           x-> <b><i>hold</b></i>|&lt;user&gt;
-                           x-> <b><i>free</b></i>|&lt;user&gt;
+                           x-> <b><i>away</b></i>|&lt;user&gt;
+                           x-> <b><i>back</b></i>|&lt;user&gt;
 
                             // add/remove friend
  <b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done|&lt;bool&gt;
@@ -267,7 +267,7 @@ In sort of chronological order:
  <b><i>drop</i></b> <b><i>made</i></b> <b><i>halt</i></b>
  <b><i>body</i></b> <b><i>text</i></b> <b><i>sent</i></b>
  <b><i>data</i></b> <b><i>head</i></b> <b><i>tail</i></b>
- <b><i>make</i></b>
+ <b><i>make</i></b> <b><i>hold</i></b> <b><i>free</i></b>
 
 // attribution
 
