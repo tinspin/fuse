@@ -342,17 +342,22 @@ public class Router implements Node {
 		}
 		
 		if(data.startsWith("away")) {
+			if(!user.room.away())
+				user.room.send(user, "hold", true);
+			
 			user.away = true;
-			user.room.send(user, "away|" + user.name, true);
+			user.room.send(user, "away|" + user.name);
 				
 			return "away|done";
 		}
 		
 		if(data.startsWith("back")) {
 			user.away = false;
-			if(!user.room.away())
-				user.room.send(user, "back|" + user.name, true);
+			user.room.send(user, "back|" + user.name);
 			
+			if(!user.room.away())
+				user.room.send(user, "free", true);
+				
 			return "back|done";
 		}
 		

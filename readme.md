@@ -145,10 +145,12 @@ In sort of chronological order:
                             // pause game
  <b><i>away</i></b>|&lt;salt&gt;                -> away|done
                            x-> <b><i>away</b></i>|&lt;user&gt;
-                           
+                           o-> <b><i>hold</b></i>                         // pause
+
                             // unpause game
  <b><i>back</i></b>|&lt;salt&gt;                -> back|done
                            x-> <b><i>back</b></i>|&lt;user&gt;
+                           o-> <b><i>free</b></i>                         // unpause
 
                             // add/remove friend
  <b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done|&lt;bool&gt;
@@ -266,8 +268,8 @@ In sort of chronological order:
  time host pull head
  pick push hide tail
  show fill full make
- slay ruin rise hold
- drop made halt free
+ slay ruin rise
+ drop made halt
  body text sent
 
 // attribution

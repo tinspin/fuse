@@ -204,12 +204,16 @@ public class game extends Service {
       if(split[0] == 'away') {
         update_select('ally', split[1], '#ff3300');
         element('chat').value = split[1] + ': away\n' + element('chat').value;
-        if(game_play)
-      	  pause(true);
       }
       if(split[0] == 'back') {
         update_select('ally', split[1], '#6699ff');
         element('chat').value = split[1] + ': back\n' + element('chat').value;
+      }
+      if(split[0] == 'hold') {
+        if(game_play)
+      	  pause(true);
+      }
+      if(split[0] == 'free') {
         if(game_play)
           pause(false);
       }
