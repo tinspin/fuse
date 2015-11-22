@@ -30,7 +30,6 @@ Platform:
   - multithreaded NIO with queue, linear scalability:
     - 1000 mess./sec. on raspberry pi 1
     - 6500 mess./sec. on raspberry pi 2
-  - proven for 5 years
   - 100% uptime on routing with round-robin DNS
   - 100% read uptime on persistence with custom 
     async distributed JSON file system database 
