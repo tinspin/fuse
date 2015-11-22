@@ -27,9 +27,14 @@ Protocol:
 
 Platform:
 
+  - multithreaded NIO with queue, linear scalability:
+    - 1000 mess./sec. on raspberry pi 1
+    - 6500 mess./sec. on raspberry pi 2
   - proven for 5 years
   - 100% uptime on routing
-  - 100% read uptime on data
+  - 100% read uptime on persistence with custom 
+    distributed JSON file system database that 
+    uses ext4 indexing
 
 Examples:
 
