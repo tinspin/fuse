@@ -9,7 +9,7 @@ using System.Threading;
 using System.Text;
 
 /* A real-time comet stream plugin for unity.
- * For unity search for the 5 ### and change.
+ * For unity search for the 5x ### and change.
  * For usage scroll down to Main() method.
  */
 public class Fuse { // : MonoBehaviour { // ### 2

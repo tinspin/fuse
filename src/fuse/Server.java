@@ -227,7 +227,8 @@ public class Server extends Service implements Node, Runnable {
 						}
 						
 						out.flush(); // Solves output buffer limit problems
-						// But might be a performance problem
+									 // But might be a performance problem
+									 // 1024 bytes limit on packets
 						
 						data = (String) queue.poll();
 					}

@@ -19,15 +19,18 @@ Support:
 
 Protocol:
 
-  - client/server triplex HTTP, upstream \n terminated or 'data: \n\n' encapsulated
+  - client/server triplex HTTP, comet upstream 
+    '\n' terminated or 'data: \n\n' encapsulated
     - dynamic presence position move packets for MMO
   - peer-to-peer UDP, binary physics packets for VR
     - position move and talk, look, head, body, hand packets
   - multicast UDP on cluster for load distribution
+    - estimated collusion concurrency ~25.000 mess./sec. 
+      on 4x raspberry pi 2: <a href="http://host.rupy.se/cluster.jpg">example</a>
 
 Platform:
 
-  - multithreaded NIO with queue, linear scalability:
+  - multithreaded NIO with queue, linear perf.:
     - 1000 mess./sec. on raspberry pi 1
     - 6500 mess./sec. on raspberry pi 2
   - 100% uptime on routing with round-robin DNS
