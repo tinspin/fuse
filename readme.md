@@ -31,10 +31,10 @@ Platform:
     - 1000 mess./sec. on raspberry pi 1
     - 6500 mess./sec. on raspberry pi 2
   - proven for 5 years
-  - 100% uptime on routing
+  - 100% uptime on routing with round-robin DNS
   - 100% read uptime on persistence with custom 
-    distributed JSON file system database that 
-    uses ext4 indexing
+    async distributed JSON file system database 
+    that uses ext4 indexing
 
 Examples:
 
