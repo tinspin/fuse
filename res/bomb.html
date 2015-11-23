@@ -1,0 +1,160 @@
+<!DOCTYPE HTML>
+<style>body{ margin: 0; padding: 0 }</style>
+<!-- these methods are called by game.html -->
+<script>
+  var pid;
+  function head(seed) { /* play(seed) is broadcasted to N */
+    clear();
+    this.seed = seed;
+    pid = setInterval(tick, 33);
+    spawn();
+  }
+  function sent(user, data) { /* send(data) is broadcasted to N-1 */
+    var split = data.split('+');
+    var used = [];
+    var high = 0;
+    for(var i = 1; i < split.length; i++) {
+      if(contains(used, split[i]))
+        high += 50;
+      add_cube(color[math_random(0, 3)], split[i] * 50, -50 - high, 8);
+      used.push(split[i]);
+      drops++;
+    }
+  }
+  function pause(hold) {
+    if(hold)
+      clearInterval(pid);
+    else
+      pid = setInterval(tick, 33);
+  }
+  function tail() { /* over(data) is broadcasted to N */
+    clearInterval(pid);
+    reset();
+  }
+</script>
+<!-- arrow keys for desktop -->
+<script>
+  function keydown(event) {
+    action(event.keyCode, 5);
+  }
+  function keyup(event) {
+    action(event.keyCode, 0);
+  }
+  function action(key, speed) {
+    if(key === 37)
+      current.fuse.dx = -speed;
+    if(key === 39)
+      current.fuse.dx = speed;
+    if(key === 40)
+      current.fuse.dy = speed;
+    if(key === 38)
+      current.fuse.dy = -speed;
+  }
+  var pop = new Audio('mp3/pop.mp3');
+  var snap = new Audio('mp3/snap.mp3');
+</script>
+<!-- the game logic -->
+<script>
+  function reset() {
+    element('bomb').innerHTML = '';
+    cubes = [];
+    next = null;
+    score = 0;
+    drops = 0;
+  }
+  function element(name) {
+    return document.getElementById(name);
+  }
+  var seed = 1;
+  var current;
+  var grid = [];
+  var cubes = [];
+  var remove = [];
+  var color = ['blue', 'green', 'orange', 'purple'];
+  function random() {
+    var x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+  }
+  function limit(min, max) {
+    return Math.floor(random() * (max - min + 1)) + min;
+  }
+  function clear() {
+    grid = [];
+    for(var i = 0; i < 9; i++)
+      grid[i] = [];
+  }
+  function tick() {
+    var landed = [];
+    for(var i = 0; i < cubes.length; i++) {
+      var cube = cubes[i];
+      if(cube) {
+        var x = parseInt(cube.style.left, 10);
+        var y = parseInt(cube.style.top, 10);
+        var dx = x + cube.fuse.dx;
+        var dy = y + cube.fuse.dy;
+        var col = Math.round(x / 50);
+        var row = Math.round(y / 50);
+        cube.fuse.col = col;
+        cube.fuse.row = row;
+        grid[col][row] = cube;
+        if(dx >= 0 && dx <= 400) {
+          cube.style.left = dx + 'px';
+        }
+        if(dy >= 0 && dy <= 300) {
+          cube.style.top = dy + 'px';
+        }
+      }
+    }
+  }
+  function contains(a, obj) {
+    var i = a.length;
+    while(i--) {
+      if(a[i] === obj) {
+        return true;
+      }
+    }
+    return false;
+  }
+  var max = 3;
+  var min = 0;
+  function spawn() {
+    current = add_cube(color[limit(min, max)], 100, 50, 0, 0);
+  }
+  function add_cube(color, x, y, dx, dy) {
+    var cube = document.createElement('img');
+    cube.src = 'svg/' + color + '.svg';
+    cube.style.position = 'absolute';
+    cube.style.left = x + 'px';
+    cube.style.top = y + 'px';
+    cube.fuse = {};
+    cube.fuse.dx = dx;
+    cube.fuse.dy = dy;
+    cube.fuse.color = color;
+    cube.fuse.index = cubes.push(cube) - 1;
+    element('bomb').appendChild(cube);
+    return cube;
+  }
+</script>
+
+<div id="bomb" style="width: 450px; height: 350px; background-color: black;"></div>
+
+<script>
+  document.addEventListener('keydown', keydown);
+  document.addEventListener('keyup', keyup);
+  var url = window.location.href.split('/');
+  if(url[url.length - 1] === 'bomb.html')
+    head(232423);
+</script>
+
+<!-- IE & Android do not load pictures before 
+     they are displayed on the screen -->
+<div id="load" style="position: absolute; left: 200px; top: 0px; z-index: -1;">
+<img id="1" src="svg/blue.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="2" src="svg/green.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="3" src="svg/orange.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="4" src="svg/purple.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="5" src="svg/blues.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="6" src="svg/greens.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="7" src="svg/oranges.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="8" src="svg/purples.svg" style="position: absolute; left: 0px; top: 0px;"/>
+</div>

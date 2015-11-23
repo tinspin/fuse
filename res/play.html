@@ -67,10 +67,6 @@
   };
   function keydown(event) {
     action(event.keyCode);
-    if(!pop)
-      pop = new Audio('mp3/pop.mp3');
-    if(!snap)
-      snap = new Audio('mp3/snap.mp3');
   }
   function action(key) {
     if(key === 37)
@@ -124,7 +120,6 @@
   }
   function tick() {
     clear();
-    var upgrade = false;
     var landed = [];
     for(var i = 0; i < cubes.length; i++) {
       var cube = cubes[i];
