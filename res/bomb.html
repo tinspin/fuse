@@ -7,19 +7,16 @@
     clear();
     this.seed = seed;
     pid = setInterval(tick, 33);
+    for(var i = 0; i < 9; i++) {
+      for(var j = 0; j < 7; j++) {
+        if(i % 2 && j % 2)
+          current = add_cube('blue', 50 * i, 50 * j, 0, 0);
+      }
+    }
     spawn();
   }
   function sent(user, data) { /* send(data) is broadcasted to N-1 */
     var split = data.split('+');
-    var used = [];
-    var high = 0;
-    for(var i = 1; i < split.length; i++) {
-      if(contains(used, split[i]))
-        high += 50;
-      add_cube(color[math_random(0, 3)], split[i] * 50, -50 - high, 8);
-      used.push(split[i]);
-      drops++;
-    }
   }
   function pause(hold) {
     if(hold)
@@ -34,21 +31,34 @@
 </script>
 <!-- arrow keys for desktop -->
 <script>
+  var left = false;
+  var right = false;
+  var up = false;
+  var down = false;
+  var recent = 0;
   function keydown(event) {
-    action(event.keyCode, 5);
+    action(event.keyCode, speed);
   }
   function keyup(event) {
     action(event.keyCode, 0);
   }
   function action(key, speed) {
-    if(key === 37)
-      current.fuse.dx = -speed;
-    if(key === 39)
-      current.fuse.dx = speed;
-    if(key === 40)
-      current.fuse.dy = speed;
-    if(key === 38)
-      current.fuse.dy = -speed;
+    if(key === 37) {
+      if(speed == 0) left = false; else left = true;
+      if(speed == 0 && right) current.fuse.dx = this.speed; else { current.fuse.dx = -speed; recent = 37 }
+    }
+    if(key === 39) {
+      if(speed == 0) right = false; else right = true;
+      if(speed == 0 && left) current.fuse.dx = -this.speed; else { current.fuse.dx = speed; recent = 39 }
+    }
+    if(key === 40) {
+      if(speed == 0) down = false; else down = true;
+      if(speed == 0 && up) current.fuse.dy = -this.speed; else { current.fuse.dy = speed; recent = 40 }
+    }
+    if(key === 38) {
+      if(speed == 0) up = false; else up = true;
+      if(speed == 0 && down) current.fuse.dy = this.speed; else { current.fuse.dy = -speed; recent = 38 }
+    }
   }
   var pop = new Audio('mp3/pop.mp3');
   var snap = new Audio('mp3/snap.mp3');
@@ -83,26 +93,119 @@
     for(var i = 0; i < 9; i++)
       grid[i] = [];
   }
+  var speed = 9;
   function tick() {
     var landed = [];
     for(var i = 0; i < cubes.length; i++) {
       var cube = cubes[i];
-      if(cube) {
+      if(cube && cube.fuse.color == 'green') {
         var x = parseInt(cube.style.left, 10);
         var y = parseInt(cube.style.top, 10);
         var dx = x + cube.fuse.dx;
         var dy = y + cube.fuse.dy;
+        var border = false;
+        if(dx < 0) { dx = 0; border = true; }
+        if(dy < 0) { dy = 0; border = true; }
+        if(dx > 400) { dx = 400; border = true; }
+        if(dy > 300) { dy = 300; border = true; }
         var col = Math.round(x / 50);
         var row = Math.round(y / 50);
         cube.fuse.col = col;
         cube.fuse.row = row;
         grid[col][row] = cube;
-        if(dx >= 0 && dx <= 400) {
-          cube.style.left = dx + 'px';
+        var _mx = x % 50;
+        var _my = y % 50;
+        var mx = dx % 50;
+        var my = dy % 50;
+        var sx = 0;
+        var sy = 0;
+        var _col = col % 2;
+        var _row = row % 2;
+        if(mx != 0 && _my == 0 && (up || down)) {
+          if(_col == 1) {
+            if(mx > 25) {
+              console.log('xx-');
+              sx -= speed;
+            }
+            else if(mx <= 25) {
+              console.log('xx+');
+              sx += speed;
+            }
+            dx = x;
+            dy = y;
+          }
+          else if(mx < 25) {
+            console.log('dx-');
+            sx -= speed;
+            dx = x;
+            dy = y;
+          }
+          else if(mx >= 25) {
+            console.log('dx+');
+            sx += speed;
+            dx = x;
+            dy = y;
+          }
         }
-        if(dy >= 0 && dy <= 300) {
-          cube.style.top = dy + 'px';
+        if(_mx == 0 && my != 0 && (left || right)) {
+          if(_row == 1) {
+            if(my > 25) {
+              console.log('yy-');
+              sy -= speed;
+            }
+            else if(my <= 25) {
+              console.log('yy+');
+              sy += speed;
+            }
+            dx = x;
+            dy = y;
+          }
+          else if(my < 25) {
+            console.log('dy-');
+            sy -= speed;
+            dx = x;
+            dy = y;
+          }
+          else if(my >= 25) {
+            console.log('dy+');
+            sy += speed;
+            dx = x;
+            dy = y;
+          }
         }
+        var move = (_mx == 0 || _my == 0);
+        if(sx != 0 && sy != 0) {
+          sx = 0;
+          sy = 0;
+          /*if(recent == 37 || recent == 39) {
+            console.log('rx');
+            sx = 0;
+          }
+          if(recent == 38 || recent == 40) {
+            console.log('ry');
+            sy = 0;
+          }*/
+        }
+        if(dx >= 0 && dx <= 400 && move)
+          if(sx != 0 && !border) {
+            var pos = x + sx;
+            var ran = col * 50;
+            if(pos > ran - speed && pos < ran + speed)
+              pos = ran;
+            cube.style.left = pos + 'px';
+          }
+          else if(_row != 1)
+            cube.style.left = dx + 'px';
+        if(dy >= 0 && dy <= 300 && move)
+          if(sy != 0 && !border) {
+            var pos = y + sy;
+            var ran = row * 50;
+            if(pos > ran - speed && pos < ran + speed)
+              pos = ran;
+            cube.style.top = pos + 'px';
+          }
+          else if(_col != 1)
+            cube.style.top = dy + 'px';
       }
     }
   }
@@ -118,7 +221,7 @@
   var max = 3;
   var min = 0;
   function spawn() {
-    current = add_cube(color[limit(min, max)], 100, 50, 0, 0);
+    current = add_cube(color[limit(min, max)], 0, 0, 0, 0);
   }
   function add_cube(color, x, y, dx, dy) {
     var cube = document.createElement('img');
