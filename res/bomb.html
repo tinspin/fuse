@@ -121,91 +121,53 @@
         var sy = 0;
         var _col = col % 2;
         var _row = row % 2;
+        var clear = false;
+        var limit = 25 + current.fuse.dx;
         if(mx != 0 && _my == 0 && (up || down)) {
           if(_col == 1) {
-            if(mx > 25) {
-              console.log('xx-');
-              sx -= speed;
-            }
-            else if(mx <= 25) {
-              console.log('xx+');
-              sx += speed;
-            }
-            dx = x;
-            dy = y;
+            if(mx >= limit) sx -= speed;
+            else if(mx < limit) sx += speed;
           }
-          else if(mx < 25) {
-            console.log('dx-');
-            sx -= speed;
-            dx = x;
-            dy = y;
-          }
-          else if(mx >= 25) {
-            console.log('dx+');
-            sx += speed;
-            dx = x;
-            dy = y;
-          }
+          else if(mx < limit) sx -= speed;
+          else if(mx >= limit) sx += speed;
         }
+        limit = 25 + current.fuse.dy;
         if(_mx == 0 && my != 0 && (left || right)) {
           if(_row == 1) {
-            if(my > 25) {
-              console.log('yy-');
-              sy -= speed;
-            }
-            else if(my <= 25) {
-              console.log('yy+');
-              sy += speed;
-            }
-            dx = x;
-            dy = y;
+            if(my >= limit) sy -= speed;
+            else if(my < limit) sy += speed;
           }
-          else if(my < 25) {
-            console.log('dy-');
-            sy -= speed;
-            dx = x;
-            dy = y;
-          }
-          else if(my >= 25) {
-            console.log('dy+');
-            sy += speed;
-            dx = x;
-            dy = y;
-          }
+          else if(my < limit) sy -= speed;
+          else if(my >= limit) sy += speed;
         }
-        var move = (_mx == 0 || _my == 0);
-        if(sx != 0 && sy != 0) {
-          sx = 0;
-          sy = 0;
-          /*if(recent == 37 || recent == 39) {
-            console.log('rx');
-            sx = 0;
-          }
-          if(recent == 38 || recent == 40) {
-            console.log('ry');
-            sy = 0;
-          }*/
+        if(sx != 0 || sy != 0) {
+          dx = x;
+          dy = y;
         }
-        if(dx >= 0 && dx <= 400 && move)
-          if(sx != 0 && !border) {
-            var pos = x + sx;
-            var ran = col * 50;
-            if(pos > ran - speed && pos < ran + speed)
-              pos = ran;
-            cube.style.left = pos + 'px';
-          }
-          else if(_row != 1)
-            cube.style.left = dx + 'px';
-        if(dy >= 0 && dy <= 300 && move)
-          if(sy != 0 && !border) {
-            var pos = y + sy;
-            var ran = row * 50;
-            if(pos > ran - speed && pos < ran + speed)
-              pos = ran;
-            cube.style.top = pos + 'px';
-          }
-          else if(_col != 1)
-            cube.style.top = dy + 'px';
+        if(sx != 0 && sy != 0) {}
+        else {
+          var move = (_mx == 0 || _my == 0);
+          if(dx >= 0 && dx <= 400 && move)
+            if(sx != 0 && !border) {
+              var pos = x + sx;
+              var ran = col * 50;
+              if(pos > ran - speed && pos < ran + speed)
+                pos = ran;
+              cube.style.left = pos + 'px';
+            }
+            else if(_row != 1)
+              cube.style.left = dx + 'px';
+          if(dy >= 0 && dy <= 300 && move)
+            if(sy != 0 && !border) {
+              var pos = y + sy;
+              var ran = row * 50;
+              if(pos > ran - speed && pos < ran + speed)
+                pos = ran;
+              cube.style.top = pos + 'px';
+            }
+            else if(_col != 1)
+              cube.style.top = dy + 'px';
+        }
       }
     }
   }
