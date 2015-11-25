@@ -65,31 +65,33 @@ img {
       return;
     }
     if(key === 37) {
-      if(speed > 0) sprite.fuse.last = 'left';
+      if(speed > 0) sprite.fuse.head = 'left';
       if(speed == 0) left = false; else left = true;
       if(speed == 0 && right) { sprite.fuse.dx = sprite.fuse.speed; recent = 39; } else { sprite.fuse.dx = -speed; }
       if(speed > 0) recent = 37;
     }
     if(key === 39) {
-      if(speed > 0) sprite.fuse.last = 'right';
+      if(speed > 0) sprite.fuse.head = 'right';
       if(speed == 0) right = false; else right = true;
       if(speed == 0 && left) { sprite.fuse.dx = -sprite.fuse.speed; recent = 37; } else { sprite.fuse.dx = speed; }
       if(speed > 0) recent = 39;
     }
     if(key === 40) {
-      if(speed > 0) sprite.fuse.last = 'down';
+      if(speed > 0) sprite.fuse.head = 'down';
       if(speed == 0) down = false; else down = true;
       if(speed == 0 && up) { sprite.fuse.dy = -sprite.fuse.speed; recent = 38; } else { sprite.fuse.dy = speed; }
       if(speed > 0) recent = 40;
     }
     if(key === 38) {
-      if(speed > 0) sprite.fuse.last = 'up';
+      if(speed > 0) sprite.fuse.head = 'up';
       if(speed == 0) up = false; else up = true;
       if(speed == 0 && down) { sprite.fuse.dy = sprite.fuse.speed; recent = 40; } else { sprite.fuse.dy = -speed; }
       if(speed > 0) recent = 38;
     }
     if(speed == 0 && !left && !right && !up && !down) {
       recent = 0;
+      sprite.fuse.count = 3;
+      sprite.fuse.img.src = 'gif/' + sprite.fuse.color + '_' + sprite.fuse.head + '_' + sprite.fuse.count + '.gif';
     }
   }
   var pop = new Audio('mp3/pop.mp3');
@@ -221,11 +223,10 @@ img {
     }
   }
   function animate(sprite, dx, dy) {
-    var head = sprite.fuse.last;
-    if(dx > 0) head = 'right';
-    if(dx < 0) head = 'left';
-    if(dy > 0) head = 'down';
-    if(dy < 0) head = 'up';
+    if(dx > 0) sprite.fuse.head = 'right';
+    if(dx < 0) sprite.fuse.head = 'left';
+    if(dy > 0) sprite.fuse.head = 'down';
+    if(dy < 0) sprite.fuse.head = 'up';
     if(dx != 0 || dy != 0) {
       if(sprite.fuse.counter > 6) {
         sprite.fuse.count++;
@@ -234,12 +235,7 @@ img {
         sprite.fuse.counter = 0;
       }
       sprite.fuse.counter++;
-      sprite.fuse.img.src = 'gif/' + sprite.fuse.color + '_' + head + '_' + sprite.fuse.count + '.gif';
-    }
-    else {
-      if(recent == 0)
-        sprite.fuse.count = 3;
-      sprite.fuse.img.src = 'gif/' + sprite.fuse.color + '_' + head + '_' + sprite.fuse.count + '.gif';
+      sprite.fuse.img.src = 'gif/' + sprite.fuse.color + '_' + sprite.fuse.head + '_' + sprite.fuse.count + '.gif';
     }
   }
   function contains(a, obj) {
@@ -275,11 +271,11 @@ img {
     sprite.fuse.color = color;
     if(color == 'white') {
       sprite.fuse.type = 'player';
-      sprite.fuse.last = 'down';
+      sprite.fuse.head = 'down';
       sprite.fuse.count = 3;
       sprite.fuse.counter = 0;
       sprite.fuse.speed = scale;
-      img.src = 'gif/' + sprite.fuse.color + '_' + sprite.fuse.last + '_' + sprite.fuse.count + '.gif';
+      img.src = 'gif/' + sprite.fuse.color + '_' + sprite.fuse.head + '_' + sprite.fuse.count + '.gif';
       img.style.bottom = size + 'px';
     }
     else {
@@ -303,3 +299,24 @@ img {
   if(url[url.length - 1].split('?')[0] === 'bomb.html')
     head(232423);
 </script>
+
+<!-- Firefox completely craps out without this, and even with this it still tries 
+     to load the first image over and over again each time img.src is set! -->
+<div id="load" style="position: absolute; left: 200px; top: 0px; z-index: -1;">
+<img src="gif/white_down_0.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_down_1.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_down_2.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_down_3.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_right_0.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_right_1.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_right_2.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_right_3.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_left_0.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_left_1.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_left_2.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_left_3.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_up_0.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_up_1.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_up_2.gif" style="position: absolute; left: 0px; top: 0px;"/>
+<img src="gif/white_up_3.gif" style="position: absolute; left: 0px; top: 0px;"/>
+</div>
