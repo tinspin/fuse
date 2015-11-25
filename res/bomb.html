@@ -11,15 +11,20 @@ img {
 </style>
 <!-- these methods are called by game.html -->
 <script>
-  var height = 384; //256; //128;
-  var width = 480; //320; //160;
-  var size = 48; //32; //16;
-  var half = 24; //16; //8;
+  var scale = window.location.search.substring(1);
+  if(scale)
+    scale = parseInt(scale);
+  else
+    scale = 1;
+  var size = 16 * scale;
+  var half = size / 2;
+  var height = size * 8;
+  var width = size * 10;
   var pid;
   function head(seed) { /* play(seed) is broadcasted to N */
     clear();
     this.seed = seed;
-    pid = setInterval(tick, 33);
+    pid = setInterval(tick, 16);
     for(var i = 0; i < 11; i++) {
       for(var j = 0; j < 9; j++) {
         if(i % 2 && j % 2)
@@ -35,7 +40,7 @@ img {
     if(hold)
       clearInterval(pid);
     else
-      pid = setInterval(tick, 33);
+      pid = setInterval(tick, 16);
   }
   function tail() { /* over(data) is broadcasted to N */
     clearInterval(pid);
@@ -222,7 +227,7 @@ img {
     if(dy > 0) head = 'down';
     if(dy < 0) head = 'up';
     if(dx != 0 || dy != 0) {
-      if(sprite.fuse.counter > (sprite.fuse.speed > 5 ? 2 : 3)) {
+      if(sprite.fuse.counter > 6) {
         sprite.fuse.count++;
         if(sprite.fuse.count > 3)
           sprite.fuse.count = 0;
@@ -273,7 +278,7 @@ img {
       sprite.fuse.last = 'down';
       sprite.fuse.count = 3;
       sprite.fuse.counter = 0;
-      sprite.fuse.speed = 5;
+      sprite.fuse.speed = scale;
       img.src = 'gif/' + sprite.fuse.color + '_' + sprite.fuse.last + '_' + sprite.fuse.count + '.gif';
       img.style.bottom = size + 'px';
     }
@@ -286,26 +291,15 @@ img {
   }
 </script>
 
-
-<div id="bomb" style="width: 528px; height: 432px; background-color: black;"></div>
+<div id="bomb" style="background-color: black;"></div>
 
 <script>
+  var bomb = element('bomb');
+  bomb.style.width = size * 11 + 'px';
+  bomb.style.height = size * 9 + 'px';
   document.addEventListener('keydown', keydown);
   document.addEventListener('keyup', keyup);
   var url = window.location.href.split('/');
-  if(url[url.length - 1] === 'bomb.html')
+  if(url[url.length - 1].split('?')[0] === 'bomb.html')
     head(232423);
 </script>
-
-<!-- IE & Android do not load pictures before 
-     they are displayed on the screen -->
-<div id="load" style="position: absolute; left: 100px; top: 0px; z-index: -1;">
-<img id="1" src="svg/blue.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="2" src="svg/green.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="3" src="svg/orange.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="4" src="svg/purple.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="5" src="svg/blues.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="6" src="svg/greens.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="7" src="svg/oranges.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="8" src="svg/purples.svg" style="position: absolute; left: 0px; top: 0px;"/>
-</div>

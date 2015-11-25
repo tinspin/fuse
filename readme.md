@@ -43,6 +43,11 @@ Examples:
   - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source, try single-player <a href="http://fuse.rupy.se/play.html">play.html</a>)
   - java 3D VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a> (closed-source)
 
+Filter:
+
+  - To remove HTTP headers in your browser: <a href="https://chrome.google.com/webstore/detail/modify-headers-for-google/innpjfdalfhpcoinfnehdnbkglpmogdi">modify-headers-for-google</a>
+    This is good advice in general as most headers just waste bandwidth.
+    
 +-------------------+
 | <i>Work in progress!</i> |
 +-------------------+
