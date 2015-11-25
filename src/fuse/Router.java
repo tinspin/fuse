@@ -354,7 +354,7 @@ public class Router implements Node {
 			user.away = false;
 			user.room.send(user, "back|" + user.name);
 			
-			if(!user.room.away())
+			if(!user.room.away() && user.room.play)
 				user.room.send(user, "free", true);
 				
 			return "back|done";
