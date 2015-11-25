@@ -45,8 +45,14 @@ Examples:
 
 Filter:
 
-  - To remove HTTP headers in your browser: <a href="https://chrome.google.com/webstore/detail/modify-headers-for-google/innpjfdalfhpcoinfnehdnbkglpmogdi">modify-headers-for-google</a>
-    This is good advice in general as most headers just waste bandwidth.
+  - to remove HTTP headers in your browser: <a href="https://chrome.google.com/webstore/detail/modify-headers-for-google/innpjfdalfhpcoinfnehdnbkglpmogdi">modify-headers-for-google</a>
+    this is good advice in general as most headers just waste bandwidth:
+    
+      User-Agent
+      Referer
+      Accept-Encoding
+      Accept-Language
+      Connection (doesn't work)
     
 +-------------------+
 | <i>Work in progress!</i> |
