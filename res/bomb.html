@@ -1,16 +1,29 @@
 <!DOCTYPE HTML>
-<style>body{ margin: 0; padding: 0 }</style>
+<style>body{ margin: 0; padding: 0 }
+img {
+  -ms-interpolation-mode: nearest-neighbor;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -o-crisp-edges;
+  image-rendering: pixelated;
+}
+</style>
 <!-- these methods are called by game.html -->
 <script>
+  var height = 384; //256; //128;
+  var width = 480; //320; //160;
+  var size = 48; //32; //16;
+  var half = 24; //16; //8;
   var pid;
   function head(seed) { /* play(seed) is broadcasted to N */
     clear();
     this.seed = seed;
     pid = setInterval(tick, 33);
-    for(var i = 0; i < 9; i++) {
-      for(var j = 0; j < 7; j++) {
+    for(var i = 0; i < 11; i++) {
+      for(var j = 0; j < 9; j++) {
         if(i % 2 && j % 2)
-          current = add_cube('blue', 50 * i, 50 * j, 0, 0);
+          current = add_sprite('floor_center', size * i, size * j, size, size);
       }
     }
     spawn();
@@ -37,27 +50,41 @@
   var down = false;
   var recent = 0;
   function keydown(event) {
-    action(event.keyCode, speed);
+    action(current, event.keyCode, current.fuse.speed);
   }
   function keyup(event) {
-    action(event.keyCode, 0);
+    action(current, event.keyCode, 0);
   }
-  function action(key, speed) {
+  function action(sprite, key, speed) {
+    if(speed > 0 && ((key === 37 && left) || (key === 39 && right) || (key === 40 && down) || (key === 38 && up))) {
+      return;
+    }
     if(key === 37) {
+      if(speed > 0) sprite.fuse.last = 'left';
       if(speed == 0) left = false; else left = true;
-      if(speed == 0 && right) current.fuse.dx = this.speed; else { current.fuse.dx = -speed; recent = 37 }
+      if(speed == 0 && right) { sprite.fuse.dx = sprite.fuse.speed; recent = 39; } else { sprite.fuse.dx = -speed; }
+      if(speed > 0) recent = 37;
     }
     if(key === 39) {
+      if(speed > 0) sprite.fuse.last = 'right';
       if(speed == 0) right = false; else right = true;
-      if(speed == 0 && left) current.fuse.dx = -this.speed; else { current.fuse.dx = speed; recent = 39 }
+      if(speed == 0 && left) { sprite.fuse.dx = -sprite.fuse.speed; recent = 37; } else { sprite.fuse.dx = speed; }
+      if(speed > 0) recent = 39;
     }
     if(key === 40) {
+      if(speed > 0) sprite.fuse.last = 'down';
       if(speed == 0) down = false; else down = true;
-      if(speed == 0 && up) current.fuse.dy = -this.speed; else { current.fuse.dy = speed; recent = 40 }
+      if(speed == 0 && up) { sprite.fuse.dy = -sprite.fuse.speed; recent = 38; } else { sprite.fuse.dy = speed; }
+      if(speed > 0) recent = 40;
     }
     if(key === 38) {
+      if(speed > 0) sprite.fuse.last = 'up';
       if(speed == 0) up = false; else up = true;
-      if(speed == 0 && down) current.fuse.dy = this.speed; else { current.fuse.dy = -speed; recent = 38 }
+      if(speed == 0 && down) { sprite.fuse.dy = sprite.fuse.speed; recent = 40; } else { sprite.fuse.dy = -speed; }
+      if(speed > 0) recent = 38;
+    }
+    if(speed == 0 && !left && !right && !up && !down) {
+      recent = 0;
     }
   }
   var pop = new Audio('mp3/pop.mp3');
@@ -67,7 +94,7 @@
 <script>
   function reset() {
     element('bomb').innerHTML = '';
-    cubes = [];
+    sprites = [];
     next = null;
     score = 0;
     drops = 0;
@@ -78,9 +105,8 @@
   var seed = 1;
   var current;
   var grid = [];
-  var cubes = [];
+  var sprites = [];
   var remove = [];
-  var color = ['blue', 'green', 'orange', 'purple'];
   function random() {
     var x = Math.sin(seed++) * 10000;
     return x - Math.floor(x);
@@ -90,85 +116,125 @@
   }
   function clear() {
     grid = [];
-    for(var i = 0; i < 9; i++)
+    for(var i = 0; i < 11; i++)
       grid[i] = [];
   }
-  var speed = 9;
   function tick() {
     var landed = [];
-    for(var i = 0; i < cubes.length; i++) {
-      var cube = cubes[i];
-      if(cube && cube.fuse.color == 'green') {
-        var x = parseInt(cube.style.left, 10);
-        var y = parseInt(cube.style.top, 10);
-        var dx = x + cube.fuse.dx;
-        var dy = y + cube.fuse.dy;
+    for(var i = 0; i < sprites.length; i++) {
+      var sprite = sprites[i];
+      if(sprite && sprite.fuse.type == 'player') {
+        var x = parseInt(sprite.style.left, 10);
+        var y = parseInt(sprite.style.top, 10);
+        var dx = x + sprite.fuse.dx;
+        var dy = y + sprite.fuse.dy;
         var border = false;
         if(dx < 0) { dx = 0; border = true; }
         if(dy < 0) { dy = 0; border = true; }
-        if(dx > 400) { dx = 400; border = true; }
-        if(dy > 300) { dy = 300; border = true; }
-        var col = Math.round(x / 50);
-        var row = Math.round(y / 50);
-        cube.fuse.col = col;
-        cube.fuse.row = row;
-        grid[col][row] = cube;
-        var _mx = x % 50;
-        var _my = y % 50;
-        var mx = dx % 50;
-        var my = dy % 50;
+        if(dx > width) { dx = width; border = true; }
+        if(dy > height) { dy = height; border = true; }
+        var col = Math.round(x / size);
+        var row = Math.round(y / size);
+        sprite.fuse.col = col;
+        sprite.fuse.row = row;
+        grid[col][row] = sprite;
+        var _mx = x % size;
+        var _my = y % size;
+        var mx = dx % size;
+        var my = dy % size;
         var sx = 0;
         var sy = 0;
         var _col = col % 2;
         var _row = row % 2;
         var clear = false;
-        var limit = 25 + current.fuse.dx;
+        var limit = half + current.fuse.dx;
         if(mx != 0 && _my == 0 && (up || down)) {
           if(_col == 1) {
-            if(mx >= limit) sx -= speed;
-            else if(mx < limit) sx += speed;
+            if(mx >= limit) sx -= sprite.fuse.speed;
+            else if(mx < limit) sx += sprite.fuse.speed;
           }
-          else if(mx < limit) sx -= speed;
-          else if(mx >= limit) sx += speed;
+          else if(mx < limit) sx -= sprite.fuse.speed;
+          else if(mx >= limit) sx += sprite.fuse.speed;
         }
-        limit = 25 + current.fuse.dy;
+        limit = half + current.fuse.dy;
         if(_mx == 0 && my != 0 && (left || right)) {
           if(_row == 1) {
-            if(my >= limit) sy -= speed;
-            else if(my < limit) sy += speed;
+            if(my >= limit) sy -= sprite.fuse.speed;
+            else if(my < limit) sy += sprite.fuse.speed;
           }
-          else if(my < limit) sy -= speed;
-          else if(my >= limit) sy += speed;
+          else if(my < limit) sy -= sprite.fuse.speed;
+          else if(my >= limit) sy += sprite.fuse.speed;
         }
         if(sx != 0 || sy != 0) {
           dx = x;
           dy = y;
         }
-        if(sx != 0 && sy != 0) {}
-        else {
+        var stop = false;
+        if(sx != 0 && sy != 0) {
           var move = (_mx == 0 || _my == 0);
-          if(dx >= 0 && dx <= 400 && move)
+          if(move) {
+            if(sx != 0 && _col == 1) sy = 0;
+            else if(sy != 0 && _row == 1) sx = 0;
+            else
+              stop = true;
+          }
+          else
+            stop = true;
+        }
+        if(!stop) {
+          var move = (_mx == 0 || _my == 0);
+          if(dx >= 0 && dx <= width && move)
             if(sx != 0 && !border) {
               var pos = x + sx;
-              var ran = col * 50;
-              if(pos > ran - speed && pos < ran + speed)
+              var ran = col * size;
+              if(pos > ran - sprite.fuse.speed && pos < ran + sprite.fuse.speed) {
                 pos = ran;
-              cube.style.left = pos + 'px';
+              }
+              sprite.style.left = pos + 'px';
+              animate(sprite, sx, 0);
             }
-            else if(_row != 1)
-              cube.style.left = dx + 'px';
-          if(dy >= 0 && dy <= 300 && move)
+            else if(_row == 0) {
+              sprite.style.left = dx + 'px';
+              animate(sprite, sprite.fuse.dx, 0);
+            }
+          if(dy >= 0 && dy <= height && move)
             if(sy != 0 && !border) {
               var pos = y + sy;
-              var ran = row * 50;
-              if(pos > ran - speed && pos < ran + speed)
+              var ran = row * size;
+              if(pos > ran - sprite.fuse.speed && pos < ran + sprite.fuse.speed) {
                 pos = ran;
-              cube.style.top = pos + 'px';
+              }
+              sprite.style.top = pos + 'px';
+              animate(sprite, 0, sy);
             }
-            else if(_col != 1)
-              cube.style.top = dy + 'px';
+            else if(_col == 0) {
+              sprite.style.top = dy + 'px';
+              animate(sprite, 0, sprite.fuse.dy);
+            }
         }
       }
+    }
+  }
+  function animate(sprite, dx, dy) {
+    var head = sprite.fuse.last;
+    if(dx > 0) head = 'right';
+    if(dx < 0) head = 'left';
+    if(dy > 0) head = 'down';
+    if(dy < 0) head = 'up';
+    if(dx != 0 || dy != 0) {
+      if(sprite.fuse.counter > (sprite.fuse.speed > 5 ? 2 : 3)) {
+        sprite.fuse.count++;
+        if(sprite.fuse.count > 3)
+          sprite.fuse.count = 0;
+        sprite.fuse.counter = 0;
+      }
+      sprite.fuse.counter++;
+      sprite.fuse.img.src = 'gif/' + sprite.fuse.color + '_' + head + '_' + sprite.fuse.count + '.gif';
+    }
+    else {
+      if(recent == 0)
+        sprite.fuse.count = 3;
+      sprite.fuse.img.src = 'gif/' + sprite.fuse.color + '_' + head + '_' + sprite.fuse.count + '.gif';
     }
   }
   function contains(a, obj) {
@@ -183,25 +249,45 @@
   var max = 3;
   var min = 0;
   function spawn() {
-    current = add_cube(color[limit(min, max)], 0, 0, 0, 0);
+    current = add_sprite('white', 0, 0, size, size * 2);
   }
-  function add_cube(color, x, y, dx, dy) {
-    var cube = document.createElement('img');
-    cube.src = 'svg/' + color + '.svg';
-    cube.style.position = 'absolute';
-    cube.style.left = x + 'px';
-    cube.style.top = y + 'px';
-    cube.fuse = {};
-    cube.fuse.dx = dx;
-    cube.fuse.dy = dy;
-    cube.fuse.color = color;
-    cube.fuse.index = cubes.push(cube) - 1;
-    element('bomb').appendChild(cube);
-    return cube;
+  function add_sprite(color, x, y, width, height) {
+    var sprite = document.createElement('div');
+    var img = document.createElement('img');
+    img.style.width = width + 'px';
+    img.style.height = height + 'px';
+    img.style.position = 'relative';
+    sprite.appendChild(img);
+    sprite.style.position = 'absolute';
+    sprite.style.left = x + 'px';
+    sprite.style.top = y + 'px';
+    sprite.style.width = width + 'px';
+    sprite.style.height = height + 'px';
+    sprite.fuse = {};
+    sprite.fuse.img = img;
+    sprite.fuse.dx = 0;
+    sprite.fuse.dy = 0;
+    sprite.fuse.color = color;
+    if(color == 'white') {
+      sprite.fuse.type = 'player';
+      sprite.fuse.last = 'down';
+      sprite.fuse.count = 3;
+      sprite.fuse.counter = 0;
+      sprite.fuse.speed = 5;
+      img.src = 'gif/' + sprite.fuse.color + '_' + sprite.fuse.last + '_' + sprite.fuse.count + '.gif';
+      img.style.bottom = size + 'px';
+    }
+    else {
+      img.src = 'gif/' + color + '.gif';
+    }
+    sprite.fuse.index = sprites.push(sprite) - 1;
+    element('bomb').appendChild(sprite);
+    return sprite;
   }
 </script>
 
-<div id="bomb" style="width: 450px; height: 350px; background-color: black;"></div>
+
+<div id="bomb" style="width: 528px; height: 432px; background-color: black;"></div>
 
 <script>
   document.addEventListener('keydown', keydown);
@@ -213,7 +299,7 @@
 
 <!-- IE & Android do not load pictures before 
      they are displayed on the screen -->
-<div id="load" style="position: absolute; left: 200px; top: 0px; z-index: -1;">
+<div id="load" style="position: absolute; left: 100px; top: 0px; z-index: -1;">
 <img id="1" src="svg/blue.svg" style="position: absolute; left: 0px; top: 0px;"/>
 <img id="2" src="svg/green.svg" style="position: absolute; left: 0px; top: 0px;"/>
 <img id="3" src="svg/orange.svg" style="position: absolute; left: 0px; top: 0px;"/>
