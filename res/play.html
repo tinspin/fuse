@@ -1,322 +1,521 @@
+[[	package gen;
+
+import fuse.Router;
+import se.rupy.http.*;
+import java.util.*;
+import java.net.*;
+import java.io.*;
+
+public class play extends Service {
+	public String path() { return "/play.html"; }
+	public void filter(Event event) throws Event, Exception {
+		event.query().parse();
+		String host = event.query().string("host", "fuse.rupy.se");
+		String game = event.query().string("game", "cube");
+		String path = event.query().string("path", game + ".html");
+		Output out = event.output(); ]]
+
 <!DOCTYPE HTML>
-<style>body{ margin: 0; padding: 0 }</style>
-<!-- these methods are called by game.html -->
-<script>
-  var pid;
-  function head(seed) { /* play(seed) is broadcasted to N */
-    this.seed = seed;
-    pid = setInterval(tick, 33);
-    spawn();
+<html>
+<head>
+<meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<style>
+  a:link, a:hover, a:active, a:visited { color: #6699ff; }
+  img { display: block; }
+  div { font-family: monospace; }
+  input { font-family: monospace; }
+  table { margin: 5px; }
+  #fail1 { color: #ff3300; }
+  #fail2 { color: #ff3300; }
+  textarea {
+    font-family: monospace;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    resize: none;
+    width: 100%;
   }
-  function sent(user, data) { /* send(data) is broadcasted to N-1 */
-    var split = data.split('+');
-    var used = [];
-    var high = 0;
-    for(var i = 1; i < split.length; i++) {
-      if(contains(used, split[i]))
-        high += 50;
-      add_cube(color[math_random(0, 3)], split[i] * 50, -50 - high, 8);
-      used.push(split[i]);
-      drops++;
+  select {
+    font-family: monospace;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  #show {
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+  }
+</style>
+<script src="md5.js"></script>
+<!-- fuse network code -->
+<script>
+  var host = '[[ host ]]';
+  var game = '[[ game ]]';
+  var show = false;
+  var size = 0;
+  var salt;
+  function pull(salt) {
+    this.salt = salt;
+    http('pull', null);
+  }
+  function push(data) {
+    var data = http('push', data);
+    if(data) {
+      var split = data.split('|');
+      if(split[1] == 'fail')
+        show_fail(split[2]);
+      return split;
     }
   }
-  function pause(hold) {
-    if(hold)
-      clearInterval(pid);
-    else
-      pid = setInterval(tick, 33);
-  }
-  function tail() { /* over(data) is broadcasted to N */
-    clearInterval(pid);
-    reset();
-  }
-</script>
-<!-- input, touch for phones and tablets, arrow keys for desktop -->
-<script>
-  var x;
-  var y;
-  function touchstart(event) {
-    event.preventDefault();
-    x = event.touches[0].clientX;
-    y = event.touches[0].clientY;
-  }
-  function touchmove(event) {
-    if(!x || !y) {
-      return;
+  function http(path, data) {
+    hide_fail();
+    var async = false;
+    var state = (path == 'pull' ? 3 : 4);
+    var xhr = new XMLHttpRequest();
+    var ie = false;
+    var url = 'http://' + host + '/' + path + '?';
+    if(state == 3) {
+      async = true;
+      url += 'salt=' + salt;
+      try { xhr = new XDomainRequest(); url += '&ie'; ie = true; } catch(e) {}
     }
-    event.preventDefault();
-    var nx = event.touches[0].clientX;
-    var ny = event.touches[0].clientY;
-    var dx = x - nx;
-    var dy = y - ny;
-    if(Math.abs(dx) > Math.abs(dy)) {
-      if(dx > 0) {
-        action(37);
-      } else if(dx < 0) {
-        action(39);
-      }
-    } else {
-      if(dy > 0) {
-        action(38);
-      } else if(dy < 0) {
-        action(40);
-      }
+    else {
+      var type = data.substring(0, 4);
+      if(type == 'chat' || type == 'send')
+        async = true;
+      if(salt)
+        data = type + '|' + salt + data.substring(4, data.length);
+      url += 'data=' + encodeURIComponent(data);
     }
-    x = null;
-    y = null;
-  };
-  function keydown(event) {
-    action(event.keyCode);
+    url += "&time=" + new Date().getTime();
+    xhr.open('GET', url, async); // sync is deprecated really? genious!
+    if(!ie) xhr.setRequestHeader('Accept', 'text/event-stream');
+    if(state == 3) {
+      if(ie)
+        xhr.onprogress = function() {
+          var body = xhr.responseText.substring(size, xhr.responseText.length);
+          chop(body, '\n'); // last \n instead
+          size = xhr.responseText.length;
+        };
+      else
+        xhr.onreadystatechange = function() {
+          if(xhr.readyState == 3) {
+            var body = xhr.responseText.substring(size, xhr.responseText.length);
+            chop(body, '\n\n'); // last \n\n instead
+            size = xhr.responseText.length;
+          }
+        };
+    }
+    xhr.send();
+    if(state == 4) {
+      if(show)
+        element('push').innerHTML += xhr.responseText + '\n';
+      if(!async)
+        return xhr.responseText;
+    }
   }
-  function action(key) {
-    if(key === 37)
-      current.fuse.delta = -50;
-    if(key === 39)
-      current.fuse.delta = 50;
-    if(key === 40)
-      current.fuse.speed = 20;
-    if(key === 38)
-      current.fuse.speed = 4;
-  }
-  var pop = new Audio('mp3/pop.mp3');
-  var snap = new Audio('mp3/snap.mp3');
-</script>
-<!-- the game logic -->
-<script>
-  function reset() {
-    element('cube').innerHTML = '';
-    height = [0, 0, 0, 0, 0];
-    cubes = [];
-    next = null;
-    score = 0;
-    drops = 0;
+  function chop(body, delimiter) {
+    var part = body.split(delimiter);
+    for(var i = 0; i < part.length; i++) {
+      var trim = part[i].trim();
+      if(trim.length > 0)
+        if(trim.indexOf('data: ') == 0)
+          read(trim.substring(6, trim.length));
+        else
+          read(trim);
+    }
   }
   function element(name) {
     return document.getElementById(name);
   }
-  var seed = 1;
-  var combo = 0;
-  var current;
-  var next;
-  var lost = 0;
-  var score = 0;
-  var drops = 0;
-  var height = [0, 0, 0, 0, 0];
-  var grid = [];
-  var cubes = [];
-  var remove = [];
-  var color = ['blue', 'green', 'orange', 'purple'];
-  function random() {
-    var x = Math.sin(seed++) * 10000;
-    return x - Math.floor(x);
-  }
-  function limit(min, max) {
-    return Math.floor(random() * (max - min + 1)) + min;
-  }
-  function clear() {
-    grid = [];
-    for(var i = 0; i < 5; i++)
-      grid[i] = [];
-  }
-  function tick() {
-    clear();
-    var landed = [];
-    for(var i = 0; i < cubes.length; i++) {
-      var cube = cubes[i];
-      if(cube) {
-        var x = parseInt(cube.style.left, 10);
-        var y = parseInt(cube.style.top, 10);
-        var col = x / 50;
-        var row = Math.round(y / 50);
-        var top = height[col] / 50;
-        cube.fuse.col = col;
-        cube.fuse.row = row;
-        if(row > -1)
-          grid[col][row] = cube;
-        if(cube.fuse.speed != 0) {
-          var dx = x + cube.fuse.delta;
-          var dy = y + cube.fuse.speed;
-          var move = false;
-          if(cube.fuse.delta != 0) { /* horizontal */
-            if(x > 200) x = 200;
-            if(x < 0) x = 0;
-            if(height[col + cube.fuse.delta / 50] < 300 - dy)
-              move = true;
-            cube.fuse.delta = 0;
-          }
-          if(300 - dy < height[col]) { /* vertical */
-            if(col == 2 && y < 0) { /* game over */
-              try {
-                lost++;
-                over('lost (' + lost + ',' + score + ',' + drops + ')');
-              }
-              catch(e) {
-                reset();
-                spawn();
-              }
-            }
-            else { /* floor landing */
-              cube.src = 'svg/' + cube.fuse.color + '.svg';
-              dy = 300 - height[col];
-              height[col] += 50;
-              cube.fuse.speed = 0;
-              cube.style.zIndex = 0;
-              landed.push(cube);
-              if(cube === current) {
-                spawn();
-                combo = 0;
-              }
-            }
-          }
-          else if(move) {
-            cube.style.left = dx + 'px';
-          }
-          cube.style.top = dy + 'px';
-          if(cube.fuse.speed < 0) {
-            cube.fuse.speed *= 1.4;
-            if(cube.fuse.speed < -1000) {
-              cubes[cube.fuse.index] = null;
-              element('cube').removeChild(cube);
-            }
-          }
+</script>
+<!-- fuse message handling -->
+<script>
+  var beep = new Audio('mp3/beep.mp3');
+  var select = new Audio('mp3/select.mp3');
+  var send_game = true;
+  var game_play = false;
+  function read(data) {
+    //try { console.log(data) } catch(e) {}
+    if(show)
+      element('pull').innerHTML += data + '\n';
+    if(send_game) {
+      setTimeout(function() { push('game|' + game); list() }, 1000); // Give IE time to handle 2000kb payload.
+      send_game = false;
+    }
+    var split = data.split('|');
+    if(split.length > 1 && split[0] == 'chat') {
+      element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
+      select.play();
+    }
+    if(split.length > 0) {
+      if(split[0] == 'lock') {
+        update_select('join', split[1], '#ff3300');
+      }
+      if(split[0] == 'open') {
+        update_select('join', split[1], '#ff9900');
+      }
+      if(split[0] == 'here') {
+        add_select('ally', split[1], '#6699ff');
+        beep.play();
+      }
+      if(split[0] == 'ally') {
+        update_select('ally', split[1], '#00cc33');
+      }
+      if(split[0] == 'gone') {
+        remove_select('ally', split[1]);
+        stop_game();
+      }
+      if(split[0] == 'room') {
+        add_select('join', split[1].split('+')[0], '#ff9900');
+      }
+      if(split[0] == 'drop') {
+        remove_select('join', split[1]);
+      }
+      if(split[0] == 'stop' || split[0] == 'exit') {
+        remove_select('ally', split[1]);
+        remove_select('join', split[1]);
+        if(split[0] == 'stop') {
+          element('chat').value = split[1] + ': quit\n' + element('chat').value;
+          stop_game();
         }
       }
-    }
-    /* multiplayer works like this now; every 3+ block 
-       is sent to the opponent, if you make a combo (>1 
-       send per drop) that is increased to 1+ for 2nd 
-       drop and all blocks for 3rd. */
-    var restart = false;
-    for(var i = 0; i < landed.length; i++) {
-      var cube = landed[i];
-      if(cube) {
-        fork(cube);
-        if(remove.length > 3) {
-          var data = cube.fuse.color;
-          var block = 2 - combo * 2;
-          for(var j = 0; j < remove.length; j++) {
-            var done = remove[j];
-            grid[done.fuse.col][done.fuse.row] = null;
-            if(block > -1) {
-              cubes[done.fuse.index] = null;
-              element('cube').removeChild(done);
-            }
-            else {
-              done.style.zIndex = 1;
-              done.fuse.speed = -4;
-              data += '+' + done.fuse.col;
-              score++;
-            }
-            block--;
-          }
-          try {
-            send(data);
-          }
-          catch(e) {}
-          combo++;
-          restart = true;
-          pop.play();
-        }
-        else {
-          snap.play();
-        }
-        remove = [];
+      if(split[0] == 'play') {
+        display('room', 'none');
+        display('play', 'block');
+        element('talk').style.position = 'absolute';
+        element('talk').style.left = '0px';
+        element('talk').style.top = '350px';
+        head(split[1]);
+        game_play = true;
       }
-    }
-    if(restart)
-      moveAll();
-  }
-  /* when something was removed reset the whole 
-     game area and set everything in motion */
-  function moveAll() {
-    height = [0, 0, 0, 0, 0];
-    for(var i = 0; i < grid.length; i++) {
-      for(var j = 0; j < grid[i].length; j++) {
-        var cube = grid[i][j];
-        if(cube && cube.fuse.speed > -1 && !cube.fuse.next) {
-          cube.fuse.speed = 4;
-        }
+      if(split[0] == 'send') {
+        sent(split[1], split[2]);
+      }
+      if(split[0] == 'over') {
+        element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
+        stop_game();
+      }
+      if(split[0] == 'away') {
+        update_select('ally', split[1], '#ff3300');
+        element('chat').value = split[1] + ': away\n' + element('chat').value;
+      }
+      if(split[0] == 'back') {
+        update_select('ally', split[1], '#6699ff');
+        element('chat').value = split[1] + ': back\n' + element('chat').value;
+      }
+      if(split[0] == 'hold') {
+        if(game_play)
+      	  pause(true);
+      }
+      if(split[0] == 'free') {
+        if(game_play)
+          pause(false);
       }
     }
   }
-  function fork(cube) {
-    check(cube, cube.fuse.col - 1, cube.fuse.row);
-    check(cube, cube.fuse.col + 1, cube.fuse.row);
-    check(cube, cube.fuse.col, cube.fuse.row - 1);
-    check(cube, cube.fuse.col, cube.fuse.row + 1);
+  function stop_game() {
+    display('room', 'block');
+    display('play', 'none');
+    element('talk').style.position = 'static';
+    tail();
+    game_play = false;
   }
-  function check(cube, col, row) {
-    if(col < 0 || col > 4 || row < 0 || row > 6) {
+  function remove_select(type, name) {
+    var select = element(type);
+    var id = -1;
+    for(var i = 0; i < select.options.length; i++) {
+      if(select.options[i].text == name) {
+        id = i;
+        break;
+      }
+    }
+    if(id > -1)
+      select.remove(id);
+  }
+  function add_select(type, name, color) {
+    var select = element(type);
+    for(var i = 0; i < select.options.length; i++) {
+      if(select.options[i].text == name) {
+        return;
+      }
+    }
+    var option = document.createElement('option');
+    option.style.color = color;
+    option.text = name;
+    select.options.add(option, select.options[0]);
+  }
+  function update_select(type, name, color) {
+    var select = element(type);
+    for(var i = 0; i < select.options.length; i++) {
+      if(select.options[i].text == name) {
+        select.options[i].style.color = color;
+        return;
+      }
+    }
+  }
+  function clear_join() {
+    var select = element('join');
+    var length = select.options.length;
+    for(i = 0; i < length; i++) {
+      select.options[i] = null;
+    }
+  }
+  function hide_fail(text) {
+    element('fail1').innerHTML = '';
+    element('fail2').innerHTML = '';
+  }
+  function show_fail(text) {
+    element('fail1').innerHTML = text;
+    element('fail2').innerHTML = text;
+  }
+</script>
+<!-- fuse view handling -->
+<script>
+  var name;
+  function user() {
+    name = id('name');
+    if(name.length < 3) {
+      show_fail('name too short');
       return;
     }
-    var other = grid[col][row];
-    if(other && other.fuse.speed == 0 && cube.src === other.src && !contains(remove, other)) {
-      remove.push(other);
-      fork(other);
+    var pass = id('pass');
+    if(pass.length < 3) {
+      show_fail('pass too short');
+      return;
+    }
+    var mail = id('mail');
+    if(mail.length > 0 && mail.indexOf('@') < 0) {
+      show_fail('mail invalid');
+      return;
+    }
+    var hash = md5(pass + name.toLowerCase());
+    var user = push('user|' + name + '|' + mail + '|' + hash);
+    if(user[1] == 'done')
+      authorize(user[2]);
+  }
+  function hash() {
+    name = id('name');
+    if(name.length < 3) {
+      show_fail('name too short');
+      return;
+    }
+    var pass = id('pass');
+    if(pass.length < 3) {
+      show_fail('pass too short');
+      return;
+    }
+    var salt = push('salt|' + name);
+    if(salt[1] === 'fail') {
+      show_fail(salt[2]);
+      return;
+    }
+    var sign = push('sign|' + salt[2] + '|' + md5(md5(pass + name.toLowerCase()) + salt[2]));
+    if(sign[1] == 'done')
+      authorize(salt[2]);
+  }
+  function authorize(salt) {
+    display('user', 'none');
+    display('room', 'block');
+    display('talk', 'block');
+    focus('text');
+    pull(salt);
+  }
+  function none(data) {
+    push(data);
+  }
+  function id(name, reset) {
+    var value = element(name).value;
+    if(reset)
+      element(name).value = '';
+    return value;
+  }
+  function display(id, value) {
+    element(id).style.display = value;
+  }
+  function focus(id) {
+    element(id).focus();
+  }
+  function hash_code(e) {
+    e = e || window.event;
+    var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+    if(unicode == 13) {
+      hash();
     }
   }
-  function contains(a, obj) {
-    var i = a.length;
-    while(i--) {
-      if(a[i] === obj) {
-        return true;
-      }
+  function user_code(e) {
+    e = e || window.event;
+    var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+    if(unicode == 13) {
+      user();
     }
-    return false;
   }
-  var max = 3;
-  var min = 0;
-  function spawn() {
-    if(next == null) {
-      next = add_cube(color[limit(min, max)], 100, -45, 0);
-      next.src = 'svg/' + next.fuse.color + 's.svg';
-      next.fuse.next = true;
+  function chat_code(e) {
+    e = e || window.event;
+    var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+    if(unicode == 13) {
+      chat();
     }
-    current = next;
-    current.fuse.next = false;
-    current.fuse.speed = 4;
-    current.style.zIndex = 2;
-    next = add_cube(color[limit(min, max)], 100, -45, 0);
-    next.src = 'svg/' + next.fuse.color + 's.svg';
-    next.fuse.next = true;
   }
-  function add_cube(color, x, y, speed) {
-    var cube = document.createElement('img');
-    cube.src = 'svg/' + color + '.svg';
-    cube.style.position = 'absolute';
-    cube.style.left = x + 'px';
-    cube.style.top = y + 'px';
-    cube.fuse = {};
-    cube.fuse.color = color;
-    cube.fuse.speed = speed;
-    cube.fuse.delta = 0;
-    cube.fuse.index = cubes.push(cube) - 1;
-    element('cube').appendChild(cube);
-    return cube;
+  function ally() {
+    var select = element('ally');
+    var index = select.selectedIndex;
+    if(index > -1) {
+      var ally = push('ally|' + select.options[index].text);
+      if(ally[1] == 'done')
+        alert('done');
+    }
+  }
+  function chat() {
+    var text = id('text', true)
+    send_chat(text);
+  }
+  function send_chat(text) {
+    if(text.length > 0)
+      none('chat|' + text);
+  }
+  function room() {
+    push('room|' + make_room());
+    clear_join();
+  }
+  function join() {
+    var select = element('join');
+    var index = select.selectedIndex;
+    if(index > -1) {
+      var join = push('join|' + select.options[index].text);
+      if(join[1] == 'done')
+        clear_join();
+    }
+  }
+  function quit() {
+    var quit = push('quit');
+    if(quit[1] == 'done')
+      list();
+  }
+  function list() {
+    var list = push('list|room');
+    for(var i = 3; i < list.length; i++) {
+      add_select('join', list[i].split('+')[0], '#ff9900');
+    }
+  }
+  function math_random(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  function play() {
+    var play = push('play|' + math_random(1, 400000));
+    if(play[1] === 'fail')
+      show_fail(play[2]);
+  }
+  function over(data) {
+    push('over|' + data);
+  }
+  function send(data) {
+    push('send|' + data);
+  }
+  function away(event) {
+    if(!salt)
+      return;
+    if(event.type == 'focus')
+      push('back');
+    if(event.type == 'blur')
+      push('away');
   }
 </script>
+</head>
+<body style="margin: 0px;">
 
-<div id="cube" style="width: 250px; height: 350px; background-color: black;"></div>
+<div id="user"><table>
+<tr><td colspan="3"><a href="https://github.com/tinspin/fuse"><img border="0" width="140" height="80" src="fuse.svg"></a></td></tr>
+<tr><td colspan="3"><div id="fail1"></div></td></tr>
+<tr><td>name&nbsp;</td><td><input id="name" name="name" size="10"></td></tr>
+<tr><td>pass&nbsp;</td>
+    <td><input id="pass" name="pass" type="password" size="10" onkeypress="hash_code(event);"></td>
+    <td><a href="javascript:hash();">login</a></td></tr>
+<tr><td><font color="#00cc33">mail*</font></td>
+    <td><input id="mail" name="mail" size="10" onkeypress="user_code(event);"></td>
+    <td><a href="javascript:user();">register</a></td></tr>
+<tr><td colspan="2"><font color="#ff9900">*optional</font></td></tr>
+</table>
+<table>
+[[	Iterator it = fuse.Router.score.iterator();
+
+	while(it.hasNext()) {
+		String score = (String) it.next(); ]]
+
+<tr><td>[[ score ]]</td></tr>
+
+[[	} ]]
+</table>
+</div>
+
+<div id="room" style="display: none;"><table>
+<tr><td colspan="3"><div id="fail2"></div></td></tr>
+<tr><td align="center">user</td><td></td>
+    <td align="center">room</td></tr>
+<tr><td><select id="ally" size="5" multiple></select></td><td></td>
+    <td><select id="join" size="5" multiple></select></td></tr>
+<tr><td><a href="javascript:ally();">ally</a></td><td></td>
+    <td><a href="javascript:room();">room</a>
+        <a href="javascript:join();">join</a>
+        <a href="javascript:quit();">quit</a>
+        <a href="javascript:play();">play</a></td></tr>
+</table>
+</div>
+
+<div id="play" style="display: none;">
+
+<!-- cube.html contains the game for modularity 
+     of you want to use our lobby with your game 
+     host a file that mimics play.html and call 
+     fuse.rupy.se/play.html?game=<name>&path=URLtoyourgame.html -->
+     
+[[		if(path.equals("cube.html") || path.equals("bomb.html")) {
+			BufferedReader file = new BufferedReader(new FileReader("app/fuse.rupy.se/" + path));
+			String line = file.readLine();
+			while(line != null) {
+				out.println(line);
+				line = file.readLine();
+			}
+		}
+		else {
+			HttpURLConnection conn = (HttpURLConnection) new URL(path).openConnection();
+			conn.setRequestMethod("GET");
+			int code = conn.getResponseCode();
+			if(code == 200) {
+				InputStream in = conn.getInputStream();
+				int size = Deploy.pipe(in, event.output());
+				in.close();
+			}
+		} ]]
+
+</div>
+
+<div id="talk" style="display: none;"><table>
+<tr><td colspan="3"><textarea id="chat" name="chat" rows="5" readonly></textarea></td></tr>
+<tr><td colspan="3">
+<input id="text" name="text" size="25" onkeypress="chat_code(event);">
+<a href="javascript:chat();">chat</a>
+</td></tr>
+</table>
+</div>
+
+<div id="show">
+<div id="pull">pull:</div>
+<div id="push">push:</div>
+</div>
 
 <script>
-  var div = element('cube');
-  div.addEventListener('touchstart', touchstart);
-  div.addEventListener('touchmove', touchmove);
-  document.addEventListener('keydown', keydown);
-  var url = window.location.href.split('/');
-  if(url[url.length - 1] === 'play.html')
-    head(232423);
+  focus('name');
+  /* disabled for development
+  window.onfocus = away;
+  window.onblur = away;
+  */
 </script>
 
-<!-- IE & Android do not load pictures before 
-     they are displayed on the screen -->
-<div id="load" style="position: absolute; left: 200px; top: 0px; z-index: -1;">
-<img id="1" src="svg/blue.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="2" src="svg/green.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="3" src="svg/orange.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="4" src="svg/purple.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="5" src="svg/blues.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="6" src="svg/greens.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="7" src="svg/oranges.svg" style="position: absolute; left: 0px; top: 0px;"/>
-<img id="8" src="svg/purples.svg" style="position: absolute; left: 0px; top: 0px;"/>
-</div>
+</body>
+</html>
+
+[[	}
+} ]]

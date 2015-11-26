@@ -295,7 +295,7 @@ public class Server extends Service implements Node, Runnable {
 	public static class Redirect extends Service {
 		public String path() { return "/"; }
 		public void filter(Event event) throws Event, Exception {
-			event.reply().header("Location", "game.html");
+			event.reply().header("Location", "play.html");
 			event.reply().code("302 Found");
 		}
 	}

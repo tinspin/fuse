@@ -10,7 +10,7 @@ Support:
   - unity
     - plugin is only one file of C# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">Fuse.cs</a>, <a href="https://dl.dropboxusercontent.com/u/1352420/Fuse.zip">Minimalist Unity Project</a>
   - javascript XHR/XDR, 99.9% of browsers, only IE7 missing
-    - CORS compliant, static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/game.html">game.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>
+    - CORS compliant, static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/cube.html">cube.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/cube.html">bomb.html</a>
   - java will be added later, if somebody needs it now just post an issue.
   - 100% firewall pass-through
   - all gameplay types:
@@ -25,8 +25,7 @@ Protocol:
   - peer-to-peer UDP, binary physics packets for VR
     - position move and talk, look, head, body, hand packets
   - multicast UDP on cluster for load distribution
-    - estimated collusion concurrency ~25.000 mess./sec. 
-      on 4x raspberry pi 2: <a href="http://host.rupy.se/cluster.jpg">example</a>
+    - concurrency ~25.000 mess./sec. on 4x raspberry pi 2
 
 Platform:
 
@@ -40,7 +39,7 @@ Platform:
 
 Examples:
 
-  - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source, try single-player <a href="http://fuse.rupy.se/play.html">play.html</a>)
+  - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source, try single-player <a href="http://fuse.rupy.se/cube.html">cube.html</a>)
   - java 3D VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a> (closed-source)
 
 Filter:

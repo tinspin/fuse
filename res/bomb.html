@@ -11,15 +11,11 @@ img {
 </style>
 <!-- these methods are called by game.html -->
 <script>
-  var scale = window.location.search.substring(1);
-  if(scale)
-    scale = parseInt(scale);
-  else
-    scale = 2;
-  var size = 16 * scale;
-  var half = size / 2;
-  var height = size * 8;
-  var width = size * 10;
+  var scale = 2;
+  var bomb_size = 16 * scale;
+  var half = bomb_size / 2;
+  var board_height = bomb_size * 8;
+  var board_width = bomb_size * 10;
   var pid;
   function head(seed) { /* play(seed) is broadcasted to N */
     clear();
@@ -28,13 +24,49 @@ img {
     for(var i = 0; i < 11; i++) {
       for(var j = 0; j < 9; j++) {
         if(i % 2 && j % 2)
-          current = add_sprite('floor_center', size * i, size * j, size, size);
+          current = add_sprite('', 'floor_center', bomb_size * i, bomb_size * j, bomb_size, bomb_size);
       }
     }
     spawn();
   }
+  function make_room() {
+    return 'bomb|4';
+  }
+  var marc;
+    var fdsa;
+      var rewq;
   function sent(user, data) { /* send(data) is broadcasted to N-1 */
     var split = data.split('+');
+    console.log(user + ' ' + data);
+    
+    var x = parseInt(split[0], 10);
+    var y = parseInt(split[1], 10);
+    var key = parseInt(split[2], 10);
+    var speed = parseInt(split[3], 10);
+    
+    if(user == 'marc') {
+      if(!marc)
+        marc = add_sprite('marc', 'white', x, y, bomb_size, bomb_size * 2);
+      marc.style.left = x + 'px';
+      marc.style.top = y + 'px';
+      action(marc, key, speed, false);
+    }
+    
+    if(user == 'fdsa') {
+      if(!fdsa)
+        fdsa = add_sprite('fdsa', 'white', x, y, bomb_size, bomb_size * 2);
+      fdsa.style.left = x + 'px';
+      fdsa.style.top = y + 'px';
+      action(fdsa, key, speed, false);
+    }
+    
+    if(user == 'rewq') {
+      if(!rewq)
+        rewq = add_sprite('rewq', 'white', x, y, bomb_size, bomb_size * 2);
+      rewq.style.left = x + 'px';
+      rewq.style.top = y + 'px';
+      action(rewq, key, speed, false);
+    }
   }
   function pause(hold) {
     if(hold)
@@ -49,53 +81,58 @@ img {
 </script>
 <!-- arrow keys for desktop -->
 <script>
-  var left = false;
-  var right = false;
-  var up = false;
-  var down = false;
-  var recent = 0;
   function keydown(event) {
-    action(current, event.keyCode, current.fuse.speed);
+    if(current)
+      action(current, event.keyCode, current.fuse.speed, true);
   }
   function keyup(event) {
-    action(current, event.keyCode, 0);
+    if(current)
+      action(current, event.keyCode, 0, true);
   }
-  function action(sprite, key, speed) {
-    if(speed > 0 && ((key === 37 && left) || (key === 39 && right) || (key === 40 && down) || (key === 38 && up))) {
+  function send_move(sprite, key, speed) {
+    var x = parseInt(sprite.style.left, 10);
+    var y = parseInt(sprite.style.top, 10);
+    try {
+      send(x + '+' + y + '+' + key + '+' + speed);
+    }
+    catch(e) {}
+  }
+  function action(sprite, key, speed, do_send) {
+    if(do_send && speed > 0 && ((key === 37 && sprite.fuse.left) || (key === 39 && sprite.fuse.right) || (key === 40 && sprite.fuse.down) || (key === 38 && sprite.fuse.up))) {
       return;
     }
+    if(do_send)
+      send_move(sprite, key, speed);
     if(key === 37) {
       if(speed > 0) sprite.fuse.head = 'left';
-      if(speed == 0) left = false; else left = true;
-      if(speed == 0 && right) { sprite.fuse.dx = sprite.fuse.speed; recent = 39; } else { sprite.fuse.dx = -speed; }
-      if(speed > 0) recent = 37;
+      if(speed == 0) sprite.fuse.left = false; else sprite.fuse.left = true;
+      if(speed == 0 && sprite.fuse.right) { sprite.fuse.dx = sprite.fuse.speed; sprite.fuse.recent = 39; } else { sprite.fuse.dx = -speed; }
+      if(speed > 0) sprite.fuse.recent = 37;
     }
     if(key === 39) {
       if(speed > 0) sprite.fuse.head = 'right';
-      if(speed == 0) right = false; else right = true;
-      if(speed == 0 && left) { sprite.fuse.dx = -sprite.fuse.speed; recent = 37; } else { sprite.fuse.dx = speed; }
-      if(speed > 0) recent = 39;
+      if(speed == 0) sprite.fuse.right = false; else sprite.fuse.right = true;
+      if(speed == 0 && sprite.fuse.left) { sprite.fuse.dx = -sprite.fuse.speed; sprite.fuse.recent = 37; } else { sprite.fuse.dx = speed; }
+      if(speed > 0) sprite.fuse.recent = 39;
     }
     if(key === 40) {
       if(speed > 0) sprite.fuse.head = 'down';
-      if(speed == 0) down = false; else down = true;
-      if(speed == 0 && up) { sprite.fuse.dy = -sprite.fuse.speed; recent = 38; } else { sprite.fuse.dy = speed; }
-      if(speed > 0) recent = 40;
+      if(speed == 0) sprite.fuse.down = false; else sprite.fuse.down = true;
+      if(speed == 0 && sprite.fuse.up) { sprite.fuse.dy = -sprite.fuse.speed; sprite.fuse.recent = 38; } else { sprite.fuse.dy = speed; }
+      if(speed > 0) sprite.fuse.recent = 40;
     }
     if(key === 38) {
       if(speed > 0) sprite.fuse.head = 'up';
-      if(speed == 0) up = false; else up = true;
-      if(speed == 0 && down) { sprite.fuse.dy = sprite.fuse.speed; recent = 40; } else { sprite.fuse.dy = -speed; }
-      if(speed > 0) recent = 38;
+      if(speed == 0) sprite.fuse.up = false; else sprite.fuse.up = true;
+      if(speed == 0 && sprite.fuse.down) { sprite.fuse.dy = sprite.fuse.speed; sprite.fuse.recent = 40; } else { sprite.fuse.dy = -speed; }
+      if(speed > 0) sprite.fuse.recent = 38;
     }
-    if(speed == 0 && !left && !right && !up && !down) {
-      recent = 0;
+    if(speed == 0 && !sprite.fuse.left && !sprite.fuse.right && !sprite.fuse.up && !sprite.fuse.down) {
+      sprite.fuse.recent = 0;
       sprite.fuse.count = 3;
       sprite.fuse.img.src = 'gif/' + sprite.fuse.color + '_' + sprite.fuse.head + '_' + sprite.fuse.count + '.gif';
     }
   }
-  var pop = new Audio('mp3/pop.mp3');
-  var snap = new Audio('mp3/snap.mp3');
 </script>
 <!-- the game logic -->
 <script>
@@ -138,24 +175,24 @@ img {
         var border = false;
         if(dx < 0) { dx = 0; border = true; }
         if(dy < 0) { dy = 0; border = true; }
-        if(dx > width) { dx = width; border = true; }
-        if(dy > height) { dy = height; border = true; }
-        var col = Math.round(x / size);
-        var row = Math.round(y / size);
+        if(dx > board_width) { dx = board_width; border = true; }
+        if(dy > board_height) { dy = board_height; border = true; }
+        var col = Math.round(x / bomb_size);
+        var row = Math.round(y / bomb_size);
         sprite.fuse.col = col;
         sprite.fuse.row = row;
         grid[col][row] = sprite;
-        var _mx = x % size;
-        var _my = y % size;
-        var mx = dx % size;
-        var my = dy % size;
+        var _mx = x % bomb_size;
+        var _my = y % bomb_size;
+        var mx = dx % bomb_size;
+        var my = dy % bomb_size;
         var sx = 0;
         var sy = 0;
         var _col = col % 2;
         var _row = row % 2;
         var clear = false;
         var limit = half + current.fuse.dx;
-        if(mx != 0 && _my == 0 && (up || down)) {
+        if(mx != 0 && _my == 0 && (sprite.fuse.up || sprite.fuse.down)) {
           if(_col == 1) {
             if(mx >= limit) sx -= sprite.fuse.speed;
             else if(mx < limit) sx += sprite.fuse.speed;
@@ -164,7 +201,7 @@ img {
           else if(mx >= limit) sx += sprite.fuse.speed;
         }
         limit = half + current.fuse.dy;
-        if(_mx == 0 && my != 0 && (left || right)) {
+        if(_mx == 0 && my != 0 && (sprite.fuse.left || sprite.fuse.right)) {
           if(_row == 1) {
             if(my >= limit) sy -= sprite.fuse.speed;
             else if(my < limit) sy += sprite.fuse.speed;
@@ -190,10 +227,10 @@ img {
         }
         if(!stop) {
           var move = (_mx == 0 || _my == 0);
-          if(dx >= 0 && dx <= width && move)
+          if(dx >= 0 && dx <= board_width && move)
             if(sx != 0 && !border) {
               var pos = x + sx;
-              var ran = col * size;
+              var ran = col * bomb_size;
               if(pos > ran - sprite.fuse.speed && pos < ran + sprite.fuse.speed) {
                 pos = ran;
               }
@@ -204,10 +241,10 @@ img {
               sprite.style.left = dx + 'px';
               animate(sprite, sprite.fuse.dx, 0);
             }
-          if(dy >= 0 && dy <= height && move)
+          if(dy >= 0 && dy <= board_height && move)
             if(sy != 0 && !border) {
               var pos = y + sy;
-              var ran = row * size;
+              var ran = row * bomb_size;
               if(pos > ran - sprite.fuse.speed && pos < ran + sprite.fuse.speed) {
                 pos = ran;
               }
@@ -250,37 +287,43 @@ img {
   var max = 3;
   var min = 0;
   function spawn() {
-    current = add_sprite('white', 0, 0, size, size * 2);
+    current = add_sprite(name, 'white', 0, 0, bomb_size, bomb_size * 2);
   }
-  function add_sprite(color, x, y, width, height) {
+  function add_sprite(name, color, x, y, w, h) {
     var sprite = document.createElement('div');
     var img = document.createElement('img');
-    img.style.width = width + 'px';
-    img.style.height = height + 'px';
-    img.style.position = 'relative';
     sprite.appendChild(img);
     sprite.style.position = 'absolute';
     sprite.style.left = x + 'px';
     sprite.style.top = y + 'px';
-    sprite.style.width = width + 'px';
-    sprite.style.height = height + 'px';
+    sprite.style.width = w + 'px';
+    sprite.style.height = h + 'px';
     sprite.fuse = {};
     sprite.fuse.img = img;
     sprite.fuse.dx = 0;
     sprite.fuse.dy = 0;
     sprite.fuse.color = color;
     if(color == 'white') {
+      sprite.fuse.name = name;
+      sprite.fuse.left = false;
+      sprite.fuse.right = false;
+      sprite.fuse.up = false;
+      sprite.fuse.down = false;
+      sprite.fuse.recent = 0;
       sprite.fuse.type = 'player';
       sprite.fuse.head = 'down';
       sprite.fuse.count = 3;
       sprite.fuse.counter = 0;
       sprite.fuse.speed = scale;
-      img.src = 'gif/' + sprite.fuse.color + '_' + sprite.fuse.head + '_' + sprite.fuse.count + '.gif';
-      img.style.bottom = size + 'px';
+      sprite.fuse.img.src = 'gif/' + sprite.fuse.color + '_' + sprite.fuse.head + '_' + sprite.fuse.count + '.gif';
+      sprite.fuse.img.style.bottom = bomb_size + 'px';
     }
     else {
-      img.src = 'gif/' + color + '.gif';
+      sprite.fuse.img.src = 'gif/' + color + '.gif';
     }
+    sprite.fuse.img.style.width = w + 'px';
+    sprite.fuse.img.style.height = h + 'px';
+    sprite.fuse.img.style.position = 'relative';
     sprite.fuse.index = sprites.push(sprite) - 1;
     element('bomb').appendChild(sprite);
     return sprite;
@@ -291,8 +334,8 @@ img {
 
 <script>
   var bomb = element('bomb');
-  bomb.style.width = size * 11 + 'px';
-  bomb.style.height = size * 9 + 'px';
+  bomb.style.width = bomb_size * 11 + 'px';
+  bomb.style.height = bomb_size * 9 + 'px';
   document.addEventListener('keydown', keydown);
   document.addEventListener('keyup', keyup);
   var url = window.location.href.split('/');
