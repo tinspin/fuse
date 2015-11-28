@@ -179,7 +179,8 @@ public class Server extends Service implements Node, Runnable {
 				try {
 					String response = node.push(event, data);
 
-					System.err.println("<- " + response);
+					if(!data.startsWith("send"))
+						System.err.println("<- " + response);
 					
 					if(!response.equals("hold")) {
 						body = response.getBytes("UTF-8");

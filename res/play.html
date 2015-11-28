@@ -90,7 +90,13 @@ public class play extends Service {
       url += 'data=' + encodeURIComponent(data);
     }
     url += "&time=" + new Date().getTime();
-    xhr.open('GET', url, async); // sync is deprecated really? genious!
+    try {
+      xhr.open('GET', url, async); // sync is deprecated really? genious!
+    }
+    catch(e) {
+      console.log(url);
+      return e;
+    }
     if(!ie) xhr.setRequestHeader('Accept', 'text/event-stream');
     if(state == 3) {
       if(ie)

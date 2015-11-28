@@ -10,7 +10,7 @@ Support:
   - unity
     - plugin is only one file of C# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">Fuse.cs</a>, <a href="https://dl.dropboxusercontent.com/u/1352420/Fuse.zip">Minimalist Unity Project</a>
   - javascript XHR/XDR, 99.9% of browsers, only IE7 missing
-    - CORS compliant, static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/cube.html">cube.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/cube.html">bomb.html</a>
+    - CORS compliant, static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/cube.html">cube.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/bomb.html">bomb.html</a>
   - java will be added later, if somebody needs it now just post an issue.
   - 100% firewall pass-through
   - all gameplay types:
