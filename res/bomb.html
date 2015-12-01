@@ -32,9 +32,7 @@ img {
   function make_room() {
     return 'bomb|4';
   }
-  var marc;
-    var fdsa;
-      var rewq;
+  var players = {};
   function sent(user, data) { /* send(data) is broadcasted to N-1 */
     var split = data.split('+');
     console.log(user + ' ' + data);
@@ -44,29 +42,12 @@ img {
     var key = parseInt(split[2], 10);
     var speed = parseInt(split[3], 10);
     
-    if(user == 'marc') {
-      if(!marc)
-        marc = add_sprite('marc', 'white', x, y, bomb_size, bomb_size * 2);
-      marc.style.left = x + 'px';
-      marc.style.top = y + 'px';
-      action(marc, key, speed, false);
-    }
-    
-    if(user == 'fdsa') {
-      if(!fdsa)
-        fdsa = add_sprite('fdsa', 'white', x, y, bomb_size, bomb_size * 2);
-      fdsa.style.left = x + 'px';
-      fdsa.style.top = y + 'px';
-      action(fdsa, key, speed, false);
-    }
-    
-    if(user == 'rewq') {
-      if(!rewq)
-        rewq = add_sprite('rewq', 'white', x, y, bomb_size, bomb_size * 2);
-      rewq.style.left = x + 'px';
-      rewq.style.top = y + 'px';
-      action(rewq, key, speed, false);
-    }
+    if(!players[user])
+      players[user] = add_sprite(user, 'white', x, y, bomb_size, bomb_size * 2);
+      
+    players[user].style.left = x + 'px';
+    players[user].style.top = y + 'px';
+    action(players[user], key, speed, false);
   }
   function pause(hold) {
     if(hold)

@@ -61,7 +61,7 @@ public class Router implements Node {
 
 	public String push(final Event event, String data) throws Exception {
 		if(!data.startsWith("send"))
-			System.err.println("-> " + data);
+			System.err.println("-> '" + data + "'");
 
 		final String[] split = data.split("\\|");
 
