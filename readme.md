@@ -264,7 +264,7 @@ In sort of chronological order:
                             // motion for 3D MMO games with dynamic here/gone
 *<b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
                            x-> <b><i>move</i></b>|&lt;user&gt;|&lt;data&gt;
-                            // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;+&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;+&lt;action&gt;(|&lt;speed&gt;|...)
+                            // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;+&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;+&lt;action&gt;(+&lt;speed&gt;+...)
                             //          position   |orientation    |key/button
 
  <b><i>/\</b></i> type not implemented    -> main|fail|type not found
