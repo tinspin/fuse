@@ -877,7 +877,7 @@ public class Daemon implements Runnable {
 		 * from cluster node <i>one</i> ({@link Daemon#name()}) 
 		 * with application <i>host.rupy.se</i> the first bytes would be 
 		 * 'se.rupy.host.one' followed by payload.
-		 * Max length is 256 bytes!
+		 * Max length is 1024 bytes!
 		 * @throws Exception
 		 */
 		public void receive(byte[] message) throws Exception;
@@ -933,7 +933,7 @@ public class Daemon implements Runnable {
 	/**
 	 * Send inter-cluster-node UDP multicast message.
 	 * @param tail your payload.
-	 * Max length is 256 bytes including header: [host].[node]!
+	 * Max length is 1024 bytes including header: [host].[node]!
 	 */
 	public void broadcast(byte[] tail) throws Exception {
 		if(socket != null) {
@@ -947,7 +947,7 @@ public class Daemon implements Runnable {
 
 			byte[] head = (name() + "." + archive.host()).getBytes();
 
-			if(head.length + tail.length > 256) {
+			if(head.length + tail.length > 1024) {
 				throw new Exception("Message is too long (" + archive.host() + " " + tail.length + ").");
 			}
 
@@ -1036,8 +1036,8 @@ public class Daemon implements Runnable {
 					MulticastSocket socket = new MulticastSocket(8888);
 					socket.joinGroup(address);
 
-					byte[] empty = new byte[256];
-					byte[] data = new byte[256];
+					byte[] empty = new byte[1024];
+					byte[] data = new byte[1024];
 					DatagramPacket packet = new DatagramPacket(data, data.length);
 
 					while (true) {
@@ -1065,7 +1065,7 @@ public class Daemon implements Runnable {
 							}
 						}
 
-						System.arraycopy(empty, 0, data, 0, 256);
+						System.arraycopy(empty, 0, data, 0, 1024);
 					}
 				}
 				catch(Exception e) {
