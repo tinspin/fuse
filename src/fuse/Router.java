@@ -60,7 +60,7 @@ public class Router implements Node {
 	public boolean wakeup(String name) { return false; }
 
 	public String push(final Event event, String data) throws Exception {
-		if(!data.startsWith("send"))
+		if(!data.startsWith("send") && !data.startsWith("move"))
 			System.err.println("-> '" + data + "'");
 
 		final String[] split = data.split("\\|");
@@ -818,7 +818,7 @@ public class Router implements Node {
 			if(data.startsWith("over"))
 				play = false;
 			
-			if(!data.startsWith("send"))
+			if(!data.startsWith("send") && !data.startsWith("move"))
 				System.err.println("<-- " + from + " " + data);
 
 			boolean wakeup = false;

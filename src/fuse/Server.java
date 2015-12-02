@@ -179,7 +179,7 @@ public class Server extends Service implements Node, Runnable {
 				try {
 					String response = node.push(event, data);
 
-					if(!data.startsWith("send"))
+					if(!data.startsWith("send") && !data.startsWith("move"))
 						System.err.println("<- " + response);
 					
 					if(!response.equals("hold")) {

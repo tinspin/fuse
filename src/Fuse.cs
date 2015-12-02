@@ -41,7 +41,11 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 	
 	void Awake() {
-		//DontDestroyOnLoad(gameObject); // ### 4
+		// ### 4
+		// Also to debug multiplayer it helps if you check:
+		// Edit -> Project Settings -> Player -> Resolution & Presentation -> Run In Background
+		//Application.runInBackground = true;
+		//DontDestroyOnLoad(gameObject);
 	}
 	
 	void Start() {
@@ -286,6 +290,10 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 	public void Send(string data) {
 		Async("send|" + data);
+	}
+
+	public void Move(string data) {
+		Async("move|" + data);
 	}
 
 	private bool BoolPush(string data) {
