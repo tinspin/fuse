@@ -65,6 +65,10 @@ public class Router implements Node {
 
 		final String[] split = data.split("\\|");
 
+		if(data.startsWith("ping")) {
+			return "ping|done";
+		}
+		
 		if(data.startsWith("user")) {
 			final boolean name = split.length > 1 && split[1].length() > 0;
 			final boolean mail = split.length > 2 && split[2].length() > 0;

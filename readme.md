@@ -72,6 +72,9 @@ In sort of chronological order:
 | <i>Rule</i>                      -> <i>Echo</i> |
 +-----------------------------------+
 
+                            // to get latency
+ <b><i>ping</i></b>                       -> ping|done
+
                             // register
                             // [name] if you can't store the &lt;id&gt; otherwise set
                             //        to empty string (||)
@@ -283,7 +286,7 @@ In sort of chronological order:
 
 // name pool
 
- cash info ping data
+ cash info      data
  time host pull head
  pick push hide tail
  show fill full make
