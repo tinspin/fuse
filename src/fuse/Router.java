@@ -962,6 +962,8 @@ public class Router implements Node {
 			out.println("<pre>");
 			out.println("<table>");
 			out.println("<tr><td>rule&nbsp;</td><td>avg.&nbsp;</td><td>num.&nbsp;</td><td>min.&nbsp;</td><td>max.&nbsp;</td><td>fail&nbsp;</td><td>err.&nbsp;</td></tr>");
+			out.println("<tr><td colspan=\"7\" bgcolor=\"#000\"></td></tr>");
+			
 			while(it.hasNext()) {
 				String name = (String) it.next();
 				Stat stat = (Stat) stats.get(name);
