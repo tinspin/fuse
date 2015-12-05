@@ -959,18 +959,20 @@ public class Router implements Node {
 				throw event;
 			}
 
+			out.println("<pre>");
 			out.println("<table>");
-			out.println("<tr><td>rule&nbsp;</td><td>ms.</td><td>no.</td><td>min/max</td><td>fail</td><td>err</td></tr>");
+			out.println("<tr><td>rule&nbsp;</td><td>avg.&nbsp;</td><td>num.&nbsp;</td><td>min.&nbsp;</td><td>max.&nbsp;</td><td>fail&nbsp;</td><td>err.&nbsp;</td></tr>");
 			while(it.hasNext()) {
 				String name = (String) it.next();
 				Stat stat = (Stat) stats.get(name);
 
 				float avg = (float) stat.total / (float) stat.count;
 
-				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "</td><td>" + stat.count + "</td><td>" + stat.min + "/" + stat.max + "</td><td>" + stat.fail + "</td><td>" + stat.error + "</td></tr>");
+				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "</td><td>" + stat.count + "</td><td>" + stat.min + "</td><td>" + stat.max + "</td><td>" + stat.fail + "</td><td>" + stat.error + "</td></tr>");
 			}
 
 			out.println("</table>");
+			out.println("</pre>");
 		}
 	}
 
