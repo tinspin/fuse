@@ -23,10 +23,10 @@ import se.rupy.http.Service;
 
 public class Router implements Node {
 	public static ConcurrentLinkedDeque score = new ConcurrentLinkedDeque();
-	
+
 	ConcurrentHashMap users = new ConcurrentHashMap();
 	ConcurrentHashMap games = new ConcurrentHashMap();
-	
+
 	static ConcurrentHashMap stats = new ConcurrentHashMap();
 	static Daemon daemon;
 	static Node node;
@@ -48,13 +48,13 @@ public class Router implements Node {
 	private User session(Event event, String name, String salt, JSONObject json) throws Exception {
 		User user = new User(name.length() > 0 ? name : "" + Root.hash(json.getString("key")), salt, json);
 		users.put(salt, user);
-		
+
 		// This uses host.rupy.se specific MaxMind GeoLiteCity.dat
 		JSONObject country = new JSONObject((String) daemon.send(null, "{\"type\":\"country\",\"ip\":\"" + event.remote() + "\"}"));
 		if(!country.getString("code").equals("--"))
 			user.flag = country.getString("code").toLowerCase();
 		// End
-		
+
 		return user;
 	}
 
@@ -68,11 +68,11 @@ public class Router implements Node {
 			System.err.println("-> '" + data + "'");
 
 		final String[] split = data.split("\\|");
-		
+
 		if(data.startsWith("ping")) {
 			return "ping|done";
 		}
-		
+
 		if(data.startsWith("user")) {
 			final boolean name = split.length > 1 && split[1].length() > 0;
 			final boolean mail = split.length > 2 && split[2].length() > 0;
@@ -202,7 +202,7 @@ public class Router implements Node {
 
 			File file = null;
 			boolean id = name.matches("[0-9]+");
-			
+
 			if(id)
 				file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
 			else
@@ -213,7 +213,7 @@ public class Router implements Node {
 			}
 
 			JSONObject json = new JSONObject(Root.file(file));
-			
+
 			session(event, name, salt, json);
 
 			return "salt|done|" + salt;
@@ -221,7 +221,7 @@ public class Router implements Node {
 
 		if(split.length < 2)
 			return "main|fail|salt not found";
-		
+
 		final User user = (User) users.get(split[1]);
 
 		if(user == null || !user.salt.equals(split[1]))
@@ -233,7 +233,7 @@ public class Router implements Node {
 			if(user.name.length() > 0 && hash.length() > 0) {
 				String key = user.json.has("pass") ? user.json.getString("pass") : user.json.getString("key");
 				String md5 = Deploy.hash(key + user.salt, "MD5");
-				
+
 				if(hash.equals(md5)) {
 					user.sign = true;
 					return "sign|done|" + user.name;
@@ -258,7 +258,7 @@ public class Router implements Node {
 				game = new Game(split[2].toLowerCase());
 				games.put(split[2], game);
 			}
-			
+
 			user.move(user.game, game);
 			user.game = game;
 
@@ -279,9 +279,9 @@ public class Router implements Node {
 				if(file == null || !file.exists()) {
 					return rule + "|fail|not found";
 				}
-				
+
 				JSONObject json = new JSONObject(Root.file(file));
-				
+
 				try {
 					return rule + "|done|" + json.getString(rule);
 				}
@@ -292,13 +292,13 @@ public class Router implements Node {
 			else {
 				if(rule.equals("mail") && split[2].indexOf("@") < 1 && !split[2].matches("[a-zA-Z0-9.@\\-\\+]+"))
 					return "mail|fail|mail invalid";
-				
+
 				if((rule.equals("name") || rule.equals("nick")) && !split[2].matches("[a-zA-Z0-9.\\-]+"))
 					return rule + "|fail|" + rule + " invalid";
-				
+
 				if(rule.equals("name") && split[2].matches("[0-9]+"))
 					return "name|fail|name alpha missing"; // [0-9]+ reserved for <id>
-				
+
 				if(rule.equals("name"))
 					user.json.put("name", split[2].toLowerCase());
 				else if(rule.equals("nick"))
@@ -307,16 +307,16 @@ public class Router implements Node {
 					user.json.put("pass", split[2]);
 				else
 					user.json.put("mail", split[2]);
-				
+
 				final String json = user.json.toString();
-				
+
 				Async.Work update = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
 						String sort = "";
-						
+
 						if(rule.equals("name"))
 							sort = "&sort=name";
-						
+
 						byte[] post = ("json=" + json + sort).getBytes("utf-8");
 						String host = event.query().header("host");
 						call.post("/node", "Host:" + host, post);
@@ -324,7 +324,7 @@ public class Router implements Node {
 
 					public void read(String host, String body) throws Exception {
 						System.out.println(body);
-						
+
 						if(body.indexOf("Collision") > 0) {
 							String message = body.substring(body.indexOf("[") + 1, body.indexOf("]"));
 
@@ -335,7 +335,7 @@ public class Router implements Node {
 						}
 						else
 							event.query().put("done", rule + "|done");
-						
+
 						event.reply().wakeup();
 					}
 
@@ -348,32 +348,32 @@ public class Router implements Node {
 				return "hold";
 			}
 		}
-		
+
 		if(data.startsWith("away")) {
 			if(!user.room.away() && user.room.play)
 				user.room.send(user, "hold", true);
-			
+
 			user.away = true;
 			user.room.send(user, "away|" + user.name);
-				
+
 			return "away|done";
 		}
-		
+
 		if(data.startsWith("back")) {
 			user.away = false;
 			user.room.send(user, "back|" + user.name);
-			
+
 			if(!user.room.away() && user.room.play)
 				user.room.send(user, "free", true);
-				
+
 			return "back|done";
 		}
-		
+
 		if(data.startsWith("ally")) {
 			File file = null;
 			String name = split[2];
 			boolean id = name.matches("[0-9]+");
-			
+
 			if(id)
 				file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
 			else
@@ -384,7 +384,7 @@ public class Router implements Node {
 			}
 
 			final JSONObject json = new JSONObject(Root.file(file));
-			
+
 			Async.Work link = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.post("/link", "Host:" + event.query().header("host"), 
@@ -405,10 +405,10 @@ public class Router implements Node {
 			};
 
 			event.daemon().client().send("localhost", link, 30);
-			
+
 			return "hold";
 		}
-		
+
 		if(data.startsWith("peer")) {
 			user.peer(event, split[2]);
 			return "peer|done";
@@ -502,7 +502,7 @@ public class Router implements Node {
 				return "join|fail|is full";
 
 			user.move(user.room, room);
-			
+
 			if(room.users.size() == room.size)
 				user.game.send(user, "lock|" + user.room.user.name);
 
@@ -511,13 +511,13 @@ public class Router implements Node {
 
 		if(data.startsWith("play")) {
 			String seed = split[2];
-			
+
 			if(user.room.away())
 				return "play|fail|someone is away";
-			
+
 			if(user.room.play)
 				return "play|fail|already playing";
-			
+
 			if(user.room.user == null)
 				return "play|fail|in lobby";
 
@@ -530,41 +530,41 @@ public class Router implements Node {
 				return "play|fail|not creator";
 
 			user.game.send(user, "view|" + user.room.user.name);
-			
+
 			return "play|done";
 		}
-		
+
 		if(data.startsWith("over")) {
 			if(!user.room.play)
 				return "over|fail|not playing";
-			
+
 			if(split.length > 2)
 				user.room.send(user, "over|" + user.name + '|' + split[2], true);
 			else
 				user.room.send(user, "over|" + user.name, true);
 
 			user.lost++;
-			
+
 			Iterator it = user.room.users.values().iterator();
-			
+
 			while(it.hasNext()) {
 				User other = (User) it.next();
-				
+
 				if(user.salt != other.salt) {
 					StringBuilder builder = new StringBuilder();
-					
+
 					if(user.flag != null)
 						builder.append("<img style=\"display: inline;\" src=\"flag/" + user.flag + ".gif\">&nbsp;");
-					
+
 					builder.append("<font color=\"#ff3300\">" + user.name + "(" + user.lost + ")</font> vs. ");
-					
+
 					if(other.flag != null)
 						builder.append("<img style=\"display: inline;\" src=\"flag/" + other.flag + ".gif\">&nbsp;");
-					
+
 					builder.append("<font color=\"#00cc33\">" + other.name + "</font>");
-					
+
 					score.add(builder.toString());
-					
+
 					if(score.size() > 10) {
 						score.poll();
 					}
@@ -581,14 +581,14 @@ public class Router implements Node {
 			Room room = user.room;
 			boolean full = room.users.size() == room.size;
 			Room drop = user.move(user.room, user.game);
-			
+
 			if(drop != null) {
 				user.game.rooms.remove(drop.user.name);
 				user.game.send(user, "drop|" + drop.user.name);
 			}
 			else if(full)
 				user.game.send(user, "open|" + room.user.name);
-			
+
 			return "quit|done";
 		}
 
@@ -685,13 +685,13 @@ public class Router implements Node {
 		Room room;
 		int lost;
 		long id;
-		
+
 		User(String name, String salt, JSONObject json) throws Exception {
 			this.name = name;
 			this.salt = salt;
 			this.json = json;
 			this.id = Root.hash(json.getString("key"));
-			
+
 			try {
 				ally();
 			}
@@ -702,10 +702,10 @@ public class Router implements Node {
 
 		private void ally() throws Exception {
 			File file = new File(Root.home() + "/link/user/user" + Root.path(json.getString("key")));
-			
+
 			if(!file.exists())
 				return;
-			
+
 			RandomAccessFile raf = new RandomAccessFile(file, "rw");
 
 			int length = (int) raf.length();
@@ -719,10 +719,10 @@ public class Router implements Node {
 				else
 					break;
 			}
-			
+
 			raf.close();
 		}
-		
+
 		void peer(Event event, String ip) {
 			this.ip = new String[2];
 			this.ip[0] = ip;
@@ -732,11 +732,11 @@ public class Router implements Node {
 		void add(long ally) {
 			this.ally.add(new Long(ally));
 		}
-		
+
 		boolean ally(User user) {
 			return ally.contains(new Long(user.id));
 		}
-		
+
 		String peer(User other) {
 			if(ip != null)
 				if(other.ip != null && ip[1].equals(other.ip[1]))
@@ -771,7 +771,7 @@ public class Router implements Node {
 			}
 
 			lost = 0;
-			
+
 			return drop;
 		}
 
@@ -801,21 +801,21 @@ public class Router implements Node {
 
 		boolean away() {
 			Iterator it = users.values().iterator();
-			
+
 			while(it.hasNext()) {
 				User user = (User) it.next();
-				
+
 				if(user.away)
 					return true;
 			}
-			
+
 			return false;
 		}
-		
+
 		void send(User from, String data) throws Exception {
 			send(from, data, false);
 		}
-		
+
 		void send(User from, String data, boolean all) throws Exception {
 			Iterator it = users.values().iterator();
 
@@ -824,7 +824,7 @@ public class Router implements Node {
 
 			if(data.startsWith("over"))
 				play = false;
-			
+
 			if(!data.startsWith("send") && !data.startsWith("move"))
 				System.err.println("<-- " + from + " " + data);
 
@@ -837,13 +837,13 @@ public class Router implements Node {
 					// send every user in room to joining user
 					if(data.startsWith("here") && !from.name.equals(user.name)) {
 						node.push(from.salt, "here|" + user.name + user.peer(from), false);
-						
+
 						if(from.ally(user))
 							node.push(from.salt, "ally|" + user.name, false);
-						
+
 						if(user.away)
 							node.push(from.salt, "away|" + user.name, false);
-						
+
 						wakeup = true;
 					}
 
@@ -857,10 +857,10 @@ public class Router implements Node {
 					if(all || !from.name.equals(user.name)) {
 						if(data.startsWith("here"))
 							data += from.peer(user);
-						
+
 						if(data.startsWith("gone") && from.room.user != null)
 							data += "|" + from.room.user.name;
-						
+
 						node.push(user.salt, data, true);
 					}
 
@@ -903,34 +903,32 @@ public class Router implements Node {
 	static void add(Event event, String data, boolean error) {
 		String rule = data.substring(0, 4);
 		boolean fail = data.substring(5, 9).equals("fail");
-		
+
 		Stat stat = (Stat) stats.get(rule);
-		
+
 		if(stat == null) {
 			stat = new Stat();
 			stats.put(rule, stat);
 		}
-		
-		System.out.println(System.currentTimeMillis() + " " + event.big("time"));
-		
+
 		long time = System.currentTimeMillis() - event.big("time");
-		
+
 		if(time > 1000) {
 			System.out.println(rule + " " + time);
 		}
-		
+
 		if(error)
 			stat.error++;
-		else if(fail)
+		
+		if(fail)
 			stat.fail++;
-		else {
-			stat.count++;
-			stat.total += time;
-			stat.min = (int) (time < stat.min ? time : stat.min);
-			stat.max = (int) (time > stat.max ? time : stat.max);
-		}
+		
+		stat.count++;
+		stat.total += time;
+		stat.min = (int) (time < stat.min ? time : stat.min);
+		stat.max = (int) (time > stat.max ? time : stat.max);
 	}
-	
+
 	public static class Stat {
 		long total;
 		int count;
@@ -939,43 +937,43 @@ public class Router implements Node {
 		int min = Integer.MAX_VALUE;
 		int max;
 	}
-	
+
 	public static class Data extends Service {
 		static DecimalFormat decimal;
-		
+
 		static {
 			decimal = (DecimalFormat) DecimalFormat.getInstance();
 			decimal.applyPattern("#.#");
 		}
-		
+
 		public String path() { return "/data"; }
 		public void filter(Event event) throws Event, Exception {
 			Iterator it = stats.keySet().iterator();
 			Output out = event.output();
-			
+
 			event.query().parse();
-			
+
 			if(event.bit("clear")) {
 				stats = new ConcurrentHashMap();
 				out.println("Stats cleared!");
 				throw event;
 			}
-			
+
 			out.println("<table>");
 			out.println("<tr><td>rule&nbsp;</td><td>ms.</td><td>no.</td><td>min/max</td><td>fail</td><td>err</td></tr>");
 			while(it.hasNext()) {
 				String name = (String) it.next();
 				Stat stat = (Stat) stats.get(name);
-				
+
 				float avg = (float) stat.total / (float) stat.count;
-				
+
 				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "</td><td>" + stat.count + "</td><td>" + stat.min + "/" + stat.max + "</td><td>" + stat.fail + "</td><td>" + stat.error + "</td></tr>");
 			}
-			
+
 			out.println("</table>");
 		}
 	}
-	
+
 	public static class Game extends Room {
 		ConcurrentHashMap rooms = new ConcurrentHashMap();
 

@@ -188,13 +188,13 @@ public class Server extends Service implements Node, Runnable {
 					
 					if(!response.equals("hold")) {
 						body = response.getBytes("UTF-8");
-						Router.add(event, data, false);
+						Router.add(event, response, false);
 					}
 				}
 				catch(Exception e) {
 					e.printStackTrace();
 					body = (data.substring(0, 4) + "|fail|" + e.getClass().getSimpleName()).getBytes("UTF-8");
-					Router.add(event, data, true);
+					Router.add(event, data.substring(0, 4) + "|fail", true);
 				}
 				
 				if(body != null) {
