@@ -3,6 +3,7 @@ package fuse;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,14 +17,17 @@ import se.rupy.http.Async;
 import se.rupy.http.Daemon;
 import se.rupy.http.Deploy;
 import se.rupy.http.Event;
+import se.rupy.http.Output;
 import se.rupy.http.Root;
+import se.rupy.http.Service;
 
 public class Router implements Node {
 	public static ConcurrentLinkedDeque score = new ConcurrentLinkedDeque();
 	
 	ConcurrentHashMap users = new ConcurrentHashMap();
 	ConcurrentHashMap games = new ConcurrentHashMap();
-
+	
+	static ConcurrentHashMap stats = new ConcurrentHashMap();
 	static Daemon daemon;
 	static Node node;
 
@@ -64,7 +68,7 @@ public class Router implements Node {
 			System.err.println("-> '" + data + "'");
 
 		final String[] split = data.split("\\|");
-
+		
 		if(data.startsWith("ping")) {
 			return "ping|done";
 		}
@@ -686,7 +690,6 @@ public class Router implements Node {
 			this.name = name;
 			this.salt = salt;
 			this.json = json;
-			
 			this.id = Root.hash(json.getString("key"));
 			
 			try {
@@ -897,6 +900,82 @@ public class Router implements Node {
 		}
 	}
 
+	static void add(Event event, String data, boolean error) {
+		String rule = data.substring(0, 4);
+		boolean fail = data.substring(5, 9).equals("fail");
+		
+		Stat stat = (Stat) stats.get(rule);
+		
+		if(stat == null) {
+			stat = new Stat();
+			stats.put(rule, stat);
+		}
+		
+		System.out.println(System.currentTimeMillis() + " " + event.big("time"));
+		
+		long time = System.currentTimeMillis() - event.big("time");
+		
+		if(time > 1000) {
+			System.out.println(rule + " " + time);
+		}
+		
+		if(error)
+			stat.error++;
+		else if(fail)
+			stat.fail++;
+		else {
+			stat.count++;
+			stat.total += time;
+			stat.min = (int) (time < stat.min ? time : stat.min);
+			stat.max = (int) (time > stat.max ? time : stat.max);
+		}
+	}
+	
+	public static class Stat {
+		long total;
+		int count;
+		int error;
+		int fail;
+		int min = Integer.MAX_VALUE;
+		int max;
+	}
+	
+	public static class Data extends Service {
+		static DecimalFormat decimal;
+		
+		static {
+			decimal = (DecimalFormat) DecimalFormat.getInstance();
+			decimal.applyPattern("#.#");
+		}
+		
+		public String path() { return "/data"; }
+		public void filter(Event event) throws Event, Exception {
+			Iterator it = stats.keySet().iterator();
+			Output out = event.output();
+			
+			event.query().parse();
+			
+			if(event.bit("clear")) {
+				stats = new ConcurrentHashMap();
+				out.println("Stats cleared!");
+				throw event;
+			}
+			
+			out.println("<table>");
+			out.println("<tr><td>rule&nbsp;</td><td>ms.</td><td>no.</td><td>min/max</td><td>fail</td><td>err</td></tr>");
+			while(it.hasNext()) {
+				String name = (String) it.next();
+				Stat stat = (Stat) stats.get(name);
+				
+				float avg = (float) stat.total / (float) stat.count;
+				
+				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "</td><td>" + stat.count + "</td><td>" + stat.min + "/" + stat.max + "</td><td>" + stat.fail + "</td><td>" + stat.error + "</td></tr>");
+			}
+			
+			out.println("</table>");
+		}
+	}
+	
 	public static class Game extends Room {
 		ConcurrentHashMap rooms = new ConcurrentHashMap();
 

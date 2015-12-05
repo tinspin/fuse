@@ -170,9 +170,13 @@ public class Server extends Service implements Node, Runnable {
 
 					event.query().put("done", null);
 					event.query().put("fail", null);
+					
+					Router.add(event, send, false);
 				}
 			}
 			else {
+				event.query().put("time", new Long(System.currentTimeMillis()));
+				
 				String data = event.string("data");
 				byte[] body = null;
 				
@@ -184,11 +188,13 @@ public class Server extends Service implements Node, Runnable {
 					
 					if(!response.equals("hold")) {
 						body = response.getBytes("UTF-8");
+						Router.add(event, data, false);
 					}
 				}
 				catch(Exception e) {
 					e.printStackTrace();
 					body = (data.substring(0, 4) + "|fail|" + e.getClass().getSimpleName()).getBytes("UTF-8");
+					Router.add(event, data, true);
 				}
 				
 				if(body != null) {
