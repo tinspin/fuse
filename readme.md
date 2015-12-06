@@ -29,6 +29,7 @@ Protocol:
 
 Platform:
 
+  - low internal latency: <a href="http://fuse.rupy.se/data">stat</a>
   - multithreaded NIO with queue, linear perf.:
     - 1000 mess./sec. on raspberry pi 1
     - 6500 mess./sec. on raspberry pi 2
