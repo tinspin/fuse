@@ -252,6 +252,8 @@ In sort of chronological order:
                            o-> <b><i>over</b></i>|&lt;user&gt;[|data]           // the game is over
                             -> over|fail|not playing
 
+*<b><i>warn</i></b>
+
 +------------------------------------------------------------+
 | <i>These have to be sent in a separate thread from rendering.</i> |
 +------------------------------------------------------------+
@@ -287,18 +289,29 @@ In sort of chronological order:
 
 // name pool
 
- cash info gain data tone tape task step
- time host pull head solo sold slow slot
- pick push hide tail skip skin size site
- show fill full make seal seek sell sale
+ head tail
+ push pull
+ show hide
+ gain lose
+      info data      tape task step
+ time host           solo      slow slot
+ pick                skip skin size site
+      fill full make seal seek sell sale
  slay ruin rise poll said rank rate star
- drop made halt vote read rent rest peek
- body text sent loss plan page need mute
- find lose idle keep mark mask mate look
- warn walk wake zero like keep have home
- undo tool turn tune grab grip grow file
- face edit earn echo drop copy coin busy
- bill base
+ drop made halt vote read      rest peek
+ body text sent loss plan page need
+ find      idle keep mark mask mate look
+      wake like have home
+ undo tool turn      grab grip grow file
+ face edit      echo drop copy      busy
+      base
+ paid rent cash sold coin earn bill
+ tone tune mute
+
+// todo
+
+ noop = zero
+ move = walk
 
 // attribution
 

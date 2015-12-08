@@ -498,6 +498,9 @@ public class Router implements Node {
 				User poll = (User) names.get(split[2]);
 
 				if(poll != null) {
+					if(poll.poll != null)
+						return "join|fail|user busy";
+					
 					node.push(poll.salt, "poll|" + user.name, true);
 
 					poll.poll = user.name;
