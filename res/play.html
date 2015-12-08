@@ -53,7 +53,7 @@ public class play extends Service {
 <script>
   var host = '[[ host ]]';
   var game = '[[ game ]]';
-  var show = false;
+  var show = true;
   var size = 0;
   var salt;
   function pull(salt) {
@@ -219,6 +219,13 @@ public class play extends Service {
       if(split[0] == 'free') {
         if(game_play)
           pause(false);
+      }
+      if(split[0] == 'poll') {
+        if(confirm('Accept challenge from ' + split[1] + '?')) {
+          push('poll|' + split[1] + '|true');
+        } else {
+          push('poll|' + split[1] + '|false');
+        }
       }
     }
   }
@@ -389,6 +396,10 @@ public class play extends Service {
   function join() {
     var select = element('join');
     var index = select.selectedIndex;
+    if(index == -1) { /* try friend list */
+      select = element('ally');
+      index = select.selectedIndex;
+    }
     if(index > -1) {
       var join = push('join|' + select.options[index].text);
       if(join[1] == 'done')

@@ -25,6 +25,7 @@ public class Router implements Node {
 	public static ConcurrentLinkedDeque score = new ConcurrentLinkedDeque();
 
 	ConcurrentHashMap users = new ConcurrentHashMap();
+	ConcurrentHashMap names = new ConcurrentHashMap();
 	ConcurrentHashMap games = new ConcurrentHashMap();
 
 	static ConcurrentHashMap stats = new ConcurrentHashMap();
@@ -48,6 +49,7 @@ public class Router implements Node {
 	private User session(Event event, String name, String salt, JSONObject json) throws Exception {
 		User user = new User(name.length() > 0 ? name : "" + Root.hash(json.getString("key")), salt, json);
 		users.put(salt, user);
+		names.put(name, user);
 
 		// This uses host.rupy.se specific MaxMind GeoLiteCity.dat
 		JSONObject country = new JSONObject((String) daemon.send(null, "{\"type\":\"country\",\"ip\":\"" + event.remote() + "\"}"));
@@ -492,6 +494,19 @@ public class Router implements Node {
 		if(data.startsWith("join")) {
 			Room room = (Room) user.game.rooms.get(split[2]);
 
+			if(room == null) {
+				User poll = (User) names.get(split[2]);
+
+				if(poll != null) {
+					node.push(poll.salt, "poll|" + user.name, true);
+
+					poll.poll = user.name;
+					user.poll = poll.name;
+					
+					return "join|done|poll sent";
+				}
+			}
+
 			if(room == null)
 				return "join|fail|not found";
 
@@ -507,6 +522,33 @@ public class Router implements Node {
 				user.game.send(user, "lock|" + user.room.user.name);
 
 			return "join|done";
+		}
+
+		if(data.startsWith("poll")) {
+			User poll = (User) names.get(split[2]);
+			boolean accept = split[3].toLowerCase().equals("true");
+
+			if(poll == null)
+				return "poll|fail|not found";
+
+			if(!poll.name.equals(user.poll) || !user.poll.equals(poll.name))
+				return "poll|fail|wrong user";
+
+			if(accept) {
+				Room room = new Room(user, "duel", 2);
+
+				user.game.rooms.put(user.name, room);
+
+				poll.move(poll.room, room);
+				user.move(user.game, room);
+				
+				user.game.send(user, "room|" + room);
+			}
+
+			user.poll = null;
+			poll.poll = null;
+			
+			return "poll|done";
 		}
 
 		if(data.startsWith("play")) {
@@ -679,7 +721,7 @@ public class Router implements Node {
 		String[] ip;
 		JSONObject json;
 		LinkedList ally = new LinkedList();
-		String name, salt, nick, flag;
+		String name, salt, nick, flag, poll;
 		boolean sign, away;
 		Game game;
 		Room room;
@@ -919,10 +961,10 @@ public class Router implements Node {
 
 		if(error)
 			stat.error++;
-		
+
 		if(fail)
 			stat.fail++;
-		
+
 		stat.count++;
 		stat.total += time;
 		stat.min = (int) (time < stat.min ? time : stat.min);
@@ -963,7 +1005,7 @@ public class Router implements Node {
 			out.println("<table>");
 			out.println("<tr><td>rule&nbsp;</td><td>avg.&nbsp;</td><td>num.&nbsp;</td><td>min.&nbsp;</td><td>max.&nbsp;</td><td>fail&nbsp;</td><td>err.&nbsp;</td></tr>");
 			out.println("<tr><td colspan=\"7\" bgcolor=\"#000\"></td></tr>");
-			
+
 			while(it.hasNext()) {
 				String name = (String) it.next();
 				Stat stat = (Stat) stats.get(name);
@@ -1000,6 +1042,7 @@ public class Router implements Node {
 				user.game.send(user, "exit|" + user.name);
 			}
 			users.remove(salt);
+			names.remove(user.name);
 		}
 	}
 
