@@ -287,13 +287,18 @@ In sort of chronological order:
 
 // name pool
 
- cash info      data
- time host pull head
- pick push hide tail
- show fill full make
- slay ruin rise
- drop made halt
- body text sent
+ cash info gain data tone tape task step
+ time host pull head solo sold slow slot
+ pick push hide tail skip skin size site
+ show fill full make seal seek sell sale
+ slay ruin rise poll said rank rate star
+ drop made halt vote read rent rest peek
+ body text sent loss plan page need mute
+ find lose idle keep mark mask mate look
+ warn walk wake zero like keep have home
+ undo tool turn tune grab grip grow file
+ face edit earn echo drop copy coin busy
+ bill base
 
 // attribution
 
