@@ -200,10 +200,10 @@ In sort of chronological order:
 
                             // join room
                             // between <i>lock</i> and <i>view</i> nobody can join
-                            // this send a poll to the user if he has no room but 
-                            // is online with the appended info
+                            // this sends a poll to the user if he has no room but 
+                            // is online with the appended info for 1-on-1.
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> join|done|poll/room
-                           1-> <b><i>poll</i></b>|&lt;user&gt;[|&lt;info&gt;]         // if 1-on-1 automatic
+                           1-> <b><i>poll</i></b>|&lt;else&gt;[|&lt;info&gt;]         // if 1-on-1 automatic, &lt;else&gt; = other player
                            x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
@@ -213,8 +213,9 @@ In sort of chronological order:
                             -> join|fail|is full
 
                             // to accept poll
-                            // true results in both player joining the room
- <b><i>poll</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;bool&gt;  -> poll|done
+                            // &lt;else&gt; is the user name received in the poll request
+                            // true results in both players joining the room
+ <b><i>poll</i></b>|&lt;salt&gt;|&lt;else&gt;|&lt;bool&gt;  -> poll|done
 
                             // permanently ban user from room
 *<b><i>kick</i></b>|&lt;salt&gt;|&lt;user&gt;         -> kick|done
