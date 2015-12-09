@@ -213,8 +213,8 @@ In sort of chronological order:
                             -> join|fail|is full
 
                             // to accept poll
-                            // results in both player joining the room
- <b><i>poll</i></b>|&lt;salt&gt;|&lt;user&gt;|<bool>  -> poll|done
+                            // true results in both player joining the room
+ <b><i>poll</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;bool&gt;  -> poll|done
 
                             // permanently ban user from room
 *<b><i>kick</i></b>|&lt;salt&gt;|&lt;user&gt;         -> kick|done
