@@ -279,6 +279,10 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	public bool Join(string room, string info) {
 		return BoolPush("join|" + room + "|" + info);
 	}
+	
+	public bool Poll(string user, string info) {
+		return BoolPush("poll|" + user + "|" + info);
+	}
 
 	public void Play(string seed) {
 		Async("play|" + seed);
@@ -314,8 +318,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		string[] push = Push(data).Split('|');
 		
 		if(push[1].Equals("fail")) {
-			Log(data + " " + push[2]);
-			return null;
+			throw new Exception(push[2]);
 		}
 		
 		return push;
