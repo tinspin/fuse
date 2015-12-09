@@ -60,6 +60,7 @@ Filter:
 
 o-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) including self
 x-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) excluding self
+1-> = async. send to one user for unique feedback.
  -> = sync. return on Push(data) or push(data)
 
 < > = mandatory
@@ -199,7 +200,10 @@ In sort of chronological order:
 
                             // join room
                             // between <i>lock</i> and <i>view</i> nobody can join
- <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;         -> join|done
+                            // this send a poll to the user if he has no room but 
+                            // is online with the appended info
+ <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> join|done|poll/room
+                           1-> <b><i>poll</i></b>|&lt;user&gt;[|&lt;info&gt;]         // if 1-on-1 automatic
                            x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
@@ -207,6 +211,10 @@ In sort of chronological order:
                             -> join|fail|not found
                             -> join|fail|already here
                             -> join|fail|is full
+
+                            // to accept poll
+                            // results in both player joining the room
+ <b><i>poll</i></b>|&lt;salt&gt;|&lt;user&gt;|<bool>  -> poll|done
 
                             // permanently ban user from room
 *<b><i>kick</i></b>|&lt;salt&gt;|&lt;user&gt;         -> kick|done
@@ -252,8 +260,6 @@ In sort of chronological order:
                            o-> <b><i>over</b></i>|&lt;user&gt;[|data]           // the game is over
                             -> over|fail|not playing
 
-*<b><i>warn</i></b>
-
 +------------------------------------------------------------+
 | <i>These have to be sent in a separate thread from rendering.</i> |
 +------------------------------------------------------------+
@@ -276,6 +282,12 @@ In sort of chronological order:
  <b><i>/\</b></i> type not implemented    -> main|fail|type not found
 
 +-----------------+       
+| <i>Broadcast only.</i> |
++-----------------+
+
+                           o-> <b><i>warn</i></b>|&lt;text&gt; // to broadcast global messages
+
++-----------------+       
 | <i>Sketched rules.</i> |
 +-----------------+
 
@@ -296,7 +308,7 @@ In sort of chronological order:
       info data      tape task step
  time host           solo      slow slot
  pick                skip skin size site
-      fill full make seal seek sell sale
+      fill full make seal seek sell
  slay ruin rise poll said rank rate star
  drop made halt vote read      rest peek
  body text sent loss plan page need
@@ -305,7 +317,7 @@ In sort of chronological order:
  undo tool turn      grab grip grow file
  face edit      echo drop copy      busy
       base
- paid rent cash sold coin earn bill
+ paid rent cash sold coin earn bill sale
  tone tune mute
 
 // todo

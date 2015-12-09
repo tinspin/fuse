@@ -493,7 +493,8 @@ public class Router implements Node {
 
 		if(data.startsWith("join")) {
 			Room room = (Room) user.game.rooms.get(split[2]);
-
+			String info = split[3];
+			
 			if(room == null) {
 				User poll = (User) names.get(split[2]);
 
@@ -501,12 +502,12 @@ public class Router implements Node {
 					if(poll.poll != null)
 						return "join|fail|user busy";
 					
-					node.push(poll.salt, "poll|" + user.name, true);
+					node.push(poll.salt, "poll|" + user.name + "|" + info, true);
 
 					poll.poll = user.name;
 					user.poll = poll.name;
 					
-					return "join|done|poll sent";
+					return "join|done|poll";
 				}
 			}
 
@@ -524,7 +525,7 @@ public class Router implements Node {
 			if(room.users.size() == room.size)
 				user.game.send(user, "lock|" + user.room.user.name);
 
-			return "join|done";
+			return "join|done|room";
 		}
 
 		if(data.startsWith("poll")) {
@@ -1006,7 +1007,7 @@ public class Router implements Node {
 
 			out.println("<pre>");
 			out.println("<table>");
-			out.println("<tr><td>rule&nbsp;</td><td>avg.&nbsp;</td><td>num.&nbsp;</td><td>min.&nbsp;</td><td>max.&nbsp;</td><td>fail&nbsp;</td><td>err.&nbsp;</td></tr>");
+			out.println("<tr><td>rule&nbsp;</td><td>avg.&nbsp;</td><td>min.&nbsp;</td><td>max.&nbsp;</td><td>num.&nbsp;</td><td>fail&nbsp;</td><td>err.&nbsp;</td></tr>");
 			out.println("<tr><td colspan=\"7\" bgcolor=\"#000\"></td></tr>");
 
 			while(it.hasNext()) {
@@ -1015,7 +1016,7 @@ public class Router implements Node {
 
 				float avg = (float) stat.total / (float) stat.count;
 
-				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "</td><td>" + stat.count + "</td><td>" + stat.min + "</td><td>" + stat.max + "</td><td>" + stat.fail + "</td><td>" + stat.error + "</td></tr>");
+				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "</td><td>" + stat.min + "</td><td>" + stat.max + "</td><td>" + stat.count + "</td><td>" + stat.fail + "</td><td>" + stat.error + "</td></tr>");
 			}
 
 			out.println("</table>");

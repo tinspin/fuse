@@ -221,7 +221,7 @@ public class play extends Service {
           pause(false);
       }
       if(split[0] == 'poll') {
-        if(confirm('Accept challenge from ' + split[1] + '?')) {
+        if(confirm('Accept challenge from ' + split[1] + '?\n' + (split.length > 2 ? split[2] : ''))) {
           push('poll|' + split[1] + '|true');
         } else {
           push('poll|' + split[1] + '|false');
@@ -401,7 +401,7 @@ public class play extends Service {
       index = select.selectedIndex;
     }
     if(index > -1) {
-      var join = push('join|' + select.options[index].text);
+      var join = push('join|' + select.options[index].text + '|hejsan');
       if(join[1] == 'done')
         clear_join();
     }
