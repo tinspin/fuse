@@ -77,6 +77,7 @@ public class Server extends Service implements Node, Runnable {
 	}
 
 	public void destroy() throws Exception {
+		broadcast("warn|boot|Please reconnect!", false);
 		alive = false;
 		node.exit();
 	}
@@ -125,12 +126,16 @@ public class Server extends Service implements Node, Runnable {
 	}
 
 	private void purge(boolean finish) throws Exception {
+		broadcast("noop", finish);
+	}
+	
+	private void broadcast(String message, boolean finish) throws Exception {
 		Iterator it = list.values().iterator();
 
 		while(it.hasNext()) {
 			Queue queue = (Queue) it.next();
 
-			queue.add("noop");
+			queue.add(message);
 
 			if(finish) {
 				queue.finish = true;
@@ -268,7 +273,6 @@ public class Server extends Service implements Node, Runnable {
 			}
 
 			list.put(salt, new Queue(salt, event));
-			event.query().put("salt", salt);
 			
 			String accept = event.query().header("accept");
 

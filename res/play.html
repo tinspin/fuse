@@ -152,11 +152,11 @@ public class play extends Service {
       send_game = false;
     }
     var split = data.split('|');
-    if(split.length > 1 && split[0] == 'chat') {
-      element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
-      select.play();
-    }
     if(split.length > 0) {
+      if(split[0] == 'chat') {
+        element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
+        select.play();
+      }
       if(split[0] == 'lock') {
         update_select('join', split[1], '#ff3300');
       }
@@ -225,6 +225,12 @@ public class play extends Service {
           push('poll|' + split[1] + '|true');
         } else {
           push('poll|' + split[1] + '|false');
+        }
+      }
+      if(split[0] == 'warn') {
+        alert(split[2]);
+        if(split[1] == 'boot') {
+          location.reload();
         }
       }
     }

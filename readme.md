@@ -285,8 +285,8 @@ In sort of chronological order:
 +-----------------+       
 | <i>Broadcast only.</i> |
 +-----------------+
-
-                           o-> <b><i>warn</i></b>|&lt;text&gt; // to broadcast global messages
+                           o-> <b><i>noop</i></b>        // no operation; to keep socket alive
+                           o-> <b><i>warn</i></b>|boot/none|&lt;text&gt; // to broadcast global messages
 
 +-----------------+       
 | <i>Sketched rules.</i> |

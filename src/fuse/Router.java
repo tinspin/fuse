@@ -32,12 +32,6 @@ public class Router implements Node {
 	static Daemon daemon;
 	static Node node;
 
-	/*
-	public void session(Session session, int type) { System.out.println(session + " " + type); }
-	public String path() { return "/router"; }
-	public void filter(Event event) throws Exception { event.output().println("Hello"); }
-	*/
-	
 	public void call(Daemon daemon, Node node) throws Exception {
 		this.daemon = daemon;
 		this.node = node;
