@@ -92,7 +92,7 @@ public class Server extends Service implements Node, Runnable {
 	}
 	
 	public String push(String salt, String data, boolean wake) throws Exception {
-		Queue queue = find(salt);
+		Queue queue = (Queue) list.get(salt); //find(salt);
 		
 		if(queue != null) {
 			queue.add(data);
@@ -104,7 +104,7 @@ public class Server extends Service implements Node, Runnable {
 
 			if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
 				remove(queue.salt, 1);
-				list.remove(queue.event);
+				list.remove(queue.salt);
 			}
 		}
 		else {
@@ -115,7 +115,7 @@ public class Server extends Service implements Node, Runnable {
 	}
 	
 	public boolean wakeup(String salt) {
-		Queue queue = find(salt);
+		Queue queue = (Queue) list.get(salt); //find(salt);
 
 		if(queue != null) {
 			return queue.event.reply().wakeup() == Reply.OK;
@@ -211,7 +211,7 @@ public class Server extends Service implements Node, Runnable {
 		}
 
 		if(event.push()) {
-			Queue queue = (Queue) list.get(new Integer(event.index()));
+			Queue queue = (Queue) list.get(event.string("salt"));
 
 			try {
 				Output out = event.output();
@@ -245,7 +245,7 @@ public class Server extends Service implements Node, Runnable {
 			}
 			catch(Exception e) {
 				remove(queue.salt, 3);
-				list.remove(new Integer(event.index()));
+				list.remove(queue.salt);
 				throw e;
 			}
 		}
@@ -253,12 +253,12 @@ public class Server extends Service implements Node, Runnable {
 			event.query().parse();
 			boolean ie = event.bit("ie");
 			String salt = event.string("salt");
-			Queue queue = find(salt);
+			Queue queue = (Queue) list.get(salt); //find(salt);
 
 			if(queue != null) {
 				if(queue.event.remote().equals(event.remote())) {
 					remove(queue.salt, 4);
-					list.remove(new Integer(queue.event.index()));
+					list.remove(queue.salt);
 				}
 				else {
 					System.out.println("### IP fuse hack " + event.remote());
@@ -267,7 +267,8 @@ public class Server extends Service implements Node, Runnable {
 				}
 			}
 
-			list.put(new Integer(event.index()), new Queue(salt, event));
+			list.put(salt, new Queue(salt, event));
+			event.query().put("salt", salt);
 			
 			String accept = event.query().header("accept");
 

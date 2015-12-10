@@ -32,6 +32,12 @@ public class Router implements Node {
 	static Daemon daemon;
 	static Node node;
 
+	/*
+	public void session(Session session, int type) { System.out.println(session + " " + type); }
+	public String path() { return "/router"; }
+	public void filter(Event event) throws Exception { event.output().println("Hello"); }
+	*/
+	
 	public void call(Daemon daemon, Node node) throws Exception {
 		this.daemon = daemon;
 		this.node = node;
@@ -224,9 +230,9 @@ public class Router implements Node {
 		if(split.length < 2)
 			return "main|fail|salt not found";
 
-		final User user = (User) users.get(split[1]);
-
-		if(user == null || !user.salt.equals(split[1]))
+		User user = (User) users.get(split[1]);
+		
+		if(user == null && !user.salt.equals(split[1]))
 			return "main|fail|salt not found";
 
 		if(data.startsWith("sign")) {
@@ -386,17 +392,18 @@ public class Router implements Node {
 			}
 
 			final JSONObject json = new JSONObject(Root.file(file));
-
+			final User stencil = user;
+			
 			Async.Work link = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.post("/link", "Host:" + event.query().header("host"), 
-							("pkey=" + user.json.getString("key") + "&ckey=" + json.getString("key") + 
+							("pkey=" + stencil.json.getString("key") + "&ckey=" + json.getString("key") + 
 									"&ptype=user&ctype=user").getBytes("utf-8"));
 				}
 
 				public void read(String host, String body) throws Exception {
 					System.out.println("fuse ally " + body);
-					user.add(Root.hash(json.getString("key")));
+					stencil.add(Root.hash(json.getString("key")));
 					event.query().put("done", "ally|done");
 					event.reply().wakeup();
 				}

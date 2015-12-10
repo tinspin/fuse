@@ -60,7 +60,7 @@ Filter:
 
 o-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) including self
 x-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) excluding self
-1-> = async. send to one user for unique feedback.
+i-> = async. send to one user for unique feedback.
  -> = sync. return on Push(data) or push(data)
 
 < > = mandatory
@@ -203,7 +203,7 @@ In sort of chronological order:
                             // this sends a poll to the user if he has no room but 
                             // is online with the appended info for 1-on-1.
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> join|done|poll/room
-                           1-> <b><i>poll</i></b>|&lt;else&gt;[|&lt;info&gt;]         // if 1-on-1 automatic, &lt;else&gt; = other player
+                           i-> <b><i>poll</i></b>|&lt;else&gt;[|&lt;info&gt;]         // if 1-on-1 automatic, &lt;else&gt; = other player
                            x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
