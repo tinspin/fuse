@@ -277,7 +277,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 	
 	public bool Join(string user, string info) {
-		return BoolPush("join|" + room + "|" + info);
+		return BoolPush("join|" + user + "|" + info);
 	}
 	
 	public bool Poll(string user, string accept) {
