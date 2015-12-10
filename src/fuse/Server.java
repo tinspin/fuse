@@ -129,7 +129,7 @@ public class Server extends Service implements Node, Runnable {
 		broadcast("noop", finish);
 	}
 	
-	private void broadcast(String message, boolean finish) throws Exception {
+	public void broadcast(String message, boolean finish) throws Exception {
 		Iterator it = list.values().iterator();
 
 		while(it.hasNext()) {

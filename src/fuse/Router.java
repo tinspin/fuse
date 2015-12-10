@@ -60,6 +60,9 @@ public class Router implements Node {
 		return user;
 	}
 
+	public void broadcast(String message, boolean finish) throws Exception {
+		throw new Exception("Nope");
+	}
 	public String push(String salt, String data, boolean wake) throws Exception {
 		throw new Exception("Nope");
 	}
@@ -976,6 +979,22 @@ public class Router implements Node {
 		stat.max = (int) (time > stat.max ? time : stat.max);
 	}
 
+	public static class Warn extends Service {
+		public String path() { return "/warn"; }
+		public void filter(Event event) throws Event, Exception {
+			event.query().parse();
+			String text = event.string("text");
+			String secret = event.string("secret");
+			
+			if(secret.equals("1234")) {
+				node.broadcast("warn|none|" + text, false);
+				event.output().print("OK");
+			}
+			else
+				event.output().print("KO");
+		}
+	}
+	
 	public static class Stat {
 		long total;
 		int count;
@@ -1027,7 +1046,6 @@ public class Router implements Node {
 
 	public static class Game extends Room {
 		ConcurrentHashMap rooms = new ConcurrentHashMap();
-
 		String name;
 
 		public Game(String name) {
