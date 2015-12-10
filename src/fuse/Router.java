@@ -540,9 +540,9 @@ public class Router implements Node {
 				return "poll|fail|wrong user";
 
 			if(accept) {
-				Room room = new Room(user, "duel", 2);
+				Room room = new Room(poll, "duel", 2);
 
-				user.game.rooms.put(user.name, room);
+				user.game.rooms.put(poll.name, room);
 
 				poll.move(poll.room, room);
 				user.move(user.game, room);
