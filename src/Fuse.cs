@@ -276,12 +276,12 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		return BoolPush("join|" + room);
 	}
 	
-	public bool Join(string room, string info) {
+	public bool Join(string user, string info) {
 		return BoolPush("join|" + room + "|" + info);
 	}
 	
-	public bool Poll(string user, string info) {
-		return BoolPush("poll|" + user + "|" + info);
+	public bool Poll(string user, string accept) {
+		return BoolPush("poll|" + user + "|" + accept);
 	}
 
 	public void Play(string seed) {
