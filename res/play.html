@@ -11,6 +11,8 @@ public class play extends Service {
 	String orange = "#ff9900";
 	String blue = "#6699ff";
 	String green = "#00cc33";
+	String black = "#000000";
+	String white = "#ffffff";
 	
 	public String path() { return "/play.html"; }
 	public void filter(Event event) throws Event, Exception {
@@ -18,6 +20,10 @@ public class play extends Service {
 		String host = event.query().string("host", "fuse.rupy.se");
 		String game = event.query().string("game", "cube");
 		String path = event.query().string("path", game + ".html");
+		
+		String name = event.string("name");
+		String pass = event.string("pass");
+		
 		Output out = event.output(); ]]
 
 <!DOCTYPE HTML>
@@ -132,10 +138,15 @@ public class play extends Service {
     for(var i = 0; i < part.length; i++) {
       var trim = part[i].trim();
       if(trim.length > 0)
-        if(trim.indexOf('data: ') == 0)
-          read(trim.substring(6, trim.length));
-        else
-          read(trim);
+        try {
+          if(trim.indexOf('data: ') == 0)
+            read(trim.substring(6, trim.length));
+          else
+            read(trim);
+        }
+        catch(e) {
+          alert(e);
+        }
     }
   }
   function element(name) {
@@ -148,6 +159,8 @@ public class play extends Service {
   var orange = '[[ orange ]]';
   var blue = '[[ blue ]]';
   var green = '[[ green ]]';
+  var black = '[[ black ]]';
+  var white = '[[ white ]]';
   var beep = new Audio('mp3/beep.mp3');
   var select = new Audio('mp3/select.mp3');
   var send_game = true;
@@ -163,12 +176,8 @@ public class play extends Service {
     var split = data.split('|');
     if(split.length > 0) {
       if(split[0] == 'chat') {
-        /* var color = '#000000';
-        if(split[1] == 'root') color = red;
-        if(split[1] == 'stem') color = blue;
-        if(split[1] == 'leaf') color = green; */
         element('chat').value = '[' + split[1] + '] ' + split[2] + ': ' + split[3] + '\n' + element('chat').value;
-        select.play();
+        this.select.play();
       }
       if(split[0] == 'lock') {
         update_select('join', split[1], red);
@@ -177,15 +186,25 @@ public class play extends Service {
         update_select('join', split[1], orange);
       }
       if(split[0] == 'here') {
-        add_select('ally', split[2], blue);
+        var select = 'ally';
+        var color = black;
+        if(split[1] == 'root') color = red;
+        if(split[1] == 'stem') color = orange;
+        if(split[1] == 'leaf') {
+          color = blue;
+          select = 'join';
+        }
+        add_select(select, split[2], color);
         beep.play();
       }
       if(split[0] == 'ally') {
         update_select('ally', split[1], green);
       }
       if(split[0] == 'gone') {
-        remove_select('ally', split[2]);
-        stop_game();
+        if(split[1] == 'leaf') {
+          remove_select('join', split[2]);
+          stop_game();
+        }
       }
       if(split[0] == 'room') {
         add_select('join', split[1].split('+')[0], orange);
@@ -243,7 +262,7 @@ public class play extends Service {
       if(split[0] == 'warn') {
         alert(split[2]);
         if(split[1] == 'boot') {
-          location.reload();
+          window.location.href = '/play.html?name=' + name + '&pass=' + pass;
         }
       }
     }
@@ -306,14 +325,15 @@ public class play extends Service {
 </script>
 <!-- fuse view handling -->
 <script>
-  var name;
+  var name = '';
+  var pass = '';
   function user() {
     name = id('name');
     if(name.length < 3) {
       show_fail('name too short');
       return;
     }
-    var pass = id('pass');
+    pass = id('pass');
     if(pass.length < 3) {
       show_fail('pass too short');
       return;
@@ -334,7 +354,7 @@ public class play extends Service {
       show_fail('name too short');
       return;
     }
-    var pass = id('pass');
+    pass = id('pass');
     if(pass.length < 3) {
       show_fail('pass too short');
       return;
@@ -435,6 +455,7 @@ public class play extends Service {
       list();
   }
   function list() {
+    clear_join();
     var list = push('list|room');
     for(var i = 3; i < list.length; i++) {
       add_select('join', list[i].split('+')[0], orange);
@@ -469,9 +490,9 @@ public class play extends Service {
 <div id="user"><table>
 <tr><td colspan="3"><a href="https://github.com/tinspin/fuse"><img border="0" width="140" height="80" src="fuse.svg"></a></td></tr>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
-<tr><td>name&nbsp;</td><td><input id="name" name="name" size="10"></td></tr>
+<tr><td>name&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" size="10"></td></tr>
 <tr><td>pass&nbsp;</td>
-    <td><input id="pass" name="pass" type="password" size="10" onkeypress="hash_code(event);"></td>
+    <td><input id="pass" name="pass" value="[[ pass ]]" type="password" size="10" onkeypress="hash_code(event);"></td>
     <td><a href="javascript:hash();">login</a></td></tr>
 <tr><td><font color="[[ green ]]">mail*</font></td>
     <td><input id="mail" name="mail" size="10" onkeypress="user_code(event);"></td>

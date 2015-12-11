@@ -134,7 +134,7 @@ public class Server extends Service implements Node, Runnable {
 
 		while(it.hasNext()) {
 			Queue queue = (Queue) it.next();
-
+//System.out.println(queue);
 			queue.add(message);
 
 			if(finish) {
@@ -325,9 +325,10 @@ public class Server extends Service implements Node, Runnable {
 			this.salt = salt;
 			this.event = event;
 		}
-		
+		/*
 		public String toString() {
 			return salt + "(" + event.index() + ")";
 		}
+		*/
 	}
 }
