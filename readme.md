@@ -276,7 +276,7 @@ In sort of chronological order:
                             // chat in any room
                             // &lt;tree&gt; are root, stem or leaf
  <b><i>chat</i></b>|&lt;salt&gt;|&lt;tree&gt;|&lt;text&gt;  -> chat|done                    // @[user] of private destination
-                           o-> <b><i>chat</i></b>|&lt;zone&gt;|&lt;user&gt;|&lt;text&gt;
+                           o-> <b><i>chat</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;text&gt;
                             -> chat|fail|not online
 
                             // send any gameplay data to room
