@@ -296,7 +296,7 @@ In sort of chronological order:
 +-----------------+
 
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
-                           o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;        // to broadcast global messages
+                           o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;    // to broadcast global messages
 
 +-----------------+       
 | <i>Sketched rules.</i> |

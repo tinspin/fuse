@@ -261,7 +261,7 @@ public class play extends Service {
       }
       if(split[0] == 'warn') {
         alert(split[2]);
-        if(split[1] == 'boot') {
+        if(split[1] == 'boot' && name == pass) {
           window.location.href = '/play.html?name=' + name + '&pass=' + pass;
         }
       }
