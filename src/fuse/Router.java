@@ -898,11 +898,12 @@ public class Router implements Node {
 				User user = (User) it.next();
 
 				try {
-					boolean game = user.room instanceof Game;
+					boolean user_game = user.room instanceof Game;
+					boolean from_game = from.room instanceof Game;
 					
 					// send every user in room to joining user
 					if(data.startsWith("here") && !from.name.equals(user.name)) {
-						node.push(from.salt, "here|" + (game ? "stem" : "leaf") + "|" + user.name + user.peer(from), false);
+						node.push(from.salt, "here|" + (user_game ? "stem" : "leaf") + "|" + user.name + user.peer(from), false);
 
 						if(from.ally(user))
 							node.push(from.salt, "ally|" + user.name, false);
@@ -915,7 +916,7 @@ public class Router implements Node {
 
 					// send every user in room to leaving user
 					if(data.startsWith("gone") && !from.name.equals(user.name)) {
-						node.push(from.salt, "gone|" + (game ? "stem" : "leaf") + "|" + user.name + user.peer(from), false);
+						node.push(from.salt, "gone|" + (from_game ? "stem" : "leaf") + "|" + user.name + user.peer(from), false);
 						
 						wakeup = true;
 					}
@@ -1077,7 +1078,7 @@ public class Router implements Node {
 		while(it.hasNext()) {
 			User u = (User) it.next();
 			
-			if(!u.game.name.equals(user.game.name))
+			if(u.game == null || user.game == null || !u.game.name.equals(user.game.name))
 				node.push(u.salt, message, true);
 		}
 	}

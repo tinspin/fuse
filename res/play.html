@@ -161,8 +161,8 @@ public class play extends Service {
   var green = '[[ green ]]';
   var black = '[[ black ]]';
   var white = '[[ white ]]';
-  var beep = new Audio('mp3/beep.mp3');
-  var select = new Audio('mp3/select.mp3');
+  var join_audio = new Audio('mp3/beep.mp3');
+  var type_audio = new Audio('mp3/select.mp3');
   var send_game = true;
   var game_play = false;
   function read(data) {
@@ -177,7 +177,7 @@ public class play extends Service {
     if(split.length > 0) {
       if(split[0] == 'chat') {
         element('chat').value = '[' + split[1] + '] ' + split[2] + ': ' + split[3] + '\n' + element('chat').value;
-        this.select.play();
+        type_audio.play();
       }
       if(split[0] == 'lock') {
         update_select('join', split[1], red);
@@ -195,7 +195,7 @@ public class play extends Service {
           select = 'join';
         }
         add_select(select, split[2], color);
-        beep.play();
+        join_audio.play();
       }
       if(split[0] == 'ally') {
         update_select('ally', split[1], green);
@@ -455,8 +455,9 @@ public class play extends Service {
       list();
   }
   function list() {
-    clear_join();
     var list = push('list|room');
+    if(list[1] == 'done')
+      clear_join();
     for(var i = 3; i < list.length; i++) {
       add_select('join', list[i].split('+')[0], orange);
     }

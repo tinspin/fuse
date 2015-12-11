@@ -212,9 +212,9 @@ In sort of chronological order:
                             // is online with the appended info for 1-on-1.
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> join|done|poll/room
                            i-> <b><i>poll</i></b>|&lt;else&gt;[|&lt;info&gt;]         // if 1-on-1 automatic, &lt;else&gt; = other player
-                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]           // leaf, in new room
+                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]    // leaf, in new room
                            x-> <b><i>ally</i></b>|&lt;user&gt;
-                           x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;           // stem, in lobby
+                           x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;    // stem, in lobby
                            x-> <b><i>lock</i></b>|&lt;room&gt;                  // in lobby if room is full
                             -> join|fail|not found
                             -> join|fail|already here
@@ -274,10 +274,8 @@ In sort of chronological order:
 +------------------------------------------------------------+
 
                             // chat in any room
-                            // zones are root, stem or leaf
-                            // root and stem can see each other
-                            // stem and leaf can see each other
- <b><i>chat</i></b>|&lt;salt&gt;|&lt;zone&gt;|&lt;text&gt;  -> chat|done                    // @[user] of private destination
+                            // &lt;tree&gt; are root, stem or leaf
+ <b><i>chat</i></b>|&lt;salt&gt;|&lt;tree&gt;|&lt;text&gt;  -> chat|done                    // @[user] of private destination
                            o-> <b><i>chat</i></b>|&lt;zone&gt;|&lt;user&gt;|&lt;text&gt;
                             -> chat|fail|not online
 
