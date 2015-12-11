@@ -264,8 +264,10 @@ public class Router implements Node {
 				games.put(split[2], game);
 			}
 
-			user.move(user.game, game);
+			user.move(null, game);
 			user.game = game;
+			
+			broadcast(user, "here|root|" + user.name);
 
 			return "game|done";
 		}
@@ -708,7 +710,18 @@ public class Router implements Node {
 		}
 
 		if(data.startsWith("chat")) {
-			user.room.send(user, "chat|" + user.name + "|" + split[2], true);
+			String tree = split[2];
+			boolean game = user.room instanceof Game;
+			
+			if(tree.equals("root"))
+				broadcast(user, "chat|root|" + user.name + "|" + split[3]);
+			
+			if((tree.equals("root") || tree.equals("stem")) && game)
+				user.game.send(user, "chat|stem|" + user.name + "|" + split[3], true);
+			
+			if((tree.equals("root") || tree.equals("stem") || tree.equals("leaf")) && !game)
+				user.room.send(user, "chat|leaf|" + user.name + "|" + split[3], true);
+			
 			return "chat|done";
 		}
 
@@ -799,12 +812,13 @@ public class Router implements Node {
 
 		Room move(Room from, Room to) throws Exception {
 			Room drop = null;
-
+			boolean game = to instanceof Game;
+			
 			if(to != null) {
 				this.room = to;
 
 				to.add(this);
-				to.send(this, "here|" + name);
+				to.send(this, "here|" + (game ? "stem" : "leaf") + "|" + name);
 			}
 
 			if(from != null) {
@@ -817,7 +831,7 @@ public class Router implements Node {
 					drop = from;
 				}
 				else
-					from.send(this, "gone|" + name);
+					from.send(this, "gone|" + (game ? "stem" : "leaf") + "|" + name);
 			}
 
 			lost = 0;
@@ -886,7 +900,7 @@ public class Router implements Node {
 				try {
 					// send every user in room to joining user
 					if(data.startsWith("here") && !from.name.equals(user.name)) {
-						node.push(from.salt, "here|" + user.name + user.peer(from), false);
+						node.push(from.salt, "here|leaf|" + user.name + user.peer(from), false);
 
 						if(from.ally(user))
 							node.push(from.salt, "ally|" + user.name, false);
@@ -899,7 +913,7 @@ public class Router implements Node {
 
 					// send every user in room to leaving user
 					if(data.startsWith("gone") && !from.name.equals(user.name)) {
-						node.push(from.salt, "gone|" + user.name + user.peer(from), false);
+						node.push(from.salt, "gone|stem|" + user.name + user.peer(from), false);
 						wakeup = true;
 					}
 
@@ -907,7 +921,7 @@ public class Router implements Node {
 					if(all || !from.name.equals(user.name)) {
 						if(data.startsWith("here"))
 							data += from.peer(user);
-
+						
 						if(data.startsWith("gone") && from.room.user != null)
 							data += "|" + from.room.user.name;
 
@@ -1028,7 +1042,7 @@ public class Router implements Node {
 			out.println("<pre>");
 			out.println("<table>");
 			out.println("<tr><td>rule&nbsp;</td><td>avg.&nbsp;</td><td>min.&nbsp;</td><td>max.&nbsp;</td><td>num.&nbsp;</td><td>fail&nbsp;</td><td>err.&nbsp;</td></tr>");
-			out.println("<tr><td colspan=\"7\" bgcolor=\"#000\"></td></tr>");
+			out.println("<tr><td colspan=\"7\" bgcolor=\"#000000\"></td></tr>");
 
 			while(it.hasNext()) {
 				String name = (String) it.next();
@@ -1054,6 +1068,17 @@ public class Router implements Node {
 		}
 	}
 
+	public void broadcast(User user, String message) throws Exception {
+		Iterator it = users.values().iterator();
+		
+		while(it.hasNext()) {
+			User u = (User) it.next();
+			
+			if(!u.game.name.equals(user.game.name))
+				node.push(u.salt, message, true);
+		}
+	}
+	
 	public void remove(String salt, int place) throws Exception {
 		User user = (User) users.get(salt);
 
@@ -1066,6 +1091,7 @@ public class Router implements Node {
 			}
 			users.remove(salt);
 			names.remove(user.name);
+			broadcast(user, "gone|root|" + user.name);
 		}
 	}
 

@@ -68,6 +68,12 @@ i-> = async. send to one user for unique feedback.
 
  *  = not implemented yet
 
+&lt;tree&gt; for <b><i>here</i></b>/<b><i>gone</i></b>/<b><i>chat</i></b>:
+
+The server is the <b><i>root</i></b>
+The game is a <b><i>stem</i></b> and also a room.
+The room is a <b><i>leaf</i></b>
+
 In sort of chronological order:
 
 +-----------------------------------+
@@ -129,7 +135,7 @@ In sort of chronological order:
 
                             // join a game
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
-                           x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]
+                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK
                            o-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
@@ -185,6 +191,8 @@ In sort of chronological order:
                            x-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;
 
                             // enable peer-to-peer
+                            // before you send this it is important to 
+                            // inform the user that his privacy is lost!
  <b><i>peer</i></b>|&lt;salt&gt;|&lt;ip&gt;           -> peer|done                    // send the internal IP
 
                             // host room
@@ -204,9 +212,9 @@ In sort of chronological order:
                             // is online with the appended info for 1-on-1.
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> join|done|poll/room
                            i-> <b><i>poll</i></b>|&lt;else&gt;[|&lt;info&gt;]         // if 1-on-1 automatic, &lt;else&gt; = other player
-                           x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in new room
+                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]           // leaf, in new room
                            x-> <b><i>ally</i></b>|&lt;user&gt;
-                           x-> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in lobby
+                           x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;           // stem, in lobby
                            x-> <b><i>lock</i></b>|&lt;room&gt;                  // in lobby if room is full
                             -> join|fail|not found
                             -> join|fail|already here
@@ -224,10 +232,10 @@ In sort of chronological order:
  
                             // quit room
  <b><i>quit</i></b>|&lt;salt&gt;                -> quit|done
-                           x-> <b><i>here</i></b>|&lt;user&gt;[|&lt;ip&gt;]           // in lobby
+                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]    // stem, in lobby
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK, in lobby if creator quit
-                           x-> <b><i>gone</i></b>|&lt;user&gt;|&lt;room&gt;           // in old room
+                           x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;    // leaf, in old room
                            x-> <b><i>drop</i></b>|&lt;user&gt;                  // in lobby if creator leaves
                            x-> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
                            x-> <b><i>open</i></b>|&lt;room&gt;                  // in lobby if room is not full
@@ -266,8 +274,11 @@ In sort of chronological order:
 +------------------------------------------------------------+
 
                             // chat in any room
- <b><i>chat</i></b>|&lt;salt&gt;|&lt;text&gt;         -> chat|done                    // @[user] of private destination
-                           o-> <b><i>chat</i></b>|&lt;user&gt;|&lt;text&gt;
+                            // zones are root, stem or leaf
+                            // root and stem can see each other
+                            // stem and leaf can see each other
+ <b><i>chat</i></b>|&lt;salt&gt;|&lt;zone&gt;|&lt;text&gt;  -> chat|done                    // @[user] of private destination
+                           o-> <b><i>chat</i></b>|&lt;zone&gt;|&lt;user&gt;|&lt;text&gt;
                             -> chat|fail|not online
 
                             // send any gameplay data to room
@@ -287,7 +298,7 @@ In sort of chronological order:
 +-----------------+
 
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
-                           o-> <b><i>warn</i></b>|boot/none|&lt;text&gt;        // to broadcast global messages
+                           o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;        // to broadcast global messages
 
 +-----------------+       
 | <i>Sketched rules.</i> |
@@ -303,6 +314,7 @@ In sort of chronological order:
 
 // name pool
 
+ lead
  head tail
  push pull
  show hide
@@ -324,8 +336,8 @@ In sort of chronological order:
 
 // todo
 
- noop = zero
- move = walk
+ noop = zero, none?
+ move = walk?
 
 // attribution
 

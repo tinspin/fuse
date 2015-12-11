@@ -7,6 +7,11 @@ import java.net.*;
 import java.io.*;
 
 public class play extends Service {
+	String red = "#ff3300";
+	String orange = "#ff9900";
+	String blue = "#6699ff";
+	String green = "#00cc33";
+	
 	public String path() { return "/play.html"; }
 	public void filter(Event event) throws Event, Exception {
 		event.query().parse();
@@ -20,13 +25,13 @@ public class play extends Service {
 <head>
 <meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <style>
-  a:link, a:hover, a:active, a:visited { color: #6699ff; }
+  a:link, a:hover, a:active, a:visited { color: [[ blue ]]; }
   img { display: block; }
   div { font-family: monospace; }
   input { font-family: monospace; }
   table { margin: 5px; }
-  #fail1 { color: #ff3300; }
-  #fail2 { color: #ff3300; }
+  #fail1 { color: [[ red ]]; }
+  #fail2 { color: [[ red ]]; }
   textarea {
     font-family: monospace;
     -webkit-box-sizing: border-box;
@@ -139,6 +144,10 @@ public class play extends Service {
 </script>
 <!-- fuse message handling -->
 <script>
+  var red = '[[ red ]]';
+  var orange = '[[ orange ]]';
+  var blue = '[[ blue ]]';
+  var green = '[[ green ]]';
   var beep = new Audio('mp3/beep.mp3');
   var select = new Audio('mp3/select.mp3');
   var send_game = true;
@@ -154,28 +163,32 @@ public class play extends Service {
     var split = data.split('|');
     if(split.length > 0) {
       if(split[0] == 'chat') {
-        element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
+        /* var color = '#000000';
+        if(split[1] == 'root') color = red;
+        if(split[1] == 'stem') color = blue;
+        if(split[1] == 'leaf') color = green; */
+        element('chat').value = '[' + split[1] + '] ' + split[2] + ': ' + split[3] + '\n' + element('chat').value;
         select.play();
       }
       if(split[0] == 'lock') {
-        update_select('join', split[1], '#ff3300');
+        update_select('join', split[1], red);
       }
       if(split[0] == 'open') {
-        update_select('join', split[1], '#ff9900');
+        update_select('join', split[1], orange);
       }
       if(split[0] == 'here') {
-        add_select('ally', split[1], '#6699ff');
+        add_select('ally', split[2], blue);
         beep.play();
       }
       if(split[0] == 'ally') {
-        update_select('ally', split[1], '#00cc33');
+        update_select('ally', split[1], green);
       }
       if(split[0] == 'gone') {
-        remove_select('ally', split[1]);
+        remove_select('ally', split[2]);
         stop_game();
       }
       if(split[0] == 'room') {
-        add_select('join', split[1].split('+')[0], '#ff9900');
+        add_select('join', split[1].split('+')[0], orange);
       }
       if(split[0] == 'drop') {
         remove_select('join', split[1]);
@@ -205,11 +218,11 @@ public class play extends Service {
         stop_game();
       }
       if(split[0] == 'away') {
-        update_select('ally', split[1], '#ff3300');
+        update_select('ally', split[1], orange);
         element('chat').value = split[1] + ': away\n' + element('chat').value;
       }
       if(split[0] == 'back') {
-        update_select('ally', split[1], '#6699ff');
+        update_select('ally', split[1], blue);
         element('chat').value = split[1] + ': back\n' + element('chat').value;
       }
       if(split[0] == 'hold') {
@@ -392,8 +405,12 @@ public class play extends Service {
     send_chat(text);
   }
   function send_chat(text) {
-    if(text.length > 0)
-      none('chat|' + text);
+    if(text.length > 0) {
+      var select = element('tree');
+      var index = select.selectedIndex;
+      var tree = select.options[index].text
+      none('chat|' + tree + '|' + text);
+    }
   }
   function room() {
     push('room|' + make_room());
@@ -420,7 +437,7 @@ public class play extends Service {
   function list() {
     var list = push('list|room');
     for(var i = 3; i < list.length; i++) {
-      add_select('join', list[i].split('+')[0], '#ff9900');
+      add_select('join', list[i].split('+')[0], orange);
     }
   }
   function math_random(min, max) {
@@ -456,10 +473,10 @@ public class play extends Service {
 <tr><td>pass&nbsp;</td>
     <td><input id="pass" name="pass" type="password" size="10" onkeypress="hash_code(event);"></td>
     <td><a href="javascript:hash();">login</a></td></tr>
-<tr><td><font color="#00cc33">mail*</font></td>
+<tr><td><font color="[[ green ]]">mail*</font></td>
     <td><input id="mail" name="mail" size="10" onkeypress="user_code(event);"></td>
     <td><a href="javascript:user();">register</a></td></tr>
-<tr><td colspan="2"><font color="#ff9900">*optional</font></td></tr>
+<tr><td colspan="2"><font color="[[ blue ]]">*optional</font></td></tr>
 </table>
 <table>
 [[	Iterator it = fuse.Router.score.iterator();
@@ -518,7 +535,8 @@ public class play extends Service {
 <div id="talk" style="display: none;"><table>
 <tr><td colspan="3"><textarea id="chat" name="chat" rows="5" readonly></textarea></td></tr>
 <tr><td colspan="3">
-<input id="text" name="text" size="25" onkeypress="chat_code(event);">
+<select id="tree" style="width: 60px;"><option>root</option><option>stem</option><option>leaf</option></select>
+<input id="text" name="text" size="12" onkeypress="chat_code(event);">
 <a href="javascript:chat();">chat</a>
 </td></tr>
 </table>

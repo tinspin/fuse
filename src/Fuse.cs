@@ -292,8 +292,16 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		Async("over|" + data);
 	}
 
-	public void Chat(string text) {
-		Async("chat|" + text);
+	/* tree should be either root, stem or leaf
+	 * root -> whole server, excluding others rooms
+	 * stem -> game lobby, including your own room
+	 * leaf -> your room only
+	 * if you prefix text with @name it will send 
+	 * to that user if online; no matter where and 
+	 * what tree is used.
+	 */
+	public void Chat(string tree, string text) {
+		Async("chat|" + tree + '|' + text);
 	}
 
 	public void Send(string data) {
@@ -395,7 +403,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 				
 				Thread.Sleep(500);
 
-				fuse.Chat("hello");
+				fuse.Chat("root", "hello");
 
 				Thread.Sleep(500);
 
@@ -416,7 +424,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 				
 				Thread.Sleep(500);
 
-				fuse.Chat("hello");
+				fuse.Chat("root", "hello");
 				
 				Thread.Sleep(500);
 				
