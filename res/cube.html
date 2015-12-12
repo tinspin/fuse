@@ -12,7 +12,7 @@
     return 'cube|2';
   }
   function sent(user, data) { /* send(data) is broadcasted to N-1 */
-    var split = data.split('+');
+    var split = data.split(';');
     var used = [];
     var high = 0;
     for(var i = 1; i < split.length; i++) {
@@ -207,7 +207,7 @@
             else {
               done.style.zIndex = 1;
               done.fuse.speed = -4;
-              data += '+' + done.fuse.col;
+              data += ';' + done.fuse.col;
               score++;
             }
             block--;

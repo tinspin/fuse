@@ -34,17 +34,13 @@ img {
   }
   var players = {};
   function sent(user, data) { /* send(data) is broadcasted to N-1 */
-    var split = data.split('+');
-    console.log(user + ' ' + data);
-    
+    var split = data.split(';');
     var x = parseInt(split[0], 10);
     var y = parseInt(split[1], 10);
     var key = parseInt(split[2], 10);
     var speed = parseInt(split[3], 10);
-    
     if(!players[user])
       players[user] = add_sprite(user, 'white', x, y, bomb_size, bomb_size * 2);
-      
     players[user].style.left = x + 'px';
     players[user].style.top = y + 'px';
     action(players[user], key, speed, false);
@@ -74,7 +70,7 @@ img {
     var x = parseInt(sprite.style.left, 10);
     var y = parseInt(sprite.style.top, 10);
     try {
-      send(x + '+' + y + '+' + key + '+' + speed);
+      send(x + ';' + y + ';' + key + ';' + speed);
     }
     catch(e) {}
   }
