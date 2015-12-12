@@ -964,7 +964,7 @@ public class Router implements Node {
 		}
 
 		public String toString() {
-			return (user == null ? "lobby" : user.name) + "+" + type + "+" + size;
+			return (user == null ? "lobby" : user.name) + ";" + type + ";" + size;
 		}
 	}
 

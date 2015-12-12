@@ -119,7 +119,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		if(salt != null)
 			data = data.Substring(0, 4) + '|' + salt + data.Substring(4, data.Length - 4);
 
-		String text = "GET /push?data=" + Uri.EscapeDataString(data) + " HTTP/1.1\r\nHost: " + host + "\r\n";
+		String text = "GET /push?data=" + data + " HTTP/1.1\r\nHost: " + host + "\r\n";
 
 		if(first) {
 			text += "Head: less\r\n\r\n"; // enables TCP no delay
@@ -301,7 +301,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	 * what tree is used.
 	 */
 	public void Chat(string tree, string text) {
-		Async("chat|" + tree + '|' + text);
+		Async("chat|" + tree + '|' + Uri.EscapeDataString(text));
 	}
 
 	public void Send(string data) {

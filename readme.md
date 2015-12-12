@@ -197,12 +197,12 @@ In sort of chronological order:
 
                             // host room
  <b><i>room</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;size&gt;  -> room|done
-                           x-> <b><i>room</i></b>|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;
+                           x-> <b><i>room</i></b>|&lt;user&gt;;&lt;type&gt;;&lt;size&gt;
                             -> room|fail|not in lobby
                             -> room|fail|type invalid       // [a-zA-Z]+
 
                             // list rooms or data
- <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;+&lt;type&gt;+&lt;size&gt;|...
+ <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;;&lt;type&gt;;&lt;size&gt;|...
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
                             -> list|fail|wrong type
 
@@ -286,7 +286,7 @@ In sort of chronological order:
                             // motion for 3D MMO games with dynamic here/gone
 *<b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
                            x-> <b><i>move</i></b>|&lt;user&gt;|&lt;data&gt;
-                            // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;+&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;+&lt;action&gt;(+&lt;speed&gt;+...)
+                            // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;;&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;;&lt;action&gt;(;&lt;speed&gt;;...)
                             //          position   |orientation    |key/button
 
  <b><i>/\</b></i> type not implemented    -> main|fail|type not found

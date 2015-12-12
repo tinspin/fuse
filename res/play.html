@@ -98,7 +98,7 @@ public class play extends Service {
         async = true;
       if(salt)
         data = type + '|' + salt + data.substring(4, data.length);
-      url += 'data=' + encodeURIComponent(data);
+      url += 'data=' + data;
     }
     url += "&time=" + new Date().getTime();
     try {
@@ -207,7 +207,7 @@ public class play extends Service {
         }
       }
       if(split[0] == 'room') {
-        add_select('join', split[1].split('+')[0], orange);
+        add_select('join', split[1].split(';')[0], orange);
       }
       if(split[0] == 'drop') {
         remove_select('join', split[1]);
@@ -429,7 +429,7 @@ public class play extends Service {
       var select = element('tree');
       var index = select.selectedIndex;
       var tree = select.options[index].text
-      none('chat|' + tree + '|' + text);
+      none('chat|' + tree + '|' + encodeURIComponent(text));
     }
   }
   function room() {
@@ -459,7 +459,7 @@ public class play extends Service {
     if(list[1] == 'done')
       clear_join();
     for(var i = 3; i < list.length; i++) {
-      add_select('join', list[i].split('+')[0], orange);
+      add_select('join', list[i].split(';')[0], orange);
     }
   }
   function math_random(min, max) {
