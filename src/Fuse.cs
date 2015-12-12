@@ -417,7 +417,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 					Log("List: " + list.Length);
 
 					for(int i = 0; i < list.Length; i++) {
-						string[] room = list[i].Split('+');
+						string[] room = list[i].Split(';');
 						Log("      " + room[0] + " " + room[1] + " " + room[2]);
 					}
 				}
