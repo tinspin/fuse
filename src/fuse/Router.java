@@ -269,6 +269,13 @@ public class Router implements Node {
 			
 			broadcast(user, "here|root|" + user.name, true);
 
+			Iterator it = user.game.rooms.values().iterator();
+			
+			while(it.hasNext()) {
+				Room r = (Room) it.next();
+				r.send(user, "here|root|" + user.name, true);
+			}
+			
 			return "game|done";
 		}
 

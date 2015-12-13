@@ -216,11 +216,12 @@ public class play extends Service {
         remove_select('join', split[1]);
       }
       if(split[0] == 'stop' || split[0] == 'exit') {
-        remove_select('ally', split[1]);
-        remove_select('join', split[1]);
+        if(split[0] == 'exit')
+          remove_select('ally', split[1]);
         if(split[0] == 'stop') {
           element('chat').value = split[1] + ': quit\n' + element('chat').value;
           stop_game();
+          list();
         }
       }
       if(split[0] == 'play') {
