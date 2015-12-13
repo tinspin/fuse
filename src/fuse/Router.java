@@ -509,6 +509,11 @@ public class Router implements Node {
 			String info = split[3];
 			
 			if(room == null) {
+				boolean game = user.room instanceof Game;
+				
+				if(!game && user.room.users.size() == user.room.size && !user.room.play)
+					return "join|fail|is full";
+				
 				User poll = (User) names.get(split[2]);
 
 				if(poll != null && user.game.name.equals(poll.game.name)) {
@@ -548,22 +553,31 @@ public class Router implements Node {
 			if(poll == null)
 				return "poll|fail|not found";
 
-			if(!poll.name.equals(user.poll) || !user.poll.equals(poll.name))
+			if(!user.poll.equals(poll.name))
 				return "poll|fail|wrong user";
 
 			if(accept) {
-				Room room = new Room(poll, "duel", 2);
-
-				user.game.rooms.put(poll.name, room);
-
-				poll.move(poll.room, room);
+				boolean game = poll.room instanceof Game;
+				Room room = null;
+				
+				if(!game)
+					room = poll.room;
+				else {
+					room = new Room(poll, "duel", 2);
+					user.game.rooms.put(poll.name, room);
+					poll.move(poll.room, room);
+				}
+				
 				user.move(user.game, room);
 				
-				user.game.send(user, "room|" + room);
+				if(game)
+					user.game.send(user, "room|" + room);
 			}
 
 			user.poll = null;
-			poll.poll = null;
+			
+			if(poll.name.equals(user.poll))
+				poll.poll = null;
 			
 			return "poll|done";
 		}
