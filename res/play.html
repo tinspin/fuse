@@ -64,7 +64,7 @@ public class play extends Service {
 <script>
   var host = '[[ host ]]';
   var game = '[[ game ]]';
-  var show = true;
+  var show = false;
   var size = 0;
   var salt;
   function pull(salt) {
@@ -201,6 +201,9 @@ public class play extends Service {
         update_select('ally', split[1], green);
       }
       if(split[0] == 'gone') {
+        if(split[1] == 'root') {
+          remove_select('ally', split[2]);
+        }      
         if(split[1] == 'leaf') {
           remove_select('join', split[2]);
           stop_game();

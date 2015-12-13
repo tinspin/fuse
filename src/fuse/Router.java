@@ -267,7 +267,7 @@ public class Router implements Node {
 			user.move(null, game);
 			user.game = game;
 			
-			broadcast(user, "here|root|" + user.name);
+			broadcast(user, "here|root|" + user.name, true);
 
 			return "game|done";
 		}
@@ -504,7 +504,7 @@ public class Router implements Node {
 			if(room == null) {
 				User poll = (User) names.get(split[2]);
 
-				if(poll != null) {
+				if(poll != null && user.game.name.equals(poll.game.name)) {
 					if(poll.poll != null)
 						return "join|fail|user busy";
 					
@@ -714,7 +714,7 @@ public class Router implements Node {
 			boolean game = user.room instanceof Game;
 			
 			if(tree.equals("root"))
-				broadcast(user, "chat|root|" + user.name + "|" + split[3]);
+				broadcast(user, "chat|root|" + user.name + "|" + split[3], true);
 			
 			if(tree.equals("root") || tree.equals("stem"))
 				user.game.send(user, "chat|stem|" + user.name + "|" + split[3], true);
@@ -1072,13 +1072,18 @@ public class Router implements Node {
 		}
 	}
 
-	public void broadcast(User user, String message) throws Exception {
+	public void broadcast(User user, String message, boolean ignore) throws Exception {
 		Iterator it = users.values().iterator();
 		
 		while(it.hasNext()) {
 			User u = (User) it.next();
 			
-			if(u.game == null || user.game == null || !u.game.name.equals(user.game.name))
+			boolean add = true;
+			
+			if(ignore)
+				add = (u.game == null || user.game == null || !u.game.name.equals(user.game.name));
+			
+			if(add)
 				node.push(u.salt, message, true);
 		}
 	}
@@ -1090,12 +1095,11 @@ public class Router implements Node {
 			Room room = user.move(user.room, null);
 			user.game.rooms.remove(user.name);
 			if(place != 1) {
-				System.err.println("exit|" + user.name);
 				user.game.send(user, "exit|" + user.name);
 			}
 			users.remove(salt);
 			names.remove(user.name);
-			broadcast(user, "gone|root|" + user.name);
+			broadcast(user, "gone|root|" + user.name, false);
 		}
 	}
 
