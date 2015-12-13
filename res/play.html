@@ -444,9 +444,9 @@ public class play extends Service {
       index = select.selectedIndex;
     }
     if(index > -1) {
-      var join = push('join|' + select.options[index].text + '|hejsan');
-      if(join[1] == 'done')
-        clear_join();
+      var join = 'join|' + select.options[index].text + '|hejsan';
+      clear_join();
+      push(join);
     }
   }
   function quit() {
