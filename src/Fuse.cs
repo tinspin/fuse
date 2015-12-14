@@ -93,9 +93,21 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	private void PushAsync() {
 		while(true) {
 			try {
+				String message = null;
+
 				lock(output) {
-					while(output.Count > 0) {
-						Push(output.Dequeue());
+					if(output.Count > 0)
+						message = output.Dequeue();
+				}
+
+				while(message != null) {
+					Push(message);
+
+					lock(output) {
+						if(output.Count > 0)
+							message = output.Dequeue();
+						else
+							message = null;
 					}
 				}
 			}
