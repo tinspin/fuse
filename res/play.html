@@ -6,6 +6,9 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 
+// TODO: join fails error missing
+// TODO: here broadcast does not send other games to you when you login.
+
 public class play extends Service {
 	String red = "#ff3300";
 	String orange = "#ff9900";
@@ -448,9 +451,13 @@ public class play extends Service {
       index = select.selectedIndex;
     }
     if(index > -1) {
-      var join = 'join|' + select.options[index].text + '|hejsan';
+      var rule = 'join|' + select.options[index].text + '|hejsan';
       clear_join();
-      push(join);
+      var join = push(rule);
+      if(join[1] == 'fail') {
+        list();
+        show_fail(split[2]);
+      }
     }
   }
   function quit() {

@@ -517,7 +517,7 @@ public class Router implements Node {
 				User poll = (User) names.get(split[2]);
 
 				if(poll != null && user.game.name.equals(poll.game.name)) {
-					if(poll.poll != null)
+					if(!game)
 						return "join|fail|user busy";
 					
 					node.push(poll.salt, "poll|" + user.name + "|" + info, true);
@@ -553,7 +553,7 @@ public class Router implements Node {
 			if(poll == null)
 				return "poll|fail|not found";
 
-			if(!user.poll.equals(poll.name))
+			if(user.poll == null || !user.poll.equals(poll.name))
 				return "poll|fail|wrong user";
 
 			if(accept) {
@@ -1075,7 +1075,7 @@ public class Router implements Node {
 
 				float avg = (float) stat.total / (float) stat.count;
 
-				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "</td><td>" + stat.min + "</td><td>" + stat.max + "</td><td>" + stat.count + "</td><td>" + stat.fail + "</td><td>" + stat.error + "</td></tr>");
+				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.min + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.max + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.count + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.fail + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.error + "&nbsp;&nbsp;&nbsp;</td></tr>");
 			}
 
 			out.println("</table>");
