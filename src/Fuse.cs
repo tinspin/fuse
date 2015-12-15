@@ -152,16 +152,22 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		if(!connected)
 			return null;
 
-		lock(input) {
-			if(input.Count > 0) {
-				string[] messages = new string[input.Count];
+		int length = 0;
 
-				for(int i = 0; i < messages.Length; i++) {
+		lock(input) {
+			length = input.Count;
+		}
+		
+		if(length > 0) {
+			string[] messages = new string[input.Count];
+
+			for(int i = 0; i < messages.Length; i++) {
+				lock(input) {
 					messages[i] = input.Dequeue();
 				}
-
-				return messages;
 			}
+
+			return messages;
 		}
 
 		return null;
@@ -179,9 +185,9 @@ public class Fuse { // : MonoBehaviour { // ### 2
 				if(!split[0].StartsWith("HTTP")) {
 					string[] messages = split[1].Split('\n');
 
-					lock(input) {
-						for(int i = 0; i < messages.Length; i++) {
-							if(messages[i].Length > 0) {
+					for(int i = 0; i < messages.Length; i++) {
+						if(messages[i].Length > 0) {
+							lock(input) {
 								input.Enqueue(messages[i]);
 							}
 						}
