@@ -269,11 +269,26 @@ public class Router implements Node {
 			
 			broadcast(user, "here|root|" + user.name, true);
 
-			Iterator it = user.game.rooms.values().iterator();
+			// add this user and users in other games to each other
+			
+			Iterator it = users.values().iterator();
+			
+			while(it.hasNext()) {
+				User u = (User) it.next();
+				
+				if(user.game != null && u.game.name != null && user.game.name != u.game.name) {
+					node.push(u.salt, "here|root|" + user.name, true);
+					node.push(user.salt, "here|root|" + u.name, true);
+				}
+			}
+			
+			// add this user to users in same game but in rooms
+			
+			it = user.game.rooms.values().iterator();
 			
 			while(it.hasNext()) {
 				Room r = (Room) it.next();
-				r.send(user, "here|root|" + user.name, true);
+				r.send(user, "here|stem|" + user.name, true);
 			}
 			
 			return "game|done";
@@ -923,8 +938,11 @@ public class Router implements Node {
 					boolean from_game = from.room instanceof Game;
 					
 					// send every user in room to joining user
+					
 					if(data.startsWith("here") && !from.name.equals(user.name)) {
-						node.push(from.salt, "here|" + (user_game ? "stem" : "leaf") + "|" + user.name + user.peer(from), false);
+						System.out.println(user_game + " " + from_game);
+						
+						node.push(from.salt, "here|" + (user_game || from_game ? "stem" : "leaf") + "|" + user.name + user.peer(from), false);
 
 						if(from.ally(user))
 							node.push(from.salt, "ally|" + user.name, false);
@@ -936,6 +954,7 @@ public class Router implements Node {
 					}
 
 					// send every user in room to leaving user
+					
 					if(data.startsWith("gone") && !from.name.equals(user.name)) {
 						node.push(from.salt, "gone|" + (from_game ? "stem" : "leaf") + "|" + user.name + user.peer(from), false);
 						
@@ -943,6 +962,7 @@ public class Router implements Node {
 					}
 
 					// send message from user to room
+					
 					if(all || !from.name.equals(user.name)) {
 						if(data.startsWith("here"))
 							data += from.peer(user);
@@ -954,6 +974,7 @@ public class Router implements Node {
 					}
 
 					// eject everyone
+					
 					if(data.startsWith("stop")) {
 						user.move(null, user.game);
 					}

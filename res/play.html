@@ -24,6 +24,8 @@ public class play extends Service {
 		String game = event.query().string("game", "cube");
 		String path = event.query().string("path", game + ".html");
 		
+		boolean test = event.query().bit("test", false);
+		
 		String name = event.string("name");
 		String pass = event.string("pass");
 		
@@ -67,7 +69,7 @@ public class play extends Service {
 <script>
   var host = '[[ host ]]';
   var game = '[[ game ]]';
-  var show = false;
+  var show = [[ test ]];
   var size = 0;
   var salt;
   function pull(salt) {
@@ -269,7 +271,7 @@ public class play extends Service {
       if(split[0] == 'warn') {
         alert(split[2]);
         if(split[1] == 'boot' && name == pass) {
-          window.location.href = '/play.html?name=' + name + '&pass=' + pass;
+          window.location.href = '/play.html?name=' + name + '&pass=' + pass + '&test=' + show + '&game=' + game;
         }
       }
     }
