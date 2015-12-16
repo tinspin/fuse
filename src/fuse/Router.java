@@ -227,11 +227,11 @@ public class Router implements Node {
 		if(split.length < 2)
 			return "main|fail|salt not found";
 
-		System.out.println(split[1]);
+		//System.out.println(split[1]);
 		
 		User user = (User) users.get(split[1]);
 		
-		System.out.println(user);
+		//System.out.println(user);
 		
 		if(user == null && !user.salt.equals(split[1]))
 			return "main|fail|salt not found";
