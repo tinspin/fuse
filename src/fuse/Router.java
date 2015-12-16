@@ -227,7 +227,11 @@ public class Router implements Node {
 		if(split.length < 2)
 			return "main|fail|salt not found";
 
+		System.out.println(split[1]);
+		
 		User user = (User) users.get(split[1]);
+		
+		System.out.println(user);
 		
 		if(user == null && !user.salt.equals(split[1]))
 			return "main|fail|salt not found";
@@ -267,7 +271,7 @@ public class Router implements Node {
 			user.move(null, game);
 			user.game = game;
 			
-			broadcast(user, "here|root|" + user.name, true);
+			//broadcast(user, "here|root|" + user.name, true);
 
 			// add this user and users in other games to each other
 			
@@ -276,7 +280,7 @@ public class Router implements Node {
 			while(it.hasNext()) {
 				User u = (User) it.next();
 				
-				if(user.game != null && u.game.name != null && user.game.name != u.game.name) {
+				if(user.game != null && u.game.name != null && user.game.name != u.game.name && user.name != u.name) {
 					node.push(u.salt, "here|root|" + user.name, true);
 					node.push(user.salt, "here|root|" + u.name, true);
 				}
