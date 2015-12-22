@@ -465,7 +465,7 @@ public class Event extends Throwable implements Chain.Link {
 			e.printStackTrace(print);
 			
 			reply.code("500 Internal Server Error");
-			reply.output().print("<pre>" + System.getProperty("host", "???") + " " + trace.toString() + "</pre>");
+			reply.output().print("<pre>{" + System.getProperty("host", "???") + "} " + encode(trace.toString()) + "</pre>");
 			
 			if(reply.push()) {
 				reply.output().finish();
@@ -635,6 +635,17 @@ public class Event extends Throwable implements Chain.Link {
 		}
 	}
 
+	/**
+	 * Creates a session variable to enable cross hot-deploy 
+	 * sessions on headless real-time comet-stream applications.
+	 */
+	public void persist() {
+		if(session == null) {
+			session = new Session(daemon, query().header("host"));
+			session.add(this);
+		}
+	}
+	
 	protected final void session(final Service service, Event event) throws Exception {
 		String key = cookie(query.header("cookie"), "key");
 

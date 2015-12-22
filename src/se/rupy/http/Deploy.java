@@ -280,7 +280,7 @@ public class Deploy extends Service {
 				permissions.add(new RuntimePermission("getStackTrace"));
 
 				if(daemon.domain.equals("host.rupy.se")) {
-					/* These projects require unsecure features.
+					/* These projects require insecure features.
 					 */
 					if(host.equals("root.rupy.se")) {
 						try {
