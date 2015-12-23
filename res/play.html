@@ -7,6 +7,7 @@ import java.net.*;
 import java.io.*;
 
 // TODO: join fails error missing
+// TODO: room stop doesn't seem to work
 
 public class play extends Service {
 	String red = "#ff3300";
@@ -356,6 +357,7 @@ public class play extends Service {
     if(user[1] == 'done')
       authorize(user[2]);
   }
+  var digits = /^\d+$/;
   function hash() {
     name = id('name');
     if(name.length < 3) {
@@ -372,7 +374,10 @@ public class play extends Service {
       show_fail(salt[2]);
       return;
     }
-    var sign = push('sign|' + salt[2] + '|' + md5(md5(pass + name.toLowerCase()) + salt[2]));
+    var auth = pass;
+    if(!digits.test(name))
+      auth = md5(pass + name.toLowerCase());
+    var sign = push('sign|' + salt[2] + '|' + md5(auth + salt[2]));
     if(sign[1] == 'done')
       authorize(salt[2]);
   }

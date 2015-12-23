@@ -240,7 +240,7 @@ public class Router implements Node {
 			String hash = split[2].toLowerCase();
 
 			if(user.name.length() > 0 && hash.length() > 0) {
-				String key = user.json.has("pass") ? user.json.getString("pass") : user.json.getString("key");
+				String key = user.name.matches("[0-9]+") ? user.json.getString("key") : user.json.getString("pass");
 				String md5 = Deploy.hash(key + user.salt, "MD5");
 
 				if(hash.equals(md5)) {
@@ -280,7 +280,7 @@ public class Router implements Node {
 			while(it.hasNext()) {
 				User u = (User) it.next();
 				
-				if(user.game != null && u.game.name != null && user.game.name != u.game.name && user.name != u.name) {
+				if(user.game != null && u.game != null && user.game.name != u.game.name && user.name != u.name) {
 					node.push(u.salt, "here|root|" + user.name, true);
 					node.push(user.salt, "here|root|" + u.name, true);
 				}
@@ -944,8 +944,6 @@ public class Router implements Node {
 					// send every user in room to joining user
 					
 					if(data.startsWith("here") && !from.name.equals(user.name)) {
-						System.out.println(user_game + " " + from_game);
-						
 						node.push(from.salt, "here|" + (user_game || from_game ? "stem" : "leaf") + "|" + user.name + user.peer(from), false);
 
 						if(from.ally(user))
@@ -992,6 +990,7 @@ public class Router implements Node {
 				node.wakeup(from.salt);
 
 			// broadcast stop
+			
 			if(data.startsWith("quit")) {
 				user.game.send(from, "stop|" + user.name);
 			}
@@ -1027,7 +1026,7 @@ public class Router implements Node {
 
 		long time = System.currentTimeMillis() - event.big("time");
 
-		if(time > 1000) {
+		if(time > 50) {
 			System.out.println(rule + " " + time);
 		}
 

@@ -100,9 +100,16 @@ public class Server extends Service implements Node, Runnable {
 
 			if(!wake)
 				return null;
+
+			long time = System.currentTimeMillis();
 			
 			int wakeup = queue.event.reply().wakeup();
-
+			
+			long dt = System.currentTimeMillis() - time;
+			
+			if(dt > 100)
+				System.out.println(wakeup + " " + dt);
+			
 			if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
 				remove(queue.salt, 1);
 				list.remove(queue.salt);
