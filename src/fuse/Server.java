@@ -101,14 +101,7 @@ public class Server extends Service implements Node, Runnable {
 			if(!wake)
 				return null;
 
-			long time = System.currentTimeMillis();
-			
 			int wakeup = queue.event.reply().wakeup();
-			
-			long dt = System.currentTimeMillis() - time;
-			
-			if(dt > 100)
-				System.out.println(wakeup + " " + dt);
 			
 			if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
 				remove(queue.salt, 1);
@@ -141,7 +134,6 @@ public class Server extends Service implements Node, Runnable {
 
 		while(it.hasNext()) {
 			Queue queue = (Queue) it.next();
-//System.out.println(queue);
 			queue.add(message);
 
 			if(finish) {
@@ -237,7 +229,10 @@ public class Server extends Service implements Node, Runnable {
 
 					while(data != null) {
 						String accept = queue.event.query().header("accept");
-
+						
+						if(!data.equals("noop"))
+							System.err.println(queue.salt + " " + data);
+						
 						if(accept != null && accept.indexOf("text/event-stream") > -1) {
 							out.print("data: " + data + "\n\n");
 						}

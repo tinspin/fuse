@@ -268,8 +268,8 @@ public class Router implements Node {
 				games.put(split[2], game);
 			}
 
-			user.move(null, game);
 			user.game = game;
+			user.move(null, game);
 			
 			//broadcast(user, "here|root|" + user.name, true);
 
@@ -893,14 +893,15 @@ public class Router implements Node {
 		int size;
 
 		Room(String type, int size) {
-			this.type = type;
-			this.size = size;
+			this(null, type, size);
 		}
 
 		Room(User user, String type, int size) {
-			this.type = type;
 			this.user = user;
+			this.type = type;
 			this.size = size;
+			
+			System.out.println("ROOM " + user + " " + type + " " + size);
 		}
 
 		boolean away() {
@@ -932,6 +933,9 @@ public class Router implements Node {
 			if(!data.startsWith("send") && !data.startsWith("move"))
 				System.err.println("<-- " + from + " " + data);
 
+			if(data.startsWith("here"))
+				System.err.println(users);
+			
 			boolean wakeup = false;
 
 			while(it.hasNext()) {
@@ -966,13 +970,15 @@ public class Router implements Node {
 					// send message from user to room
 					
 					if(all || !from.name.equals(user.name)) {
-						if(data.startsWith("here"))
-							data += from.peer(user);
-						
-						if(data.startsWith("gone") && from.room.user != null)
-							data += "|" + from.room.user.name;
-
-						node.push(user.salt, data, true);
+						if(data.startsWith("here")) {
+							node.push(user.salt, data + from.peer(user), true);
+						}
+						else if(data.startsWith("gone") && from.room.user != null) {
+							node.push(user.salt, data + "|" + from.room.user.name, true);
+						}
+						else {
+							node.push(user.salt, data, true);
+						}
 					}
 
 					// eject everyone
@@ -1133,16 +1139,36 @@ public class Router implements Node {
 		}
 	}
 	
-	public void remove(String salt, int place) throws Exception {
+	static protected String stack(Thread thread) {
+		StackTraceElement[] stack = thread.getStackTrace();
+		StringBuilder builder = new StringBuilder();
+
+		for(int i = 0; i < stack.length; i++) {
+			builder.append(stack[i]);
+
+			if(i < stack.length - 1) {
+				builder.append("\r\n");
+			}
+		}
+
+		return builder.toString();
+	}
+	
+	public synchronized void remove(String salt, int place) throws Exception {
 		User user = (User) users.get(salt);
 
+		//System.err.println("exit " + place + " " + user + " " + stack(Thread.currentThread()));
+		
 		if(user != null && user.salt != null && user.game != null) {
+			users.remove(salt);
+			
 			Room room = user.move(user.room, null);
 			user.game.rooms.remove(user.name);
+
 			if(place != 1) {
 				user.game.send(user, "exit|" + user.name);
 			}
-			users.remove(salt);
+			
 			names.remove(user.name);
 			broadcast(user, "gone|root|" + user.name, false);
 		}

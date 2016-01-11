@@ -559,13 +559,18 @@ public class play extends Service {
 			}
 		}
 		else {
-			HttpURLConnection conn = (HttpURLConnection) new URL(path).openConnection();
-			conn.setRequestMethod("GET");
-			int code = conn.getResponseCode();
-			if(code == 200) {
-				InputStream in = conn.getInputStream();
-				int size = Deploy.pipe(in, event.output());
-				in.close();
+			try {
+				HttpURLConnection conn = (HttpURLConnection) new URL(path).openConnection();
+				conn.setRequestMethod("GET");
+				int code = conn.getResponseCode();
+				if(code == 200) {
+					InputStream in = conn.getInputStream();
+					int size = Deploy.pipe(in, event.output());
+					in.close();
+				}
+			}
+			catch(Exception e) {
+				System.out.println(e.getMessage());
 			}
 		} ]]
 
