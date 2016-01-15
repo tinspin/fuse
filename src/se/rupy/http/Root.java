@@ -1801,7 +1801,7 @@ public class Root extends Service {
 								if(trace)
 									event.output().println("        collision fail");
 
-								failed++;
+								//failed++;
 							}
 						}
 						else if(result.length() > 0) {
@@ -1868,7 +1868,8 @@ public class Root extends Service {
 							}
 						}
 
-					async(event, collision > 0);
+					//async(event, collision > 0);
+					async(event);
 				}
 			}
 			else {
@@ -1927,7 +1928,8 @@ public class Root extends Service {
 				}
 
 				try {
-					async(event, event.query().path().equals("/make") || create);
+					//async(event, event.query().path().equals("/make") || create);
+					async(event);
 				}
 				catch(Exception e) {
 					e.printStackTrace();
@@ -1939,7 +1941,10 @@ public class Root extends Service {
 			}
 		}
 
-		private void async(Event event, boolean create) throws Exception {
+		private void async(Event event) throws Exception {
+			boolean create = event.query().bit("create", true);
+			if(event.query().path().equals("/make"))
+				create = true;
 			JSONObject json = Root.sync(event, event.query().string("type", "user"), event.query().string("sort", "key"), create);
 			event.query().put("json", json);
 		}
