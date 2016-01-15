@@ -280,6 +280,8 @@ public class Event extends Throwable implements Chain.Link {
 							query.path().startsWith("/root") || 
 							query.path().startsWith("/node") || 
 							query.path().startsWith("/link") || 
+							query.path().startsWith("/meta") || 
+							query.path().startsWith("/tree") || 
 							query.path().startsWith("/salt")) && 
 							!host.equals("root.rupy.se")) {
 						if(!service(daemon.root(), false)) {
@@ -322,7 +324,7 @@ public class Event extends Throwable implements Chain.Link {
 	/**
 	 * Escape JSON.
 	 */
-	private static String escape(String value) {
+	public static String escape(String value) {
 		value = value.replace("\"", "\\\"");
 		value = value.replace("\\", "\\\\");
 		value = value.replace("\b", "\\b");
@@ -371,7 +373,7 @@ public class Event extends Throwable implements Chain.Link {
 				
 				if(metric == null) {
 					metric = new Daemon.Metric();
-					archive.files().put(query.path(), metric); // TODO: Threadlock.
+					archive.files().put(query.path(), metric); // TODO: Threadlock. Edit: NM, this was raspberry pi with corrupt SD card.
 				}
 			}
 			

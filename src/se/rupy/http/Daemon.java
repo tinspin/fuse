@@ -1694,6 +1694,8 @@ public class Daemon implements Runnable {
 				add(this.service, new Root.Node(), null);
 				add(this.service, new Root.Link(), null);
 				add(this.service, new Root.Find(), null);
+				add(this.service, new Root.Meta(), null);
+				add(this.service, new Root.Tree(), null);
 				add(this.service, new Root.Salt(), null);
 			}
 

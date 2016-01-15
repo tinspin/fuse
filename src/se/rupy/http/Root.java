@@ -12,9 +12,15 @@ import java.io.RandomAccessFile;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -25,6 +31,7 @@ import java.util.StringTokenizer;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -41,28 +48,33 @@ import se.rupy.http.Service;
  * 
  * This solution is "wasteful"; but with 16-digit Base-58 keys and 
  * long ids, collisions should be rare, at least over the network.
+ * 
+ * @author Marc
  */
+// TODO: debug the problem when all nodes has an object except the node that tries to create it
+//       might be a problem on http.Root only since the exceptions are wrapped...
 public class Root extends Service {
 	static int LENGTH = 16;
-	/**
-	 *  this is not protected at all and can not be relied on!
-	 */
 	public static String local;
-	static String secret;
-	//static String home;
-	static String[] ip = {"89.221.241.32", "89.221.241.33", "92.63.174.125", "2.248.42.217", "2.248.42.217", "2.248.42.217", "2.248.42.217"};
-	static String[] host = {"one", "two", "tre", "fyr", "fem", "six", "sju"}; // oct, nio, tio, elv
-	static String[] node_type = {"data", "user", "task", "type"};
-	static String[] link_type = {"data", "user", "task", "date"};
+	public static String home;
+	static String[] ip = {"89.221.241.32", "89.221.241.33", "92.63.174.125", "2.248.42.217", "2.248.42.217", "2.248.42.217"};
+	static String[] host = {"one", "two", "tre", "fem", "six", "sju"}; // oct, nio, tio, elv
+	static String[] node_type = {"data", "node", "user", "task", "type"};
+	static String[] link_type = {"data", "node", "user", "task", "date"};
+	static String[] meta_type = {"data", "node", "user", "task"};
 
-	//static Deploy.Archive archive;
+	//static String root = "/";
+	static Deploy.Archive archive;
 	static URLDecoder decoder = new URLDecoder();
 
 	// example data for tutorial
 	final String key = "SWhK6hk5jhQuJJaJ";
 	final String search = "full%20text%20search";
 
+	// <!-- start http.Root
+	static String secret;
 	static String domain;
+	static String root = "/root";
 
 	public Root(String domain, Properties prop) {
 		this.domain = domain;
@@ -115,33 +127,32 @@ public class Root extends Service {
 
 		pass.canRead();
 	}
-
-	static String type(String[] type, String name, int selected) {
-		StringBuilder select = new StringBuilder("<select id=\"type\" name=\"" + name + "\">");
-
-		for(int i = 0; i < type.length; i++) {
-			select.append("<option" + (i == selected ? " selected" : "") + ">" + type[i] + "</option>");
+	
+	static String secret() throws Exception {
+		if(secret == null) {
+			//secret = file("app/" + archive.host() + "/root/secret");
+			secret = file("secret");
 		}
 
-		select.append("</select>");
-		return select.toString();
+		return secret;
 	}
-
-	static int type(String[] type, String name) {
-		for(int i = 0; i < type.length; i++) {
-			if(type[i].equals(name))
-				return i;
-		}
-
-		return -1;
-	}
-
-	public String path() { return "/root"; }
 
 	public void create(Daemon daemon) throws Exception {
 		local = System.getProperty("host", "none");
 	}
+	
+	private static String host() {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
+		if(loader instanceof Deploy.Archive) {
+			Deploy.Archive archive = (Deploy.Archive) loader;
+			return archive.host();
+		}
+		else {
+			return "";
+		}
+	}
+	
 	/**
 	 * A cross functional Root home folder detection for your deploy.
 	 * 
@@ -192,19 +203,45 @@ public class Root extends Service {
 			throw new Exception("Home could not be found. (" + loader + ")");
 		}
 	}
+	
+	// --> http.Root end
+	
+	static String type(String[] type, String name, String selected) {
+		StringBuilder select = new StringBuilder("<select id=\"type\" name=\"" + name + "\">");
 
-	private static String host() {
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		for(int i = 0; i < type.length; i++) {
+			select.append("<option" + (type[i].equals(selected) ? " selected" : "") + ">" + type[i] + "</option>");
+		}
 
-		if(loader instanceof Deploy.Archive) {
-			Deploy.Archive archive = (Deploy.Archive) loader;
-			return archive.host();
-		}
-		else {
-			return "";
-		}
+		select.append("</select>");
+		return select.toString();
 	}
 
+	static int type(String[] type, String name) {
+		for(int i = 0; i < type.length; i++) {
+			if(type[i].equals(name))
+				return i;
+		}
+
+		return -1;
+	}
+
+	public String path() { return root; }
+/*
+	public void create(Daemon daemon) throws Exception {
+		local = InetAddress.getLocalHost().getHostName();
+		archive = (Deploy.Archive) Thread.currentThread().getContextClassLoader();
+		home = "app/" + archive.host() + "/root";
+	}
+
+	private static String host() {
+		return "root.rupy.se";
+	}
+
+	public static String home() {
+		return "app/" + host() + "/root";
+	}
+*/
 	public void filter(Event event) throws Event, Exception {
 		Output out = event.output();
 
@@ -214,8 +251,9 @@ public class Root extends Service {
 			String file = decrypt(data.toByteArray());
 			String path = event.query().header("path");
 
-			boolean create = path.startsWith("/make");
+			boolean make = path.startsWith("/make");
 			boolean link = path.startsWith("/link");
+			boolean meta = path.startsWith("/meta");
 
 			String type = "user";
 			String sort = "key";
@@ -251,15 +289,17 @@ public class Root extends Service {
 			try {
 				if(link)
 					link(new JSONObject(file), null);
+				else if(meta)
+					meta(new JSONObject(file), null);
 				else
-					store(new JSONObject(file), type, sort, create);
+					store(new JSONObject(file), type, sort, make, ((String) event.query().header("host")).equals("test.rupy.se"));
 
 				out.print(1);
 			}
-			catch(SortException e) {
+			catch(SortFail e) {
 				out.print(e);
 			}
-			catch(KeyException e) {
+			catch(KeyFail e) {
 				out.print(0);
 			}
 			catch(Exception e) {
@@ -269,22 +309,22 @@ public class Root extends Service {
 		}
 		else {
 			out.println("<html><head><title>Root Cloud Store</title></head>");
-			out.println("<body><pre><img src=\"favicon.ico\"> replicates JSON objects async<font color=\"red\"><sup>*</sup></font> over HTTP<br>across a cluster with guaranteed uniqueness<br>and DNS roundrobin for 100% read uptime.<br>");
+			out.println("<body><pre>ROOT replicates JSON objects async<font color=\"red\"><sup>*</sup></font> over HTTP<br>across a cluster with guaranteed uniqueness<br>and DNS roundrobin for 100% read uptime.<br>");
 			out.println("<i>Usage:</i>");
-			out.println("         <font color=\"grey\"><i><b>user</b></i></font>   <font color=\"grey\"><i><b>node</b></i></font>   <font color=\"grey\"><i><b>link</b></i></font>");
-			out.println("       ┌──────┬──────┬──────┐");
-			out.println(" <font color=\"red\"><i>make</i></font>  │ <a href=\"/user?url=binarytask.com\">join</a> │ <a href=\"/node?make\">form</a> │ <a href=\"/link\">bind</a> │  <font color=\"grey\"><i>\"insert\"</i></font>");
-			out.println(" <font color=\"green\"><i>find</i></font>  │ <a href=\"http://binarytask.com\">auth</a> │ <a href=\"/node/user/key/" + key + "\">load</a> │ <a href=\"/link/user/data/" + key + "\">list</a> │  <font color=\"grey\"><i>\"select\"</i></font>");
-			out.println(" <font color=\"blue\"><i>edit</i></font>  │      │ <a href=\"/node\">save</a> │      │  <font color=\"grey\"><i>\"update\"</i></font>");
-			out.println(" <i>trim</i>  │      │ drop │ tear │  <font color=\"grey\"><i>\"delete\"</i></font>");
-			out.println("       └──────┴──────┴──────┘");
+			out.println("         <font color=\"grey\"><i><b>user</b></i></font>   <font color=\"grey\"><i><b>node</b></i></font>   <font color=\"grey\"><i><b>link</b></i></font>   <font color=\"grey\"><i><b>meta</b></i></font>");
+			out.println("       ┌──────┬──────┬──────┬──────┐");
+			out.println(" <font color=\"red\"><i>make</i></font>  │ <a href=\"/user?url=binarytask.com\">join</a> │ <a href=\"/node?make\">form</a> │ <a href=\"/link\">bind</a> │ <a href=\"/meta\">bond</a> │  <font color=\"grey\"><i>\"insert\"</i></font>");
+			out.println(" <font color=\"green\"><i>find</i></font>  │ <a href=\"http://binarytask.com\">auth</a> │ <a href=\"/node/user/key/" + key + "\">load</a> │ <a href=\"/link/user/data/" + key + "\">list</a> │ <a href=\"/meta/user/data/hej\">roll</a> │  <font color=\"grey\"><i>\"select\"</i></font>");
+			out.println(" <font color=\"blue\"><i>edit</i></font>  │      │ <a href=\"/node\">save</a> │      │ <a href=\"/meta?edit\">yoke</a> │  <font color=\"grey\"><i>\"update\"</i></font>");
+			out.println(" <i>trim</i>  │      │ drop │      │ <a href=\"/meta?tear=true\">tear</a> │  <font color=\"grey\"><i>\"delete\"</i></font>");
+			out.println("       └──────┴──────┴──────┴──────┘");
 			out.println("");
-			out.println("                <font color=\"grey\"><i><b>sort</b></i></font>");
-			out.println("       ┌──────┬──────┬──────┐");
-			out.println(" open  │ <a href=\"/node/data/text/" + search + "\">text</a> │ <a href=\"/node/data/date/14/11/25/example\">path</a> │ <a href=\"/link/user/data/" + hash(key) + "\">list</a> │");
-			out.println("       └──────┴──────┴──────┘");
+			out.println("       ┌──────┬──────┬──────┬──────┐");
+			out.println(" open  │ <a href=\"/node/data/text/" + search + "\">text</a> │ <a href=\"/node/data/date/14/11/25/example\">path</a> │ <a href=\"/link/user/data/" + hash(key) + "\">list</a> │ <a href=\"/tree\">tree</a> │");
+			out.println("       └──────┴──────┴──────┴──────┘");
 			out.println("");
 			out.println("<font color=\"red\"><sup>*</sup></font><i>Source:</i> <a href=\"http://root.rupy.se/code\">Async</a>, <a href=\"http://root.rupy.se/code?path=/User.java\">User</a>, <a href=\"http://root.rupy.se/code?path=/Root.java\">Root</a>");
+			out.println("Host: " + Root.local);
 			out.println("</pre>");
 			out.println("</body>");
 			out.println("</html>");
@@ -310,7 +350,7 @@ public class Root extends Service {
 				else
 					path = event.query().path() + param;
 
-				post.post("/root", "Host:" + Root.host[i] + "." + host() + "\r\nPath:" + path, data);
+				post.post(root, "Host:" + Root.host[i] + "." + host() + "\r\nPath:" + path, data);
 			}
 
 			public void read(String host, String body) throws Exception {
@@ -354,14 +394,15 @@ public class Root extends Service {
 		if(create) {
 			json = create(event, json);
 		}
-		while(exists(json, type, sort, event, create) == 0) {
+		while(exists(json, type, sort, event, create, ((String) event.query().header("host")).equals("test.rupy.se")) == 0) {
 			json = create(event, json);
 		}
 		return json;
 	}
 
 	private static JSONObject create(Event event, JSONObject json) throws JSONException {
-		String key = Event.random(LENGTH);
+		boolean test = ((String) event.query().header("host")).equals("test.rupy.se");
+		String key = Event.random(test ? 2 : LENGTH);
 
 		if(event.query().bit("create", true)) { // From /node but with create flag.
 			json.put("key", key);
@@ -382,10 +423,13 @@ public class Root extends Service {
 		if(o.getString("key").equals(key))
 			return hash(key);
 		else
-			throw new KeyException("Root [" + type + "/" + key + "] not found!");
+			throw new KeyFail("Root [" + type + "/" + key + "] not found!");
 	}
 
-	private static int exists(JSONObject json, String type, String sort, Event event, boolean create) throws Exception {
+	private static int exists(JSONObject json, String type, String sort, Event event, boolean create, boolean test) throws Exception {
+		//if(json.has("root"))
+		//	throw new RootFail("contains key 'root'.");
+
 		String key = json.getString("key");
 		long id = hash(key);
 
@@ -396,10 +440,17 @@ public class Root extends Service {
 		boolean id_exist = Files.exists(Paths.get(home() + "/node/" + type + "/id" + path(id)));
 
 		//if(event == null) // TODO: This is to test remote collisions, set LENGTH to 2 and uncomment this.
-		if(create && (key_exist || id_exist))
+
+		boolean skip = false;
+
+		if(test && event != null)
+			skip = true;
+
+		if(!skip && create && (key_exist || id_exist))
 			return 0;
 
-		sort(json, null, type, sort, create); // TODO: To test remote sort collision comment this out.
+		if(!test)
+			sort(json, null, type, sort, create); // TODO: To test remote sort collision comment this out.
 
 		if(event == null)
 			return 1;
@@ -415,7 +466,6 @@ public class Root extends Service {
 			String out_key = event.string("out_" + host[i] + "_key");
 
 			if(!host[i].equals(local)) {
-				//System.out.println(host[i] + " " + local);
 				if(((state.equals("") || state.equals("0")) && !out_key.equals(key)) || state.equals("-2")) {
 					event.query().put(host[i], "2");
 					event.query().put("out_" + host[i] + "_key", key);
@@ -427,25 +477,31 @@ public class Root extends Service {
 		return 1;
 	}
 
-	public static class KeyException extends Exception {
-		public KeyException(String message) { super(message); }
+	public static class KeyFail extends Exception {
+		public KeyFail(String message) { super(message); }
 	}
 
-	public static class SortException extends Exception {
-		public SortException(String message) { super(message); }
+	public static class SortFail extends Exception {
+		public SortFail(String message) { super(message); }
 	}
 
-	public static class LinkException extends Exception {
-		public LinkException(String message) { super(message); }
+	public static class LinkFail extends Exception {
+		public LinkFail(String message) { super(message); }
 	}
 
-	private static void store(JSONObject json, String type, String sort, boolean create) throws Exception {
-		if(exists(json, type, sort, null, create) == 0)
-			throw new KeyException("Node [" + local + "] collision");
+	public static class MetaFail extends Exception {
+		public MetaFail(String message) { super(message); }
+	}
 
-		String path = Root.home() + "/node/" + type + "/id" + path(hash(json.getString("key")));
+	//public static class RootFail extends Exception {
+	//	public RootFail(String message) { super(message); }
+	//}
 
-		//System.out.println(path);
+	private static void store(JSONObject json, String type, String sort, boolean create, boolean test) throws Exception {
+		if(exists(json, type, sort, null, create, test) == 0)
+			throw new KeyFail("Node [" + local + "] collision");
+
+		String path = home() + "/node/" + type + "/id" + path(hash(json.getString("key")));
 
 		new File(path.substring(0, path.lastIndexOf("/"))).mkdirs();
 
@@ -454,15 +510,19 @@ public class Root extends Service {
 		if(create)
 			file.createNewFile();
 
-		BufferedWriter output = new BufferedWriter(new FileWriter(file));
-		output.write(json.toString());
-		output.close();
+		write(file, json);
 
 		sort(json, path, type, sort, create);
 	}
 
+	private static void write(File file, JSONObject json) throws Exception {
+		BufferedWriter output = new BufferedWriter(new FileWriter(file));
+		output.write(json.toString());
+		output.close();
+	}
+
 	private static void sort(JSONObject json, String path, String type, String sort, boolean create) throws Exception {
-		String home = Root.home() + "/node/" + type;
+		String home = home() + "/node/" + type;
 		long id = hash(json.getString("key"));
 		String[] name = sort.split(",");
 
@@ -473,8 +533,8 @@ public class Root extends Service {
 
 			if(value.contains(" ") || key.equals("text"))
 				full = true;
-			else if(value.matches("[0-9]+") || !value.matches("[a-zA-Z0-9/.@\\-\\+]+"))
-				throw new SortException("Validation [" + key + "=" + json.getString(key) + "]");
+			else if(value.matches("[0-9]+") || !value.matches("[a-zA-Z0-9/.@\\-\\+]+") || value.toLowerCase().matches("root"))
+				throw new SortFail("Validation [" + key + "=" + json.getString(key) + "]");
 
 			if(full) {
 				String[] words = value.toLowerCase().split("\\s+");
@@ -482,7 +542,6 @@ public class Root extends Service {
 				for(int j = 0; j < words.length; j++) {
 					String word = words[j];
 
-					// remove punctuation
 					// remove punctuation
 					while(word.endsWith(".") 
 							|| word.endsWith(":") 
@@ -510,7 +569,7 @@ public class Root extends Service {
 				boolean exists = new File(sort).exists();
 
 				if(exists && create) {
-					throw new SortException("Collision [" + key + "=" + json.getString(key) + "]");
+					throw new SortFail("Collision [" + key + "=" + json.getString(key) + "]");
 				}
 
 				if(!exists && path != null) {
@@ -538,7 +597,33 @@ public class Root extends Service {
 
 			for(int i = 0; i < host.length; i++) {
 				if(!host[i].equals(local)) {
-					send(i, data, event);
+					send_link(i, data, event);
+				}
+			}
+		}
+	}
+
+	private static void meta(JSONObject json, final Event event) throws Exception {
+		JSONObject parent = json.getJSONObject("parent");
+		JSONObject child = json.getJSONObject("child");
+		JSONObject node = json.getJSONObject("json");
+		boolean echo = json.optBoolean("echo");
+		boolean tear = json.optBoolean("tear");
+		String path = json.getString("path");
+		String ptype = parent.getString("type");
+		String pkey = parent.getString("key");
+		String ctype = child.getString("type");
+		String ckey = child.getString("key");
+
+		if(event == null) {
+			meta(ptype, pkey, ctype, ckey, path, node, echo, tear);
+		}
+		else {
+			byte[] data = Root.encrypt(json.toString());
+
+			for(int i = 0; i < host.length; i++) {
+				if(!host[i].equals(local)) {
+					send_meta(i, data, event);
 				}
 			}
 		}
@@ -548,26 +633,21 @@ public class Root extends Service {
 	 * Link parent and child.
 	 * Root relations is self referencing lists of node types, so you can get last 10 registered users f.ex.
 	 * Atomic relation is node-to-node, both one-to-one and one-to-many, allowing for regular give me all articles written by user f.ex.
-	 * TODO: one-to-many-to-many... etc.
+	 * These lists have no edit or delete, see meta!
 	 */
 	private static void link(String ptype, String pkey, String ctype, String ckey) throws Exception {
-		String path = Root.home() + "/link/";
+		String path = home() + "/link/";
 
 		long pid = hash(pkey);
 		long cid = ctype.equals("date") ? Long.parseLong(ckey) : hash(ckey);
 
-		if(!ctype.endsWith("date") && !new File(Root.home() + "/node/" + ctype + "/id" + path(cid)).exists())
-			throw new LinkException("Child node doesn't exist.");
+		if(!ctype.endsWith("date") && !new File(home() + "/node/" + ctype + "/id" + path(cid)).exists())
+			throw new LinkFail("Child node doesn't exist.");
 
-		if(pkey.length() == 0 && ptype.equals(ctype)) { // Root relation.
-			path += ptype + "/root";
-		}
-		else { // Atomic relation
-			if(!new File(Root.home() + "/node/" + ptype + "/id" + path(pid)).exists())
-				throw new LinkException("Parent node doesn't exist.");
+		if(!new File(home() + "/node/" + ptype + "/id" + path(pid)).exists())
+			throw new LinkFail("Parent node doesn't exist.");
 
-			path += ptype + "/" + ctype + "/" + path(pkey);
-		}
+		path += ptype + "/" + ctype + "/" + path(pkey);
 
 		new File(path.substring(0, path.lastIndexOf("/"))).mkdirs();
 
@@ -579,7 +659,91 @@ public class Root extends Service {
 	}
 
 	/*
-	 * Finds the references to same nodes in full text index files.
+	 * Link parent and child with meta files, potentially with tree structure.
+	 */
+	private static void meta(String ptype, String pkey, String ctype, String ckey, String path, JSONObject data, boolean echo, boolean tear) throws Exception {
+		File parent = new File(home() + "/node/" + ptype + "/key" + path(pkey));
+		File child = new File(home() + "/node/" + ctype + "/key" + path(ckey));
+
+		if(!parent.exists())
+			throw new MetaFail("Parent node doesn't exist. (" + parent + ")");
+
+		if(!child.exists())
+			throw new MetaFail("Child node doesn't exist. (" + child + ")");
+
+		JSONObject p = new JSONObject(file(parent));
+		JSONObject c = new JSONObject(file(child));
+
+		String pname = pkey;
+		String cname = ckey;
+
+		if(p.has("name"))
+			pname = p.getString("name");
+
+		if(c.has("name"))
+			cname = c.getString("name");
+
+		String ppname = path(pname);
+		String ccname = path(cname);
+
+		pname = "/" + pname;
+		cname = "/" + cname;
+
+		String root = home() + "/meta/" + ptype + "/" + ctype + ppname + cname + path;
+		String link = home() + "/meta/" + ctype + "/" + ptype + ccname + pname + path;
+
+		if(tear) {
+			try {
+				new File(root).delete();
+				new File(link).delete();
+			}
+			catch (Exception e) {
+				// OK
+			}
+		}
+		else {
+			File folder = new File(root.substring(0, root.lastIndexOf("/")));
+			folder.mkdirs();
+			folder.setLastModified(new Date().getTime());
+
+			BufferedWriter output = new BufferedWriter(new FileWriter(root));
+			output.write(data.toString());
+			output.close();
+
+			if(echo) {
+				if(new File(link.substring(0, link.lastIndexOf("/"))).mkdirs()) {
+					try {
+						Files.createLink(Paths.get(link), Paths.get(root));
+					}
+					catch(FileAlreadyExistsException e) {
+						// OK
+					}
+				}
+				else {
+					throw new MetaFail("Link could not be created.");
+				}
+			}
+		}
+	}
+
+	// rm -rf
+	public static boolean delete(File file) {
+		if(file.isDirectory()) {
+			String[] files = file.list();
+
+			for(int i = 0; i < files.length; i++) {
+				boolean success = delete(new File(file, files[i]));
+
+				if(!success)
+					return false;
+			}
+		}
+
+		return file.delete();
+	}
+
+	/*
+	 * Finds the references to same nodes in full word index files.
 	 * 
 	 * This should search from the end until the size asked for is found 
 	 * with infinite "next" pagination memory seek position instead of size.
@@ -689,10 +853,10 @@ public class Root extends Service {
 		file.close();
 	}
 
-	private static void send(final int i, final byte[] data, Event event) throws Exception {
+	private static void send_link(final int i, final byte[] data, Event event) throws Exception {
 		final Async.Work work = new Async.Work(event) {
 			public void send(Async.Call post) throws Exception {
-				post.post("/root", "Host:" + Root.host[i] + "." + host() + "\r\nPath:/link", data);
+				post.post(root, "Host:" + Root.host[i] + "." + host() + "\r\nPath:/link", data);
 			}
 
 			public void read(String host, String body) throws Exception {
@@ -715,6 +879,55 @@ public class Root extends Service {
 				if(complete == Root.host.length - 1) {
 					event.query().put("result", "1");
 					link((JSONObject) event.query().get("json"), null);
+					int state = event.reply().wakeup(true);
+				}
+				else if(failed > 0) {
+					event.query().put("result", body + "[" + local + "]");
+					int state = event.reply().wakeup(true);
+				}
+			}
+
+			public void fail(String host, Exception e) throws Exception {
+				if(e instanceof Async.Timeout) {
+					event.daemon().client().send(host, this, 60);
+				}
+				else {
+					e.printStackTrace();
+					event.query().put("result", e.toString());
+					event.reply().wakeup(true);
+				}
+			}
+		};
+
+		event.daemon().client().send(ip[i], work, 60);
+	}
+
+	private static void send_meta(final int i, final byte[] data, Event event) throws Exception {
+		final Async.Work work = new Async.Work(event) {
+			public void send(Async.Call post) throws Exception {
+				post.post(root, "Host:" + Root.host[i] + "." + host() + "\r\nPath:/meta", data);
+			}
+
+			public void read(String host, String body) throws Exception {
+				int working = 0, complete = 0, failed = 0;
+				event.query().put(Root.host[i], body);
+
+				for(int j = 0; j < Root.host.length; j++) {
+					if(!Root.host[i].equals(local)) {
+						String result = event.string(Root.host[j]);
+
+						if(result.equals("2"))
+							working++;
+						else if(result.equals("1"))
+							complete++;
+						else if(result.length() > 0)
+							failed++;
+					}
+				}
+
+				if(complete == Root.host.length - 1) {
+					event.query().put("result", "1");
+					meta((JSONObject) event.query().get("json"), null);
 					int state = event.reply().wakeup(true);
 				}
 				else if(failed > 0) {
@@ -788,18 +1001,17 @@ public class Root extends Service {
 	/*
 	 * Encryption stuff
 	 */
-
-	//static String secret;
+/*
+	static String secret;
 
 	static String secret() throws Exception {
 		if(secret == null) {
-			//secret = file("app/" + archive.host() + "/root/secret");
-			secret = file("secret");
+			secret = file("app/" + archive.host() + "/root/secret");
 		}
 
 		return secret;
 	}
-
+*/
 	public static String file(String path) throws Exception {
 		return file(new File(path));
 	}
@@ -838,42 +1050,128 @@ public class Root extends Service {
 	}
 
 	public static class Find extends Service {
+		public static int NAME = 1;
+		public static int DATE = 2;
+
 		public String path() {
 			return null;
 		}
 
+		public JSONArray recurse(File file, String full, int from, int size, int level, int deep, final int sort, boolean secure) throws Exception {
+			if(deep > -1 && level > deep)
+				return null;
+
+			File[] files = file.listFiles();
+
+			if(sort > 0) {
+				Arrays.sort(files, new Comparator<File>() {
+					public int compare(File a, File b) {
+						if(sort == DATE)
+							return Long.compare(b.lastModified(), a.lastModified());
+						else
+							return a.getName().compareTo(b.getName());
+					}
+				});
+			}
+
+			JSONArray arr = new JSONArray();
+
+			if(files.length > 0) {
+				int f = 0, s = files.length;
+
+				if(level == 0) {
+					f = from;
+
+					if(size > 0)
+						s = size;
+				}
+
+				int length = f + s;
+
+				if(length > files.length) {
+					f -= length - files.length;
+					length = files.length;
+				}
+
+				if(f < 0) f = 0;
+
+				for(int i = f; i < length; i++) {
+					Path path = Paths.get(full + "/" + files[i].getName());
+
+					JSONObject obj = new JSONObject();
+					boolean add = false;
+
+					String name = files[i].getName();
+
+					if(!secure && name.length() == 16)
+						name = "" + Root.hash(name);
+
+					if(Files.isDirectory(path)) {
+						JSONArray child = recurse(path.toFile(), path.toString(), from, size, level + 1, deep, sort, secure);
+
+						if(child != null) {
+							add = true;
+							obj.put(name, child);
+						}
+					}
+					else if(deep > -1 || level > 0) {
+						add = true;
+						obj.put(name, new JSONObject(file(path.toString())));
+					}
+
+					if(add)
+						arr.put(obj);
+				}
+			}
+
+			if(arr.length() == 0)
+				return null;
+
+			return arr;
+		}
+
+		/* Example Public Paths:
+		 * 
+		 * Node:
+		 * - /node/user/key/<key>
+		 * 
+		 * Link:
+		 * - /link/user/data/<key>
+		 * 
+		 * Meta:
+		 * - /meta/user/data/<key>
+		 * 
+		 * Find:
+		 * - /node/data/text/full%20text%20search
+		 */
 		public void filter(Event event) throws Event, Exception {
 			event.query().parse();
-			int from = event.query().medium("from", 0);
-			int size = event.query().medium("size", 10);
+
 			String[] path = event.query().path().split("/");
 
-			/* Example Public Paths:
-			 * 
-			 * Node:
-			 * - /node/user/key/<key>
-			 * 
-			 * Link:
-			 * - /link/user/data/<key>
-			 * 
-			 * Find:
-			 * - /node/data/text/full%20text%20search
-			 */
-
 			String full = "";
-			String poll = "";
-			String type = "";
-			String sort = "";
+			String rule = "";
+			String head = "";
+			String tail = "";
 			String last = "";
 
 			try {
-				poll = path[1];
-				type = path[2];
-				sort = path[3];
+				rule = path[1];
+				head = path[2];
+				tail = path[3];
 			}
 			catch(Exception e) {
-				fail(event, full, poll, type, sort, last);
+				//e.printStackTrace();
+				fail(event, full, rule, head, tail, last);
 			}
+
+			int from = event.query().medium("from", 0);
+			int size = event.query().medium("size", rule.equals("meta") ? -1 : 10);
+			int deep = event.query().medium("deep", -1);
+			int sort = event.query().medium("sort", 0);
+
+			if(size > 50)
+				size = 50;
 
 			for(int i = 4; i < path.length; i++) {
 				last += path[i];
@@ -882,13 +1180,13 @@ public class Root extends Service {
 					last += "/";
 			}
 
-			if(poll.equals("node") && type.equals("user") && (sort.equals("name") || sort.equals("mail") || sort.equals("id"))) {
+			if(rule.equals("node") && head.equals("user") && (tail.equals("name") || tail.equals("mail") || tail.equals("id"))) {
 				event.reply().code("403 Forbidden");
-				event.output().print("<pre>Public node/user/" + sort + " is forbidden.</pre>");
+				event.output().print("<pre>Public node/user/" + tail + " is forbidden.</pre>");
 				throw event;
 			}
 
-			if(poll.equals("link") && type.equals("user") && sort.equals("date") && last.matches("[0-9]+")) {
+			if(rule.equals("link") && head.equals("user") && tail.equals("date") && last.matches("[0-9]+")) {
 				event.reply().code("403 Forbidden");
 				event.output().print("<pre>Public link/user/date is forbidden.</pre>");
 				throw event;
@@ -897,55 +1195,133 @@ public class Root extends Service {
 			boolean remove = false; // remove key from node
 
 			try {
-				if(poll.equals("link")) { // link list
-					full = home() + "/link/" + type + "/root";
+				if(rule.equals("link")) { // link list
+					if(last.length() > 0) {
+						full = home() + "/link/" + head + "/" + tail + Root.path(last);
 
-					if(!sort.equals("root")) {
-						if(last.length() > 0) {
-							full = home() + "/link/" + type + "/" + sort + Root.path(last);
+						if(last.matches("[0-9]+")) {
+							full = home() + "/node/" + head + "/id" + Root.path(last, 3);
 
-							if(last.matches("[0-9]+")) {
-								full = home() + "/node/" + type + "/id" + Root.path(last, 3);
+							File file = new File(full);
 
-								File file = new File(full);
-
-								if(file.exists()) {
-									JSONObject json = new JSONObject(Root.file(file));
-									full = home() + "/link/" + type + "/" + sort + Root.path(json.getString("key"));
-									remove = true;
-								}
+							if(file.exists()) {
+								JSONObject json = new JSONObject(Root.file(file));
+								full = home() + "/link/" + head + "/" + tail + Root.path(json.getString("key"));
+								remove = true;
 							}
-						}
-						else {
-							event.reply().code("400 Bad Request");
-							event.output().print("<pre>Sort without key.</pre>");
-							throw event;
 						}
 					}
 					else {
-						sort = type;
+						event.reply().code("400 Bad Request");
+						event.output().print("<pre>Sort without key.</pre>");
+						throw event;
 					}
 
 					File file = new File(full);
 
 					if(file.exists()) {
 						RandomAccessFile raf = new RandomAccessFile(file, "rw");
-						write_last(event, sort, raf, type, last, from, size, remove);
+						write_last(event, tail, raf, head, last, from, size, remove);
 						raf.close();
 					}
 					else {
-						//event.reply().type("application/json; charset=UTF-8");
-						//event.output().print("{\"total\":0,\"list\":[],\"node\":\"" + local + "\"}");
-						fail(event, full, poll, type, sort, last);
+						fail(event, full, rule, head, tail, last);
+					}
+				}
+				else if(rule.equals("meta")) {
+					full = home() + "/meta/" + head + "/" + tail + Root.path(last);
+
+					File file = new File(full);
+
+					boolean found = file.exists() && file.isDirectory();
+
+					if(!found) {
+						String[] tree = last.split("/");
+
+						try {
+							if(tree.length == 1) {
+								long id = Long.parseLong(last);
+								JSONObject json = new JSONObject(file(home() + "/node/" + head + "/id" + Root.path(id)));
+								String key = json.getString("key");
+
+								if(json.has("name")) {
+									String name = json.getString("name");
+									full = home() + "/meta/" + head + "/" + tail + Root.path(name);
+								}
+								else {
+									full = home() + "/meta/" + head + "/" + tail + Root.path(key);
+								}
+							}
+							else if(tree.length > 1) {
+								long id = Long.parseLong(tree[1]);
+								JSONObject json = new JSONObject(file(home() + "/node/" + tail + "/id" + Root.path(id)));
+								String key = json.getString("key");
+
+								if(json.has("name")) {
+									String name = json.getString("name");
+									full = home() + "/meta/" + head + "/" + tail + Root.path(tree[0]) + "/" + name;
+								}
+								else {
+									full = home() + "/meta/" + head + "/" + tail + Root.path(tree[0]) + "/" + key;
+								}
+							}
+						}
+						catch(Exception e) {
+							JSONObject json = new JSONObject(file(home() + "/node/" + head + "/key" + Root.path(last)));
+							String name = json.getString("name");
+							full = home() + "/meta/" + head + "/" + tail + Root.path(name);
+						}
+
+						file = new File(full);
+					}
+
+					if(file.exists() && file.isDirectory()) {
+						boolean secure = last.length() == 16 && last.indexOf("/") == -1 && !last.matches("[0-9]+");
+
+						long time = System.currentTimeMillis();
+
+						JSONArray arr = recurse(file, full, from, size, 0, deep, sort, secure);
+
+						System.out.println("recurse " + (System.currentTimeMillis() - time));
+
+						File[] files = file.listFiles();
+						int length = 0;
+
+						for(int i = 0; i < files.length; i++) {
+							Path p = Paths.get(full + "/" + files[i].getName() + "/root");
+
+							if(files[i].isFile())
+								length++;
+							else if(files[i].isDirectory() && Files.exists(p))
+								length++;
+						}
+
+						if(arr != null) {
+							StringBuilder builder = new StringBuilder();
+							builder.append("{\"total\": " + length + ", \"list\":");
+							builder.append(arr.toString(4));
+							builder.append("}");
+
+							event.reply().type("application/json; charset=UTF-8");
+							byte[] data = builder.toString().getBytes("UTF-8");
+							Output out = event.reply().output(data.length);
+							out.write(data);
+						}
+						else {
+							fail(event, full, rule, head, tail, last);
+						}
+					}
+					else {
+						fail(event, full, rule, head, tail, last);
 					}
 				}
 				else {
-					full = home() + "/node/" + type + "/" + sort + "/" + last;
+					full = home() + "/node/" + head + "/" + tail + "/" + last;
 
 					String decoded = decoder.decode(last, "UTF-8");
 
-					if(sort.equals("text")) { // full text search
-						full = home() + "/node/" + type + "/" + sort + "/";
+					if(tail.equals("text")) { // full word search
+						full = home() + "/node/" + head + "/" + tail + "/";
 						remove = true;
 
 						if(last.contains(" ")) {
@@ -964,27 +1340,27 @@ public class Root extends Service {
 								next.close();
 							}
 
-							print_list(event, type, list, null, null, list.size(), remove);
+							print_list(event, head, list, null, null, list.size(), remove);
 
 							one.close();
 							two.close();
 						}
 						else {
-							full = home() + "/node/" + type + "/" + sort + "/";
+							full = home() + "/node/" + head + "/" + tail + "/";
 
 							RandomAccessFile raf = new RandomAccessFile(full + last, "r");
 
-							write_last(event, type, raf, null, null, from, size, remove);
+							write_last(event, head, raf, null, null, from, size, remove);
 
 							raf.close();
 						}
 					}
 					else { // node sort index
 						if(last.matches("[a-zA-Z0-9.@\\-\\+]+"))
-							full = home() + "/node/" + type + "/" + sort + Root.path(last);
+							full = home() + "/node/" + head + "/" + tail + Root.path(last);
 
 						if(last.matches("[0-9]+")) {
-							full = home() + "/node/" + type + "/" + sort + Root.path(Long.parseLong(last));
+							full = home() + "/node/" + head + "/" + tail + Root.path(Long.parseLong(last));
 							remove = true;
 						}
 
@@ -1007,14 +1383,14 @@ public class Root extends Service {
 							out.write(data);
 						}
 						else {
-							fail(event, full, poll, type, sort, last);
+							fail(event, full, rule, head, tail, last);
 						}
 					}
 				}
 			}
 			catch(Exception e) {
 				e.printStackTrace();
-				fail(event, full, poll, type, sort, last);
+				fail(event, full, rule, head, tail, last);
 			}
 		}
 
@@ -1074,7 +1450,7 @@ public class Root extends Service {
 			}
 
 			StringBuilder builder = new StringBuilder();
-			builder.append("{\"total\":" + total + ", \"list\":[");
+			builder.append("{\"total\": " + total + ", \"list\":[");
 
 			Iterator it = list.iterator();
 
@@ -1085,19 +1461,24 @@ public class Root extends Service {
 					builder.append(id);
 				}
 				else {
-					String open = Root.home() + "/node/" + type + "/id" + Root.path(id);
+					String open = home() + "/node/" + type + "/id" + Root.path(id);
 
-					JSONObject obj = new JSONObject(file(open));
+					try {
+						JSONObject obj = new JSONObject(file(open));
 
-					if(remove) {
-						obj.put("id", hash(obj.getString("key")));
-						obj.remove("key");
+						if(remove) {
+							obj.put("id", hash(obj.getString("key")));
+							obj.remove("key");
+						}
+
+						//if(type.equals("user"))
+						//	obj.remove("pass");
+
+						builder.append(obj.toString(4));
 					}
-
-					//if(type.equals("user"))
-					//	obj.remove("pass");
-
-					builder.append(obj.toString(4));
+					catch(Exception e) {
+						System.out.println("File " + open + " not found.");
+					}
 				}
 
 				if(it.hasNext())
@@ -1118,11 +1499,11 @@ public class Root extends Service {
 			out.write(data);
 		}
 
-		private void fail(Event event, String path, String poll, String type, String sort, String last) throws Event, Exception {
+		private void fail(Event event, String path, String rule, String head, String tail, String last) throws Event, Exception {
 			event.reply().code("404 Not Found");
-			event.output().print("<pre>" + toCase(poll) + " '" + event.query().path() + "' was not found on host " + local + ".</pre>");
+			event.output().print("<pre>" + toCase(rule) + " '" + event.query().path() + "' was not found on host " + local + ".</pre>");
 
-			JSONObject obj = new JSONObject("{\"path\":\"" + path + "\",\"poll\":\"" + poll + "\",\"type\":\"" + type + "\",\"sort\":\"" + sort + "\",\"last\":\"" + last + "\"}");
+			JSONObject obj = new JSONObject("{\"path\":\"" + path + "\",\"rule\":\"" + rule + "\",\"head\":\"" + head + "\",\"tail\":\"" + tail + "\",\"last\":\"" + last + "\"}");
 			System.out.println(obj.toString(4));
 
 			throw event;
@@ -1161,8 +1542,8 @@ public class Root extends Service {
 					out.println("<style> input, select { font-family: monospace; } </style>");
 					out.println("<pre>");
 					out.println("<form action=\"link\" method=\"post\">");
-					out.println("  Parent <input type=\"text\" style=\"width: 100px;\" name=\"pkey\"> " + type(node_type, "ptype", 1) + "<br>");
-					out.println("  Child  <input type=\"text\" style=\"width: 100px;\" name=\"ckey\"> " + type(link_type, "ctype", 0) + "<br>");
+					out.println("  Parent <input type=\"text\" style=\"width: 100px;\" name=\"pkey\"> " + type(node_type, "ptype", "user") + "<br>");
+					out.println("  Child  <input type=\"text\" style=\"width: 100px;\" name=\"ckey\"> " + type(link_type, "ctype", "data") + "<br>");
 					out.println("         <input type=\"submit\" value=\"Link\">");
 					out.println("</form>");
 					out.println("</pre>");
@@ -1174,6 +1555,162 @@ public class Root extends Service {
 									"\"child\":{\"key\":\"" + ckey + "\",\"type\":\"" + ctype + "\"}}");
 					event.query().put("json", json);
 					link(json, event);
+				}
+			}
+		}
+	}
+
+	/* Use this to build tree structured comments.
+	 * Requires a "user" key with the users name in the child node json.
+	 */
+	public static class Tree extends Service {
+		public String path() {
+			return "/tree";
+		}
+
+		public void filter(Event event) throws Event, Exception {
+			if(event.push()) {
+				for(int i = 0; i < host.length; i++) {
+					event.query().put(host[i], "");
+				}
+
+				Output out = event.output();
+				out.println(event.query().string("result"));
+				out.finish();
+				out.flush();
+			}
+			else {
+				event.query().parse();
+
+				long node = event.big("node");
+				String type = event.string("type");
+				String user = event.string("user");
+				boolean tear = event.query().bit("tear", false); // delete
+				String path = event.string("path");
+				String data = event.string("json");
+
+				if(event.query().method() == Query.GET) {
+					Output out = event.output();
+					out.println("<style> input, select { font-family: monospace; } </style>");
+					out.println("<pre>");
+					out.println("<form action=\"meta\" method=\"post\">");
+					out.println("  Node <input type=\"text\" style=\"width: 100px;\" name=\"node\"> " + type(node_type, "type", "task") + "<br>");
+					out.println("  User <input type=\"text\" style=\"width: 100px;\" name=\"user\"><br>");
+					out.println("  <input type=\"checkbox\" name=\"tear\"> Tear (Delete!)<br>");
+					out.println("  <textarea rows=\"10\" cols=\"50\" name=\"json\"></textarea><br>");
+					out.println("  Path <input type=\"text\" name=\"path\" value=\"\"><br>");
+					out.println("       <input type=\"submit\" value=\"Meta\">");
+					out.println("</form>");
+					out.println("</pre>");
+					throw event;
+				}
+				else {
+					if(path.length() == 0)
+						throw new Exception("Path '" + path + "' is too short.");
+
+					if(path.split("/").length < 2)
+						throw new Exception("Path '" + path + "' needs atleast one folder.");
+
+					if(path.endsWith("/"))
+						throw new Exception("Path '" + path + "' must not end with /.");
+
+					if(!path.startsWith("/"))
+						throw new Exception("Path '" + path + "' must begin with /.");
+
+					JSONObject root = new JSONObject(file(home() + "/node/user/key" + Root.path(user)));
+
+					String end = "/" + root.getString("name") + "/root";
+					
+					JSONObject file = new JSONObject(file(home() + "/node/" + type + "/id" + Root.path(node)));
+
+					String ckey = file.getString("key");
+
+					if(!path.endsWith(end)) {
+						throw new Exception("Path '" + path + "' must end with user name.");
+					}
+
+					String name = Root.path(file.getString("user"));
+					
+					File folder = new File(home() + "/meta/user/" + type + name + "/" + ckey + path.substring(0, path.length() - end.length()));
+					
+					if(!folder.exists()) {
+						throw new Exception("Path '" + path + "' parent folder not found.");
+					}
+					
+					root = new JSONObject(file(home() + "/node/user/name" + name));
+
+					String pkey = root.getString("key");
+
+					JSONObject json = new JSONObject(
+							"{\"parent\":{\"key\":\"" + pkey + "\",\"type\":\"user\"}," + 
+									"\"child\":{\"key\":\"" + ckey + "\",\"type\":\"" + type + "\"}," + 
+									"\"json\":" + data + ",\"tear\":" + tear + ",\"path\":\"" + path + "\"}");
+					event.query().put("json", json);
+					meta(json, event);
+				}
+			}
+		}
+	}
+
+	public static class Meta extends Service {
+		public String path() {
+			return "/meta";
+		}
+
+		public void filter(Event event) throws Event, Exception {
+			if(event.push()) {
+				for(int i = 0; i < host.length; i++) {
+					event.query().put(host[i], "");
+				}
+
+				Output out = event.output();
+				out.println(event.query().string("result"));
+				out.finish();
+				out.flush();
+			}
+			else {
+				event.query().parse();
+				String ptype = event.string("ptype");
+				String ctype = event.string("ctype");
+				String pkey = event.string("pkey");
+				String ckey = event.string("ckey");
+				boolean echo = event.query().bit("echo", false);
+				boolean tear = event.query().bit("tear", false); // delete
+				String path = event.string("path");
+				String data = event.string("json");
+
+				if(path.length() > 0) {
+					if(path.endsWith("/"))
+						throw new Exception("Path '" + path + "' must not end with /.");
+
+					if(!path.startsWith("/"))
+						throw new Exception("Path '" + path + "' must begin with /.");
+				}
+
+				if(event.query().method() == Query.GET) {
+					Output out = event.output();
+					out.println("<style> input, select { font-family: monospace; } </style>");
+					out.println("<pre>");
+					out.println("<form action=\"meta\" method=\"post\">");
+					out.println("  Parent <input type=\"text\" style=\"width: 100px;\" name=\"pkey\"> " + type(node_type, "ptype", "user") + "<br>");
+					out.println("  Child  <input type=\"text\" style=\"width: 100px;\" name=\"ckey\"> " + type(meta_type, "ctype", "data") + "<br>");
+					out.println("  <input type=\"checkbox\" name=\"echo\"> Echo<br>");
+					out.println("  <input type=\"checkbox\" name=\"tear\"" + (tear ? " checked" : "") + "> Tear (Delete!)<br>");
+					out.println("  <textarea rows=\"10\" cols=\"50\" name=\"json\"></textarea><br>");
+					out.println("  Path <input type=\"text\" name=\"path\" value=\"\"><br>");
+					out.println("       <input type=\"submit\" value=\"Meta\">");
+					out.println("</form>");
+					out.println("</pre>");
+					throw event;
+				}
+				else {
+					JSONObject json = new JSONObject(
+							"{\"parent\":{\"key\":\"" + pkey + "\",\"type\":\"" + ptype + "\"}," + 
+									"\"child\":{\"key\":\"" + ckey + "\",\"type\":\"" + ctype + "\"}," + 
+									"\"json\":" + data + ",\"echo\":" + echo + ",\"tear\":" + tear + 
+									",\"path\":\"" + path + "\"}");
+					event.query().put("json", json);
+					meta(json, event);
 				}
 			}
 		}
@@ -1272,7 +1809,7 @@ public class Root extends Service {
 								event.query().put(host[i], "");
 							if(result.equals("java.nio.channels.ClosedChannelException"))
 								event.query().put(host[i], "-2");
-							if(result.startsWith("Root$SortException")) {
+							if(result.startsWith("Root$SortFail")) {
 								event.output().print(result + "[" + local + "]");
 								event.output().finish();
 								event.output().flush();
@@ -1300,7 +1837,8 @@ public class Root extends Service {
 
 					store(json, event.query().string("type", "user"), 
 							event.query().string("sort", "key"), 
-							event.query().path().equals("/make") || create);
+							event.query().path().equals("/make") || create,
+							((String) event.query().header("host")).equals("test.rupy.se"));
 
 					for(int i = 0; i < host.length; i++) {
 						event.query().put(host[i], "");
@@ -1369,11 +1907,11 @@ public class Root extends Service {
 						out.println("<pre>");
 						out.println("<form action=\"node\" method=\"post\">");
 						out.println("  <textarea rows=\"10\" cols=\"50\" name=\"json\"></textarea><br>");
-						out.print("  Type " + type(node_type, "type", 0));
+						out.print("  Type " + type(node_type, "type", "data"));
 						out.print(" <input id=\"make\" type=\"checkbox\" name=\"create\" onclick=\"toggle();\"/> Make");
-						out.println(" <input type=\"checkbox\" name=\"trace\"> Info<br>");
+						out.println("  <input type=\"checkbox\" name=\"trace\"> Info<br>");
 						out.println("  Comma separated list of JSON keys to index,");
-						out.println("  \"text\" key reserved for full text search:<br>");
+						out.println("  \"text\" key reserved for full word search:<br>");
 						out.println("  Sort <input type=\"text\" name=\"sort\" value=\"key\"><br>");
 						out.println("       <input id=\"node\" type=\"submit\" value=\"Edit\">");
 						out.println("</form>");

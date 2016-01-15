@@ -282,7 +282,7 @@ public class Deploy extends Service {
 				if(daemon.domain.equals("host.rupy.se")) {
 					/* These projects require insecure features.
 					 */
-					if(host.equals("root.rupy.se")) {
+					if(host.equals(System.getProperty("data", "root.rupy.se"))) {
 						try {
 							permissions.add(new LinkPermission("hard"));
 							permissions.add(new LinkPermission("symbolic"));
