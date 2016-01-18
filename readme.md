@@ -185,7 +185,7 @@ In sort of chronological order:
 
                             // add/remove friend
  <b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done|&lt;bool&gt;
-                           i-> <b><i>poll</i></b>|&lt;user&gt;[|&lt;info&gt;]         // &lt;user&gt; = other player
+                           i-> <b><i>poll</i></b>|&lt;type&gt;|&lt;user&gt;[|&lt;info&gt;]  // type = ally
                             -> ally|fail|name not found
                             -> ally|fail|id not found
 
@@ -224,7 +224,7 @@ In sort of chronological order:
                             // between <i>lock</i> and <i>view</i> nobody can join
                             // this sends a poll to the user if he has no room
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> join|done|poll/room
-                           i-> <b><i>poll</i></b>|&lt;user&gt;|text[|&lt;info&gt;]         // &lt;user&gt; = other player
+                           i-> <b><i>poll</i></b>|&lt;type&gt;|&lt;user&gt;[|&lt;info&gt;]  // type = join
                            x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]    // leaf, in new room
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;    // stem, in lobby
