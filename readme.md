@@ -197,6 +197,9 @@ In sort of chronological order:
 *<b><i>item</i></b>|&lt;salt&gt;|&lt;json&gt;         -> item|done
                             -> data|fail|name not found
                             -> data|fail|type not found
+                            
+                            // get user country (ISO 3166)
+*<b><i>flag</i></b>|&lt;salt&gt;|&lt;user&gt;         -> flag|done|<code>
 
                             // enable peer-to-peer
                             // before you send this it is important to 
@@ -212,8 +215,8 @@ In sort of chronological order:
                             // list rooms or data
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;;…      // use load to get data
- <b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
- <b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|{"name","x","y","z",…};…
+*<b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
+*<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|{"name","x","y","z",…};…
                             -> list|fail|wrong type
 
                             // join room
