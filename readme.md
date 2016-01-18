@@ -189,7 +189,7 @@ In sort of chronological order:
                             -> data|fail|user not found
                             -> data|fail|type not found
                             
-                            // set item data, requires admin user
+                            // set item data
 *<b><i>item</i></b>|&lt;salt&gt;|&lt;json&gt;         -> item|done
                             -> data|fail|name not found
                             -> data|fail|type not found
@@ -298,9 +298,10 @@ In sort of chronological order:
  <b><i>/\</b></i> type not implemented    -> main|fail|type not found
 
 +-----------------+       
-| <i>Broadcast only.</i> |
+| <i>Broadcast packets.</i> |
 +-----------------+
 
+                           o-> <b><i>item</i></b>|{}                      // items appearing in room
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
                            o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;   // to broadcast global messages
 
