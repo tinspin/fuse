@@ -185,12 +185,12 @@ In sort of chronological order:
                             -> ally|fail|id not found
 
                             // get user data, like avatar
-*<b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;type&gt;  -> data|done|{"name",…};…
+*<b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;type&gt;  -> data|done|{};…
                             -> data|fail|user not found
                             -> data|fail|type not found
                             
                             // set item data, requires admin user
-*<b><i>item</i></b>|&lt;salt&gt;|&lt;json&gt;       -> item|done
+*<b><i>item</i></b>|&lt;salt&gt;|&lt;json&gt;         -> item|done
                             -> data|fail|name not found
                             -> data|fail|type not found
 
