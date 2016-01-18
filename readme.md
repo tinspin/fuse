@@ -19,6 +19,10 @@ Support:
 
 Protocol:
 
+  - uses |;, separation:
+    - '|' protocol
+    - ';' objects
+    - ',' attributes
   - client/server triplex HTTP, comet upstream 
     '\n' terminated or 'data: \n\n' encapsulated
     - dynamic presence position move packets for MMO
