@@ -215,7 +215,7 @@ public class play extends Service {
         }
       }
       if(split[0] == 'room') {
-        add_select('join', split[1].split(';')[0], orange);
+        add_select('join', split[1].split(',')[0], orange);
       }
       if(split[0] == 'drop') {
         remove_select('join', split[1]);
@@ -472,11 +472,12 @@ public class play extends Service {
       list();
   }
   function list() {
-    var list = push('list|room');
-    if(list[1] == 'done')
+    var data = push('list|room');
+    if(data[1] == 'done')
       clear_join();
+    var list = data[2].split(';')
     for(var i = 3; i < list.length; i++) {
-      add_select('join', list[i].split(';')[0], orange);
+      add_select('join', list[i].split(',')[0], orange);
     }
   }
   function math_random(min, max) {

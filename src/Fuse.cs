@@ -285,7 +285,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		}
 
 		if(list.Length > 15)
-			return list.Substring(15).Split('|'); // from 'list|done|room|'
+			return list.Substring(15).Split(';'); // from 'list|done|room|'
 		else
 			return null;
 	}
@@ -435,7 +435,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 					Log("List: " + list.Length);
 
 					for(int i = 0; i < list.Length; i++) {
-						string[] room = list[i].Split(';');
+						string[] room = list[i].Split(',');
 						Log("      " + room[0] + " " + room[1] + " " + room[2]);
 					}
 				}

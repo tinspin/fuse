@@ -230,7 +230,7 @@ public class Server extends Service implements Node, Runnable {
 					while(data != null) {
 						String accept = queue.event.query().header("accept");
 						
-						if(!data.equals("noop"))
+						if(!data.equals("noop") && !data.startsWith("move"))
 							System.err.println(queue.salt + " " + data);
 						
 						if(accept != null && accept.indexOf("text/event-stream") > -1) {

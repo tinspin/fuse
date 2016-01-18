@@ -233,14 +233,14 @@ public class Router implements Node {
 		
 		//System.out.println(user);
 		
-		if(user == null && !user.salt.equals(split[1]))
+		if(user == null || !user.salt.equals(split[1]))
 			return "main|fail|salt not found";
 
 		if(data.startsWith("sign")) {
 			String hash = split[2].toLowerCase();
 
 			if(user.name.length() > 0 && hash.length() > 0) {
-				String key = user.name.matches("[0-9]+") ? user.json.getString("key") : user.json.getString("pass");
+				String key = user.name.matches("[0-9]+") || !user.json.has("pass") ? user.json.getString("key") : user.json.getString("pass");
 				String md5 = Deploy.hash(key + user.salt, "MD5");
 
 				if(hash.equals(md5)) {
@@ -472,12 +472,16 @@ public class Router implements Node {
 			String what = split[2];
 
 			if(what.equals("room")) {
-				StringBuilder builder = new StringBuilder("list|done|room");
+				StringBuilder builder = new StringBuilder("list|done|room|");
 				Iterator it = user.game.rooms.values().iterator();
 
 				while(it.hasNext()) {
 					Room room = (Room) it.next();
-					builder.append("|" + room);
+					builder.append(room);
+					
+					if(it.hasNext()) {
+						builder.append(";");
+					}
 				}
 
 				return builder.toString();
@@ -753,14 +757,16 @@ public class Router implements Node {
 			String tree = split[2];
 			boolean game = user.room instanceof Game;
 			
-			if(tree.equals("root"))
-				broadcast(user, "chat|root|" + user.name + "|" + split[3], true);
+			if(split.length > 3) {
+				if(tree.equals("root"))
+					broadcast(user, "chat|root|" + user.name + "|" + split[3], true);
 			
-			if(tree.equals("root") || tree.equals("stem"))
-				user.game.send(user, "chat|stem|" + user.name + "|" + split[3], true);
+				if(tree.equals("root") || tree.equals("stem"))
+					user.game.send(user, "chat|stem|" + user.name + "|" + split[3], true);
 			
-			if((tree.equals("root") || tree.equals("stem") || tree.equals("leaf")) && !game)
-				user.room.send(user, "chat|leaf|" + user.name + "|" + split[3], true);
+				if((tree.equals("root") || tree.equals("stem") || tree.equals("leaf")) && !game)
+					user.room.send(user, "chat|leaf|" + user.name + "|" + split[3], true);
+			}
 			
 			return "chat|done";
 		}
@@ -900,8 +906,6 @@ public class Router implements Node {
 			this.user = user;
 			this.type = type;
 			this.size = size;
-			
-			System.out.println("ROOM " + user + " " + type + " " + size);
 		}
 
 		boolean away() {
@@ -1015,7 +1019,7 @@ public class Router implements Node {
 		}
 
 		public String toString() {
-			return (user == null ? "lobby" : user.name) + ";" + type + ";" + size;
+			return (user == null ? "lobby" : user.name) + "," + type + "," + size;
 		}
 	}
 

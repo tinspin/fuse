@@ -138,10 +138,8 @@ In sort of chronological order:
                            x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK
-                           o-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;           // if avatar set
                            o-> <b><i>name</b></i>|&lt;user&gt;|&lt;name&gt;           // if &lt;id&gt; used and name set
                            o-> <b><i>nick</b></i>|&lt;user&gt;|&lt;nick&gt;           // if &lt;id&gt; used and nick set
-                           o-> <b><i>flag</b></i>|&lt;user&gt;|&lt;flag&gt;           // country
                             -> game|fail|name invalid       // [a-zA-Z]+
 
  <b><i>\/</i></b> anything below          -> main|fail|no game
@@ -186,9 +184,15 @@ In sort of chronological order:
                             -> ally|fail|name not found
                             -> ally|fail|id not found
 
-                            // set avatar
-*<b><i>self</i></b>|&lt;salt&gt;|&lt;data&gt;         -> self|done
-                           x-> <b><i>self</b></i>|&lt;user&gt;|&lt;data&gt;
+                            // get user data, like avatar
+*<b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;type&gt;  -> data|done|{"name",…};…
+                            -> data|fail|user not found
+                            -> data|fail|type not found
+                            
+                            // set item data, requires admin user
+*<b><i>item</i></b>|&lt;salt&gt;|&lt;json&gt;       -> item|done
+                            -> data|fail|name not found
+                            -> data|fail|type not found
 
                             // enable peer-to-peer
                             // before you send this it is important to 
@@ -202,8 +206,10 @@ In sort of chronological order:
                             -> room|fail|type invalid       // [a-zA-Z]+
 
                             // list rooms or data
- <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;;&lt;type&gt;;&lt;size&gt;|...
- <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;|...      // use load to get data
+ <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
+ <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;;…      // use load to get data
+ <b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
+ <b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|{"name","x","y","z",…};…
                             -> list|fail|wrong type
 
                             // join room
@@ -286,7 +292,7 @@ In sort of chronological order:
                             // motion for 3D MMO games with dynamic here/gone
 *<b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
                            x-> <b><i>move</i></b>|&lt;user&gt;|&lt;data&gt;
-                            // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;;&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;;&lt;action&gt;(;&lt;speed&gt;;...)
+                            // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;;&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;;&lt;action&gt;(;&lt;speed&gt;;…)
                             //          position   |orientation    |key/button
 
  <b><i>/\</b></i> type not implemented    -> main|fail|type not found
