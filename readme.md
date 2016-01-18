@@ -199,7 +199,7 @@ In sort of chronological order:
                             -> data|fail|type not found
                             
                             // get user country (ISO 3166)
-*<b><i>flag</i></b>|&lt;salt&gt;|&lt;user&gt;         -> flag|done|<code>
+*<b><i>flag</i></b>|&lt;salt&gt;|&lt;user&gt;         -> flag|done|&lt;code&gt;
 
                             // enable peer-to-peer
                             // before you send this it is important to 
