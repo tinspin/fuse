@@ -203,7 +203,7 @@ In sort of chronological order:
 
                             // enable peer-to-peer
                             // before you send this it is important to 
-                            // inform the user that his privacy is lost!
+                            // inform the user that privacy is lost!
  <b><i>peer</i></b>|&lt;salt&gt;|&lt;ip&gt;           -> peer|done                    // send the internal IP
 
                             // host room
