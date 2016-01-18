@@ -233,9 +233,10 @@ In sort of chronological order:
                             -> join|fail|already here
                             -> join|fail|is full
 
-                            // to accept poll
+                            // accept poll, you can only have one poll per user at the same time.
                             // &lt;user&gt; is the user name received in the poll request
-                            // true results in both players joining the room
+                            // type = join; player joins the room of the host
+                            // type = ally; both players stored as friends
  <b><i>poll</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;bool&gt;  -> poll|done
 
                             // permanently ban user from room
@@ -260,7 +261,7 @@ In sort of chronological order:
                             -> exit|fail|in lobby
 
                             // save data
- <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|{…}     -> save|done|&lt;id&gt;|&lt;key&gt;         // use {"key": <key>,…} to update
+ <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|{…}     -> save|done|&lt;id&gt;|&lt;key&gt;         // use {"key": &lt;key&gt;,…} to update
                             -> save|fail|too large
 
                             // load data
