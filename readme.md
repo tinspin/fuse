@@ -185,11 +185,12 @@ In sort of chronological order:
 
                             // add/remove friend
  <b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done|&lt;bool&gt;
+                           i-> <b><i>poll</i></b>|&lt;user&gt;[|&lt;info&gt;]         // &lt;user&gt; = other player
                             -> ally|fail|name not found
                             -> ally|fail|id not found
 
                             // get user data, like avatar
-*<b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;type&gt;  -> data|done|{};…
+*<b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;type&gt;  -> data|done|{…};…
                             -> data|fail|user not found
                             -> data|fail|type not found
                             
@@ -221,10 +222,9 @@ In sort of chronological order:
 
                             // join room
                             // between <i>lock</i> and <i>view</i> nobody can join
-                            // this sends a poll to the user if he has no room but 
-                            // is online with the appended info for 1-on-1.
+                            // this sends a poll to the user if he has no room
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> join|done|poll/room
-                           i-> <b><i>poll</i></b>|&lt;else&gt;[|&lt;info&gt;]         // if 1-on-1 automatic, &lt;else&gt; = other player
+                           i-> <b><i>poll</i></b>|&lt;user&gt;|text[|&lt;info&gt;]         // &lt;user&gt; = other player
                            x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]    // leaf, in new room
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;    // stem, in lobby
@@ -234,9 +234,9 @@ In sort of chronological order:
                             -> join|fail|is full
 
                             // to accept poll
-                            // &lt;else&gt; is the user name received in the poll request
+                            // &lt;user&gt; is the user name received in the poll request
                             // true results in both players joining the room
- <b><i>poll</i></b>|&lt;salt&gt;|&lt;else&gt;|&lt;bool&gt;  -> poll|done
+ <b><i>poll</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;bool&gt;  -> poll|done
 
                             // permanently ban user from room
 *<b><i>kick</i></b>|&lt;salt&gt;|&lt;user&gt;         -> kick|done
@@ -260,11 +260,11 @@ In sort of chronological order:
                             -> exit|fail|in lobby
 
                             // save data
- <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;json&gt;  -> save|done|&lt;id&gt;|&lt;key&gt;         // use key to update
+ <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|{…}     -> save|done|&lt;id&gt;|&lt;key&gt;         // use {"key": <key>,…} to update
                             -> save|fail|too large
 
                             // load data
- <b><i>load</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;id&gt;    -> load|done|&lt;json&gt;             // use &lt;id&gt; from list|data|&lt;type&gt;
+ <b><i>load</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;id&gt;    -> load|done|{…}                // use &lt;id&gt; from list|data|&lt;type&gt;
                             -> load|fail|not found
 
                             // play game
@@ -305,11 +305,11 @@ In sort of chronological order:
  <b><i>/\</b></i> type not implemented    -> main|fail|type not found
 
 +-----------------+       
-| <i>Broadcast packets.</i> |
+| <i>Broadcast rules.</i> |
 +-----------------+
 
-                           o-> <b><i>item</i></b>|{}                      // items appearing in room
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
+                           o-> <b><i>item</i></b>|{…}                      // items appearing in room
                            o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;   // to broadcast global messages
 
 +-----------------+       
