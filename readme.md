@@ -185,7 +185,7 @@ In sort of chronological order:
                             -> ally|fail|id not found
 
                             // get user data, like avatar
-*<b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;type&gt;  -> data|done|{"name",…};…
+*<b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;type&gt;  -> data|done|{"name",â€¦};â€¦
                             -> data|fail|user not found
                             -> data|fail|type not found
                             
@@ -206,10 +206,10 @@ In sort of chronological order:
                             -> room|fail|type invalid       // [a-zA-Z]+
 
                             // list rooms or data
- <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
- <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;;…      // use load to get data
- <b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
- <b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|{"name","x","y","z",…};…
+ <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;â€¦
+ <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;;â€¦      // use load to get data
+ <b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",â€¦};â€¦
+ <b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|{"name","x","y","z",â€¦};â€¦
                             -> list|fail|wrong type
 
                             // join room
@@ -292,7 +292,7 @@ In sort of chronological order:
                             // motion for 3D MMO games with dynamic here/gone
 *<b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
                            x-> <b><i>move</i></b>|&lt;user&gt;|&lt;data&gt;
-                            // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;;&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;;&lt;action&gt;(;&lt;speed&gt;;…)
+                            // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;;&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;;&lt;action&gt;(;&lt;speed&gt;;â€¦)
                             //          position   |orientation    |key/button
 
  <b><i>/\</b></i> type not implemented    -> main|fail|type not found
