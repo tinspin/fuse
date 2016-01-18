@@ -201,7 +201,7 @@ In sort of chronological order:
 
                             // host room
  <b><i>room</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;size&gt;  -> room|done
-                           x-> <b><i>room</i></b>|&lt;user&gt;;&lt;type&gt;;&lt;size&gt;
+                           x-> <b><i>room</i></b>|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;
                             -> room|fail|not in lobby
                             -> room|fail|type invalid       // [a-zA-Z]+
 
