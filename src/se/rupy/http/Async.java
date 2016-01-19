@@ -325,7 +325,7 @@ public class Async implements Runnable {
 			byte[] data = new byte[SIZE];
 			byte[] body = null;
 
-			int read = channel.read(buffer), full = 0;
+			int read = channel.read(buffer), full = 0, zero = 0;
 			String length = null;
 			String head = null;
 
@@ -403,6 +403,15 @@ public class Async implements Runnable {
 						read(selector);
 						selector.wakeup();
 						read = channel.read(buffer);
+						
+						if(read == 0) {
+							zero++;
+							
+							Thread.currentThread().sleep(zero * 20);
+							
+							if(zero > 10)
+								throw new Exception("Pipe broken.");
+						}
 					}
 
 					if(debug)
@@ -441,6 +450,9 @@ public class Async implements Runnable {
 
 		public void run() {
 			try {
+				if(work == null || (daemon != null && daemon.host && work.archive == null))
+					return;
+				
 				if(run == CONNECT) {
 					channel.finishConnect();
 					state(Call.WRITE);

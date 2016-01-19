@@ -1114,7 +1114,7 @@ public class Root extends Service {
 							obj.put(name, child);
 						}
 					}
-					else if(deep > -1 || level > 0) {
+					else {
 						add = true;
 						obj.put(name, new JSONObject(file(path.toString())));
 					}
@@ -1281,8 +1281,6 @@ public class Root extends Service {
 						long time = System.currentTimeMillis();
 
 						JSONArray arr = recurse(file, full, from, size, 0, deep, sort, secure);
-
-						System.out.println("recurse " + (System.currentTimeMillis() - time));
 
 						File[] files = file.listFiles();
 						int length = 0;
