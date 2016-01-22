@@ -1229,6 +1229,9 @@ public class Root extends Service {
 					}
 				}
 				else if(rule.equals("meta")) {
+					if(last.length() == 0)
+						fail(event, full, rule, head, tail, last);
+					
 					full = home() + "/meta/" + head + "/" + tail + Root.path(last);
 
 					File file = new File(full);
