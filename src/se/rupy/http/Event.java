@@ -770,7 +770,7 @@ public class Event extends Throwable implements Chain.Link {
 				builder.append(BASE_58[Math.abs(random.nextInt() % BASE_58.length)]);
 			}
 		}
-		while(!builder.toString().matches("[0-9]+")); // Only non-number random keys.
+		while(builder.toString().matches("[0-9]+")); // Only non-number random keys.
 		
 		return builder.toString();
 	}
