@@ -56,8 +56,8 @@ x-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) excluding self
 i-> = async. send to one user for unique feedback.
  -> = sync. return on Push(data) or push(data)
 
-< > = mandatory
-[ ] = optional
+<…> = mandatory
+[…] = optional
 
  *  = not implemented yet
 
