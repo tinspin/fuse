@@ -741,7 +741,7 @@ public class Event extends Throwable implements Chain.Link {
 		if(cookie != null) {
 			StringTokenizer tokenizer = new StringTokenizer(cookie, " ");
 
-			while (tokenizer.hasMoreTokens()) {
+			while(tokenizer.hasMoreTokens()) {
 				String part = tokenizer.nextToken();
 				int equals = part.indexOf("=");
 
@@ -766,15 +766,25 @@ public class Event extends Throwable implements Chain.Link {
 		StringBuilder builder = new StringBuilder();
 
 		do {
-			while (builder.length() < length) {
+			builder.delete(0, builder.length());
+			while(builder.length() < length) {
 				builder.append(BASE_58[Math.abs(random.nextInt() % BASE_58.length)]);
 			}
 		}
-		while(builder.toString().matches("[0-9]+")); // Only non-number random keys.
+		while(!alpha(builder.toString()));
 		
 		return builder.toString();
 	}
 
+	private static final boolean alpha(String key) {
+		for(int i = 0; i < key.length(); i++) {
+			if(Character.isLetter(key.charAt(i)))
+				return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * @return true if the Event is being recycled due to a call to
 	 *         {@link Reply#wakeup()}.
