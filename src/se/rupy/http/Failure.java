@@ -6,7 +6,7 @@ import java.io.IOException;
  * The failure, if thrown, does not display the error to the user but
  * disconnects the client. Useful if you receive hack attempts or similar
  * unwanted requests. Also used internally to jump the 500 Internal Server Error
- * bridge.
+ * trap.
  */
 public class Failure extends IOException {
 	public Failure(String message) {
