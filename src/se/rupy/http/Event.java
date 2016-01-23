@@ -762,11 +762,16 @@ public class Event extends Throwable implements Chain.Link {
 		return value;
 	}
 
-	public static String random(int length) {
+	public static String random(int length) throws Exception {
+		if(length < 1 || length > 32)
+			throw new Exception("Length must be between 1 and 32.");
+		
 		StringBuilder builder = new StringBuilder();
 
 		do {
-			builder.delete(0, builder.length());
+			if(builder.length() > 0)
+				builder.delete(0, builder.length());
+			
 			while(builder.length() < length) {
 				builder.append(BASE_58[Math.abs(random.nextInt() % BASE_58.length)]);
 			}

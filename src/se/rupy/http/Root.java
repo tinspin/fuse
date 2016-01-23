@@ -400,7 +400,7 @@ public class Root extends Service {
 		return json;
 	}
 
-	private static JSONObject create(Event event, JSONObject json) throws JSONException {
+	private static JSONObject create(Event event, JSONObject json) throws Exception {
 		boolean test = ((String) event.query().header("host")).equals("test.rupy.se");
 		String key = Event.random(test ? 2 : LENGTH);
 
