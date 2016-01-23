@@ -46,17 +46,6 @@ Examples:
 
   - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source, try single-player <a href="http://fuse.rupy.se/cube.html">cube.html</a>)
   - java 3D VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a> (closed-source)
-
-Filter:
-
-  - to remove HTTP headers in your browser: <a href="https://chrome.google.com/webstore/detail/modify-headers-for-google/innpjfdalfhpcoinfnehdnbkglpmogdi">modify-headers-for-google</a>
-    this is good advice in general as most headers just waste bandwidth: <a href="https://github.com/tinspin/fuse/blob/master/headers.json">import</a>
-    
-      User-Agent
-      Referer
-      Accept-Encoding
-      Accept-Language
-      Connection (doesn't work)
     
 +-------------------+
 | <i>Work in progress!</i> |
