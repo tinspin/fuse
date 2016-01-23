@@ -262,10 +262,12 @@ public class play extends Service {
           pause(false);
       }
       if(split[0] == 'poll') {
-        if(confirm('Accept challenge from ' + split[1] + '?\n' + (split.length > 2 ? split[2] : ''))) {
-          push('poll|' + split[1] + '|true');
+        var join = 'Accept challenge from';
+        var ally = 'Become friends with';
+        if(confirm((split[1] == 'ally' ? ally : join) + ' ' + split[2] + '?\n' + (split.length > 3 ? split[3] : ''))) {
+          push('poll|' + split[2] + '|true');
         } else {
-          push('poll|' + split[1] + '|false');
+          push('poll|' + split[2] + '|false');
         }
       }
       if(split[0] == 'warn') {
@@ -429,8 +431,8 @@ public class play extends Service {
     var index = select.selectedIndex;
     if(index > -1) {
       var ally = push('ally|' + select.options[index].text);
-      if(ally[1] == 'done')
-        alert('done');
+      if(ally[1] == 'fail')
+        alert(ally[2]);
     }
   }
   function chat() {

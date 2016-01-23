@@ -184,10 +184,10 @@ In sort of chronological order:
                            o-> <b><i>free</b></i>                         // unpause
 
                             // add/remove friend
- <b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;         -> ally|done|&lt;bool&gt;
-                           i-> <b><i>poll</i></b>|&lt;type&gt;|&lt;user&gt;[|&lt;info&gt;]  // type = ally
-                            -> ally|fail|name not found
-                            -> ally|fail|id not found
+ <b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> ally|done
+                           i-> <b><i>poll</i></b>|ally|&lt;user&gt;[|&lt;info&gt;]
+                            -> ally|fail|user not online
+                            -> ally|fail|user busy
 
                             // get user data, like avatar
 *<b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;type&gt;  -> data|done|{…};…
@@ -215,7 +215,7 @@ In sort of chronological order:
 
                             // list rooms or data
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
- <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;;…      // use load to get data
+ <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;;…        // use load to get data
 *<b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
 *<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|{"name","x","y","z",…};…
                             -> list|fail|wrong type
@@ -224,7 +224,7 @@ In sort of chronological order:
                             // between <i>lock</i> and <i>view</i> nobody can join
                             // this sends a poll to the user if he has no room
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> join|done|poll/room
-                           i-> <b><i>poll</i></b>|&lt;type&gt;|&lt;user&gt;[|&lt;info&gt;]  // type = join
+                           i-> <b><i>poll</i></b>|join|&lt;user&gt;[|&lt;info&gt;]
                            x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]    // leaf, in new room
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;    // stem, in lobby
@@ -232,12 +232,16 @@ In sort of chronological order:
                             -> join|fail|not found
                             -> join|fail|already here
                             -> join|fail|is full
+                            -> join|fail|user busy
 
                             // accept poll, you can only have one poll per user at the same time.
                             // &lt;user&gt; is the user name received in the poll request
                             // type = join; player joins the room of the host
                             // type = ally; both players stored as friends
- <b><i>poll</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;bool&gt;  -> poll|done
+ <b><i>poll</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;bool&gt;  -> poll|done|&lt;type&gt;
+                            -> poll|fail|user not online
+                            -> poll|fail|wrong user
+                            -> poll|fail|type not found
 
                             // permanently ban user from room
 *<b><i>kick</i></b>|&lt;salt&gt;|&lt;user&gt;         -> kick|done
@@ -303,14 +307,14 @@ In sort of chronological order:
                             // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;;&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;;&lt;action&gt;(;&lt;speed&gt;;…)
                             //          position   |orientation    |key/button
 
- <b><i>/\</b></i> type not implemented    -> main|fail|type not found
+ <b><i>/\</b></i> type not found          -> main|fail|type not found
 
 +-----------------+       
 | <i>Broadcast rules.</i> |
 +-----------------+
 
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
-                           o-> <b><i>item</i></b>|{…}                      // items appearing in room
+                           o-> <b><i>item</i></b>|{…}                     // items appearing in room
                            o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;   // to broadcast global messages
 
 +-----------------+       
