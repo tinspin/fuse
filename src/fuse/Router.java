@@ -39,7 +39,7 @@ public class Router implements Node {
 		this.node = node;
 	}
 
-	private synchronized String session() {
+	private synchronized String session() throws Exception {
 		String salt = Event.random(4);
 
 		while(users.get(salt) != null)
@@ -406,12 +406,38 @@ public class Router implements Node {
 		if(split[0].equals("ally")) {
 			String info = split.length > 3 ? "|" + split[3] : "";
 			
-			User poll = (User) names.get(split[2]);
+			final User poll = (User) names.get(split[2]);
 
 			if(poll == null) {
 				return "ally|fail|user not online";
 			}
 
+			if(user.ally(poll)) {
+				Async.Work meta = new Async.Work(event) {
+					public void send(Async.Call call) throws Exception {
+						call.post("/meta", "Host:" + host, 
+								("pkey=" + user.json.getString("key") + "&ckey=" + poll.json.getString("key") + 
+										"&ptype=user&ctype=user&json={}&tear=true").getBytes("utf-8"));
+					}
+
+					public void read(String host, String body) throws Exception {
+						System.err.println("fuse ally tear read " + body);
+						if(body.equals("1")) {
+							user.remove(Root.hash(poll.json.getString("key")));
+							poll.remove(Root.hash(user.json.getString("key")));
+						}
+					}
+
+					public void fail(String host, Exception e) throws Exception {
+						System.err.println("fuse ally tear fail " + e);
+					}
+				};
+
+				event.daemon().client().send("localhost", meta, 30);
+				
+				return "ally|done";
+			}
+			
 			boolean game = user.room instanceof Game;
 
 			if(!game)
@@ -886,6 +912,10 @@ public class Router implements Node {
 
 		void add(long ally) {
 			this.ally.add(new Long(ally));
+		}
+		
+		void remove(long ally) {
+			this.ally.remove(new Long(ally));
 		}
 
 		boolean ally(User user) {

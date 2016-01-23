@@ -173,7 +173,7 @@ In sort of chronological order:
                            o-> <b><i>free</b></i>                         // unpause
 
                             // add/remove friend
- <b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> ally|done
+ <b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> ally|done[|poll]
                            i-> <b><i>poll</i></b>|ally|&lt;user&gt;[|&lt;info&gt;]
                             -> ally|fail|user not online
                             -> ally|fail|user busy
@@ -291,7 +291,7 @@ In sort of chronological order:
                            x-> <b><i>send</i></b>|&lt;user&gt;|&lt;data&gt;
  
                             // motion for 3D MMO games with dynamic here/gone
-*<b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
+ <b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
                            x-> <b><i>move</i></b>|&lt;user&gt;|&lt;data&gt;
                             // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;;&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;;&lt;action&gt;(;&lt;speed&gt;;…)
                             //          position   |orientation    |key/button
