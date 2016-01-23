@@ -350,7 +350,7 @@ public class Root extends Service {
 				else
 					path = event.query().path() + param;
 
-				post.post(root, "Host:" + Root.host[i] + "." + host() + "\r\nPath:" + path, data);
+				post.post(root, "Host:" + Root.host[i] + "." + host() + "\r\nHead:less\r\nPath:" + path, data);
 			}
 
 			public void read(String host, String body) throws Exception {
@@ -711,16 +711,13 @@ public class Root extends Service {
 			output.close();
 
 			if(echo) {
-				if(new File(link.substring(0, link.lastIndexOf("/"))).mkdirs()) {
-					try {
-						Files.createLink(Paths.get(link), Paths.get(root));
-					}
-					catch(FileAlreadyExistsException e) {
-						// OK
-					}
+				new File(link.substring(0, link.lastIndexOf("/"))).mkdirs();
+				
+				try {
+					Files.createLink(Paths.get(link), Paths.get(root));
 				}
-				else {
-					throw new MetaFail("Link could not be created.");
+				catch(FileAlreadyExistsException e) {
+					// OK
 				}
 			}
 		}
@@ -856,7 +853,7 @@ public class Root extends Service {
 	private static void send_link(final int i, final byte[] data, Event event) throws Exception {
 		final Async.Work work = new Async.Work(event) {
 			public void send(Async.Call post) throws Exception {
-				post.post(root, "Host:" + Root.host[i] + "." + host() + "\r\nPath:/link", data);
+				post.post(root, "Host:" + Root.host[i] + "." + host() + "\r\nHead:less\r\nPath:/link", data);
 			}
 
 			public void read(String host, String body) throws Exception {
@@ -905,7 +902,7 @@ public class Root extends Service {
 	private static void send_meta(final int i, final byte[] data, Event event) throws Exception {
 		final Async.Work work = new Async.Work(event) {
 			public void send(Async.Call post) throws Exception {
-				post.post(root, "Host:" + Root.host[i] + "." + host() + "\r\nPath:/meta", data);
+				post.post(root, "Host:" + Root.host[i] + "." + host() + "\r\nHead:less\r\nPath:/meta", data);
 			}
 
 			public void read(String host, String body) throws Exception {
@@ -927,7 +924,6 @@ public class Root extends Service {
 
 				if(complete == Root.host.length - 1) {
 					event.query().put("result", "1");
-					meta((JSONObject) event.query().get("json"), null);
 					int state = event.reply().wakeup(true);
 				}
 				else if(failed > 0) {
@@ -1575,6 +1571,8 @@ public class Root extends Service {
 					event.query().put(host[i], "");
 				}
 
+				meta((JSONObject) event.query().get("json"), null);
+				
 				Output out = event.output();
 				out.println(event.query().string("result"));
 				out.finish();
@@ -1598,7 +1596,7 @@ public class Root extends Service {
 					out.println("  Node <input type=\"text\" style=\"width: 100px;\" name=\"node\"> " + type(node_type, "type", "task") + "<br>");
 					out.println("  User <input type=\"text\" style=\"width: 100px;\" name=\"user\"><br>");
 					out.println("  <input type=\"checkbox\" name=\"tear\"> Tear (Delete!)<br>");
-					out.println("  <textarea rows=\"10\" cols=\"50\" name=\"json\"></textarea><br>");
+					out.println("  <textarea rows=\"10\" cols=\"50\" name=\"json\">{}</textarea><br>");
 					out.println("  Path <input type=\"text\" name=\"path\" value=\"\"><br>");
 					out.println("       <input type=\"submit\" value=\"Meta\">");
 					out.println("</form>");
@@ -1664,6 +1662,8 @@ public class Root extends Service {
 					event.query().put(host[i], "");
 				}
 
+				meta((JSONObject) event.query().get("json"), null);
+				
 				Output out = event.output();
 				out.println(event.query().string("result"));
 				out.finish();
@@ -1697,7 +1697,7 @@ public class Root extends Service {
 					out.println("  Child  <input type=\"text\" style=\"width: 100px;\" name=\"ckey\"> " + type(meta_type, "ctype", "data") + "<br>");
 					out.println("  <input type=\"checkbox\" name=\"echo\"> Echo<br>");
 					out.println("  <input type=\"checkbox\" name=\"tear\"" + (tear ? " checked" : "") + "> Tear (Delete!)<br>");
-					out.println("  <textarea rows=\"10\" cols=\"50\" name=\"json\"></textarea><br>");
+					out.println("  <textarea rows=\"10\" cols=\"50\" name=\"json\">{}</textarea><br>");
 					out.println("  Path <input type=\"text\" name=\"path\" value=\"\"><br>");
 					out.println("       <input type=\"submit\" value=\"Meta\">");
 					out.println("</form>");
@@ -1908,7 +1908,7 @@ public class Root extends Service {
 						out.println("<style> input, select { font-family: monospace; } </style>");
 						out.println("<pre>");
 						out.println("<form action=\"node\" method=\"post\">");
-						out.println("  <textarea rows=\"10\" cols=\"50\" name=\"json\"></textarea><br>");
+						out.println("  <textarea rows=\"10\" cols=\"50\" name=\"json\">{}</textarea><br>");
 						out.print("  Type " + type(node_type, "type", "data"));
 						out.print(" <input id=\"make\" type=\"checkbox\" name=\"create\" onclick=\"toggle();\"/> Make");
 						out.println("  <input type=\"checkbox\" name=\"trace\"> Info<br>");

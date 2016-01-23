@@ -450,7 +450,7 @@ public class Async implements Runnable {
 
 		public void run() {
 			try {
-				if(work == null || (daemon != null && daemon.host && work.archive == null))
+				if(work == null || work.archive == null)
 					return;
 				
 				if(run == CONNECT) {
