@@ -141,7 +141,7 @@ public class Root extends Service {
 		local = System.getProperty("host", "none");
 	}
 	
-	private static String host() {
+	public static String host() throws Exception {
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
 		if(loader instanceof Deploy.Archive) {
@@ -149,7 +149,7 @@ public class Root extends Service {
 			return archive.host();
 		}
 		else {
-			return "";
+			throw new Exception("Host not found.");
 		}
 	}
 	
