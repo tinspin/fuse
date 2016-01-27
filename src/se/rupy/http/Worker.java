@@ -192,6 +192,7 @@ public class Worker implements Runnable, Chain.Link {
 					} else {
 						event.read();
 					}
+					event.wakeup = false;
 				}
 			} catch(Exception e) {
 				reset(e);

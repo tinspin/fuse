@@ -263,6 +263,9 @@ public class Async implements Runnable {
 					headers + 
 					"\r\n\r\n";
 
+			if(debug)
+				System.out.println("  request " + http);
+			
 			byte[] head = http.getBytes("utf-8");
 			long length, write;
 
@@ -276,6 +279,12 @@ public class Async implements Runnable {
 				System.arraycopy(head, 0, data, 0, head.length);
 				System.arraycopy(body, 0, data, head.length, body.length);
 
+				if(debug) {
+					System.out.println("  head " + head.length);
+					System.out.println("  body " + body.length);
+					System.out.println("  data " + new String(data));
+				}
+				
 				length = data.length;
 				write = channel.write(ByteBuffer.wrap(data));
 			}

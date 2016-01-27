@@ -32,6 +32,7 @@ public abstract class Output extends OutputStream implements Event.Block {
 	 * @return If the push has been completed.
 	 */
 	public boolean complete() {
+		//System.out.println(push + " " + done);
 		return !push && done;
 	}
 
@@ -110,6 +111,8 @@ public abstract class Output extends OutputStream implements Event.Block {
 			}
 		}
 
+		//System.out.println("done");
+		
 		done = true;
 		flush();
 
@@ -441,6 +444,8 @@ public abstract class Output extends OutputStream implements Event.Block {
 				throw new IOException("Reply already complete.");
 			}
 
+			//System.out.println("push");
+			
 			push = false;
 		}
 

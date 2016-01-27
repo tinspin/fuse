@@ -57,14 +57,14 @@ public class Reply {
 	}
 
 	protected void done() throws IOException {
-		if (Event.LOG) {
+		if(Event.LOG) {
 			event.log("done " + output.push() + " " + Thread.currentThread().getId(), Event.DEBUG);
 		}
 		
 		if(!output.push()) {
 			output.end();
 
-			if (headers != null) {
+			if(headers != null) {
 				headers.clear();
 			}
 
@@ -115,7 +115,7 @@ public class Reply {
 	 * @param code
 	 */
 	public void code(String code) throws IOException {
-		if (Event.LOG) {
+		if(Event.LOG) {
 			event.log("code", Event.DEBUG);
 		}
 		
@@ -141,7 +141,7 @@ public class Reply {
 	 * @param value
 	 */
 	public void header(String name, String value) {
-		if (headers == null) {
+		if(headers == null) {
 			headers = new HashMap();
 		}
 
@@ -175,7 +175,7 @@ public class Reply {
 	 * @throws IOException
 	 */
 	public Output output(long length) throws IOException {
-		if (Event.LOG) {
+		if(Event.LOG) {
 			event.log("output " + length, Event.DEBUG);
 		}
 		
@@ -200,17 +200,17 @@ public class Reply {
 	 * @return The status of the wakeup call. {@link Reply#OK}, {@link Reply#COMPLETE}, {@link Reply#CLOSED} or {@link Reply#WORKING}
 	 */
 	public synchronized int wakeup(boolean queue) {
-		if (output.complete())
+		if(!queue && output.complete())
 			return COMPLETE;
 		
-		if (!event.channel().isOpen())
+		if(!event.channel().isOpen())
 			return CLOSED;
-		
-		if(event.daemon().match(event, null))
-			return OK;
 
 		if(queue)
 			event.wakeup = true;
+		
+		if(event.daemon().match(event, null))
+			return OK;
 		
 		return WORKING;
 	}
