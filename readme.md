@@ -237,21 +237,20 @@ In sort of chronological order:
                             -> kick|fail|not creator
                             -> kick|fail|not here
  
-                            // quit room
- <b><i>quit</i></b>|&lt;salt&gt;                -> quit|done
+                            // exit room
+ <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
                            x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]    // stem, in lobby
                            x-> <b><i>ally</i></b>|&lt;user&gt;
-                           x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK, in lobby if creator quit
+                           x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK, in lobby if creator exit
                            x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;    // leaf, in old room
                            x-> <b><i>drop</i></b>|&lt;user&gt;                  // in lobby if creator leaves
                            x-> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
                            x-> <b><i>open</i></b>|&lt;room&gt;                  // in lobby if room is not full
-                            -> quit|fail|in lobby
-
-                            // user exit from platform
- <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
-                           x-> <b><i>exit</i></b>|&lt;user&gt;
                             -> exit|fail|in lobby
+
+                            // quit platform
+ <b><i>quit</i></b>|&lt;salt&gt;                -> quit|done
+                           x-> <b><i>quit</i></b>|&lt;user&gt;
 
                             // save data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|{…}     -> save|done|&lt;id&gt;|&lt;key&gt;         // use {"key": &lt;key&gt;,…} to update

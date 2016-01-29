@@ -298,6 +298,10 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		return BoolPush("join|" + user + "|" + info);
 	}
 	
+	public bool Quit(string user) {
+		return BoolPush("quit|" + user);
+	}
+	
 	public bool Poll(string user, string accept) {
 		return BoolPush("poll|" + user + "|" + accept);
 	}

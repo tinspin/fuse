@@ -36,7 +36,7 @@ public class play extends Service {
 <head>
 <meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <style>
-  a:link, a:hover, a:active, a:visited { color: [[ blue ]]; }
+  a:link, a:hover, a:active, a:visited { color: [[ blue ]]; font-style: italic; }
   img { display: block; }
   div { font-family: monospace; }
   input { font-family: monospace; }
@@ -220,8 +220,8 @@ public class play extends Service {
       if(split[0] == 'drop') {
         remove_select('join', split[1]);
       }
-      if(split[0] == 'stop' || split[0] == 'exit') {
-        if(split[0] == 'exit')
+      if(split[0] == 'stop' || split[0] == 'quit') {
+        if(split[0] == 'quit')
           remove_select('ally', split[1]);
         if(split[0] == 'stop') {
           element('chat').value = split[1] + ': quit\n' + element('chat').value;
@@ -468,18 +468,21 @@ public class play extends Service {
       }
     }
   }
-  function quit() {
-    var quit = push('quit');
-    if(quit[1] == 'done')
+  function exit() {
+    var exit = push('exit');
+    if(exit[1] == 'done')
       list();
   }
   function list() {
     var data = push('list|room');
     if(data[1] == 'done')
       clear_join();
-    var list = data[2].split(';')
-    for(var i = 3; i < list.length; i++) {
-      add_select('join', list[i].split(',')[0], orange);
+    /*console.log('listroom ' + data.length);*/
+    if(data.length > 3 && data[3].length > 0) {
+      var list = data[3].split(';');
+      for(var i = 0; i < list.length; i++) {
+        add_select('join', list[i].split(',')[0], orange);
+      }
     }
   }
   function math_random(min, max) {
@@ -511,14 +514,14 @@ public class play extends Service {
 <div id="user"><table>
 <tr><td colspan="3"><a href="https://github.com/tinspin/fuse"><img border="0" width="140" height="80" src="fuse.svg"></a></td></tr>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
-<tr><td>name&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" size="10"></td></tr>
-<tr><td>pass&nbsp;</td>
+<tr><td><i>name</i>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" size="10"></td></tr>
+<tr><td><i>pass</i>&nbsp;</td>
     <td><input id="pass" name="pass" value="[[ pass ]]" type="password" size="10" onkeypress="hash_code(event);"></td>
     <td><a href="javascript:hash();">login</a></td></tr>
-<tr><td><font color="[[ green ]]">mail*</font></td>
+<tr><td><font color="[[ green ]]"><i>mail*</i></font></td>
     <td><input id="mail" name="mail" size="10" onkeypress="user_code(event);"></td>
     <td><a href="javascript:user();">register</a></td></tr>
-<tr><td colspan="2"><font color="[[ orange ]]">*optional</font></td></tr>
+<tr><td></td><td><font color="[[ orange ]]"><i>*optional</i></font></td></tr>
 </table>
 <table>
 [[	Iterator it = fuse.Router.score.iterator();
@@ -534,14 +537,14 @@ public class play extends Service {
 
 <div id="room" style="display: none;"><table>
 <tr><td colspan="3"><div id="fail2"></div></td></tr>
-<tr><td align="center">user</td><td></td>
-    <td align="center">room</td></tr>
+<tr><td align="center"><i>user</i></td><td></td>
+    <td align="center"><i>room</i></td></tr>
 <tr><td><select id="ally" size="5" multiple></select></td><td></td>
     <td><select id="join" size="5" multiple></select></td></tr>
 <tr><td><a href="javascript:ally();">ally</a></td><td></td>
     <td><a href="javascript:room();">room</a>
         <a href="javascript:join();">join</a>
-        <a href="javascript:quit();">quit</a>
+        <a href="javascript:exit();">exit</a>
         <a href="javascript:play();">play</a></td></tr>
 </table>
 </div>

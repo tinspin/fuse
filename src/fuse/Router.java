@@ -714,9 +714,9 @@ public class Router implements Node {
 			return "over|done";
 		}
 
-		if(split[0].equals("quit")) {
+		if(split[0].equals("exit")) {
 			if(user.room.user == null)
-				return "quit|fail|in lobby";
+				return "exit|fail|in lobby";
 
 			Room room = user.room;
 			boolean full = room.users.size() == room.size;
@@ -729,7 +729,7 @@ public class Router implements Node {
 			else if(full)
 				user.game.send(user, "open|" + room.user.name);
 
-			return "quit|done";
+			return "exit|done";
 		}
 
 		if(split[0].equals("save")) {
@@ -1080,7 +1080,7 @@ public class Router implements Node {
 
 			// broadcast stop
 
-			if(data.startsWith("quit")) {
+			if(data.startsWith("exit")) {
 				user.game.send(from, "stop|" + user.name);
 			}
 		}
@@ -1240,7 +1240,7 @@ public class Router implements Node {
 	public synchronized void remove(String salt, int place) throws Exception {
 		User user = (User) users.get(salt);
 
-		//System.err.println("exit " + place + " " + user + " " + stack(Thread.currentThread()));
+		//System.err.println("quit " + place + " " + user + " " + stack(Thread.currentThread()));
 
 		if(user != null && user.salt != null && user.game != null) {
 			users.remove(salt);
@@ -1249,7 +1249,7 @@ public class Router implements Node {
 			user.game.rooms.remove(user.name);
 
 			if(place != 1) {
-				user.game.send(user, "exit|" + user.name);
+				user.game.send(user, "quit|" + user.name);
 			}
 
 			names.remove(user.name);
