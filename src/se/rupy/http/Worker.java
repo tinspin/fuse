@@ -22,7 +22,7 @@ public class Worker implements Runnable, Chain.Link {
 	private int index, lock;
 	private boolean awake, alive, exit = false;
 	private long touch;
-	private DateFormat date;
+	private DateFormat date, log;
 
 	protected Worker(Daemon daemon, int index) {
 		this.daemon = daemon;
@@ -35,6 +35,8 @@ public class Worker implements Runnable, Chain.Link {
 
 		date = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
 		date.setTimeZone(TimeZone.getTimeZone("GMT"));
+		
+		log = new SimpleDateFormat("yy-MM-dd HH:mm:ss.SSS");
 
 		alive = true;
 
@@ -44,6 +46,10 @@ public class Worker implements Runnable, Chain.Link {
 
 	protected DateFormat date() {
 		return date;
+	}
+	
+	protected DateFormat log() {
+		return log;
 	}
 
 	protected ByteBuffer in() {

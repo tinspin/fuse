@@ -33,10 +33,7 @@ import javax.net.ssl.X509TrustManager;
  */
 
 public class Daemon implements Runnable {
-	static DateFormat DATE;
-
 	protected String domain = "host.rupy.se";
-
 	private int selected, valid, accept, readwrite; // panel stats
 	private TreeMap archive, service;
 	private Heart heart;
@@ -450,8 +447,6 @@ public class Daemon implements Runnable {
 
 		access = new PrintStream(new FileOutputStream(new File("log/access.txt")), true, "UTF-8");
 		error = new PrintStream(new FileOutputStream(new File("log/error.txt")), true, "UTF-8");
-
-		DATE = new SimpleDateFormat("yy-MM-dd HH:mm:ss.SSS");
 	}
 
 	protected void error(final Event e, final Throwable t) throws IOException {
@@ -483,7 +478,7 @@ public class Daemon implements Runnable {
 			Calendar date = Calendar.getInstance();
 			StringBuilder b = new StringBuilder();
 
-			b.append(DATE.format(date.getTime()));
+			b.append(e.worker().log().format(date.getTime()));
 			b.append(' ');
 			b.append(e.remote());
 			b.append(' ');
@@ -509,7 +504,7 @@ public class Daemon implements Runnable {
 			Calendar date = Calendar.getInstance();
 			StringBuilder b = new StringBuilder();
 
-			b.append(DATE.format(date.getTime()));
+			b.append(event.worker().log().format(date.getTime()));
 			b.append(' ');
 			b.append(event.remote());
 			b.append(' ');
