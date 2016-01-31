@@ -10,7 +10,6 @@ import java.util.*;
  */
 public class Query extends Hash {
 	public final static int GET = 1 << 0, POST = 1 << 1, PUT = 1 << 2, DELETE = 1 << 3, HEAD = 1 << 4;
-	private static URLDecoder decoder = new URLDecoder();
 	private String path, version, parameters;
 	private Hash headers;
 	protected Input input;
@@ -64,11 +63,11 @@ public class Query extends Hash {
 		int index = get.indexOf('?');
 
 		if (index > 0) {
-			path = decoder.decode(get.substring(0, index), "UTF-8");
+			path = URLDecoder.decode(get.substring(0, index), "UTF-8");
 			parameters = get.substring(index + 1);
 			parsed = false;
 		} else {
-			path = decoder.decode(get, "UTF-8");
+			path = URLDecoder.decode(get, "UTF-8");
 			parameters = null;
 		}
 		
@@ -200,7 +199,7 @@ public class Query extends Hash {
 				}
 				else {
 					key = equ.substring(0, pos);
-					value = equ.length() > pos + 1 ? decoder.decode(equ.substring(pos + 1), "UTF-8") : "";
+					value = equ.length() > pos + 1 ? URLDecoder.decode(equ.substring(pos + 1), "UTF-8") : "";
 				}
 
 				put(key, value);
