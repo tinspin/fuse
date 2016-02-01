@@ -165,7 +165,7 @@ public class Worker implements Runnable, Chain.Link {
 				return false;
 			}
 
-			return event != null;
+			return true;
 		}
 
 		return false;
