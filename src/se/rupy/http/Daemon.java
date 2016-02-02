@@ -1308,6 +1308,12 @@ public class Daemon implements Runnable {
 			catch(Exception e) {
 				e.printStackTrace();
 			}
+			
+			file = new File("res" + path);
+
+			if(file.exists() && !file.isDirectory()) {
+				return new Deploy.Big(file);
+			}
 		}
 
 		return null;
@@ -1692,10 +1698,10 @@ public class Daemon implements Runnable {
 				add(this.service, new Root.Meta(), null);
 				add(this.service, new Root.Tree(), null);
 				add(this.service, new Root.Salt(), null);
+				add(this.service, new User(), null);
 			}
 
-			if (properties.getProperty("test", "false").toLowerCase().equals(
-					"true")) {
+			if (properties.getProperty("test", "false").toLowerCase().equals("true")) {
 				new Test(this, 1);
 			}
 		} catch (Exception e) {

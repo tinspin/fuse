@@ -348,13 +348,21 @@ VERSION:
     - Fixed some wildcard stuff, preparing for 
       both proxy and load-balancing.
     
-    1.3 Metrics
+    1.3 Cloud
     
     - Added root cloud store to rupy core. This will 
-    change everything but it's completely undocumented 
-    right now. Take a look at http://root.rupy.se for 
-    preview.
-    - Measures:
+      change everything but it's completely undocumented 
+      right now. Take a look at http://root.rupy.se for 
+      preview.
+    - Added User.java for generic register + login and 
+      oauth like transparent crossdomain authentication.
+      This uses basic salt hash from end to end:
+      client --- server --- filedb
+                  salt?  ->  generate
+       hash  <-    <-    <-  salt
+       pass  ->    ->    ->  verify
+                  done   <-  user key
+    - Metrics measures:
       1) the time worker threads spend filtering 
          services. (CPU)
       2) the amount of bytes:

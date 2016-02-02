@@ -282,7 +282,8 @@ public class Event extends Throwable implements Chain.Link {
 							query.path().startsWith("/link") || 
 							query.path().startsWith("/meta") || 
 							query.path().startsWith("/tree") || 
-							query.path().startsWith("/salt")) && 
+							query.path().startsWith("/salt") || 
+							query.path().startsWith("/user")) && 
 							!host.equals("root.rupy.se")) {
 						if(!service(daemon.root(), false)) {
 							reply.code("404 Not Found");

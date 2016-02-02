@@ -9,12 +9,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
-import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -51,14 +49,11 @@ import se.rupy.http.Service;
  * 
  * @author Marc
  */
-// TODO: debug the problem when all nodes has an object except the node that tries to create it
-//       might be a problem on http.Root only since the exceptions are wrapped...
 public class Root extends Service {
 	static int LENGTH = 16;
 	public static String local;
-	public static String home;
 	static String[] ip = {"89.221.241.32", "89.221.241.33", "92.63.174.125", "2.248.42.217", "2.248.42.217", "2.248.42.217"};
-	static String[] host = {"one", "two", "tre", "fem", "six", "sju"}; // oct, nio, tio, elv
+	static String[] host = {"one", "two", "tre", "fem", "six", "sju"}; // oct, nio, ten
 	static String[] node_type = {"data", "node", "user", "task", "type"};
 	static String[] link_type = {"data", "node", "user", "task", "date"};
 	static String[] meta_type = {"data", "node", "user", "task"};
@@ -66,10 +61,6 @@ public class Root extends Service {
 	//static String root = "/";
 	static Deploy.Archive archive;
 	static URLDecoder decoder = new URLDecoder();
-
-	// example data for tutorial
-	final String key = "SWhK6hk5jhQuJJaJ";
-	final String search = "full%20text%20search";
 
 	// <!-- start http.Root
 	static String secret;
@@ -206,6 +197,10 @@ public class Root extends Service {
 	
 	// --> http.Root end
 	
+	// example data for tutorial
+	final String key = "SWhK6hk5jhQuJJaJ";
+	final String search = "four";
+
 	static String type(String[] type, String name, String selected) {
 		StringBuilder select = new StringBuilder("<select id=\"type\" name=\"" + name + "\">");
 
@@ -226,15 +221,15 @@ public class Root extends Service {
 		return -1;
 	}
 
+	public String local() { return local; }
 	public String path() { return root; }
 /*
 	public void create(Daemon daemon) throws Exception {
 		local = InetAddress.getLocalHost().getHostName();
 		archive = (Deploy.Archive) Thread.currentThread().getContextClassLoader();
-		home = "app/" + archive.host() + "/root";
 	}
 
-	private static String host() {
+	public static String host() {
 		return "root.rupy.se";
 	}
 
@@ -308,23 +303,29 @@ public class Root extends Service {
 			}
 		}
 		else {
-			out.println("<html><head><title>Root Cloud Store</title></head>");
+			out.println("<html><head><title>Root Cloud Store</title>");
+			out.println("<style>");
+			out.println("  a:link, a:hover, a:active, a:visited { color: #666666; font-style: italic; }");
+			out.println("  a.red:link, a.red:hover, a.red:active, a.red:visited { color: #ff3300; font-style: italic; }");
+			out.println("  a.green:link, a.green:hover, a.green:active, a.green:visited { color: #00cc33; font-style: italic; }");
+			out.println("  a.blue:link, a.blue:hover, a.blue:active, a.blue:visited { color: #6699ff; font-style: italic; }");
+			out.println("  a.orange:link, a.orange:hover, a.orange:active, a.orange:visited { color: #ff9900; font-style: italic; }");
+			out.println("</style>");
+			out.println("</head>");
 			out.println("<body><pre>ROOT replicates JSON objects async<font color=\"red\"><sup>*</sup></font> over HTTP<br>across a cluster with guaranteed uniqueness<br>and DNS roundrobin for 100% read uptime.<br>");
-			out.println("<i>Usage:</i>");
-			out.println("         <font color=\"grey\"><i><b>user</b></i></font>   <font color=\"grey\"><i><b>node</b></i></font>   <font color=\"grey\"><i><b>link</b></i></font>   <font color=\"grey\"><i><b>meta</b></i></font>");
+			out.println("&nbsp;<i>Usage:</i>");
+			out.println("         <font color=\"#ff3300\"><i>user</i></font>   <font color=\"#00cc33\"><i>node</i></font>   <font color=\"##6699ff\"><i>link</i></font>   <font color=\"#ff9900\"><i>meta</i></font>");
 			out.println("       ┌──────┬──────┬──────┬──────┐");
-			out.println(" <font color=\"red\"><i>make</i></font>  │ <a href=\"/user?url=binarytask.com\">join</a> │ <a href=\"/node?make\">form</a> │ <a href=\"/link\">bind</a> │ <a href=\"/meta\">bond</a> │  <font color=\"grey\"><i>\"insert\"</i></font>");
-			out.println(" <font color=\"green\"><i>find</i></font>  │ <a href=\"http://binarytask.com\">auth</a> │ <a href=\"/node/user/key/" + key + "\">load</a> │ <a href=\"/link/user/data/" + key + "\">list</a> │ <a href=\"/meta/user/data/hej\">roll</a> │  <font color=\"grey\"><i>\"select\"</i></font>");
-			out.println(" <font color=\"blue\"><i>edit</i></font>  │      │ <a href=\"/node\">save</a> │      │ <a href=\"/meta?edit\">yoke</a> │  <font color=\"grey\"><i>\"update\"</i></font>");
-			out.println(" <i>trim</i>  │      │ drop │      │ <a href=\"/meta?tear=true\">tear</a> │  <font color=\"grey\"><i>\"delete\"</i></font>");
-			out.println("       └──────┴──────┴──────┴──────┘");
-			out.println("");
-			out.println("       ┌──────┬──────┬──────┬──────┐");
-			out.println(" open  │ <a href=\"/node/data/text/" + search + "\">text</a> │ <a href=\"/node/data/date/14/11/25/example\">path</a> │ <a href=\"/link/user/data/" + hash(key) + "\">list</a> │ <a href=\"/tree\">tree</a> │");
+			out.println(" <i>make</i>  │ <a class=\"red\" href=\"/user?url=" + event.query().header("host") + "/user\">join</a> │ <a class=\"green\" href=\"/node?make\">form</a> │ <a class=\"blue\" href=\"/link\">bind</a> │ <a class=\"orange\" href=\"/meta\">bond</a> │  <font color=\"grey\"><i>\"insert\"</i></font>");
+			out.println(" <i>find</i>  │ <a class=\"red\" href=\"/user?url=" + event.query().header("host") + "/user\">sign</a> │ <a class=\"green\" href=\"/node/user/key/" + key + "\">load</a> │ <a class=\"blue\" href=\"/link/user/data/" + key + "\">list</a> │ <a class=\"orange\" href=\"/meta/user/data/hej\">roll</a> │  <font color=\"grey\"><i>\"select\"</i></font>");
+			out.println(" <i>edit</i>  │      │ <a class=\"green\" href=\"/node\">save</a> │      │ <a class=\"orange\" href=\"/meta?edit\">yoke</a> │  <font color=\"grey\"><i>\"update\"</i></font>");
+			out.println(" <i>trim</i>  │      │ <font color=\"#666666\"><i>drop</i></font> │      │ <a class=\"orange\" href=\"/meta?tear=true\">tear</a> │  <font color=\"grey\"><i>\"delete\"</i></font>");
+			out.println("       ├──────┼──────┼──────┼──────┤");
+			out.println(" <i>open</i>  │ <a href=\"/node/task/word/" + search + "\">word</a> │ <a href=\"/node/data/date/14/11/25/example\">path</a> │ <a href=\"/link/user/data/" + hash(key) + "\">list</a> │ <a href=\"/tree\">tree</a> │");
 			out.println("       └──────┴──────┴──────┴──────┘");
 			out.println("");
 			out.println("<font color=\"red\"><sup>*</sup></font><i>Source:</i> <a href=\"http://root.rupy.se/code\">Async</a>, <a href=\"http://root.rupy.se/code?path=/User.java\">User</a>, <a href=\"http://root.rupy.se/code?path=/Root.java\">Root</a>");
-			out.println("Host: " + Root.local);
+			out.println("&nbsp;<i>Host:</i> " + Root.local);
 			out.println("</pre>");
 			out.println("</body>");
 			out.println("</html>");
@@ -531,7 +532,7 @@ public class Root extends Service {
 			String value = json.getString(key);
 			boolean full = false;
 
-			if(value.contains(" ") || key.equals("text"))
+			if(value.contains(" ") || key.equals("word"))
 				full = true;
 			else if(value.matches("[0-9]+") || !value.matches("[a-zA-Z0-9/.@\\-\\+]+") || value.toLowerCase().matches("root"))
 				throw new SortFail("Validation [" + key + "=" + json.getString(key) + "]");
@@ -551,7 +552,7 @@ public class Root extends Service {
 							|| word.endsWith("?"))
 						word = word.substring(0, word.length() - 1);
 
-					if(word.matches("[\\p{L}]+")) { // UTF-8 character
+					if(word.matches("[\\p{L}]+") && word.length() > 3) { // UTF-8 character
 						sort = home + "/" + key + "/" + word;
 						new File(sort.substring(0, sort.lastIndexOf("/"))).mkdirs();
 						RandomAccessFile file = new RandomAccessFile(sort, "rw");
@@ -724,7 +725,7 @@ public class Root extends Service {
 	}
 
 	// rm -rf
-	public static boolean delete(File file) {
+	private static boolean delete(File file) {
 		if(file.isDirectory()) {
 			String[] files = file.list();
 
@@ -1053,7 +1054,7 @@ public class Root extends Service {
 			return null;
 		}
 
-		public JSONArray recurse(File file, String full, int from, int size, int level, int deep, final int sort, boolean secure) throws Exception {
+		public JSONArray recurse(File file, String full, int from, int size, int level, int deep, final int sort, boolean secure, boolean time) throws Exception {
 			if(deep > -1 && level > deep)
 				return null;
 
@@ -1103,7 +1104,7 @@ public class Root extends Service {
 						name = "" + Root.hash(name);
 
 					if(Files.isDirectory(path)) {
-						JSONArray child = recurse(path.toFile(), path.toString(), from, size, level + 1, deep, sort, secure);
+						JSONArray child = recurse(path.toFile(), path.toString(), from, size, level + 1, deep, sort, secure, time);
 
 						if(child != null) {
 							add = true;
@@ -1112,7 +1113,12 @@ public class Root extends Service {
 					}
 					else {
 						add = true;
-						obj.put(name, new JSONObject(file(path.toString())));
+						JSONObject json = new JSONObject(file(path.toString()));
+						
+						if(time)
+							json.put("time", System.currentTimeMillis() - files[i].lastModified());
+						
+						obj.put(name, json);
 					}
 
 					if(add)
@@ -1138,7 +1144,7 @@ public class Root extends Service {
 		 * - /meta/user/data/<key>
 		 * 
 		 * Find:
-		 * - /node/data/text/full%20text%20search
+		 * - /node/data/word/full%20word%20search
 		 */
 		public void filter(Event event) throws Event, Exception {
 			event.query().parse();
@@ -1158,13 +1164,15 @@ public class Root extends Service {
 			}
 			catch(Exception e) {
 				//e.printStackTrace();
-				fail(event, full, rule, head, tail, last);
+				fail(1, event, full, rule, head, tail, last);
 			}
 
 			int from = event.query().medium("from", 0);
 			int size = event.query().medium("size", rule.equals("meta") ? -1 : 10);
 			int deep = event.query().medium("deep", -1);
 			int sort = event.query().medium("sort", 0);
+			boolean time = event.query().bit("time", false);
+			String algo = event.query().string("algo", "SHA");
 
 			if(size > 50)
 				size = 50;
@@ -1217,16 +1225,16 @@ public class Root extends Service {
 
 					if(file.exists()) {
 						RandomAccessFile raf = new RandomAccessFile(file, "rw");
-						write_last(event, tail, raf, head, last, from, size, remove);
+						write_last(event, tail, raf, head, last, from, size, remove, algo);
 						raf.close();
 					}
 					else {
-						fail(event, full, rule, head, tail, last);
+						fail(2, event, full, rule, head, tail, last);
 					}
 				}
 				else if(rule.equals("meta")) {
 					if(last.length() == 0)
-						fail(event, full, rule, head, tail, last);
+						fail(3, event, full, rule, head, tail, last);
 					
 					full = home() + "/meta/" + head + "/" + tail + Root.path(last);
 
@@ -1276,11 +1284,7 @@ public class Root extends Service {
 
 					if(file.exists() && file.isDirectory()) {
 						boolean secure = last.length() == 16 && last.indexOf("/") == -1 && !last.matches("[0-9]+");
-
-						long time = System.currentTimeMillis();
-
-						JSONArray arr = recurse(file, full, from, size, 0, deep, sort, secure);
-
+						JSONArray arr = recurse(file, full, from, size, 0, deep, sort, secure, time);
 						File[] files = file.listFiles();
 						int length = 0;
 
@@ -1305,11 +1309,11 @@ public class Root extends Service {
 							out.write(data);
 						}
 						else {
-							fail(event, full, rule, head, tail, last);
+							fail(4, event, full, rule, head, tail, last);
 						}
 					}
 					else {
-						fail(event, full, rule, head, tail, last);
+						fail(5, event, full, rule, head, tail, last);
 					}
 				}
 				else {
@@ -1317,7 +1321,7 @@ public class Root extends Service {
 
 					String decoded = decoder.decode(last, "UTF-8");
 
-					if(tail.equals("text")) { // full word search
+					if(tail.equals("word")) { // full word search
 						full = home() + "/node/" + head + "/" + tail + "/";
 						remove = true;
 
@@ -1337,7 +1341,7 @@ public class Root extends Service {
 								next.close();
 							}
 
-							print_list(event, head, list, null, null, list.size(), remove);
+							print_list(event, head, list, null, null, list.size(), remove, algo);
 
 							one.close();
 							two.close();
@@ -1347,7 +1351,7 @@ public class Root extends Service {
 
 							RandomAccessFile raf = new RandomAccessFile(full + last, "r");
 
-							write_last(event, head, raf, null, null, from, size, remove);
+							write_last(event, head, raf, null, null, from, size, remove, algo);
 
 							raf.close();
 						}
@@ -1380,18 +1384,18 @@ public class Root extends Service {
 							out.write(data);
 						}
 						else {
-							fail(event, full, rule, head, tail, last);
+							fail(6, event, full, rule, head, tail, last);
 						}
 					}
 				}
 			}
 			catch(Exception e) {
 				e.printStackTrace();
-				fail(event, full, rule, head, tail, last);
+				fail(7, event, full, rule, head, tail, last);
 			}
 		}
 
-		private void write_last(Event event, String type, RandomAccessFile file, String poll, String last, int from, int size, boolean remove) throws Event, Exception {
+		private void write_last(Event event, String type, RandomAccessFile file, String poll, String last, int from, int size, boolean remove, String algo) throws Event, Exception {
 			LinkedList list = new LinkedList();
 			int length = (int) (file.length() > 8 * size ? 8 * size : file.length());
 			long start = length + from * 8;
@@ -1412,10 +1416,10 @@ public class Root extends Service {
 					break;
 			}
 
-			print_list(event, type, list, poll, last, file.length() / 8, remove);
+			print_list(event, type, list, poll, last, file.length() / 8, remove, algo);
 		}
 
-		private void print_list(Event event, String type, List list, String poll, String last, long total, boolean remove) throws Event, Exception {
+		private void print_list(Event event, String type, List list, String poll, String last, long total, boolean remove, String algo) throws Event, Exception {
 			boolean secure = poll != null && last != null && last.matches("[0-9]+") && type.equals("user");
 			String key = "";
 
@@ -1437,7 +1441,7 @@ public class Root extends Service {
 				JSONObject object = new JSONObject(file(home() + "/node/" + poll + "/id/" + Root.path(last, 3)));
 				key = object.getString("key");
 
-				String match = Deploy.hash(key + salt, "SHA");
+				String match = Deploy.hash(key + salt, algo);
 
 				if(!hash.equals(match)) {
 					event.reply().code("400 Bad Request");
@@ -1487,7 +1491,7 @@ public class Root extends Service {
 			String result = builder.toString();
 
 			if(secure) {
-				event.reply().header("Hash", Deploy.hash(result + key, "SHA"));
+				event.reply().header("Hash", Deploy.hash(result + key, algo));
 			}
 
 			event.reply().type("application/json; charset=UTF-8");
@@ -1496,11 +1500,11 @@ public class Root extends Service {
 			out.write(data);
 		}
 
-		private void fail(Event event, String path, String rule, String head, String tail, String last) throws Event, Exception {
+		private void fail(int spot, Event event, String path, String rule, String head, String tail, String last) throws Event, Exception {
 			event.reply().code("404 Not Found");
 			event.output().print("<pre>" + toCase(rule) + " '" + event.query().path() + "' was not found on host " + local + ".</pre>");
 
-			JSONObject obj = new JSONObject("{\"path\":\"" + path + "\",\"rule\":\"" + rule + "\",\"head\":\"" + head + "\",\"tail\":\"" + tail + "\",\"last\":\"" + last + "\"}");
+			JSONObject obj = new JSONObject("{\"spot\":\"" + spot + "\",\"path\":\"" + path + "\",\"rule\":\"" + rule + "\",\"head\":\"" + head + "\",\"tail\":\"" + tail + "\",\"last\":\"" + last + "\"}");
 			System.out.println(obj.toString(4));
 
 			throw event;
@@ -1539,8 +1543,8 @@ public class Root extends Service {
 					out.println("<style> input, select { font-family: monospace; } </style>");
 					out.println("<pre>");
 					out.println("<form action=\"link\" method=\"post\">");
-					out.println("  Parent <input type=\"text\" style=\"width: 100px;\" name=\"pkey\"> " + type(node_type, "ptype", "user") + "<br>");
-					out.println("  Child  <input type=\"text\" style=\"width: 100px;\" name=\"ckey\"> " + type(link_type, "ctype", "data") + "<br>");
+					out.println("  Parent <input type=\"text\" size=\"16\" name=\"pkey\"> " + type(node_type, "ptype", "user") + "<br>");
+					out.println("  Child  <input type=\"text\" size=\"16\" name=\"ckey\"> " + type(link_type, "ctype", "data") + "<br>");
 					out.println("         <input type=\"submit\" value=\"Link\">");
 					out.println("</form>");
 					out.println("</pre>");
@@ -1593,8 +1597,8 @@ public class Root extends Service {
 					out.println("<style> input, select { font-family: monospace; } </style>");
 					out.println("<pre>");
 					out.println("<form action=\"meta\" method=\"post\">");
-					out.println("  Node <input type=\"text\" style=\"width: 100px;\" name=\"node\"> " + type(node_type, "type", "task") + "<br>");
-					out.println("  User <input type=\"text\" style=\"width: 100px;\" name=\"user\"><br>");
+					out.println("  Node <input type=\"text\" size=\"16\" name=\"node\"> " + type(node_type, "type", "task") + "<br>");
+					out.println("  User <input type=\"text\" size=\"16\" name=\"user\"><br>");
 					out.println("  <input type=\"checkbox\" name=\"tear\"> Tear (Delete!)<br>");
 					out.println("  <textarea rows=\"10\" cols=\"50\" name=\"json\">{}</textarea><br>");
 					out.println("  Path <input type=\"text\" name=\"path\" value=\"\"><br>");
@@ -1693,8 +1697,8 @@ public class Root extends Service {
 					out.println("<style> input, select { font-family: monospace; } </style>");
 					out.println("<pre>");
 					out.println("<form action=\"meta\" method=\"post\">");
-					out.println("  Parent <input type=\"text\" style=\"width: 100px;\" name=\"pkey\"> " + type(node_type, "ptype", "user") + "<br>");
-					out.println("  Child  <input type=\"text\" style=\"width: 100px;\" name=\"ckey\"> " + type(meta_type, "ctype", "data") + "<br>");
+					out.println("  Parent <input type=\"text\" size=\"16\" name=\"pkey\"> " + type(node_type, "ptype", "user") + "<br>");
+					out.println("  Child  <input type=\"text\" size=\"16\" name=\"ckey\"> " + type(meta_type, "ctype", "data") + "<br>");
 					out.println("  <input type=\"checkbox\" name=\"echo\"> Echo<br>");
 					out.println("  <input type=\"checkbox\" name=\"tear\"" + (tear ? " checked" : "") + "> Tear (Delete!)<br>");
 					out.println("  <textarea rows=\"10\" cols=\"50\" name=\"json\">{}</textarea><br>");
@@ -1723,16 +1727,25 @@ public class Root extends Service {
 		public String path() {
 			return "/salt";
 		}
-
+		
 		public void filter(Event event) throws Event, Exception {
-			String salt = Event.random(8);
+			String salt = Event.random(4);
 
 			while(this.salt.containsKey(salt)) {
-				salt = Event.random(8);
+				salt = Event.random(4);
 			}
 
 			this.salt.put(salt, null);
 			event.output().print(salt);
+		}
+		
+		public boolean prune(String salt) {
+			if(this.salt.containsKey(salt)) {
+				this.salt.remove(salt);
+				return true;
+			}
+			
+			return false;
 		}
 	}
 
@@ -1750,7 +1763,7 @@ public class Root extends Service {
 				out.println("<style> input { font-family: monospace; } </style>");
 				out.println("<pre>");
 				out.println("<form action=\"hash\" method=\"get\">");
-				out.println("  Key <input type=\"text\" name=\"key\" value=\"" + key + "\"> <input type=\"submit\" value=\"Hash\">");
+				out.println("  Key <input type=\"text\" size=\"16\" name=\"key\" value=\"" + key + "\"> <input type=\"submit\" value=\"Hash\">");
 				out.println("</form>");
 				out.println("</pre>");
 			}
@@ -1912,8 +1925,10 @@ public class Root extends Service {
 						out.print("  Type " + type(node_type, "type", "data"));
 						out.print(" <input id=\"make\" type=\"checkbox\" name=\"create\" onclick=\"toggle();\"/> Make");
 						out.println("  <input type=\"checkbox\" name=\"trace\"> Info<br>");
-						out.println("  Comma separated list of JSON keys to index,");
-						out.println("  \"text\" key reserved for full word search:<br>");
+						out.println("  Comma separated list of JSON keys to index;");
+						out.println("  \"word\" key reserved for full word search");
+						out.println("  (min. 4 characters). \"name\" key reserved");
+						out.println("  for relational mapping with <i>/meta</i>.<br>");
 						out.println("  Sort <input type=\"text\" name=\"sort\" value=\"key\"><br>");
 						out.println("       <input id=\"node\" type=\"submit\" value=\"Edit\">");
 						out.println("</form>");
