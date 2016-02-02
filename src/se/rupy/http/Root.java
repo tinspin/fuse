@@ -51,7 +51,7 @@ import se.rupy.http.Service;
  */
 public class Root extends Service {
 	static int LENGTH = 16;
-	public static String local;
+	static String local;
 	static String[] ip = {"89.221.241.32", "89.221.241.33", "92.63.174.125", "2.248.42.217", "2.248.42.217", "2.248.42.217"};
 	static String[] host = {"one", "two", "tre", "fem", "six", "sju"}; // oct, nio, ten
 	static String[] node_type = {"data", "node", "user", "task", "type"};
@@ -221,7 +221,7 @@ public class Root extends Service {
 		return -1;
 	}
 
-	public String local() { return local; }
+	public static String local() { return local; }
 	public String path() { return root; }
 /*
 	public void create(Daemon daemon) throws Exception {
