@@ -18,15 +18,6 @@ public class User extends Service {
 	private String head() throws Exception {
 		return "Head:less\r\nHost:" + host();
 	}
-	
-	public static class Logout extends Service {
-		public String path() { return "/logout"; }
-		public void filter(Event event) throws Event, Exception {
-			event.session().remove("user");
-			event.session().remove("list");
-			redirect(event);
-		}
-	}
 
 	public static void redirect(Event event) throws IOException, Event {
 		String referer = event.query().header("referer");
@@ -278,7 +269,7 @@ public class User extends Service {
 
 						if(!file.exists()) {
 							System.out.println(file);
-							event.output().print("0");
+							event.output().print("name not found");
 							throw event;
 						}
 
@@ -290,7 +281,7 @@ public class User extends Service {
 							event.output().print(object);
 						}
 						else {
-							event.output().print("1");
+							event.output().print("wrong pass");
 						}
 
 						throw event;
@@ -309,7 +300,7 @@ public class User extends Service {
 									event.query().put("success", user.getString("name"));
 								}
 								catch(Exception e) {
-									event.query().put("fail", body.equals("1") ? "wrong pass" : body.equals("0") ? "name not found" : body);
+									event.query().put("fail", body);
 								}
 
 								event.reply().wakeup(true);

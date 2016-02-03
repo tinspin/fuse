@@ -1738,15 +1738,6 @@ public class Root extends Service {
 			this.salt.put(salt, null);
 			event.output().print(salt);
 		}
-		
-		public boolean prune(String salt) {
-			if(this.salt.containsKey(salt)) {
-				this.salt.remove(salt);
-				return true;
-			}
-			
-			return false;
-		}
 	}
 
 	public static class Hash extends Service {
