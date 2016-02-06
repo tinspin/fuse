@@ -95,11 +95,6 @@ In sort of chronological order:
                             -> user|fail|mail already registered
                             -> user|fail|pass too short
  
-                            // to get the &lt;name&gt;/&lt;id&gt; of a mail
-                            // if you want to login with &lt;name&gt;/&lt;id&gt; below
- <b><i>mail</i></b>|&lt;mail&gt;                -> mail|done|&lt;name&gt;/&lt;id&gt;
-                            -> mail|fail|not found
- 
                             // get salt for &lt;name&gt; or &lt;id&gt;
  <b><i>salt</i></b>|&lt;name&gt;/&lt;id&gt;           -> salt|done|&lt;salt&gt;
                             -> salt|fail|name not found
@@ -114,7 +109,6 @@ In sort of chronological order:
                             //        make sure you keep the case correct
  <b><i>sign</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> sign|done|&lt;name&gt;/&lt;id&gt;
                             -> sign|fail|wrong pass
-                            -> sign|fail|wrong key
 
  <b><i>\/</i></b> anything below          -> main|fail|not authorized
 

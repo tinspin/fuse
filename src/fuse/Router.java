@@ -34,6 +34,10 @@ public class Router implements Node {
 	static Daemon daemon;
 	static Node node;
 
+	private static String head() {
+		return "Head:less\r\nHost:" + host;
+	}
+	
 	public void call(Daemon daemon, Node node) throws Exception {
 		this.daemon = daemon;
 		this.node = node;
@@ -48,8 +52,8 @@ public class Router implements Node {
 		return salt;
 	}
 
-	private User session(Event event, String name, String salt, JSONObject json) throws Exception {
-		User user = new User(name.length() > 0 ? name : "" + Root.hash(json.getString("key")), salt, json);
+	private User session(Event event, String name, String salt) throws Exception {
+		User user = new User(name, salt);
 		users.put(salt, user);
 		names.put(name, user);
 
@@ -140,7 +144,7 @@ public class Router implements Node {
 
 					byte[] post = ("json=" + json + "&sort=key" + sort + "&create").getBytes("utf-8");
 
-					call.post("/node", "Host:" + host, post);
+					call.post("/node", head(), post);
 				}
 
 				public void read(String host, String body) throws Exception {
@@ -172,8 +176,8 @@ public class Router implements Node {
 						JSONObject json = new JSONObject(body);
 						String key = json.getString("key");
 
-						User user = session(event, name ? split[1] : "", session(), json);
-						user.sign = true;
+						User user = session(event, name ? split[1] : "", session());
+						user.auth(json);
 
 						event.query().put("done", "user|done|" + user.salt + "|" + key + "|" + Root.hash(key));
 					}
@@ -190,20 +194,31 @@ public class Router implements Node {
 			return "hold";
 		}
 
-		if(split[0].equals("mail") && split[1].contains("@")) {
-			File file = new File(Root.home() + "/node/user/mail" + Root.path(split[1].toLowerCase()));
-
-			if(file == null || !file.exists()) {
-				return "mail|fail|not found";
-			}
-
-			JSONObject json = new JSONObject(Root.file(file));
-
-			return "mail|done|" + (json.has("name") ? json.getString("key") : Root.hash(json.getString("key")));
-		}
-
 		if(split[0].equals("salt")) {
-			String name = split[1].toLowerCase();
+			final String name = split[1].toLowerCase();
+			
+			Async.Work work = new Async.Work(event) {
+				public void send(Async.Call call) throws Exception {
+					call.get("/salt", head());
+				}
+
+				public void read(String host, String body) throws Exception {
+					session(event, name, body);
+					event.query().put("done", "salt|done|" + body);
+					event.reply().wakeup(true);
+				}
+
+				public void fail(String host, Exception e) throws Exception {
+					e.printStackTrace();
+					event.query().put("done", "salt|fail|unknown problem");
+					event.reply().wakeup(true);
+				}
+			};
+
+			event.daemon().client().send("localhost", work, 30);
+			return "hold";
+			
+			/*
 			String salt = session();
 
 			File file = null;
@@ -223,6 +238,7 @@ public class Router implements Node {
 			session(event, name, salt, json);
 
 			return "salt|done|" + salt;
+			*/
 		}
 
 		if(split.length < 2)
@@ -238,8 +254,38 @@ public class Router implements Node {
 			return "main|fail|salt not found";
 
 		if(split[0].equals("sign")) {
-			String hash = split[2].toLowerCase();
+			final String hash = split[2].toLowerCase();
 
+			Async.Work work = new Async.Work(event) {
+				public void send(Async.Call call) throws Exception {
+					String body = "name=" + user.name + "&pass=" + hash + "&salt=" + user.salt + "&host=" + host + "&algo=md5";
+					call.post("/user", head(), body.getBytes());
+				}
+
+				public void read(String host, String body) throws Exception {
+					try {
+						JSONObject json = new JSONObject(body);
+						user.auth(json);
+
+						event.query().put("done", "sign|done|" + user.name);
+					}
+					catch(Exception e) {
+						event.query().put("fail", "sign|fail|wrong pass");
+					}
+					event.reply().wakeup(true);
+				}
+
+				public void fail(String host, Exception e) throws Exception {
+					e.printStackTrace();
+					event.query().put("done", "sign|fail|unknown problem");
+					event.reply().wakeup(true);
+				}
+			};
+
+			event.daemon().client().send("localhost", work, 30);
+			return "hold";
+			
+			/*
 			if(user.name.length() > 0 && hash.length() > 0) {
 				String key = user.name.matches("[0-9]+") || !user.json.has("pass") ? user.json.getString("key") : user.json.getString("pass");
 				String md5 = Deploy.hash(key + user.salt, "MD5");
@@ -253,6 +299,7 @@ public class Router implements Node {
 					return "sign|fail|wrong " + (user.json.has("pass") ? "pass" : "key");
 				}
 			}
+			*/
 		}
 
 		if(!user.sign)
@@ -353,7 +400,7 @@ public class Router implements Node {
 
 						byte[] post = ("json=" + json + sort).getBytes("utf-8");
 
-						call.post("/node", "Host:" + host, post);
+						call.post("/node", head(), post);
 					}
 
 					public void read(String host, String body) throws Exception {
@@ -415,7 +462,7 @@ public class Router implements Node {
 			if(user.ally(poll)) {
 				Async.Work meta = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
-						call.post("/meta", "Host:" + host, 
+						call.post("/meta", head(), 
 								("pkey=" + user.json.getString("key") + "&ckey=" + poll.json.getString("key") + 
 										"&ptype=user&ctype=user&json={}&tear=true").getBytes("utf-8"));
 					}
@@ -506,7 +553,7 @@ public class Router implements Node {
 				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
 						call.get("/link/user/" + type + "/" + key + "?from=" + from + 
-								"&size=" + size, "Host:" + host);
+								"&size=" + size, head());
 					}
 
 					public void read(String host, String body) throws Exception {
@@ -614,7 +661,7 @@ public class Router implements Node {
 				else if(type.equals("ally")) {
 					Async.Work meta = new Async.Work(event) {
 						public void send(Async.Call call) throws Exception {
-							call.post("/meta", "Host:" + host, 
+							call.post("/meta", head(), 
 									("pkey=" + user.json.getString("key") + "&ckey=" + poll.json.getString("key") + 
 											"&ptype=user&ctype=user&json={}&echo=true").getBytes("utf-8"));
 						}
@@ -746,7 +793,7 @@ public class Router implements Node {
 				public void send(Async.Call call) throws Exception {
 					String data = "json=" + json.toString() + "&type=" + type + 
 							"&sort=key" + (key.length() > 0 ? "" : "&create");
-					call.post("/node", "Host:" + host, data.getBytes("utf-8"));
+					call.post("/node", head(), data.getBytes("utf-8"));
 				}
 
 				public void read(final String host, final String body) throws Exception {
@@ -754,7 +801,7 @@ public class Router implements Node {
 
 					Async.Work link = new Async.Work(event) {
 						public void send(Async.Call call) throws Exception {
-							call.post("/link", "Host:" + host, 
+							call.post("/link", head(), 
 									("pkey=" + user_key + "&ckey=" + node.getString("key") + 
 											"&ptype=user&ctype=" + type).getBytes("utf-8"));
 						}
@@ -839,12 +886,16 @@ public class Router implements Node {
 		int lost;
 		long id;
 
-		User(String name, String salt, JSONObject json) throws Exception {
+		User(String name, String salt) throws Exception {
 			this.name = name;
 			this.salt = salt;
+		}
+		
+		private void auth(JSONObject json) throws Exception {
 			this.json = json;
 			this.id = Root.hash(json.getString("key"));
-
+			this.sign = true;
+			
 			try {
 				ally();
 			}
@@ -879,7 +930,7 @@ public class Router implements Node {
 			
 			Async.Work work = new Async.Work(null) {
 				public void send(Async.Call call) throws Exception {
-					call.get("/meta/user/user/" + json.getString("key"), "Host:" + host);
+					call.get("/meta/user/user/" + json.getString("key"), head());
 				}
 
 				public void read(String host, String body) throws Exception {
@@ -1240,7 +1291,7 @@ public class Router implements Node {
 	public synchronized void remove(String salt, int place) throws Exception {
 		User user = (User) users.get(salt);
 
-		//System.err.println("quit " + place + " " + user + " " + stack(Thread.currentThread()));
+		System.err.println("quit " + place + " " + user + " " + salt + " " + stack(Thread.currentThread()));
 
 		if(user != null && user.salt != null && user.game != null) {
 			users.remove(salt);
