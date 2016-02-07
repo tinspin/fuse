@@ -154,6 +154,8 @@ public class Server extends Service implements Node, Runnable {
 			event.query().parse();
 
 			if(event.push()) {
+				System.err.println("push (" + event.index() + ")");
+				
 				String data = event.query().string("done", null);
 				String fail = event.query().string("fail", null);
 
@@ -187,13 +189,14 @@ public class Server extends Service implements Node, Runnable {
 				try {
 					String response = node.push(event, data);
 
+					//if(response.equals("hold"))
+					//	throw event;
+					
 					if(!data.startsWith("send") && !data.startsWith("move"))
 						System.err.println("<- " + response);
 					
-					if(!response.equals("hold")) {
-						body = response.getBytes("UTF-8");
-						Router.add(event, response, false);
-					}
+					body = response.getBytes("UTF-8");
+					Router.add(event, response, false);
 				}
 				catch(Exception e) {
 					e.printStackTrace();

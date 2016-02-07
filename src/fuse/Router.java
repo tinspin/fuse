@@ -35,7 +35,7 @@ public class Router implements Node {
 	static Node node;
 
 	private static String head() {
-		return "Head:less\r\nHost:" + host;
+		return "Head:less\r\nHost:" + host; // Head:less\r\n
 	}
 	
 	public void call(Daemon daemon, Node node) throws Exception {
@@ -74,7 +74,7 @@ public class Router implements Node {
 	}
 	public boolean wakeup(String name) { return false; }
 
-	public String push(final Event event, String data) throws Exception {
+	public String push(final Event event, String data) throws Event, Exception {
 		final String[] split = data.split("\\|");
 
 		if(!split[0].equals("send") && !split[0].equals("move"))
@@ -191,7 +191,7 @@ public class Router implements Node {
 			};
 
 			event.daemon().client().send("localhost", user, 30);
-			return "hold";
+			throw event;
 		}
 
 		if(split[0].equals("salt")) {
@@ -216,7 +216,7 @@ public class Router implements Node {
 			};
 
 			event.daemon().client().send("localhost", work, 30);
-			return "hold";
+			throw event;
 			
 			/*
 			String salt = session();
@@ -270,7 +270,6 @@ public class Router implements Node {
 						event.query().put("done", "sign|done|" + user.name);
 					}
 					catch(Exception e) {
-						System.out.println(body);
 						event.query().put("fail", "sign|fail|" + body);
 					}
 					event.reply().wakeup(true);
@@ -284,7 +283,7 @@ public class Router implements Node {
 			};
 
 			event.daemon().client().send("localhost", work, 30);
-			return "hold";
+			throw event;
 			
 			/*
 			if(user.name.length() > 0 && hash.length() > 0) {
@@ -427,7 +426,7 @@ public class Router implements Node {
 				};
 
 				event.daemon().client().send("localhost", work, 30);
-				return "hold";
+				throw event;
 			}
 		}
 
@@ -578,7 +577,7 @@ public class Router implements Node {
 				};
 
 				event.daemon().client().send("localhost", work, 30);
-				return "hold";
+				throw event;
 			}
 
 			return "list|fail|wrong type";
@@ -630,7 +629,7 @@ public class Router implements Node {
 		if(split[0].equals("poll")) {
 			String type = user.type;
 			
-			System.out.println(split[2] + " " + names);
+			System.err.println(split[2] + " " + names);
 			
 			final User poll = (User) names.get(split[2]);
 			boolean accept = split[3].toLowerCase().equals("true");
@@ -683,8 +682,7 @@ public class Router implements Node {
 					};
 
 					event.daemon().client().send("localhost", meta, 30);
-
-					return "hold";
+					throw event;
 				}
 				else
 					return "poll|fail|type not found";
@@ -828,7 +826,7 @@ public class Router implements Node {
 			};
 
 			event.daemon().client().send("localhost", node, 30);
-			return "hold";
+			throw event;
 		}
 
 		if(split[0].equals("load")) {
@@ -1294,11 +1292,11 @@ public class Router implements Node {
 	public synchronized void remove(String salt, int place) throws Exception {
 		User user = (User) users.get(salt);
 
-		System.err.println("quit " + place + " " + user + " " + salt + " " + stack(Thread.currentThread()));
+		System.err.println("quit " + place + " " + user + " " + salt); // + " " + stack(Thread.currentThread()));
 
+		users.remove(salt);
+		
 		if(user != null && user.salt != null && user.game != null) {
-			users.remove(salt);
-
 			Room room = user.move(user.room, null);
 			user.game.rooms.remove(user.name);
 
