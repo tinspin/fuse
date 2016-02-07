@@ -125,10 +125,10 @@ public class User extends Service {
 			out.println("<html>");
 			out.println("<head>");
 			out.println("<meta name=\"viewport\" content=\"width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0\">");
-
-			script(event);
 		}
 
+		script(event);
+		
 		if(bare.length() == 0) {
 			out.println("</head>");
 			out.println("<body>");
@@ -153,9 +153,6 @@ public class User extends Service {
 		if(bare.length() == 0) {
 			out.println("</body>");
 			out.println("</html>");
-		}
-		else {
-			script(event);
 		}
 	}
 
@@ -251,11 +248,17 @@ public class User extends Service {
 					redirect(event);
 				}
 
+				//System.out.println("salt " + salt);
+				
 				if(salt.length() > 0) {
 					if(event.session() != null)
 						event.session().put("salt", null);
 					
-					if(host.equals(Root.host())) {	
+					//System.out.println("host " + host + " " + Root.host());
+					
+					if(host.equals(Root.host())) {
+						//System.out.println("salt " + Root.Salt.salt);
+						
 						if(Root.Salt.salt.containsKey(salt)) {
 							Root.Salt.salt.remove(salt);
 						}
@@ -264,7 +267,7 @@ public class User extends Service {
 							event.output().print("salt not found");
 							throw event;
 						}
-						
+						//System.out.println(1);
 						File file = new File(Root.home() + "/node/user/name" + Root.path(name));
 
 						if(!file.exists()) {
@@ -272,10 +275,17 @@ public class User extends Service {
 							event.output().print("name not found");
 							throw event;
 						}
-
+						//System.out.println(2);
 						JSONObject object = new JSONObject(Root.file(file));
-						String hash = Deploy.hash(object.getString("pass") + salt, algo);
-
+						String hash = null;
+						//System.out.println(3);
+						if(object.has("pass")) {
+							hash = Deploy.hash(object.getString("pass") + salt, algo);
+						}
+						else {
+							hash = Deploy.hash(object.getString("key") + salt, algo);
+						}
+						//System.out.println(4);
 						if(hash.equals(pass)) {
 							object.remove("pass");
 							event.output().print(object);
@@ -283,7 +293,10 @@ public class User extends Service {
 						else {
 							event.output().print("wrong pass");
 						}
-
+						//System.out.println(5);
+						//Output out = event.output();
+						//out.finish();
+						//out.flush();
 						throw event;
 					}
 					else {

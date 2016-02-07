@@ -461,8 +461,13 @@ public class Event extends Throwable implements Chain.Link {
 				log(e);
 			}
 
-			daemon.error(this, e);
-
+			try {
+				daemon.error(this, e);
+			}
+			catch(Exception ee) {
+				e.printStackTrace(daemon.out);
+			}
+			
 			StringWriter trace = new StringWriter();
 			PrintWriter print = new PrintWriter(trace);
 			e.printStackTrace(print);
@@ -631,6 +636,7 @@ public class Event extends Throwable implements Chain.Link {
 
 			daemon.error(this, e);
 		} catch (Exception de) {
+			e.printStackTrace(daemon.out);
 			de.printStackTrace(daemon.out);
 		}
 		finally {

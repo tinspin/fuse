@@ -205,12 +205,15 @@ public class Reply {
 		
 		if(!event.channel().isOpen())
 			return CLOSED;
-
+		
 		if(queue)
 			event.wakeup = true;
 		
 		if(event.daemon().match(event, null))
 			return OK;
+		
+		if(queue)
+			event.daemon().queue(event);
 		
 		return WORKING;
 	}

@@ -348,6 +348,10 @@ public class Async implements Runnable {
 
 					if(body == null) {
 						head = new String(data, "utf-8");
+						
+						if(debug)
+							System.out.println("  head " + head);
+						
 						int boundary = head.indexOf("\r\n\r\n");
 
 						if(boundary == -1)

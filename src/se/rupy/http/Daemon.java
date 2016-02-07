@@ -1319,6 +1319,10 @@ public class Daemon implements Runnable {
 		return null;
 	}
 
+	protected void queue(Event event) {
+		queue.add(event);
+	}
+	
 	protected Lock chain(Event event) {
 		if(host) {
 			return chain(event.query().header("host"), event.query().path(), event.push());
