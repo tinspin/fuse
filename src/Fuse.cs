@@ -416,7 +416,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 			if(salt != null) {
 				fuse.Pull(salt);
-				fuse.Game("kloss");
+				fuse.Game("cube");
 
 				Thread.Sleep(100);
 				

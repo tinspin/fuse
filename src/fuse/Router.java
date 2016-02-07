@@ -278,7 +278,7 @@ public class Router implements Node {
 
 				public void fail(String host, Exception e) throws Exception {
 					e.printStackTrace();
-					event.query().put("done", "sign|fail|unknown problem");
+					event.query().put("fail", "sign|fail|unknown problem");
 					event.reply().wakeup(true);
 				}
 			};
@@ -1103,10 +1103,12 @@ public class Router implements Node {
 
 					if(all || !from.name.equals(user.name)) {
 						if(data.startsWith("here")) {
-							node.push(user.salt, data + from.peer(user), true);
+							node.push(user.salt, data + from.peer(user), false);
 							
 							if(user.ally(from))
 								node.push(user.salt, "ally|" + from.name, false);
+							
+							node.wakeup(user.salt);
 						}
 						else if(data.startsWith("gone") && from.room.user != null) {
 							node.push(user.salt, data + "|" + from.room.user.name, true);
