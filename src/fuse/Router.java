@@ -270,7 +270,8 @@ public class Router implements Node {
 						event.query().put("done", "sign|done|" + user.name);
 					}
 					catch(Exception e) {
-						event.query().put("fail", "sign|fail|wrong pass");
+						System.out.println(body);
+						event.query().put("fail", "sign|fail|" + body);
 					}
 					event.reply().wakeup(true);
 				}

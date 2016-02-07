@@ -307,7 +307,8 @@ public class play extends Service {
     var option = document.createElement('option');
     option.style.color = color;
     option.text = name;
-    select.options.add(option, select.options[0]);
+    /*select.options.add(option, select.options[0]);*/
+    select.add(option, 0);
   }
   function update_select(type, name, color) {
     var select = element(type);
@@ -318,12 +319,9 @@ public class play extends Service {
       }
     }
   }
-  function clear_join() {
-    var select = element('join');
-    var length = select.options.length;
-    for(i = 0; i < length; i++) {
-      select.options[i] = null;
-    }
+  function clear_select(name) {
+    var select = element(name);
+    select.options.length = 0;
   }
   function hide_fail(text) {
     element('fail1').innerHTML = '';
@@ -449,7 +447,7 @@ public class play extends Service {
   }
   function room() {
     push('room|' + make_room());
-    clear_join();
+    clear_select('join');
   }
   function join() {
     var select = element('join');
@@ -460,7 +458,7 @@ public class play extends Service {
     }
     if(index > -1) {
       var rule = 'join|' + select.options[index].text + '|hejsan';
-      clear_join();
+      clear_select('join');
       var join = push(rule);
       if(join[1] == 'fail') {
         list();
@@ -476,7 +474,7 @@ public class play extends Service {
   function list() {
     var data = push('list|room');
     if(data[1] == 'done')
-      clear_join();
+      clear_select('join');
     /*console.log('listroom ' + data.length);*/
     if(data.length > 3 && data[3].length > 0) {
       var list = data[3].split(';');
