@@ -154,8 +154,6 @@ public class Server extends Service implements Node, Runnable {
 			event.query().parse();
 
 			if(event.push()) {
-				System.err.println("push (" + event.index() + ")");
-				
 				String data = event.query().string("done", null);
 				String fail = event.query().string("fail", null);
 
