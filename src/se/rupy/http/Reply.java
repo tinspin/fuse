@@ -209,10 +209,14 @@ public class Reply {
 		if(queue)
 			event.wakeup = true;
 		
-		if(event.daemon().match(event, null))
+		int wake = event.daemon().match(event, null);
+		
+		if(wake == 0)
 			return OK;
 		
-		if(queue)
+		//System.err.println("wake " + wake);
+		
+		if(queue && wake == 1)
 			event.daemon().queue(event);
 		
 		return WORKING;

@@ -1834,7 +1834,7 @@ public class Daemon implements Runnable {
 		return worker;
 	}
 
-	protected synchronized boolean match(Event event, Worker worker) {
+	protected synchronized int match(Event event, Worker worker) {
 		boolean wakeup = true;
 
 		if(event != null && worker != null) {
@@ -1852,24 +1852,24 @@ public class Daemon implements Runnable {
 			event = null;
 		}
 		else if(event.worker() != null) {
-			return false;
+			return 1;
 		}
 
 		if(worker == null) {
 			worker = employ(event);
 
 			if(worker == null) {
-				return false;
+				return 2;
 			}
 		}
 		else if(event == null) {
 			event = next();
 
 			if(event == null) {
-				return false;
+				return 3;
 			}
 			else if(event.worker() != null) {
-				return event.worker() == worker;
+				return event.worker() == worker ? 4 : 5;
 			}
 		}
 
@@ -1887,7 +1887,7 @@ public class Daemon implements Runnable {
 			worker.wakeup(true);
 		}
 
-		return true;
+		return 0;
 	}
 
 	class Filter implements FilenameFilter {
