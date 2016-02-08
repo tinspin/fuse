@@ -377,7 +377,7 @@ public class Daemon implements Runnable {
 					new ProtectionDomain(null, permissions)});
 		}
 
-		//if (!verbose) {
+		//if(!verbose) {
 		//	debug = false;
 		//}
 
@@ -452,7 +452,7 @@ public class Daemon implements Runnable {
 	protected void error(final Event e, final Throwable t) throws IOException {
 		//t.printStackTrace();
 
-		if (error != null && t != null && !(t instanceof Failure.Close)) {
+		if(error != null && t != null && !(t instanceof Failure.Close)) {
 			if(err != null) {
 				try {
 					Boolean log = (Boolean) AccessController.doPrivileged(new PrivilegedExceptionAction() {
@@ -500,7 +500,7 @@ public class Daemon implements Runnable {
 	}
 
 	protected String access(Event event) throws IOException {
-		if (access != null && !event.reply().push() && !event.headless) {
+		if(access != null && !event.reply().push() && !event.headless) {
 			Calendar date = Calendar.getInstance();
 			StringBuilder b = new StringBuilder();
 
@@ -526,7 +526,7 @@ public class Daemon implements Runnable {
 	}
 
 	protected void access(String row, boolean push) throws IOException {
-		if (access != null) {
+		if(access != null) {
 			StringBuilder b = new StringBuilder();
 
 			b.append(row);
@@ -607,10 +607,10 @@ public class Daemon implements Runnable {
 	protected void chain(final Deploy.Archive archive) throws Exception {
 		Deploy.Archive old = (Deploy.Archive) this.archive.get(archive.name());
 
-		if (old != null) {
+		if(old != null) {
 			Iterator it = old.service().values().iterator();
 
-			while (it.hasNext()) {
+			while(it.hasNext()) {
 				final Service service = (Service) it.next();
 
 				try {
@@ -639,7 +639,7 @@ public class Daemon implements Runnable {
 
 		Iterator it = archive.service().values().iterator();
 
-		while (it.hasNext()) {
+		while(it.hasNext()) {
 			Service service = (Service) it.next();
 			add(archive.chain(), service, archive);
 		}
@@ -655,7 +655,7 @@ public class Daemon implements Runnable {
 		Deploy.Archive archive = (Deploy.Archive) this.archive.get(name);
 		Iterator it = archive.service().values().iterator();
 
-		while (it.hasNext()) {
+		while(it.hasNext()) {
 			Service service = (Service) it.next();
 			Iterator it2 = service.metric.values().iterator();
 
@@ -1035,7 +1035,7 @@ public class Daemon implements Runnable {
 					byte[] data = new byte[1024];
 					DatagramPacket packet = new DatagramPacket(data, data.length);
 
-					while (true) {
+					while(true) {
 						socket.receive(packet);
 
 						synchronized (listeners) {
@@ -1111,11 +1111,11 @@ public class Daemon implements Runnable {
 
 		StringTokenizer paths = new StringTokenizer(path, ":");
 
-		while (paths.hasMoreTokens()) {
+		while(paths.hasMoreTokens()) {
 			path = paths.nextToken();
 			Chain chain = (Chain) map.get(path);
 
-			if (chain == null) {
+			if(chain == null) {
 				chain = new Chain();
 				map.put(path, chain);
 			}
@@ -1127,7 +1127,7 @@ public class Daemon implements Runnable {
 				Thread.currentThread().setContextClassLoader(archive);
 				AccessController.doPrivileged(new PrivilegedExceptionAction() {
 					public Object run() throws Exception {
-						if (old != null) {
+						if(old != null) {
 							int index = 0;
 
 							try {
@@ -1149,7 +1149,7 @@ public class Daemon implements Runnable {
 				}, control);
 			}
 			else {
-				if (old != null) {
+				if(old != null) {
 					throw new Exception(service.getClass().getName()
 							+ " with path '" + path + "' and index ["
 							+ service.index() + "] is conflicting with "
@@ -1158,7 +1158,7 @@ public class Daemon implements Runnable {
 				}
 			}
 
-			if (verbose)
+			if(verbose)
 				out.println(path + padding(path) + chain);
 
 			try {
@@ -1200,7 +1200,7 @@ public class Daemon implements Runnable {
 	protected void verify(final Deploy.Archive archive) throws Exception {
 		Iterator it = archive.chain().keySet().iterator();
 
-		while (it.hasNext()) {
+		while(it.hasNext()) {
 			final String path = (String) it.next();
 			Chain chain = (Chain) archive.chain().get(path);
 
@@ -1213,7 +1213,7 @@ public class Daemon implements Runnable {
 					Thread.currentThread().setContextClassLoader(archive);
 					AccessController.doPrivileged(new PrivilegedExceptionAction() {
 						public Object run() throws Exception {
-							if (j != service.index()) {
+							if(j != service.index()) {
 								a.remove(archive.name());
 
 								int index = 0;
@@ -1235,7 +1235,7 @@ public class Daemon implements Runnable {
 					}, control);
 				}
 				else {
-					if (i != service.index()) {
+					if(i != service.index()) {
 						this.archive.remove(archive.name());
 						throw new Exception(service.getClass().getName()
 								+ " with path '" + path + "' has index ["
@@ -1396,7 +1396,7 @@ public class Daemon implements Runnable {
 				if(archive != null) {
 					Chain chain = (Chain) archive.chain().get(path);
 
-					if (chain != null) {
+					if(chain != null) {
 						return new Lock(chain, false);
 					}
 				}
@@ -1404,20 +1404,20 @@ public class Daemon implements Runnable {
 			else {
 				Iterator it = this.archive.values().iterator();
 
-				while (it.hasNext()) {
+				while(it.hasNext()) {
 					Deploy.Archive archive = (Deploy.Archive) it.next();
 
-					if (archive.host().equals(host)) {
+					if(archive.host().equals(host)) {
 						Chain chain = (Chain) archive.chain().get(path);
 
-						if (chain != null) {
+						if(chain != null) {
 							return new Lock(chain, false);
 						}
 						/* COM port proxy stuff, breaks sprout talk
 						else if(wakeup) {
 							chain = (Chain) archive.chain().get("null");
 
-							if (chain != null) {
+							if(chain != null) {
 								return new Lock(chain, false);
 							}
 						}
@@ -1433,7 +1433,7 @@ public class Daemon implements Runnable {
 		synchronized (this.service) {
 			Chain chain = (Chain) this.service.get(path);
 
-			if (chain != null) {
+			if(chain != null) {
 				return new Lock(chain, true);
 			}
 		}
@@ -1444,7 +1444,7 @@ public class Daemon implements Runnable {
 	protected Lock root() {
 		Chain chain = (Chain) this.service.get("null");
 
-		if (chain != null) {
+		if(chain != null) {
 			return new Lock(chain, true);
 		}
 
@@ -1501,7 +1501,7 @@ public class Daemon implements Runnable {
 			DecimalFormat decimal = (DecimalFormat) DecimalFormat.getInstance();
 			decimal.applyPattern("#.##");
 
-			if (verbose) {
+			if(verbose) {
 				boolean live = properties.getProperty("live", "false").toLowerCase().equals("true");
 
 				out.println("daemon started\n" + "- pass       \t"
@@ -1527,7 +1527,7 @@ public class Daemon implements Runnable {
 					out.println("- domain     \t" + domain);
 			}
 
-			if (pass != null && pass.length() > 0 || host) {
+			if(pass != null && pass.length() > 0 || host) {
 				Service deploy = null;
 
 				if(host) {
@@ -1542,7 +1542,7 @@ public class Daemon implements Runnable {
 				File[] app = new File(Deploy.path).listFiles(new Filter());
 				File domain = null;
 
-				if (app != null) {
+				if(app != null) {
 					if(host) {
 						domain = new File("app" + File.separator + this.domain + ".jar");
 						Deploy.deploy(this, domain, null);
@@ -1705,7 +1705,7 @@ public class Daemon implements Runnable {
 				add(this.service, new User(), null);
 			}
 
-			if (properties.getProperty("test", "false").toLowerCase().equals("true")) {
+			if(properties.getProperty("test", "false").toLowerCase().equals("true")) {
 				new Test(this, 1);
 			}
 		} catch (Exception e) {
@@ -1717,7 +1717,7 @@ public class Daemon implements Runnable {
 		Event event = null;
 		SelectionKey key = null;
 
-		while (alive) {
+		while(alive) {
 			try {
 				selector.select();
 
@@ -1725,39 +1725,39 @@ public class Daemon implements Runnable {
 				int valid = 0, accept = 0, readwrite = 0, selected = set.size();
 				Iterator it = set.iterator();
 
-				while (it.hasNext()) {
+				while(it.hasNext()) {
 					key = (SelectionKey) it.next();
 					it.remove();
 
-					if (key.isValid()) {
+					if(key.isValid()) {
 						valid++;
-						if (key.isAcceptable()) {
+						if(key.isAcceptable()) {
 							accept++;
 							event = new Event(this, key, index++);
 							events.put(new Integer(event.index()), event);
 
-							if (Event.LOG) {
+							if(Event.LOG) {
 								event.log("accept ---");
 							}
-						} else if (key.isReadable() || key.isWritable()) {
+						} else if(key.isReadable() || key.isWritable()) {
 							readwrite++;
 							key.interestOps(0);
 
 							event = (Event) key.attachment();
 							Worker worker = event.worker();
 
-							if (Event.LOG) {
-								if (debug) {
-									if (key.isReadable())
+							if(Event.LOG) {
+								if(debug) {
+									if(key.isReadable())
 										event.log("read ---");
-									if (key.isWritable())
+									if(key.isWritable())
 										event.log("write ---");
 								}
 							}
 
-							if (key.isReadable() && event.push()) {
+							if(key.isReadable() && event.push()) {
 								event.disconnect(null);
-							} else if (worker == null) {
+							} else if(worker == null) {
 								match(event, null);
 							} else {
 								worker.wakeup(false);
@@ -1799,12 +1799,12 @@ public class Daemon implements Runnable {
 	}
 
 	private Event next() {
-		if (queue.size() > 0) {
-			Event event = (Event) queue.remove(0);
+		if(queue.size() > 0) {
+			Event event = (Event) queue.poll(); //queue.remove(0);
 
-			while (queue.size() > 0 && event.worker() != null) {
+			while(queue.size() > 0 && event != null && event.worker() != null) {
 				//System.err.print(":");
-				event = (Event) queue.remove(0);
+				event = (Event) queue.poll(); //queue.remove(0);
 			}
 
 			return event;
@@ -1817,15 +1817,15 @@ public class Daemon implements Runnable {
 		workers.reset();
 		Worker worker = (Worker) workers.next();
 
-		if (worker == null) {
+		if(worker == null) {
 			queue.add(event);
 			return null;
 		}
 
-		while (worker.busy()) {
+		while(worker.busy()) {
 			worker = (Worker) workers.next();
 
-			if (worker == null) {
+			if(worker == null) {
 				queue.add(event);
 				return null;
 			}
@@ -1873,8 +1873,8 @@ public class Daemon implements Runnable {
 			}
 		}
 
-		if (Event.LOG) {
-			if (debug)
+		if(Event.LOG) {
+			if(debug)
 				out.println("event " + event.index()
 						+ " and worker " + worker.index()
 						+ " found each other. (" + queue.size() + ")");
@@ -1892,7 +1892,7 @@ public class Daemon implements Runnable {
 
 	class Filter implements FilenameFilter {
 		public boolean accept(File dir, String name) {
-			if (name.endsWith(".jar")) {
+			if(name.endsWith(".jar")) {
 				return true;
 			}
 
@@ -1931,7 +1931,7 @@ public class Daemon implements Runnable {
 				socket = timeout;
 			}
 
-			while (alive) {
+			while(alive) {
 				try {
 					Thread.sleep(1000);
 
@@ -1940,15 +1940,15 @@ public class Daemon implements Runnable {
 					if(timeout > 0) {
 						it = session.values().iterator();
 
-						while (it.hasNext()) {
+						while(it.hasNext()) {
 							Session se = (Session) it.next();
 
-							if (System.currentTimeMillis() - se.date() > timeout) {
+							if(System.currentTimeMillis() - se.date() > timeout) {
 								it.remove();
 								se.remove();
 
-								if (Event.LOG) {
-									if (debug)
+								if(Event.LOG) {
+									if(debug)
 										out.println("session timeout "
 												+ se.key());
 								}
@@ -2025,23 +2025,23 @@ public class Daemon implements Runnable {
 			String flag = args[i];
 			String value = null;
 
-			if (flag.startsWith("-") && ++i < args.length) {
+			if(flag.startsWith("-") && ++i < args.length) {
 				value = args[i];
 
-				if (value.startsWith("-")) {
+				if(value.startsWith("-")) {
 					i--;
 					value = null;
 				}
 			}
 
-			if (value == null) {
+			if(value == null) {
 				properties.put(flag.substring(1).toLowerCase(), "true");
 			} else {
 				properties.put(flag.substring(1).toLowerCase(), value);
 			}
 		}
 
-		if (properties.getProperty("help", "false").toLowerCase()
+		if(properties.getProperty("help", "false").toLowerCase()
 				.equals("true")) {
 			System.out.println("Usage: java -jar http.jar -verbose");
 			return null;
@@ -2073,7 +2073,7 @@ public class Daemon implements Runnable {
 	static {
 		javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier(){
 			public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
-				if (hostname.equals("rupy.se")) {
+				if(hostname.equals("rupy.se")) {
 					return true;
 				}
 				return false;

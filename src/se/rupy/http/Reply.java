@@ -188,7 +188,11 @@ public class Reply {
 	}
 
 	public synchronized int wakeup() {
-		return wakeup(false);
+		return wakeup(false, false);
+	}
+	
+	public synchronized int wakeup(boolean wakeup) {
+		return wakeup(wakeup, false);
 	}
 	
 	/**
@@ -196,27 +200,26 @@ public class Reply {
 	 * Just make sure you didn't already flush the reply and that you are ready to
 	 * catch the event when it recycles in {@link Service#filter(Event)}!
 	 * 
-	 * @param queue Automatically wakeup the worker on this event if WORKING.
+	 * @param wakeup Automatically wakeup the worker on this event if WORKING.
+	 * @param queue Automatically queue the worker on this event if WORKING.
 	 * @return The status of the wakeup call. {@link Reply#OK}, {@link Reply#COMPLETE}, {@link Reply#CLOSED} or {@link Reply#WORKING}
 	 */
-	public synchronized int wakeup(boolean queue) {
-		if(!queue && output.complete())
+	public synchronized int wakeup(boolean wakeup, boolean queue) {
+		if(!wakeup && output.complete())
 			return COMPLETE;
 		
 		if(!event.channel().isOpen())
 			return CLOSED;
-		
-		if(queue)
-			event.wakeup = true;
 		
 		int wake = event.daemon().match(event, null);
 		
 		if(wake == 0)
 			return OK;
 		
-		//System.err.println("wake " + wake);
+		if(wakeup)
+			event.wakeup = true;
 		
-		if(queue && wake == 1)
+		if(queue)
 			event.daemon().queue(event);
 		
 		return WORKING;
