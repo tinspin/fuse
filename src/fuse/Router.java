@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,16 +71,20 @@ public class Router implements Node {
 	public void broadcast(String message, boolean finish) throws Exception {
 		throw new Exception("Nope");
 	}
+	
 	public String push(String salt, String data, boolean wake) throws Exception {
 		throw new Exception("Nope");
 	}
+	
 	public boolean wakeup(String name) { return false; }
-
+	
+	static SimpleDateFormat date = new SimpleDateFormat("HH:mm:ss.SSS");
+	
 	public String push(final Event event, String data) throws Event, Exception {
 		final String[] split = data.split("\\|");
 
 		if(!split[0].equals("send") && !split[0].equals("move"))
-			System.err.println("-> '" + data + "'");
+			System.err.println(" -> '" + data + "'");
 
 		if(split[0].equals("ping")) {
 			return "ping|done";
@@ -205,13 +211,13 @@ public class Router implements Node {
 				public void read(String host, String body) throws Exception {
 					session(event, name, body);
 					event.query().put("done", "salt|done|" + body);
-					event.reply().wakeup(true);
+					event.reply().wakeup(true, true);
 				}
 
 				public void fail(String host, Exception e) throws Exception {
 					e.printStackTrace();
 					event.query().put("done", "salt|fail|unknown problem");
-					event.reply().wakeup(true);
+					event.reply().wakeup(true, true);
 				}
 			};
 
@@ -243,15 +249,14 @@ public class Router implements Node {
 
 		if(split.length < 2)
 			return "main|fail|salt not found";
-
-		//System.err.println(split[1]);
-
+		
 		final User user = (User) users.get(split[1]);
 
-		//System.err.println(user);
-
-		if(user == null || !user.salt.equals(split[1]))
+		if(user == null || !user.salt.equals(split[1])) {
+			System.err.println(split[1]);
+			System.err.println(user);
 			return "main|fail|salt not found";
+		}
 
 		if(split[0].equals("sign")) {
 			final String hash = split[2].toLowerCase();
@@ -272,13 +277,13 @@ public class Router implements Node {
 					catch(Exception e) {
 						event.query().put("fail", "sign|fail|" + body);
 					}
-					event.reply().wakeup(true);
+					event.reply().wakeup(true, true);
 				}
 
 				public void fail(String host, Exception e) throws Exception {
 					e.printStackTrace();
 					event.query().put("fail", "sign|fail|unknown problem");
-					event.reply().wakeup(true);
+					event.reply().wakeup(true, true);
 				}
 			};
 
@@ -306,6 +311,8 @@ public class Router implements Node {
 			return "main|fail|user not authorized";
 
 		if(split[0].equals("game")) {
+			System.err.println("push " + Router.date.format(new Date()) + " " + user.salt + " " + user.name);
+			
 			if(!split[2].matches("[a-zA-Z]+"))
 				return "game|fail|name invalid";
 
