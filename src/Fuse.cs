@@ -416,6 +416,12 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 			if(salt != null) {
 				fuse.Pull(salt);
+				
+				// Very important to sleep a bit here
+				// Use coroutines to send fuse.Game("race");
+				// in Unity.
+				Thread.Sleep(100);
+				
 				fuse.Game("race");
 
 				Thread.Sleep(100);
