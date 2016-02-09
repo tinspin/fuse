@@ -64,7 +64,7 @@ public class play extends Service {
     left: 5px;
   }
 </style>
-<script src="md5.js"></script>
+<script src="[[ Router.hash ]].js"></script>
 <!-- fuse network code -->
 <script>
   var host = '[[ host ]]';
@@ -351,7 +351,11 @@ public class play extends Service {
       show_fail('mail invalid');
       return;
     }
+[[	if(Router.hash.equals("sha256")) { ]]
+    var hash = CryptoJS.SHA256(pass + name.toLowerCase());
+[[	} else { ]]
     var hash = md5(pass + name.toLowerCase());
+[[	} ]]
     var user = push('user|' + name + '|' + mail + '|' + hash);
     if(user[1] == 'done')
       authorize(user[2]);
@@ -374,9 +378,15 @@ public class play extends Service {
       return;
     }
     var auth = pass;
+[[	if(Router.hash.equals("sha256")) { ]]
+    if(!digits.test(name))
+      auth = CryptoJS.SHA256(pass + name.toLowerCase());
+    var sign = push('sign|' + salt[2] + '|' + CryptoJS.SHA256(auth + salt[2]));
+[[	} else { ]]
     if(!digits.test(name))
       auth = md5(pass + name.toLowerCase());
     var sign = push('sign|' + salt[2] + '|' + md5(auth + salt[2]));
+[[	} ]]
     if(sign[1] == 'done')
       authorize(salt[2]);
   }

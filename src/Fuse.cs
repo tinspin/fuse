@@ -419,7 +419,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 				
 				// Very important to sleep a bit here
 				// Use coroutines to send fuse.Game("race");
-				// in Unity.
+				// in Unity. Or send it on the first "noop" in Update()!
 				Thread.Sleep(100);
 				
 				fuse.Game("race");

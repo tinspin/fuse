@@ -24,6 +24,7 @@ import se.rupy.http.Root;
 import se.rupy.http.Service;
 
 public class Router implements Node {
+	public static final String hash = "md5";
 	private static final String host = "fuse.rupy.se";
 	
 	public static ConcurrentLinkedDeque score = new ConcurrentLinkedDeque();
@@ -263,7 +264,7 @@ public class Router implements Node {
 
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					String body = "name=" + user.name + "&pass=" + hash + "&salt=" + user.salt + "&host=" + host + "&algo=md5";
+					String body = "name=" + user.name + "&pass=" + hash + "&salt=" + user.salt + "&host=" + host + "&algo=" + Router.hash;
 					call.post("/user", head(), body.getBytes());
 				}
 
