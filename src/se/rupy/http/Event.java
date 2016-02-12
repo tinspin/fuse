@@ -148,6 +148,14 @@ public class Event extends Throwable implements Chain.Link {
 		return close;
 	}
 
+	public Worker worker_(int where) {
+		if(worker == null) {
+			Thread.yield(); // multicore processors need it.
+		}
+		
+		return worker;
+	}
+	
 	public Worker worker() {
 		return worker;
 	}

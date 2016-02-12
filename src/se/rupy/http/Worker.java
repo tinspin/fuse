@@ -17,7 +17,7 @@ public class Worker implements Runnable, Chain.Link {
 	private Daemon daemon;
 	private ByteBuffer in, out;
 	private byte[] chunk;
-	private Thread thread;
+	Thread thread;
 	private Event event;
 	private int index, lock;
 	private boolean awake, alive, exit = false;

@@ -1798,7 +1798,7 @@ public class Daemon implements Runnable {
 		}
 	}
 
-	private Event next() {
+	private synchronized Event next() {
 		if(queue.size() > 0) {
 			Event event = (Event) queue.poll(); //queue.remove(0);
 
@@ -1813,7 +1813,7 @@ public class Daemon implements Runnable {
 		return null;
 	}
 
-	private Worker employ(Event event) {
+	private synchronized Worker employ(Event event) {
 		workers.reset();
 		Worker worker = (Worker) workers.next();
 
@@ -1869,7 +1869,7 @@ public class Daemon implements Runnable {
 				return 3;
 			}
 			else if(event.worker() != null) {
-				return event.worker() == worker ? 4 : 5;
+				return event.worker() == worker ? 0 : 4;
 			}
 		}
 
@@ -1879,7 +1879,7 @@ public class Daemon implements Runnable {
 						+ " and worker " + worker.index()
 						+ " found each other. (" + queue.size() + ")");
 		}
-
+		
 		worker.event(event);
 		event.worker(worker);
 

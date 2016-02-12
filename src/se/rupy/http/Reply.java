@@ -201,7 +201,7 @@ public class Reply {
 	 * catch the event when it recycles in {@link Service#filter(Event)}!
 	 * 
 	 * @param wakeup Automatically wakeup the worker on this event if WORKING.
-	 * @param queue Automatically queue the worker on this event if WORKING.
+	 * @param queue Automatically queue this event if WORKING.
 	 * @return The status of the wakeup call. {@link Reply#OK}, {@link Reply#COMPLETE}, {@link Reply#CLOSED} or {@link Reply#WORKING}
 	 */
 	public synchronized int wakeup(boolean wakeup, boolean queue) {

@@ -269,7 +269,7 @@ public abstract class Output extends OutputStream implements Event.Block {
 	}
 
 	protected void internal(boolean debug) throws Exception {
-		ByteBuffer out = reply.event().worker().out();
+		ByteBuffer out = reply.event().worker_(2).out();
 
 		if (out.remaining() < size) {
 			out.flip();
@@ -388,7 +388,7 @@ public abstract class Output extends OutputStream implements Event.Block {
 				return;
 			}
 
-			byte[] chunk = reply.event().worker().chunk();
+			byte[] chunk = reply.event().worker_(4).chunk();
 			int remain = size - count;
 
 			if (len > remain) {
