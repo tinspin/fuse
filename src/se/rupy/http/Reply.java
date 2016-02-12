@@ -200,6 +200,10 @@ public class Reply {
 	 * Just make sure you didn't already flush the reply and that you are ready to
 	 * catch the event when it recycles in {@link Service#filter(Event)}!
 	 * 
+	 * Do not use queue when testing the system, or in one-to-many broadcasts.
+	 * It's specifically there for deep async-to-async chains and will stall 
+	 * the socket it used intensively over and over again.
+	 * 
 	 * @param wakeup Automatically wakeup the worker on this event if WORKING.
 	 * @param queue Automatically queue this event if WORKING.
 	 * @return The status of the wakeup call. {@link Reply#OK}, {@link Reply#COMPLETE}, {@link Reply#CLOSED} or {@link Reply#WORKING}

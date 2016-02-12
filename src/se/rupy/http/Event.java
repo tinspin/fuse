@@ -150,7 +150,13 @@ public class Event extends Throwable implements Chain.Link {
 
 	public Worker worker_(int where) {
 		if(worker == null) {
-			Thread.yield(); // multicore processors need it.
+			try {
+				// Multicore ARM processors needs this.
+				// If somebody knows why; they are 
+				// very welcome to explain it.
+				Thread.sleep(1);
+			}
+			catch(InterruptedException e) {}
 		}
 		
 		return worker;
