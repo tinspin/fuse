@@ -97,13 +97,11 @@ public class User extends Service {
 		out.println("        salt.value = '" + salt + "';");
 		if(algo.equals("sha-256")) {
 			out.println("        var secret = CryptoJS.SHA256(pass.value + name.value.toLowerCase());");
-			out.println("        pass.value = CryptoJS.SHA256(secret + salt.value);");
-			out.println("        pass.value = CryptoJS.SHA256(pass.value + secret);");
+			out.println("        pass.value = CryptoJS.SHA256(CryptoJS.SHA256(secret + salt.value) + secret);");
 		}
 		else {
 			out.println("        var secret = md5(pass.value + name.value.toLowerCase());");
-			out.println("        pass.value = md5(secret + salt.value);");
-			out.println("        pass.value = md5(pass.value + secret);");
+			out.println("        pass.value = md5(md5(secret + salt.value) + secret);");
 		}
 		out.println("      }");
 		out.println("      document.forms['user'].submit();");
@@ -278,8 +276,7 @@ public class User extends Service {
 						
 						JSONObject object = new JSONObject(Root.file(file));
 						String secret = object.has("pass") ? object.getString("pass") : object.getString("key");
-						String hash = Deploy.hash(secret + salt, algo);
-						hash = Deploy.hash(hash + secret, algo); // makes the solution dictionary safe!
+						String hash = Deploy.hash(Deploy.hash(secret + salt, algo) + secret, algo); // makes the solution dictionary safe!
 
 						if(hash.equals(pass)) {
 							object.remove("pass");
