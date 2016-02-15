@@ -95,10 +95,16 @@ public class User extends Service {
 			out.println("        pass.value = md5(pass.value + name.value.toLowerCase());");
 		out.println("      } else {");
 		out.println("        salt.value = '" + salt + "';");
-		if(algo.equals("sha-256"))
-			out.println("        pass.value = CryptoJS.SHA256(CryptoJS.SHA256(pass.value + name.value.toLowerCase()) + salt.value);");
-		else
-			out.println("        pass.value = md5(md5(pass.value + name.value.toLowerCase()) + salt.value);");
+		if(algo.equals("sha-256")) {
+			out.println("        var secret = CryptoJS.SHA256(pass.value + name.value.toLowerCase());");
+			out.println("        pass.value = CryptoJS.SHA256(secret + salt.value);");
+			out.println("        pass.value = CryptoJS.SHA256(pass.value + secret);");
+		}
+		else {
+			out.println("        var secret = md5(pass.value + name.value.toLowerCase());");
+			out.println("        pass.value = md5(secret + salt.value);");
+			out.println("        pass.value = md5(pass.value + secret);");
+		}
 		out.println("      }");
 		out.println("      document.forms['user'].submit();");
 		out.println("    }");
@@ -247,18 +253,12 @@ public class User extends Service {
 					event.query().put("fail", "name too short");
 					redirect(event);
 				}
-
-				//System.out.println("salt " + salt);
 				
 				if(salt.length() > 0) {
 					if(event.session() != null)
 						event.session().put("salt", null);
 					
-					//System.out.println("host " + host + " " + Root.host());
-					
 					if(host.equals(Root.host())) {
-						//System.out.println("salt " + Root.Salt.salt);
-						
 						if(Root.Salt.salt.containsKey(salt)) {
 							Root.Salt.salt.remove(salt);
 						}
@@ -267,7 +267,7 @@ public class User extends Service {
 							event.output().print("salt not found");
 							throw event;
 						}
-						//System.out.println(1);
+						
 						File file = new File(Root.home() + "/node/user/name" + Root.path(name));
 
 						if(!file.exists()) {
@@ -275,17 +275,12 @@ public class User extends Service {
 							event.output().print("name not found");
 							throw event;
 						}
-						//System.out.println(2);
+						
 						JSONObject object = new JSONObject(Root.file(file));
-						String hash = null;
-						//System.out.println(3);
-						if(object.has("pass")) {
-							hash = Deploy.hash(object.getString("pass") + salt, algo);
-						}
-						else {
-							hash = Deploy.hash(object.getString("key") + salt, algo);
-						}
-						//System.out.println(4);
+						String secret = object.has("pass") ? object.getString("pass") : object.getString("key");
+						String hash = Deploy.hash(secret + salt, algo);
+						hash = Deploy.hash(hash + secret, algo); // makes the solution dictionary safe!
+
 						if(hash.equals(pass)) {
 							object.remove("pass");
 							event.output().print(object);
@@ -293,10 +288,7 @@ public class User extends Service {
 						else {
 							event.output().print("wrong pass");
 						}
-						//System.out.println(5);
-						//Output out = event.output();
-						//out.finish();
-						//out.flush();
+						
 						throw event;
 					}
 					else {
