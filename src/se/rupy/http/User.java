@@ -188,7 +188,7 @@ public class User extends Service {
 				}
 			}
 			else if(name.length() > 0) {
-				redirect(event, "http://" + url + "/?name=" + name);
+				redirect(event, "http://" + url + "?name=" + name);
 			}
 			else if(fail.length() > 0) {
 				Output out = event.output();
