@@ -104,10 +104,9 @@ In sort of chronological order:
  <b><i>\/</i></b> anything below          -> main|fail|salt not found
  
                             // login
-                            // &lt;hash&gt; is either md5(&lt;key&gt; + &lt;salt&gt;)
-                            //               or md5([pass] + &lt;salt&gt;)
-                            //        we use md5(md5(pass + name.toLowerCase()) + &lt;salt&gt;)
-                            //        make sure you keep the case correct
+                            // &lt;hash&gt; is either md5(md5(&lt;key&gt; + &lt;salt&gt;) + &lt;key&gt;)
+                            //               or md5(md5([auth] + &lt;salt&gt;) + [auth])
+                            //        where auth = md5(pass + name.toLowerCase())
  <b><i>sign</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> sign|done|&lt;name&gt;/&lt;id&gt;
                             -> sign|fail|wrong pass
 
