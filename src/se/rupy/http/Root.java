@@ -705,7 +705,8 @@ public class Root extends Service {
 		else {
 			File folder = new File(root.substring(0, root.lastIndexOf("/")));
 			folder.mkdirs();
-			folder.setLastModified(new Date().getTime());
+			// Neat but leads to edit wars...
+			//folder.setLastModified(new Date().getTime());
 
 			BufferedWriter output = new BufferedWriter(new FileWriter(root));
 			output.write(data.toString());
