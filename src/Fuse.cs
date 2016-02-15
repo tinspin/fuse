@@ -259,7 +259,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			throw new Exception(salt[2]);
 		}
 		
-		string[] sign = Push("sign|" + salt[2] + "|" + MD5(hide + salt[2])).Split('|');
+		string[] sign = Push("sign|" + salt[2] + "|" + MD5(MD5(hide + salt[2]) + hide)).Split('|');
 
 		if(sign[1].Equals("fail")) {
 			throw new Exception(sign[2]);
