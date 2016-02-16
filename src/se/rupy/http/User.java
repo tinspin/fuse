@@ -276,7 +276,7 @@ public class User extends Service {
 						
 						JSONObject object = new JSONObject(Root.file(file));
 						String secret = object.has("pass") ? object.getString("pass") : object.getString("key");
-						String hash = Deploy.hash(Deploy.hash(secret + salt, algo) + secret, algo); // makes the solution dictionary safe!
+						String hash = Deploy.hash(Deploy.hash(secret + salt, algo) + secret, algo);
 
 						if(hash.equals(pass)) {
 							object.remove("pass");
