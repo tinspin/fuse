@@ -177,11 +177,17 @@ In sort of chronological order:
                             -> data|fail|user not found
                             -> data|fail|type not found
                             
+                            // add item
+*<b><i>item</i></b>|&lt;salt&gt;|&lt;json&gt;         -> item|done|&lt;salt&gt;
+                            -> item|fail|name not found
+                            -> item|fail|type not found
+                           o-> item|&lt;salt&gt;|{…}
+
                             // pick item
-*<b><i>pick</i></b>|&lt;salt&gt;|&lt;json&gt;         -> pick|done
-                            -> data|fail|name not found
-                            -> data|fail|type not found
-                            
+*<b><i>pick</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> pick|done
+                            -> pick|fail|salt not found
+                           x-> pick|user|salt
+                           
                             // get user country (ISO 3166)
 *<b><i>flag</i></b>|&lt;salt&gt;|&lt;user&gt;         -> flag|done|&lt;code&gt;
 
@@ -200,7 +206,7 @@ In sort of chronological order:
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;;…        // use load to get data
 *<b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
-*<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|{"name","x","y","z",…};…
+*<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|{"salt","name","x","y","z",…};…
                             -> list|fail|wrong type
 
                             // join room
@@ -307,7 +313,7 @@ In sort of chronological order:
 +-----------------+
 
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
-                           o-> <b><i>item</i></b>|{…}                     // items appearing in room
+                           o-> <b><i>item</i></b>|&lt;salt&gt;|{…}              // items appearing in room
                            o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;   // to broadcast global messages
 
 +-----------------+       

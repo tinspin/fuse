@@ -882,11 +882,19 @@ public class Router implements Node {
 		return "main|fail|rule not found";
 	}
 
-	public static class User {
+	public static class Part {
+		String salt;
+	}
+	
+	public static class Item extends Part {
+		
+	}
+	
+	public static class User extends Part {
 		String[] ip;
 		JSONObject json;
 		LinkedList ally = new LinkedList();
-		String name, salt, nick, flag, poll, type;
+		String name, nick, flag, poll, type;
 		boolean sign, away;
 		Game game;
 		Room room;
