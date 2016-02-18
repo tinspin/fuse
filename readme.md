@@ -312,9 +312,9 @@ In sort of chronological order:
                             
  <b><i>/\</b></i> type not found          -> main|fail|type not found
 
-+-----------------+       
++------------------+       
 | <i>Broadcast rules.</i> |
-+-----------------+
++------------------+
 
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
                            o-> <b><i>item</i></b>|&lt;salt&gt;|&lt;many&gt;|&lt;spot&gt;|{"name",…}  // items appearing in room
