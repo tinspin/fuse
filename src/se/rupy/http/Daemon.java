@@ -94,6 +94,10 @@ public class Daemon implements Runnable {
 		}
 	}
 
+	public String domain() {
+		return domain;
+	}
+	
 	static Instrumentation inst;
 
 	public static void premain(String agentArgs, Instrumentation inst) {
@@ -366,8 +370,8 @@ public class Daemon implements Runnable {
 		}
 
 		if(host) {
-			deployer = new Deploy.Archive(this);
 			domain = properties.getProperty("domain", "host.rupy.se");
+			deployer = new Deploy.Archive(this);
 			
 			PermissionCollection permissions = new Permissions();
 			permissions.add(new PropertyPermission("host", "read"));
@@ -2071,7 +2075,7 @@ public class Daemon implements Runnable {
 	}
 	
 	static {
-		javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier(){
+		javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier() {
 			public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
 				if(hostname.equals("rupy.se")) {
 					return true;

@@ -129,7 +129,7 @@ public class Deploy extends Service {
 
 		out.flush();
 		out.close();
-
+		
 		/*
 		 * Authenticate
 		 */
@@ -273,23 +273,28 @@ public class Deploy extends Service {
 				permissions.add(new FilePermission(path + "-", "write"));
 				permissions.add(new FilePermission(path + "-", "delete"));
 				permissions.add(new FilePermission("res" + File.separator + "-", "read"));
+				permissions.add(new PropertyPermission("data", "read"));
 				permissions.add(new PropertyPermission("host", "read"));
 				permissions.add(new PropertyPermission("user.dir", "read"));
 				permissions.add(new PropertyPermission("java.version", "read"));
 				permissions.add(new RuntimePermission("getClassLoader"));
 				permissions.add(new RuntimePermission("getStackTrace"));
 
-				if(daemon.domain.equals("host.rupy.se")) {
-					/* These projects require insecure features.
-					 */
-					if(host.equals(System.getProperty("data", "root.rupy.se"))) {
-						try {
-							permissions.add(new LinkPermission("hard"));
-							permissions.add(new LinkPermission("symbolic"));
-						}
-						catch(Error e) {}
+				/* These projects require insecure features.
+				 * The -Ddata flag allows you to hotdeploy your own ROOT database, mainly for development.
+				 */
+				
+				if(host.equals(System.getProperty("data", "root.rupy.se"))) {
+					try {
+						permissions.add(new LinkPermission("hard"));
+						permissions.add(new LinkPermission("symbolic"));
 					}
-					
+					catch(Error e) {}
+				}
+				
+				// GWT requires some nasty privileges.
+				// I don't know the impact of these yet.
+				if(daemon.domain.equals("host.rupy.se")) {
 					if(host.equals("bank.rupy.se") || host.equals("www.bitcoinbankbook.com")) {
 						try {
 							permissions.add(new RuntimePermission("accessDeclaredMembers"));
@@ -354,7 +359,7 @@ public class Deploy extends Service {
 				}
 				catch(Exception e) {
 					if(event == null)
-						System.out.println(e);
+						e.printStackTrace();
 					else
 						throw e;
 				}
@@ -740,7 +745,7 @@ public class Deploy extends Service {
 			super(in);
 		}
 
-		public void close() {
+		public void close() throws IOException {
 			// geez
 		}
 	}

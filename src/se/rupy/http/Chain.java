@@ -100,6 +100,8 @@ public class Chain extends LinkedList {
 				if(root) {
 					final Deploy.Archive archive = event.daemon().archive(event.query().header("host"), true);
 
+					//System.out.println(event.query().header("host") + " " + archive);
+					
 					try {
 						Thread.currentThread().setContextClassLoader(archive);
 					}
