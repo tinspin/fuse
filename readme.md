@@ -68,6 +68,8 @@ The server is the <b><i>root</i></b>
 The game is a <b><i>stem</i></b> and also a room.
 The room is a <b><i>leaf</i></b>
 
+&lt;spot&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;
+
 In sort of chronological order:
 
 +-----------------------------------+
@@ -177,11 +179,17 @@ In sort of chronological order:
                             -> data|fail|user not found
                             -> data|fail|type not found
                             
-                            // add item
-*<b><i>item</i></b>|&lt;salt&gt;|&lt;json&gt;         -> item|done|&lt;salt&gt;
+                            // make item
+*<b><i>item</i></b>|&lt;salt&gt;|&lt;spot&gt;|{…}             -> item|done|&lt;salt&gt;
                             -> item|fail|name not found
                             -> item|fail|type not found
-                           o-> item|&lt;salt&gt;|{…}
+                           o-> item|&lt;salt&gt;|&lt;x&gt;,&lt;y&gt;,&lt;z&gt;|{…}
+                            
+                            // drop item
+*<b><i>drop</i></b>|&lt;salt&gt;|{…}           -> drop|done|&lt;salt&gt;
+                            -> item|fail|name not found
+                            -> item|fail|type not found
+                           o-> item|&lt;salt&gt;|&lt;x&gt;,&lt;y&gt;,&lt;z&gt;|{…}
 
                             // pick item
 *<b><i>pick</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> pick|done
@@ -313,7 +321,7 @@ In sort of chronological order:
 +-----------------+
 
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
-                           o-> <b><i>item</i></b>|&lt;salt&gt;|{…}              // items appearing in room
+                           o-> <b><i>item</i></b>|&lt;salt&gt;|&lt;x&gt;,&lt;y&gt;,&lt;z&gt;|{…}  // items appearing in room
                            o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;   // to broadcast global messages
 
 +-----------------+       
