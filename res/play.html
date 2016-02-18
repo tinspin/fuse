@@ -20,7 +20,7 @@ public class play extends Service {
 	public String path() { return "/play.html"; }
 	public void filter(Event event) throws Event, Exception {
 		event.query().parse();
-		String host = event.query().string("host", "fuse.rupy.se");
+		String host = event.query().string("host", Router.fuse);
 		String game = event.query().string("game", "cube");
 		String path = event.query().string("path", game + ".html");
 		
@@ -64,7 +64,7 @@ public class play extends Service {
     left: 5px;
   }
 </style>
-<script src="[[ Router.hash ]].js"></script>
+<script src="[[ Router.hash.equals("md5") ? "md5" : "sha256" ]].js"></script>
 <!-- fuse network code -->
 <script>
   var host = '[[ host ]]';
@@ -351,7 +351,7 @@ public class play extends Service {
       show_fail('mail invalid');
       return;
     }
-[[	if(Router.hash.equals("sha256")) { ]]
+[[	if(Router.hash.equals("sha-256")) { ]]
     var hash = CryptoJS.SHA256(pass + name.toLowerCase());
 [[	} else { ]]
     var hash = md5(pass + name.toLowerCase());
@@ -378,7 +378,7 @@ public class play extends Service {
       return;
     }
     var auth = pass;
-[[	if(Router.hash.equals("sha256")) { ]]
+[[	if(Router.hash.equals("sha-256")) { ]]
     if(!digits.test(name))
       auth = CryptoJS.SHA256(pass + name.toLowerCase());
     var sign = push('sign|' + salt[2] + '|' + CryptoJS.SHA256(CryptoJS.SHA256(auth + salt[2]) + auth));
@@ -564,7 +564,7 @@ public class play extends Service {
      fuse.rupy.se/play.html?game=<name>&path=URLtoyourgame.html -->
      
 [[		if(path.equals("cube.html") || path.equals("bomb.html")) {
-			BufferedReader file = new BufferedReader(new FileReader("app/fuse.rupy.se/" + path));
+			BufferedReader file = new BufferedReader(new FileReader("app/" + Router.path + "/" + path));
 			String line = file.readLine();
 			while(line != null) {
 				out.println(line);

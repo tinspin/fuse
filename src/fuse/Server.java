@@ -44,6 +44,13 @@ public class Server extends Service implements Node, Runnable {
 	}
 	
 	public void create(Daemon daemon) throws Exception {
+		if(!daemon.domain().equals("host.rupy.se")) {
+			Router.hash = "sha-256";
+			Router.host = "data" + daemon.domain().substring(4);
+			Router.fuse = System.getProperty("host") + daemon.domain().substring(4);
+			Router.path = "www" + daemon.domain().substring(4);
+		}
+		
 		if(!alive) {
 			list = new ConcurrentHashMap();
 			alive = true;

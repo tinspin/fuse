@@ -1,8 +1,6 @@
 package fuse;
 
 import java.io.File;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,19 +15,20 @@ import org.json.JSONObject;
 
 import se.rupy.http.Async;
 import se.rupy.http.Daemon;
-import se.rupy.http.Deploy;
 import se.rupy.http.Event;
 import se.rupy.http.Output;
 import se.rupy.http.Root;
 import se.rupy.http.Service;
 
 public class Router implements Node {
-	public static final String hash = "md5";
-	private static final String host = "fuse.rupy.se";
+	public static String hash = "md5";
+	public static String host = "fuse.rupy.se";
+	public static String fuse = "fuse.rupy.se";
+	public static String path = "fuse.rupy.se";
 	
 	public static ConcurrentLinkedDeque score = new ConcurrentLinkedDeque();
 
-	ConcurrentHashMap users = new ConcurrentHashMap();
+	ConcurrentHashMap parts = new ConcurrentHashMap();
 	ConcurrentHashMap names = new ConcurrentHashMap();
 	ConcurrentHashMap games = new ConcurrentHashMap();
 
@@ -38,6 +37,7 @@ public class Router implements Node {
 	static Node node;
 
 	private static String head() {
+		System.out.println(host);
 		return "Head:less\r\nHost:" + host; // Head:less\r\n
 	}
 	
@@ -49,7 +49,7 @@ public class Router implements Node {
 	private synchronized String session() throws Exception {
 		String salt = Event.random(4);
 
-		while(users.get(salt) != null)
+		while(parts.get(salt) != null)
 			salt = Event.random(4);
 
 		return salt;
@@ -57,7 +57,7 @@ public class Router implements Node {
 
 	private User session(Event event, String name, String salt) throws Exception {
 		User user = new User(name, salt);
-		users.put(salt, user);
+		parts.put(salt, user);
 		names.put(name, user);
 
 		// This uses host.rupy.se specific MaxMind GeoLiteCity.dat
@@ -68,7 +68,7 @@ public class Router implements Node {
 
 		return user;
 	}
-
+	
 	public void broadcast(String message, boolean finish) throws Exception {
 		throw new Exception("Nope");
 	}
@@ -251,7 +251,7 @@ public class Router implements Node {
 		if(split.length < 2)
 			return "main|fail|salt not found";
 		
-		final User user = (User) users.get(split[1]);
+		final User user = (User) parts.get(split[1]);
 
 		if(user == null || !user.salt.equals(split[1])) {
 			System.err.println(split[1]);
@@ -331,7 +331,7 @@ public class Router implements Node {
 
 			// add this user and users in other games to each other
 
-			Iterator it = users.values().iterator();
+			Iterator it = parts.values().iterator();
 
 			while(it.hasNext()) {
 				User u = (User) it.next();
@@ -1275,7 +1275,7 @@ public class Router implements Node {
 	}
 
 	public void broadcast(User user, String message, boolean ignore) throws Exception {
-		Iterator it = users.values().iterator();
+		Iterator it = parts.values().iterator();
 
 		while(it.hasNext()) {
 			User u = (User) it.next();
@@ -1306,11 +1306,11 @@ public class Router implements Node {
 	}
 
 	public synchronized void remove(String salt, int place) throws Exception {
-		User user = (User) users.get(salt);
+		User user = (User) parts.get(salt);
 
 		System.err.println("quit " + place + " " + user + " " + salt); // + " " + stack(Thread.currentThread()));
 
-		users.remove(salt);
+		parts.remove(salt);
 		
 		if(user != null && user.salt != null && user.game != null) {
 			Room room = user.move(user.room, null);

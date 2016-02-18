@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="remote" name="fuse">
 	
-	<property name="pass" value="vrALHWDZCGG9YHRi"/>
+	<property file="../pass.txt" />
 	<property name="root" value="fuse.rupy.se"/>
 	
 	<path id="lib">
@@ -88,7 +88,7 @@
 		<java fork="yes" classname="se.rupy.http.Deploy" classpath="lib/http.jar">
 			<arg line="host.rupy.se"/>
 			<arg line="bin/${root}.jar"/>
-			<arg line="${pass}"/>
+			<arg line="${fuse.rupy.se}"/>
 		</java>
 	</target>
 	
