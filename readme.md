@@ -180,13 +180,13 @@ In sort of chronological order:
                             -> data|fail|type not found
                             
                             // make item
-*<b><i>item</i></b>|&lt;salt&gt;|&lt;spot&gt;|{…}             -> item|done|&lt;salt&gt;
+*<b><i>item</i></b>|&lt;salt&gt;|&lt;spot&gt;|{…}     -> item|done|&lt;salt&gt;
                             -> item|fail|name not found
                             -> item|fail|type not found
                            o-> item|&lt;salt&gt;|&lt;x&gt;,&lt;y&gt;,&lt;z&gt;|{…}
                             
                             // drop item
-*<b><i>drop</i></b>|&lt;salt&gt;|{…}           -> drop|done|&lt;salt&gt;
+*<b><i>drop</i></b>|&lt;salt&gt;|{…}            -> drop|done|&lt;salt&gt;
                             -> item|fail|name not found
                             -> item|fail|type not found
                            o-> item|&lt;salt&gt;|&lt;x&gt;,&lt;y&gt;,&lt;z&gt;|{…}
