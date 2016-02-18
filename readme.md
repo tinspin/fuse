@@ -180,16 +180,16 @@ In sort of chronological order:
                             -> data|fail|type not found
                             
                             // make item
-*<b><i>item</i></b>|&lt;salt&gt;|&lt;spot&gt;|{…}     -> item|done|&lt;salt&gt;
+*<b><i>item</i></b>|&lt;salt&gt;|&lt;spot&gt;|&lt;name&gt;  -> item|done|&lt;salt&gt;
                             -> item|fail|name not found
                             -> item|fail|type not found
-                           o-> item|&lt;salt&gt;|&lt;x&gt;,&lt;y&gt;,&lt;z&gt;|{…}
+                           o-> item|&lt;salt&gt;|1|&lt;spot&gt;|{…}
                             
-                            // drop item
-*<b><i>drop</i></b>|&lt;salt&gt;|{…}            -> drop|done|&lt;salt&gt;
+                            // drop item, how many and which
+*<b><i>drop</i></b>|&lt;salt&gt;|&lt;many&gt;|&lt;name&gt;  -> drop|done|&lt;salt&gt;
                             -> item|fail|name not found
                             -> item|fail|type not found
-                           o-> item|&lt;salt&gt;|&lt;x&gt;,&lt;y&gt;,&lt;z&gt;|{…}
+                           o-> item|&lt;salt&gt;|&lt;many&gt;|&lt;spot&gt;|{…}
 
                             // pick item
 *<b><i>pick</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> pick|done
@@ -214,7 +214,7 @@ In sort of chronological order:
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;;…        // use load to get data
 *<b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
-*<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|{"salt","name","x","y","z",…};…
+*<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|&lt;salt&gt;;&lt;spot&gt;{"name",…};…
                             -> list|fail|wrong type
 
                             // join room
@@ -321,7 +321,7 @@ In sort of chronological order:
 +-----------------+
 
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
-                           o-> <b><i>item</i></b>|&lt;salt&gt;|&lt;x&gt;,&lt;y&gt;,&lt;z&gt;|{…}  // items appearing in room
+                           o-> <b><i>item</i></b>|&lt;salt&gt;|&lt;many&gt;|&lt;spot&gt;|{"name",…}  // items appearing in room
                            o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;   // to broadcast global messages
 
 +-----------------+       
