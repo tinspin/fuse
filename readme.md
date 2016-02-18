@@ -299,20 +299,16 @@ In sort of chronological order:
  
                             // motion for 3D MMO games with dynamic here/gone
  <b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
-                           x-> <b><i>move</i></b>|&lt;user&gt;|&lt;data&gt;
-                            // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;;&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;;&lt;action&gt;(;&lt;speed&gt;;…)
-                            //          position   |orientation    |key/button
+                           x-> <b><i>move</i></b>|&lt;user&gt;|&lt;x&gt;,&lt;y&gt;,&lt;z&gt;;&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;;&lt;action&gt;(;&lt;speed&gt;;…)
+                            //                      position   |orientation    |key/button
 
                             // destination to interpolate to
 *<b><i>goal</i></b>|&lt;salt&gt;|&lt;data&gt;         -> goal|done
-                           x-> <b><i>goal</i></b>|&lt;user&gt;|&lt;data&gt;
-                            // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;
-                            //          position
+                           x-> <b><i>goal</i></b>|&lt;user&gt;|&lt;spot&gt;
                             
                             // object to follow/attack
 *<b><i>hunt</i></b>|&lt;salt&gt;|&lt;data&gt;         -> hunt|done
-                           x-> <b><i>hunt</i></b>|&lt;user&gt;|&lt;data&gt;
-                            // &lt;data&gt; = &lt;salt&gt;;&lt;kill&gt;
+                           x-> <b><i>hunt</i></b>|&lt;user&gt;|&lt;salt&gt;;&lt;kill&gt;
                             
  <b><i>/\</b></i> type not found          -> main|fail|type not found
 
