@@ -290,15 +290,15 @@ In sort of chronological order:
                             //          position   |orientation    |key/button
 
                             // destination to interpolate to
- <b><i>walk</i></b>|&lt;salt&gt;|&lt;data&gt;         -> walk|done
-                           x-> <b><i>walk</i></b>|&lt;user&gt;|&lt;data&gt;
+ <b><i>goal</i></b>|&lt;salt&gt;|&lt;data&gt;         -> goal|done
+                           x-> <b><i>goal</i></b>|&lt;user&gt;|&lt;data&gt;
                             // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;
                             //          position
                             
                             // object to follow/attack
  <b><i>hunt</i></b>|&lt;salt&gt;|&lt;data&gt;         -> hunt|done
                            x-> <b><i>hunt</i></b>|&lt;user&gt;|&lt;data&gt;
-                            // &lt;data&gt; = &lt;salt&gt;,&lt;kill&gt;
+                            // &lt;data&gt; = &lt;salt&gt;;&lt;kill&gt;
                             
  <b><i>/\</b></i> type not found          -> main|fail|type not found
 
@@ -342,7 +342,7 @@ In sort of chronological order:
  face edit      echo drop copy      busy
       base
  paid rent cash sold coin earn bill sale
- tone tune mute
+ tone tune mute walk
 
 // todo
 
