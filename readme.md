@@ -183,13 +183,13 @@ In sort of chronological order:
 *<b><i>item</i></b>|&lt;salt&gt;|&lt;spot&gt;|&lt;name&gt;  -> item|done|&lt;salt&gt;
                             -> item|fail|name not found
                             -> item|fail|type not found
-                           o-> item|&lt;salt&gt;|1|&lt;spot&gt;|{…}
+                           o-> item|&lt;salt&gt;|1|&lt;spot&gt;|{"name",…}
                             
                             // drop item, how many and which
 *<b><i>drop</i></b>|&lt;salt&gt;|&lt;many&gt;|&lt;name&gt;  -> drop|done|&lt;salt&gt;
                             -> item|fail|name not found
                             -> item|fail|type not found
-                           o-> item|&lt;salt&gt;|&lt;many&gt;|&lt;spot&gt;|{…}
+                           o-> item|&lt;salt&gt;|&lt;many&gt;|&lt;spot&gt;|{"name",…}
 
                             // pick item
 *<b><i>pick</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> pick|done
