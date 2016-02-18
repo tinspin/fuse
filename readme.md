@@ -290,13 +290,13 @@ In sort of chronological order:
                             //          position   |orientation    |key/button
 
                             // destination to interpolate to
- <b><i>goal</i></b>|&lt;salt&gt;|&lt;data&gt;         -> goal|done
+*<b><i>goal</i></b>|&lt;salt&gt;|&lt;data&gt;         -> goal|done
                            x-> <b><i>goal</i></b>|&lt;user&gt;|&lt;data&gt;
                             // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;
                             //          position
                             
                             // object to follow/attack
- <b><i>hunt</i></b>|&lt;salt&gt;|&lt;data&gt;         -> hunt|done
+*<b><i>hunt</i></b>|&lt;salt&gt;|&lt;data&gt;         -> hunt|done
                            x-> <b><i>hunt</i></b>|&lt;user&gt;|&lt;data&gt;
                             // &lt;data&gt; = &lt;salt&gt;;&lt;kill&gt;
                             
