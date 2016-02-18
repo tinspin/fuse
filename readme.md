@@ -177,8 +177,8 @@ In sort of chronological order:
                             -> data|fail|user not found
                             -> data|fail|type not found
                             
-                            // set item data
-*<b><i>item</i></b>|&lt;salt&gt;|&lt;json&gt;         -> item|done
+                            // pick item
+*<b><i>pick</i></b>|&lt;salt&gt;|&lt;json&gt;         -> pick|done
                             -> data|fail|name not found
                             -> data|fail|type not found
                             
@@ -289,6 +289,17 @@ In sort of chronological order:
                             // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;;&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;;&lt;action&gt;(;&lt;speed&gt;;…)
                             //          position   |orientation    |key/button
 
+                            // destination to interpolate to
+ <b><i>walk</i></b>|&lt;salt&gt;|&lt;data&gt;         -> walk|done
+                           x-> <b><i>walk</i></b>|&lt;user&gt;|&lt;data&gt;
+                            // &lt;data&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;
+                            //          position
+                            
+                            // object to follow/attack
+ <b><i>hunt</i></b>|&lt;salt&gt;|&lt;data&gt;         -> hunt|done
+                           x-> <b><i>hunt</i></b>|&lt;user&gt;|&lt;data&gt;
+                            // &lt;data&gt; = &lt;salt&gt;,&lt;kill&gt;
+                            
  <b><i>/\</b></i> type not found          -> main|fail|type not found
 
 +-----------------+       
@@ -318,9 +329,9 @@ In sort of chronological order:
  push pull
  show hide
  gain lose
-      info data      tape task step
+ item info data      tape task step
  time host           solo      slow slot
- pick                skip skin size site
+                     skip skin size site
       fill full make seal seek sell
  slay ruin rise poll said rank rate star
  drop made halt vote read      rest peek
@@ -336,7 +347,6 @@ In sort of chronological order:
 // todo
 
  noop = zero, none?
- move = walk?
 
 // attribution
 
