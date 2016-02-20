@@ -381,11 +381,11 @@ public class play extends Service {
 [[	if(Router.hash.equals("sha-256")) { ]]
     if(!digits.test(name))
       auth = CryptoJS.SHA256(pass + name.toLowerCase());
-    var sign = push('sign|' + salt[2] + '|' + CryptoJS.SHA256(CryptoJS.SHA256(auth + salt[2]) + auth));
+    var sign = push('sign|' + salt[2] + '|' + CryptoJS.SHA256(auth + salt[2]));
 [[	} else { ]]
     if(!digits.test(name))
       auth = md5(pass + name.toLowerCase());
-    var sign = push('sign|' + salt[2] + '|' + md5(md5(auth + salt[2]) + auth));
+    var sign = push('sign|' + salt[2] + '|' + md5(auth + salt[2]));
 [[	} ]]
     if(sign[1] == 'done')
       authorize(salt[2]);

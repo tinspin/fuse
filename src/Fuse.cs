@@ -13,6 +13,7 @@ using System.Text;
  * For usage scroll down to Main() method.
  */
 public class Fuse { // : MonoBehaviour { // ### 2
+	public static bool WEAK = false; // MD5 or SHA256
 	public static Fuse instance;
 	public string host = "fuse.rupy.se";
 	public int port = 80;
@@ -226,7 +227,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	public void User(string name, string mail, string pass) {
-		EasyUser(name, mail, MD5(pass + name.ToLower()));
+		EasyUser(name, mail, hash(pass + name.ToLower()));
 	}
 
 	private string[] EasyUser(string name, string mail, string hash) {
@@ -249,7 +250,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	public string SignNamePass(string name, string pass) {
-		return Sign(name, MD5(pass + name.ToLower()));
+		return Sign(name, hash(pass + name.ToLower()));
 	}
 	
 	private string Sign(string user, string hide) {
@@ -259,7 +260,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			throw new Exception(salt[2]);
 		}
 		
-		string[] sign = Push("sign|" + salt[2] + "|" + MD5(MD5(hide + salt[2]) + hide)).Split('|');
+		string[] sign = Push("sign|" + salt[2] + "|" + hash(hide + salt[2])).Split('|');
 
 		if(sign[1].Equals("fail")) {
 			throw new Exception(sign[2]);
@@ -354,10 +355,10 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		return push;
 	}
 
-	public static string MD5(string input) {
-		MD5 md5 = System.Security.Cryptography.MD5.Create();
+	public static string hash(string input) {
+		HashAlgorithm algo = WEAK ? (HashAlgorithm) MD5.Create() : (HashAlgorithm) SHA256.Create();
 		byte[] bytes = Encoding.UTF8.GetBytes(input);
-		byte[] hash = md5.ComputeHash(bytes);
+		byte[] hash = algo.ComputeHash(bytes);
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < hash.Length; i++) {
 			sb.Append(hash[i].ToString("X2"));
@@ -400,6 +401,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			//   get name and key
 
 			key = "F9hG7K7Jwe1SmtiQ";
+			//key = "yt4QACtL2uzbyUTT";
 			string salt = null;
 
 			if(key != null) {

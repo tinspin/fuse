@@ -37,7 +37,7 @@ public class Router implements Node {
 	static Node node;
 
 	private static String head() {
-		System.out.println(host);
+		//System.out.println(host);
 		return "Head:less\r\nHost:" + host; // Head:less\r\n
 	}
 	
