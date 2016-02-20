@@ -97,14 +97,14 @@ public class User extends Service {
 		out.println("      } else {");
 		out.println("        salt.value = '" + salt + "';");
 		out.println("        if(!digits.test(name.value))");
-		if(algo.equals("sha-256"))
+		if(algo.equals("sha-256")) {
 			out.println("          pass.value = CryptoJS.SHA256(pass.value + name.value.toLowerCase());");
-		else
-			out.println("          pass.value = md5(pass.value + name.value.toLowerCase());");
-		if(algo.equals("sha-256"))
 			out.println("        pass.value = CryptoJS.SHA256(pass.value + salt.value);");
-		else
+		}
+		else {
+			out.println("          pass.value = md5(pass.value + name.value.toLowerCase());");
 			out.println("        pass.value = md5(pass.value + salt.value);");
+		}
 		out.println("      }");
 		out.println("      document.forms['user'].submit();");
 		out.println("    }");
