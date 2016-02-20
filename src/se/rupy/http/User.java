@@ -95,14 +95,10 @@ public class User extends Service {
 			out.println("        pass.value = md5(pass.value + name.value.toLowerCase());");
 		out.println("      } else {");
 		out.println("        salt.value = '" + salt + "';");
-		if(algo.equals("sha-256")) {
-			out.println("        var secret = CryptoJS.SHA256(pass.value + name.value.toLowerCase());");
-			out.println("        pass.value = CryptoJS.SHA256(CryptoJS.SHA256(secret + salt.value) + secret);");
-		}
-		else {
-			out.println("        var secret = md5(pass.value + name.value.toLowerCase());");
-			out.println("        pass.value = md5(md5(secret + salt.value) + secret);");
-		}
+		if(algo.equals("sha-256"))
+			out.println("        pass.value = CryptoJS.SHA256(CryptoJS.SHA256(pass.value + name.value.toLowerCase()) + salt.value);");
+		else
+			out.println("        pass.value = md5(md5(pass.value + name.value.toLowerCase()) + salt.value);");
 		out.println("      }");
 		out.println("      document.forms['user'].submit();");
 		out.println("    }");
@@ -269,23 +265,42 @@ public class User extends Service {
 						File file = new File(Root.home() + "/node/user/name" + Root.path(name));
 
 						if(!file.exists()) {
-							System.out.println(file);
 							event.output().print("name not found");
 							throw event;
 						}
-						
-						JSONObject object = new JSONObject(Root.file(file));
-						String secret = object.has("pass") ? object.getString("pass") : object.getString("key");
-						String hash = Deploy.hash(Deploy.hash(secret + salt, algo) + secret, algo);
 
+						JSONObject object = new JSONObject(Root.file(file));
+						
+						String secret = object.optString("pass");
+						boolean key = false;
+						
+						if(secret.length() == 0) {
+							secret = object.optString("key");
+							key = true;
+						}
+						
+						String hash = Deploy.hash(secret + salt, algo);
+						
 						if(hash.equals(pass)) {
 							object.remove("pass");
 							event.output().print(object);
 						}
+						else if(key == false) {
+							secret = object.optString("key");
+							hash = Deploy.hash(secret + salt, algo);
+							
+							if(hash.equals(pass)) {
+								object.remove("pass");
+								event.output().print(object);
+							}
+							else {
+								event.output().print("wrong pass");
+							}
+						}
 						else {
 							event.output().print("wrong pass");
 						}
-						
+
 						throw event;
 					}
 					else {
