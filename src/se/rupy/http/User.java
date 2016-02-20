@@ -262,12 +262,20 @@ public class User extends Service {
 							throw event;
 						}
 						
-						File file = new File(Root.home() + "/node/user/name" + Root.path(name));
+						File file = null;
+						
+						if(name.matches("[0-9]+")) {
+							file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
+						}
+						else {
+							file = new File(Root.home() + "/node/user/name" + Root.path(name));
+						}
 
 						if(!file.exists()) {
 							event.output().print("name not found");
 							throw event;
 						}
+
 
 						JSONObject object = new JSONObject(Root.file(file));
 						
