@@ -83,6 +83,7 @@ public class User extends Service {
 		out.println("      hash('sign');");
 		out.println("    }");
 		out.println("  }");
+		out.println("  var digits = /^\\d+$/;");
 		out.println("  function hash(type) {");
 		out.println("    var name = document.getElementById('name');");
 		out.println("    var pass = document.getElementById('pass');");
@@ -95,10 +96,15 @@ public class User extends Service {
 			out.println("        pass.value = md5(pass.value + name.value.toLowerCase());");
 		out.println("      } else {");
 		out.println("        salt.value = '" + salt + "';");
+		out.println("        if(!digits.test(name.value))");
 		if(algo.equals("sha-256"))
-			out.println("        pass.value = CryptoJS.SHA256(CryptoJS.SHA256(pass.value + name.value.toLowerCase()) + salt.value);");
+			out.println("          pass.value = CryptoJS.SHA256(pass.value + name.value.toLowerCase());");
 		else
-			out.println("        pass.value = md5(md5(pass.value + name.value.toLowerCase()) + salt.value);");
+			out.println("          pass.value = md5(pass.value + name.value.toLowerCase());");
+		if(algo.equals("sha-256"))
+			out.println("        pass.value = CryptoJS.SHA256(pass.value + salt.value);");
+		else
+			out.println("        pass.value = md5(pass.value + salt.value);");
 		out.println("      }");
 		out.println("      document.forms['user'].submit();");
 		out.println("    }");
@@ -275,8 +281,7 @@ public class User extends Service {
 							event.output().print("name not found");
 							throw event;
 						}
-
-
+						
 						JSONObject object = new JSONObject(Root.file(file));
 						
 						String secret = object.optString("pass");
