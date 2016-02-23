@@ -87,7 +87,7 @@ In sort of chronological order:
                             // [pass] if you can't store the &lt;key&gt; otherwise set
                             //        to empty string (||)
                             //        preferably [pass] is a hash with salt 
-                            //        we simply use md5(pass + name.toLowerCase())
+                            //        we simply use <i>hash</i>(pass + name.toLowerCase())
  <b><i>user</i></b>|[name]|[mail]|[pass]  -> user|done|&lt;salt&gt;|&lt;key&gt;|&lt;id&gt;
                             -> user|fail|name too short
                             -> user|fail|name too long
@@ -106,9 +106,9 @@ In sort of chronological order:
  <b><i>\/</i></b> anything below          -> main|fail|salt not found
  
                             // login
-                            // &lt;hash&gt; is either md5(md5(&lt;key&gt; + &lt;salt&gt;) + &lt;key&gt;)
-                            //               or md5(md5([auth] + &lt;salt&gt;) + [auth])
-                            //        where auth = md5(pass + name.toLowerCase())
+                            // &lt;hash&gt; is either <i>hash</i>(<i>hash</i>(&lt;key&gt; + &lt;salt&gt;) + &lt;key&gt;)
+                            //               or <i>hash</i>(<i>hash</i>([auth] + &lt;salt&gt;) + [auth])
+                            //        where auth = hash(pass + name.toLowerCase())
  <b><i>sign</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> sign|done|&lt;name&gt;/&lt;id&gt;
                             -> sign|fail|wrong pass
 
