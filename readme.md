@@ -108,8 +108,8 @@ In sort of chronological order:
  <b><i>\/</i></b> anything below          -> main|fail|salt not found
  
                             // login
-                            // &lt;hash&gt; is either <i>hash</i>(<i>hash</i>(&lt;key&gt; + &lt;salt&gt;) + &lt;key&gt;)
-                            //               or <i>hash</i>(<i>hash</i>([auth] + &lt;salt&gt;) + [auth])
+                            // &lt;hash&gt; is either <i>hash</i>(&lt;key&gt; + &lt;salt&gt;)
+                            //               or <i>hash</i>([auth] + &lt;salt&gt;)
                             //        where auth = hash(pass + name.toLowerCase())
  <b><i>sign</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> sign|done|&lt;name&gt;/&lt;id&gt;
                             -> sign|fail|wrong pass
