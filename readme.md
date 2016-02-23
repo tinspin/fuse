@@ -110,7 +110,6 @@ In sort of chronological order:
                             // login
                             // &lt;hash&gt; is either <i>hash</i>(&lt;key&gt; + &lt;salt&gt;)
                             //               or <i>hash</i>(<i>hash</i>(pass + name.toLowerCase()) + &lt;salt&gt;)
-                            //        where auth = hash(pass + name.toLowerCase())
  <b><i>sign</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> sign|done|&lt;name&gt;/&lt;id&gt;
                             -> sign|fail|wrong pass
 
