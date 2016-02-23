@@ -70,7 +70,7 @@ The room is a <b><i>leaf</i></b>
 
 &lt;spot&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;
 
-<i>hash</i> can be either md5 or sha-256 (default)
+<i>hash</i>() can be either md5 or sha-256
 
 In sort of chronological order:
 
