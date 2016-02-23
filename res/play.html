@@ -563,7 +563,7 @@ public class play extends Service {
      host a file that mimics play.html and call 
      fuse.rupy.se/play.html?game=<name>&path=URLtoyourgame.html -->
      
-[[		if(path.equals("cube.html") || path.equals("bomb.html")) {
+[[		if(path.equals("cube.html") || path.equals("bomb.html") || path.equals("item.html")) {
 			BufferedReader file = new BufferedReader(new FileReader("app/" + Router.path + "/" + path));
 			String line = file.readLine();
 			while(line != null) {

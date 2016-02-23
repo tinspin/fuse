@@ -214,7 +214,7 @@ In sort of chronological order:
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;;…        // use load to get data
 *<b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
-*<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|&lt;salt&gt;;&lt;spot&gt;{"name",…};…
+*<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|&lt;salt&gt;,&lt;many&gt;,&lt;spot&gt;,{"name",…};…
                             -> list|fail|wrong type
 
                             // join room
@@ -317,7 +317,7 @@ In sort of chronological order:
 +------------------+
 
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
-                           o-> <b><i>item</i></b>|&lt;salt&gt;|&lt;many&gt;|&lt;spot&gt;|{"name",…}  // items appearing in room
+                           o-> <b><i>item</i></b>|&lt;salt&gt;,&lt;many&gt;,&lt;spot&gt;,{"name",…}  // items appearing in room
                            o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;   // to broadcast global messages
 
 +-----------------+       
