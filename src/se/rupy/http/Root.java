@@ -1136,6 +1136,9 @@ public class Root extends Service {
 						add = true;
 						JSONObject json = new JSONObject(file(path.toString()));
 
+						if(json.has("key"))
+							json.remove("key");
+
 						if(time)
 							json.put("time", System.currentTimeMillis() - files[i].lastModified());
 
@@ -1262,9 +1265,13 @@ public class Root extends Service {
 					File file = new File(full);
 
 					if(file.exists() && file.isFile()) {
-						String body = file(file);
+						JSONObject json = new JSONObject(file(file));
+
+						if(json.has("key"))
+							json.remove("key");
+
 						event.reply().type("application/json; charset=UTF-8");
-						byte[] data = body.getBytes("UTF-8");
+						byte[] data = json.toString().getBytes("UTF-8");
 						Output out = event.reply().output(data.length);
 						out.write(data);
 					}
