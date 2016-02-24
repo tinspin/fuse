@@ -104,6 +104,7 @@ In sort of chronological order:
  <b><i>salt</i></b>|&lt;name&gt;/&lt;id&gt;           -> salt|done|&lt;salt&gt;
                             -> salt|fail|name not found
                             -> salt|fail|id not found
+                            -> salt|fail|unknown problem
  
  <b><i>\/</i></b> anything below          -> main|fail|salt not found
  
@@ -112,6 +113,7 @@ In sort of chronological order:
                             //               or <i>hash</i>(<i>hash</i>(pass + name.toLowerCase()) + &lt;salt&gt;)
  <b><i>sign</i></b>|&lt;salt&gt;|&lt;hash&gt;         -> sign|done|&lt;name&gt;/&lt;id&gt;
                             -> sign|fail|wrong pass
+                            -> sign|fail|unknown problem
 
  <b><i>\/</i></b> anything below          -> main|fail|not authorized
 
@@ -213,7 +215,6 @@ In sort of chronological order:
 
                             // list rooms or data
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
- <b><i>list</i></b>|&lt;salt&gt;|data|&lt;type&gt;    -> list|done|data|&lt;id&gt;;…        // use load to get data
 *<b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
 *<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|&lt;salt&gt;;&lt;many&gt;;&lt;spot&gt;;{"name",…};…
                             -> list|fail|wrong type
@@ -262,11 +263,14 @@ In sort of chronological order:
                            x-> <b><i>quit</i></b>|&lt;user&gt;
 
                             // save data
- <b><i>save</i></b>|&lt;salt&gt;|&lt;type&gt;|{…}     -> save|done|&lt;id&gt;|&lt;key&gt;         // use {"key": &lt;key&gt;,…} to update
-                            -> save|fail|too large
+ <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}     -> save|done
+                            -> save|fail|name too short
+                            -> save|fail|name too long
+                            -> save|fail|data too large
+                            -> save|fail|unknown problem
 
                             // load data
- <b><i>load</i></b>|&lt;salt&gt;|&lt;type&gt;|&lt;id&gt;    -> load|done|{…}                // use &lt;id&gt; from list|data|&lt;type&gt;
+ <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;          -> load|done|{…}
                             -> load|fail|not found
 
                             // play game

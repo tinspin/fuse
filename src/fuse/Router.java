@@ -25,6 +25,7 @@ public class Router implements Node {
 	public static String host = "fuse.rupy.se";
 	public static String fuse = "fuse.rupy.se";
 	public static String path = "fuse.rupy.se";
+	public static String what = "localhost";
 	
 	public static ConcurrentLinkedDeque score = new ConcurrentLinkedDeque();
 
@@ -40,7 +41,7 @@ public class Router implements Node {
 		//System.out.println(host);
 		return "Head:less\r\nHost:" + host; // Head:less\r\n
 	}
-	
+
 	public void call(Daemon daemon, Node node) throws Exception {
 		this.daemon = daemon;
 		this.node = node;
@@ -68,19 +69,19 @@ public class Router implements Node {
 
 		return user;
 	}
-	
+
 	public void broadcast(String message, boolean finish) throws Exception {
 		throw new Exception("Nope");
 	}
-	
+
 	public String push(String salt, String data, boolean wake) throws Exception {
 		throw new Exception("Nope");
 	}
-	
+
 	public boolean wakeup(String name) { return false; }
-	
+
 	static SimpleDateFormat date = new SimpleDateFormat("HH:mm:ss.SSS");
-	
+
 	public String push(final Event event, String data) throws Event, Exception {
 		final String[] split = data.split("\\|");
 
@@ -116,7 +117,7 @@ public class Router implements Node {
 			if(pass && split[3].length() < 3)
 				return "user|fail|pass too short";
 
-			Async.Work user = new Async.Work(event) {
+			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					String json = "{";
 					String sort = "";
@@ -197,13 +198,13 @@ public class Router implements Node {
 				}
 			};
 
-			event.daemon().client().send("localhost", user, 30);
+			event.daemon().client().send(what, work, 30);
 			throw event;
 		}
 
 		if(split[0].equals("salt")) {
 			final String name = split[1].toLowerCase();
-			
+
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.get("/salt", head());
@@ -222,9 +223,9 @@ public class Router implements Node {
 				}
 			};
 
-			event.daemon().client().send("localhost", work, 30);
+			event.daemon().client().send(what, work, 30);
 			throw event;
-			
+
 			/*
 			String salt = session();
 
@@ -245,12 +246,12 @@ public class Router implements Node {
 			session(event, name, salt, json);
 
 			return "salt|done|" + salt;
-			*/
+			 */
 		}
 
 		if(split.length < 2)
 			return "main|fail|salt not found";
-		
+
 		final User user = (User) parts.get(split[1]);
 
 		if(user == null || !user.salt.equals(split[1])) {
@@ -278,6 +279,7 @@ public class Router implements Node {
 					catch(Exception e) {
 						event.query().put("fail", "sign|fail|" + body);
 					}
+					
 					event.reply().wakeup(true, true);
 				}
 
@@ -288,9 +290,9 @@ public class Router implements Node {
 				}
 			};
 
-			event.daemon().client().send("localhost", work, 30);
+			event.daemon().client().send(what, work, 30);
 			throw event;
-			
+
 			/*
 			if(user.name.length() > 0 && hash.length() > 0) {
 				String key = user.name.matches("[0-9]+") || !user.json.has("pass") ? user.json.getString("key") : user.json.getString("pass");
@@ -305,7 +307,7 @@ public class Router implements Node {
 					return "sign|fail|wrong " + (user.json.has("pass") ? "pass" : "key");
 				}
 			}
-			*/
+			 */
 		}
 
 		if(!user.sign)
@@ -313,7 +315,7 @@ public class Router implements Node {
 
 		if(split[0].equals("game")) {
 			System.err.println("push " + Router.date.format(new Date()) + " " + user.salt + " " + user.name);
-			
+
 			if(!split[2].matches("[a-zA-Z]+"))
 				return "game|fail|name invalid";
 
@@ -433,7 +435,7 @@ public class Router implements Node {
 					}
 				};
 
-				event.daemon().client().send("localhost", work, 30);
+				event.daemon().client().send(what, work, 30);
 				throw event;
 			}
 		}
@@ -460,7 +462,7 @@ public class Router implements Node {
 
 		if(split[0].equals("ally")) {
 			String info = split.length > 3 ? "|" + split[3] : "";
-			
+
 			final User poll = (User) names.get(split[2]);
 
 			if(poll == null) {
@@ -468,7 +470,7 @@ public class Router implements Node {
 			}
 
 			if(user.ally(poll)) {
-				Async.Work meta = new Async.Work(event) {
+				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
 						call.post("/meta", head(), 
 								("pkey=" + user.json.getString("key") + "&ckey=" + poll.json.getString("key") + 
@@ -488,11 +490,11 @@ public class Router implements Node {
 					}
 				};
 
-				event.daemon().client().send("localhost", meta, 30);
-				
+				event.daemon().client().send(what, work, 30);
+
 				return "ally|done";
 			}
-			
+
 			boolean game = user.room instanceof Game;
 
 			if(!game)
@@ -560,7 +562,7 @@ public class Router implements Node {
 
 				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
-						call.get("/link/user/" + type + "/" + key + "?from=" + from + 
+						call.get("/meta/user/" + type + "/" + key + "?from=" + from + 
 								"&size=" + size, head());
 					}
 
@@ -584,7 +586,7 @@ public class Router implements Node {
 					}
 				};
 
-				event.daemon().client().send("localhost", work, 30);
+				event.daemon().client().send(what, work, 30);
 				throw event;
 			}
 
@@ -612,7 +614,7 @@ public class Router implements Node {
 					poll.poll = user.name;
 					user.poll = poll.name;
 					user.type = poll.type = "join";
-					
+
 					return "join|done|poll";
 				}
 			}
@@ -636,9 +638,9 @@ public class Router implements Node {
 
 		if(split[0].equals("poll")) {
 			String type = user.type;
-			
+
 			System.err.println(split[2] + " " + names);
-			
+
 			final User poll = (User) names.get(split[2]);
 			boolean accept = split[3].toLowerCase().equals("true");
 
@@ -667,7 +669,7 @@ public class Router implements Node {
 						user.game.send(user, "room|" + room);
 				}
 				else if(type.equals("ally")) {
-					Async.Work meta = new Async.Work(event) {
+					Async.Work work = new Async.Work(event) {
 						public void send(Async.Call call) throws Exception {
 							call.post("/meta", head(), 
 									("pkey=" + user.json.getString("key") + "&ckey=" + poll.json.getString("key") + 
@@ -689,7 +691,7 @@ public class Router implements Node {
 						}
 					};
 
-					event.daemon().client().send("localhost", meta, 30);
+					event.daemon().client().send(what, work, 30);
 					throw event;
 				}
 				else
@@ -699,7 +701,7 @@ public class Router implements Node {
 			user.poll = null;
 			poll.poll = null;
 			user.type = poll.type = null;
-			
+
 			return "poll|done|" + type;
 		}
 
@@ -715,7 +717,7 @@ public class Router implements Node {
 			if(user.room.user == null)
 				return "play|fail|in lobby";
 
-			if(user.room.users.size() < 2)
+			if(user.room.users.size() < 2 && !user.room.type.equals("item"))
 				return "play|fail|only one player";
 
 			if(user.room.user == user)
@@ -787,68 +789,74 @@ public class Router implements Node {
 		}
 
 		if(split[0].equals("save")) {
-			if(split[2].length() > 512) {
-				return "save|fail|too large";
+			if(split[2].length() < 3) {
+				return "save|fail|name too short";
+			}
+			
+			if(split[2].length() > 12) {
+				return "save|fail|name too long";
+			}
+			
+			if(split[3].length() > 512) {
+				return "save|fail|data too large";
 			}
 
-			final String type = split[1];
+			final String name = split[2];
 			final JSONObject json = new JSONObject(split[3]);
-			final String key = json.optString("key");
-			final String user_key = user.json.getString("key");
 
-			Async.Work node = new Async.Work(event) {
+			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					String data = "json=" + json.toString() + "&type=" + type + 
-							"&sort=key" + (key.length() > 0 ? "" : "&create");
-					call.post("/node", head(), data.getBytes("utf-8"));
+					call.post("/meta", head(), 
+							("pkey=" + user.json.getString("key") + "&ckey=" + name + 
+									"&ptype=user&ctype=data&json=" + json).getBytes("utf-8"));
 				}
 
-				public void read(final String host, final String body) throws Exception {
-					final JSONObject node = (JSONObject) new JSONObject(body);
-
-					Async.Work link = new Async.Work(event) {
-						public void send(Async.Call call) throws Exception {
-							call.post("/link", head(), 
-									("pkey=" + user_key + "&ckey=" + node.getString("key") + 
-											"&ptype=user&ctype=" + type).getBytes("utf-8"));
-						}
-
-						public void read(String host, String body) throws Exception {
-							System.err.println("fuse node " + body);
-							String key = node.getString("key");
-							event.query().put("done", "save|done|" + Root.hash(key) + "|" + key);
-							event.reply().wakeup();
-						}
-
-						public void fail(String host, Exception e) throws Exception {
-							System.err.println("fuse link " + e);
-						}
-					};
-
-					event.daemon().client().send(host, link, 30);
+				public void read(String host, String body) throws Exception {
+					System.err.println("save " + body);
+					event.query().put("done", "save|done");
+					event.reply().wakeup(true, true);
 				}
 
 				public void fail(String host, Exception e) throws Exception {
-					System.err.println("fuse save " + e);
+					System.err.println("save " + e);
+					event.query().put("fail", "save|fail|unknown problem");
+					event.reply().wakeup(true, true);
 				}
 			};
 
-			event.daemon().client().send("localhost", node, 30);
+			event.daemon().client().send(what, work, 30);
 			throw event;
 		}
 
 		if(split[0].equals("load")) {
-			String type = split[1];
-			long id = Long.parseLong(split[3]);
+			final String name = split[1];
 
-			File file = new File(Root.home() + "/node/" + type + "/id" + Root.path(id));
+			Async.Work work = new Async.Work(event) {
+				public void send(Async.Call call) throws Exception {
+					call.get("/meta/user/data/" + user.name + "/" + name, head());
+				}
 
-			if(!file.exists()) {
-				System.err.println(file);
-				event.query().put("fail", "load|fail|not found");
-			}
+				public void read(String host, String body) throws Exception {
+					try {
+						JSONObject json = new JSONObject(body);
+						event.query().put("done", "load|done|" + body);
+					}
+					catch(Exception e) {
+						event.query().put("fail", "sign|fail|" + body);
+					}
+					
+					event.reply().wakeup(true, true);
+				}
 
-			return "load|done|" + Root.file(file);
+				public void fail(String host, Exception e) throws Exception {
+					e.printStackTrace();
+					event.query().put("fail", "load|fail|unknown problem");
+					event.reply().wakeup(true, true);
+				}
+			};
+			
+			event.daemon().client().send(what, work, 30);
+			throw event;
 		}
 
 		if(split[0].equals("chat")) {
@@ -885,11 +893,11 @@ public class Router implements Node {
 	public static class Part {
 		String salt;
 	}
-	
+
 	public static class Item extends Part {
-		
+
 	}
-	
+
 	public static class User extends Part {
 		String[] ip;
 		JSONObject json;
@@ -905,12 +913,12 @@ public class Router implements Node {
 			this.name = name;
 			this.salt = salt;
 		}
-		
+
 		private void auth(JSONObject json) throws Exception {
 			this.json = json;
 			this.id = Root.hash(json.getString("key"));
 			this.sign = true;
-			
+
 			try {
 				ally();
 			}
@@ -941,8 +949,8 @@ public class Router implements Node {
 			}
 
 			raf.close();
-			*/
-			
+			 */
+
 			Async.Work work = new Async.Work(null) {
 				public void send(Async.Call call) throws Exception {
 					call.get("/meta/user/user/" + json.getString("key"), head());
@@ -952,7 +960,7 @@ public class Router implements Node {
 					try {
 						JSONObject json = new JSONObject(body);
 						JSONArray list = json.getJSONArray("list");
-						
+
 						for(int i = 0; i < list.length(); i++) {
 							String name = JSONObject.getNames(list.getJSONObject(i))[0];
 							File file = new File(Root.home() + "/node/user/name" + Root.path(name));
@@ -967,7 +975,7 @@ public class Router implements Node {
 				}
 			};
 
-			daemon.client().send("localhost", work, 30);
+			daemon.client().send(what, work, 30);
 		}
 
 		void peer(Event event, String ip) {
@@ -979,7 +987,7 @@ public class Router implements Node {
 		void add(long ally) {
 			this.ally.add(new Long(ally));
 		}
-		
+
 		void remove(long ally) {
 			this.ally.remove(new Long(ally));
 		}
@@ -1118,10 +1126,10 @@ public class Router implements Node {
 					if(all || !from.name.equals(user.name)) {
 						if(data.startsWith("here")) {
 							node.push(user.salt, data + from.peer(user), false);
-							
+
 							if(user.ally(from))
 								node.push(user.salt, "ally|" + from.name, false);
-							
+
 							node.wakeup(user.salt);
 						}
 						else if(data.startsWith("gone") && from.room.user != null) {
@@ -1311,7 +1319,7 @@ public class Router implements Node {
 		System.err.println("quit " + place + " " + user + " " + salt); // + " " + stack(Thread.currentThread()));
 
 		parts.remove(salt);
-		
+
 		if(user != null && user.salt != null && user.game != null) {
 			Room room = user.move(user.room, null);
 			user.game.rooms.remove(user.name);

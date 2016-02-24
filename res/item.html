@@ -7,7 +7,7 @@
 
   }
   function make_room() {
-    return 'item|2';
+    return 'item|1';
   }
   function sent(user, data) { /* send(data) is broadcasted to N-1 */
 
@@ -20,4 +20,13 @@
   }
 </script>
 
-<div id="item" style="width: 250px; height: 350px; background-color: black;"></div>
+<div id="room"><table>
+<tr><td colspan="3"><div id="fail3"></div></td></tr>
+<tr><td align="center"><i>data</i></td><td></td>
+    <td align="center"><i>json</i></td></tr>
+<tr><td><select id="data" size="5" multiple></select></td><td></td>
+    <td><textarea id="json" rows="5"></textarea></td></tr>
+<tr><td><a href="javascript:load();">load</a></td><td></td>
+    <td><a href="javascript:save();">save</a></td></tr>
+</table>
+</div>
