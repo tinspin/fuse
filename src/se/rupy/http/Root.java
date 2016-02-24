@@ -669,11 +669,18 @@ public class Root extends Service {
 		if(!parent.exists())
 			throw new MetaFail("Parent node doesn't exist. (" + parent + ")");
 
-		if(!child.exists())
-			throw new MetaFail("Child node doesn't exist. (" + child + ")");
-
 		JSONObject p = new JSONObject(file(parent));
-		JSONObject c = new JSONObject(file(child));
+		JSONObject c = null;
+
+		if(!child.exists()) {
+			if(ctype.equals("data") && ckey.length() < LENGTH) {
+				// Free write on /meta/user/data...
+			}
+			else
+				throw new MetaFail("Child node doesn't exist. (" + child + ")");
+		}
+		else
+			c = new JSONObject(file(child));
 
 		String pname = pkey;
 		String cname = ckey;
@@ -681,7 +688,7 @@ public class Root extends Service {
 		if(p.has("name"))
 			pname = p.getString("name");
 
-		if(c.has("name"))
+		if(c != null && c.has("name"))
 			cname = c.getString("name");
 
 		String ppname = path(pname);
@@ -709,6 +716,9 @@ public class Root extends Service {
 			//folder.setLastModified(new Date().getTime());
 
 			if(data == null) {
+				if(ctype.equals("user"))
+					throw new MetaFail("You can't hardlink 'user' type.");
+
 				try {
 					Files.createLink(Paths.get(root), child.toPath());
 				}
@@ -722,9 +732,9 @@ public class Root extends Service {
 				output.close();
 			}
 
-			if(echo) {
+			if(echo && c != null && data != null) {
 				new File(link.substring(0, link.lastIndexOf("/"))).mkdirs();
-				
+
 				try {
 					Files.createLink(Paths.get(link), Paths.get(root));
 				}
@@ -1125,10 +1135,10 @@ public class Root extends Service {
 					else {
 						add = true;
 						JSONObject json = new JSONObject(file(path.toString()));
-						
+
 						if(time)
 							json.put("time", System.currentTimeMillis() - files[i].lastModified());
-						
+
 						obj.put(name, json);
 					}
 
@@ -1246,10 +1256,18 @@ public class Root extends Service {
 				else if(rule.equals("meta")) {
 					if(last.length() == 0)
 						fail(3, event, full, rule, head, tail, last);
-					
+
 					full = home() + "/meta/" + head + "/" + tail + Root.path(last);
 
 					File file = new File(full);
+
+					if(file.exists() && file.isFile()) {
+						String body = file(file);
+						event.reply().type("application/json; charset=UTF-8");
+						byte[] data = body.getBytes("UTF-8");
+						Output out = event.reply().output(data.length);
+						out.write(data);
+					}
 
 					boolean found = file.exists() && file.isDirectory();
 
@@ -1587,7 +1605,7 @@ public class Root extends Service {
 				}
 
 				meta((JSONObject) event.query().get("json"), null);
-				
+
 				Output out = event.output();
 				out.println(event.query().string("result"));
 				out.finish();
@@ -1634,7 +1652,7 @@ public class Root extends Service {
 					JSONObject root = new JSONObject(file(home() + "/node/user/key" + Root.path(user)));
 
 					String end = "/" + root.getString("name") + "/root";
-					
+
 					JSONObject file = new JSONObject(file(home() + "/node/" + type + "/id" + Root.path(node)));
 
 					String ckey = file.getString("key");
@@ -1644,13 +1662,13 @@ public class Root extends Service {
 					}
 
 					String name = Root.path(file.getString("user"));
-					
+
 					File folder = new File(home() + "/meta/user/" + type + name + "/" + ckey + path.substring(0, path.length() - end.length()));
-					
+
 					if(!folder.exists()) {
 						throw new Exception("Path '" + path + "' parent folder not found.");
 					}
-					
+
 					root = new JSONObject(file(home() + "/node/user/name" + name));
 
 					String pkey = root.getString("key");
@@ -1678,7 +1696,7 @@ public class Root extends Service {
 				}
 
 				meta((JSONObject) event.query().get("json"), null);
-				
+
 				Output out = event.output();
 				out.println(event.query().string("result"));
 				out.finish();
@@ -1725,10 +1743,10 @@ public class Root extends Service {
 									"\"child\":{\"key\":\"" + ckey + "\",\"type\":\"" + ctype + "\"}," + 
 									"\"echo\":" + echo + ",\"tear\":" + tear + 
 									",\"path\":\"" + path + "\"}");
-					
+
 					if(data.length() > 0)
-						json.put("json", data);
-					
+						json.put("json", new JSONObject(data));
+
 					event.query().put("json", json);
 					meta(json, event);
 				}
@@ -1742,7 +1760,7 @@ public class Root extends Service {
 		public String path() {
 			return "/salt";
 		}
-		
+
 		public void filter(Event event) throws Event, Exception {
 			String salt = Event.random(4);
 
