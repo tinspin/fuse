@@ -607,7 +607,7 @@ public class Root extends Service {
 	private static void meta(JSONObject json, final Event event) throws Exception {
 		JSONObject parent = json.getJSONObject("parent");
 		JSONObject child = json.getJSONObject("child");
-		JSONObject node = json.getJSONObject("json");
+		JSONObject node = json.optJSONObject("json");
 		boolean echo = json.optBoolean("echo");
 		boolean tear = json.optBoolean("tear");
 		String path = json.getString("path");
@@ -708,9 +708,19 @@ public class Root extends Service {
 			// Neat but leads to edit wars...
 			//folder.setLastModified(new Date().getTime());
 
-			BufferedWriter output = new BufferedWriter(new FileWriter(root));
-			output.write(data.toString());
-			output.close();
+			if(data == null) {
+				try {
+					Files.createLink(Paths.get(root), child.toPath());
+				}
+				catch(FileAlreadyExistsException e) {
+					// OK
+				}
+			}
+			else {
+				BufferedWriter output = new BufferedWriter(new FileWriter(root));
+				output.write(data.toString());
+				output.close();
+			}
 
 			if(echo) {
 				new File(link.substring(0, link.lastIndexOf("/"))).mkdirs();
@@ -1713,8 +1723,12 @@ public class Root extends Service {
 					JSONObject json = new JSONObject(
 							"{\"parent\":{\"key\":\"" + pkey + "\",\"type\":\"" + ptype + "\"}," + 
 									"\"child\":{\"key\":\"" + ckey + "\",\"type\":\"" + ctype + "\"}," + 
-									"\"json\":" + data + ",\"echo\":" + echo + ",\"tear\":" + tear + 
+									"\"echo\":" + echo + ",\"tear\":" + tear + 
 									",\"path\":\"" + path + "\"}");
+					
+					if(data.length() > 0)
+						json.put("json", data);
+					
 					event.query().put("json", json);
 					meta(json, event);
 				}
@@ -1751,7 +1765,7 @@ public class Root extends Service {
 			String key = event.string("key");
 			Output out = event.output();
 
-			if(key.length() != LENGTH) {
+			if(key.length() == 0) {
 				out.println("<style> input { font-family: monospace; } </style>");
 				out.println("<pre>");
 				out.println("<form action=\"hash\" method=\"get\">");
