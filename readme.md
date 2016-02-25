@@ -178,7 +178,7 @@ In sort of chronological order:
                             -> ally|fail|user busy
 
                             // get user data, like avatar
-*<b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;type&gt;  -> data|done|{…};…
+*<b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> data|done|{…}
                             -> data|fail|user not found
                             -> data|fail|type not found
                             
@@ -213,8 +213,9 @@ In sort of chronological order:
                             -> room|fail|not in lobby
                             -> room|fail|type invalid       // [a-zA-Z]+
 
-                            // list rooms or items
+                            // list rooms, data or items
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
+ <b><i>list</i></b>|&lt;salt&gt;|data           -> list|done|data|{…};…
 *<b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
 *<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|&lt;salt&gt;;&lt;many&gt;;&lt;spot&gt;;{"name",…};…
                             -> list|fail|wrong type
@@ -266,7 +267,6 @@ In sort of chronological order:
  <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}     -> save|done
                             -> save|fail|name too short
                             -> save|fail|name too long
-                            -> save|fail|data too large
                             -> save|fail|unknown problem
 
                             // load data

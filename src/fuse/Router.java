@@ -225,28 +225,6 @@ public class Router implements Node {
 
 			event.daemon().client().send(what, work, 30);
 			throw event;
-
-			/*
-			String salt = session();
-
-			File file = null;
-			boolean id = name.matches("[0-9]+");
-
-			if(id)
-				file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
-			else
-				file = new File(Root.home() + "/node/user/name" + Root.path(name));
-
-			if(file == null || !file.exists()) {
-				return "salt|fail|" + (id ? "id" : "name") + " not found";
-			}
-
-			JSONObject json = new JSONObject(Root.file(file));
-
-			session(event, name, salt, json);
-
-			return "salt|done|" + salt;
-			 */
 		}
 
 		if(split.length < 2)
@@ -292,22 +270,6 @@ public class Router implements Node {
 
 			event.daemon().client().send(what, work, 30);
 			throw event;
-
-			/*
-			if(user.name.length() > 0 && hash.length() > 0) {
-				String key = user.name.matches("[0-9]+") || !user.json.has("pass") ? user.json.getString("key") : user.json.getString("pass");
-				String md5 = Deploy.hash(key + user.salt, "MD5");
-
-				if(hash.equals(md5)) {
-					user.sign = true;
-					return "sign|done|" + user.name;
-				}
-				else {
-					users.remove(user.salt);
-					return "sign|fail|wrong " + (user.json.has("pass") ? "pass" : "key");
-				}
-			}
-			 */
 		}
 
 		if(!user.sign)
@@ -328,8 +290,6 @@ public class Router implements Node {
 
 			user.game = game;
 			user.move(null, game);
-
-			//broadcast(user, "here|root|" + user.name, true);
 
 			// add this user and users in other games to each other
 
@@ -554,27 +514,25 @@ public class Router implements Node {
 			}
 
 			if(what.equals("data")) {
-				final String type = split[3];
-
-				final int from = 0;
-				final int size = 5;
+				final String name = split[3];
 				final String key = user.json.getString("key");
 
 				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
-						call.get("/meta/user/" + type + "/" + key + "?from=" + from + 
-								"&size=" + size, head());
+						call.get("/meta/user/data/" + user.name, head());
 					}
 
 					public void read(String host, String body) throws Exception {
-						StringBuilder builder = new StringBuilder("list|done|data");
+						StringBuilder builder = new StringBuilder("list|done|data|");
 						final JSONObject result = (JSONObject) new JSONObject(body);
 						JSONArray list = result.getJSONArray("list");
 
 						for(int i = 0; i < list.length(); i++) {
 							JSONObject item = list.getJSONObject(i);
-							long id = Root.hash(item.getString("key"));							
-							builder.append("|" + id);
+							builder.append(item.toString());
+							
+							if(i < list.length() - 1)
+								builder.append(";");
 						}
 
 						event.query().put("done", builder.toString());
@@ -582,7 +540,9 @@ public class Router implements Node {
 					}
 
 					public void fail(String host, Exception e) throws Exception {
-						System.err.println("fuse load " + e);
+						System.err.println("list data " + e);
+						event.query().put("fail", "list|fail|unknown problem");
+						event.reply().wakeup();
 					}
 				};
 
@@ -796,10 +756,6 @@ public class Router implements Node {
 			if(split[2].length() > 12) {
 				return "save|fail|name too long";
 			}
-			
-			if(split[3].length() > 512) {
-				return "save|fail|data too large";
-			}
 
 			final String name = split[2];
 			final JSONObject json = new JSONObject(split[3]);
@@ -828,12 +784,14 @@ public class Router implements Node {
 			throw event;
 		}
 
-		if(split[0].equals("load")) {
-			final String name = split[2];
+		if(split[0].equals("load") || split[0].equals("data")) {
+			boolean load = split[0].equals("load");
+			final String username = load ? user.name : split[2];
+			final String name = load ? split[2] : split[3];
 
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					call.get("/meta/user/data/" + user.name + "/" + name, head());
+					call.get("/meta/user/data/" + username + "/" + name, head());
 				}
 
 				public void read(String host, String body) throws Exception {
@@ -918,7 +876,7 @@ public class Router implements Node {
 			this.json = json;
 			this.id = Root.hash(json.getString("key"));
 			this.sign = true;
-
+			
 			try {
 				ally();
 			}
@@ -928,29 +886,6 @@ public class Router implements Node {
 		}
 
 		private void ally() throws Exception {
-			/* old way didn't allow delete
-			File file = new File(Root.home() + "/meta/user/user" + Root.path(json.getString("key")));
-
-			if(!file.exists())
-				return;
-
-			RandomAccessFile raf = new RandomAccessFile(file, "rw");
-
-			int length = (int) raf.length();
-			byte[] data = new byte[length];
-			int read = raf.read(data);
-			ByteBuffer buffer = ByteBuffer.wrap(data); // TODO: add 0, read?
-
-			for(int i = 0; i < length / 8; i++) {
-				if(buffer.remaining() > 0)
-					ally.addFirst(new Long(buffer.getLong()));
-				else
-					break;
-			}
-
-			raf.close();
-			 */
-
 			Async.Work work = new Async.Work(null) {
 				public void send(Async.Call call) throws Exception {
 					call.get("/meta/user/user/" + json.getString("key"), head());
