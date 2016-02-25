@@ -326,7 +326,11 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	public string Load(string name) {
 		return EasyPush("load|" + name)[2];
 	}
-
+	
+	public string Data(string user, string name) {
+		return EasyPush("data|" + user + "|" + name)[2];
+	}
+	
 	/* tree should be either root, stem or leaf
 	 * root -> whole server, excluding others rooms
 	 * stem -> game lobby, including your own room
