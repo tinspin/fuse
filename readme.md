@@ -59,18 +59,18 @@ i-> = async. send to one user for unique feedback.
 
 <…> = mandatory
 […] = optional
+{…} = json
 
  *  = not implemented yet
 
+<i>hash</i>() can be either md5 or sha-256
+
+&lt;spot&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;
 &lt;tree&gt; for <b><i>here</i></b>/<b><i>gone</i></b>/<b><i>chat</i></b>:
 
 The server is the <b><i>root</i></b>
 The game is a <b><i>stem</i></b> and also a room.
 The room is a <b><i>leaf</i></b>
-
-&lt;spot&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;
-
-<i>hash</i>() can be either md5 or sha-256
 
 In sort of chronological order:
 
@@ -213,7 +213,7 @@ In sort of chronological order:
                             -> room|fail|not in lobby
                             -> room|fail|type invalid       // [a-zA-Z]+
 
-                            // list rooms or data
+                            // list rooms or items
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
 *<b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
 *<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|&lt;salt&gt;;&lt;many&gt;;&lt;spot&gt;;{"name",…};…
@@ -270,7 +270,7 @@ In sort of chronological order:
                             -> save|fail|unknown problem
 
                             // load data
- <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;          -> load|done|{…}
+ <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;         -> load|done|{…}
                             -> load|fail|not found
 
                             // play game
