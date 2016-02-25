@@ -38,7 +38,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 	
 	public Fuse() {
-		Start();
+		//Start();
 	}
 	
 	void Awake() {
@@ -399,6 +399,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	public static void Main() {
 		try {
 			Fuse fuse = new Fuse();
+			fuse.Start();
 			string key;
 
 			// if no key is stored try
