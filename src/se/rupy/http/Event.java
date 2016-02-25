@@ -340,8 +340,8 @@ public class Event extends Throwable implements Chain.Link {
 	 * Escape JSON.
 	 */
 	public static String escape(String value) {
-		value = value.replace("\"", "\\\"");
 		value = value.replace("\\", "\\\\");
+		value = value.replace("\"", "\\\"");
 		value = value.replace("\b", "\\b");
 		value = value.replace("\f", "\\f");
 		value = value.replace("\n", "\\n");
