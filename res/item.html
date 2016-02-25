@@ -16,7 +16,7 @@
     var text = element('data_name');
     var area = element('data_json');
     try {
-      var data = save(text.value, area.value);
+      save(text.value, area.value);
       add_select('data_list', text.value, red);
     }
     catch(e) {

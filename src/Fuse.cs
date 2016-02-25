@@ -13,7 +13,7 @@ using System.Text;
  * For usage scroll down to Main() method.
  */
 public class Fuse { // : MonoBehaviour { // ### 2
-	public static bool WEAK = false; // MD5 or SHA256
+	public static bool WEAK = true; // MD5 or SHA256
 	public static Fuse instance;
 	public string host = "fuse.rupy.se";
 	public int port = 80;
@@ -313,6 +313,18 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	
 	public void Over(string data) {
 		Async("over|" + data);
+	}
+	
+	/* use coroutines for everything where 
+	   you need to act on the response while 
+	   in the main thread */
+	   
+	public void Save(string name, string json) {
+		EasyPush("save|" + name + "|" + json);
+	}
+	
+	public string Load(string name) {
+		return EasyPush("load|" + name)[2];
 	}
 
 	/* tree should be either root, stem or leaf
