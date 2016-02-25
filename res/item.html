@@ -1,22 +1,44 @@
 <!DOCTYPE HTML>
-<style>body{ margin: 0; padding: 0 }</style>
+<style>
+  body{ margin: 0; padding: 0 }
+  #fail3 { color: #ff3300; }
+</style>
 <!-- these methods are called by play.html -->
 <script>
-  var pid;
-  function head(seed) { /* play(seed) is broadcasted to N */
-
+  <!-- item is implemented as a empty game -->
+  function head(seed) {}
+  function make_room() { return 'item|1'; }
+  function sent(user, data) {}
+  function pause(hold) {}
+  function tail() {}
+  <!-- here are the data/item methods -->
+  function data_save() {
+    var text = element('data_name');
+    var area = element('data_json');
+    try {
+      var data = save(text.value, area.value);
+      add_select('data_list', text.value, red);
+    }
+    catch(e) {
+      element('fail3').innerHTML = e;
+    }
   }
-  function make_room() {
-    return 'item|1';
-  }
-  function sent(user, data) { /* send(data) is broadcasted to N-1 */
-
-  }
-  function pause(hold) {
-
-  }
-  function tail() { /* over(data) is broadcasted to N */
-
+  function data_load() {
+    var select = element('data_list');
+    var index = select.selectedIndex;
+    if(index > -1) {
+      var name = select.options[index].text;
+      try {
+        var data = load(name);
+        var text = element('data_name');
+        var area = element('data_json');
+        area.value = data;
+        text.value = name;
+      }
+      catch(e) {
+        element('fail3').innerHTML = e;
+      }
+    }
   }
 </script>
 
@@ -24,9 +46,9 @@
 <tr><td colspan="3"><div id="fail3"></div></td></tr>
 <tr><td align="center"><i>data</i></td><td></td>
     <td align="center"><i>json</i></td></tr>
-<tr><td><select id="data" size="5" multiple></select></td><td></td>
-    <td><textarea id="json" rows="5"></textarea></td></tr>
-<tr><td><a href="javascript:load();">load</a></td><td></td>
-    <td><a href="javascript:save();">save</a></td></tr>
+<tr><td><select id="data_list" size="5" multiple></select></td><td></td>
+    <td><input id="data_name" type="text"><br><br><textarea id="data_json" rows="3"></textarea></td></tr>
+<tr><td><a href="javascript:data_load();">load</a></td><td></td>
+    <td><a href="javascript:data_save();">save</a></td></tr>
 </table>
 </div>

@@ -475,6 +475,18 @@ public class play extends Service {
       }
     }
   }
+  function save(name, json) {
+    return easypush('save|' + name + '|' + json);
+  }
+  function load(name) {
+    return easypush('load|' + name);
+  }
+  function easypush(data) {
+    var data = push(data);
+    if(data[1] == 'fail')
+      throw data[2];
+    return data[2];
+  }
   function exit() {
     var exit = push('exit');
     if(exit[1] == 'done')

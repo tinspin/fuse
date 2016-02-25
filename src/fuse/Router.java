@@ -829,7 +829,7 @@ public class Router implements Node {
 		}
 
 		if(split[0].equals("load")) {
-			final String name = split[1];
+			final String name = split[2];
 
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
