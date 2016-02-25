@@ -118,7 +118,7 @@ public class Root extends Service {
 
 		pass.canRead();
 	}
-	
+
 	static String secret() throws Exception {
 		if(secret == null) {
 			//secret = file("app/" + archive.host() + "/root/secret");
@@ -131,7 +131,7 @@ public class Root extends Service {
 	public void create(Daemon daemon) throws Exception {
 		local = System.getProperty("host", "none");
 	}
-	
+
 	public static String host() throws Exception {
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
@@ -143,7 +143,7 @@ public class Root extends Service {
 			throw new Exception("Host not found.");
 		}
 	}
-	
+
 	/**
 	 * A cross functional Root home folder detection for your deploy.
 	 * 
@@ -194,9 +194,9 @@ public class Root extends Service {
 			throw new Exception("Home could not be found. (" + loader + ")");
 		}
 	}
-	
+
 	// --> http.Root end
-	
+
 	// example data for tutorial
 	final String key = "SWhK6hk5jhQuJJaJ";
 	final String search = "four";
@@ -223,7 +223,7 @@ public class Root extends Service {
 
 	public static String local() { return local; }
 	public String path() { return root; }
-/*
+	/*
 	public void create(Daemon daemon) throws Exception {
 		local = InetAddress.getLocalHost().getHostName();
 		archive = (Deploy.Archive) Thread.currentThread().getContextClassLoader();
@@ -236,7 +236,7 @@ public class Root extends Service {
 	public static String home() {
 		return "app/" + host() + "/root";
 	}
-*/
+	 */
 	public void filter(Event event) throws Event, Exception {
 		Output out = event.output();
 
@@ -493,10 +493,6 @@ public class Root extends Service {
 	public static class MetaFail extends Exception {
 		public MetaFail(String message) { super(message); }
 	}
-
-	//public static class RootFail extends Exception {
-	//	public RootFail(String message) { super(message); }
-	//}
 
 	private static void store(JSONObject json, String type, String sort, boolean create, boolean test) throws Exception {
 		if(exists(json, type, sort, null, create, test) == 0)
@@ -1019,7 +1015,7 @@ public class Root extends Service {
 	/*
 	 * Encryption stuff
 	 */
-/*
+	/*
 	static String secret;
 
 	static String secret() throws Exception {
@@ -1029,7 +1025,7 @@ public class Root extends Service {
 
 		return secret;
 	}
-*/
+	 */
 	public static String file(String path) throws Exception {
 		return file(new File(path));
 	}
@@ -1260,12 +1256,61 @@ public class Root extends Service {
 					if(last.length() == 0)
 						fail(3, event, full, rule, head, tail, last);
 
-					full = home() + "/meta/" + head + "/" + tail + Root.path(last);
+					String[] tree = last.split("/");
+					JSONObject json = null;
+					String key = null;
+
+					/* this looks nasty, but it's simply 
+					 * ways to get data with id/key/name 
+					 * combinations:
+					 * 
+					 * /meta/<head>/<tail>/<id>
+					 * /meta/<head>/<tail>/<id>/<name>
+					 * /meta/<head>/<tail>/<name>/<id>
+					 * /meta/<head>/<tail>/<name>/<name>
+					 * /meta/<head>/<tail>/<key>
+					 * /meta/<head>/<tail>/<key>/<name>
+					 * 
+					 * more will be added as needed.
+					 */
+					
+					if(tree[0].matches("[0-9]+")) { // parent id
+						long id = Long.parseLong(tree[0]);
+						json = new JSONObject(file(home() + "/node/" + head + "/id" + Root.path(id)));
+
+						if(tree.length == 1) {
+							full = home() + "/meta/" + head + "/" + tail + Root.path(key);
+						}
+						else if(tree.length > 1) {
+							full = home() + "/meta/" + head + "/" + tail + "/" + Root.path(key) + "/" + tree[1];
+						}
+					}
+					else if(tree[0].length() < LENGTH) { // parent name
+						json = new JSONObject(file(home() + "/node/" + head + "/name" + Root.path(tree[0])));
+						key = json.getString("key");
+
+						if(tree.length == 1) {
+							full = home() + "/meta/" + head + "/" + tail + Root.path(key);
+						}
+						else if(tree.length > 1) {
+							if(tree[1].matches("[0-9]+")) { // child id
+								long id = Long.parseLong(tree[1]);
+								json = new JSONObject(file(home() + "/node/" + tail + "/id" + Root.path(id)));
+								full = home() + "/meta/" + head + "/" + tail + "/" + Root.path(key) + "/" + json.getString("key");
+							}
+							else {
+								full = home() + "/meta/" + head + "/" + tail + "/" + Root.path(key) + "/" + tree[1];
+							}
+						}
+					}
+					else { // parent key
+						full = home() + "/meta/" + head + "/" + tail + Root.path(last);
+					}
 
 					File file = new File(full);
 
 					if(file.exists() && file.isFile()) {
-						JSONObject json = new JSONObject(file(file));
+						json = new JSONObject(file(file));
 
 						if(json.has("key"))
 							json.remove("key");
@@ -1275,48 +1320,6 @@ public class Root extends Service {
 						Output out = event.reply().output(data.length);
 						out.write(data);
 						throw event;
-					}
-
-					boolean found = file.exists() && file.isDirectory();
-
-					if(!found) {
-						String[] tree = last.split("/");
-
-						try {
-							if(tree.length == 1) {
-								long id = Long.parseLong(last);
-								JSONObject json = new JSONObject(file(home() + "/node/" + head + "/id" + Root.path(id)));
-								String key = json.getString("key");
-
-								if(json.has("name")) {
-									String name = json.getString("name");
-									full = home() + "/meta/" + head + "/" + tail + Root.path(name);
-								}
-								else {
-									full = home() + "/meta/" + head + "/" + tail + Root.path(key);
-								}
-							}
-							else if(tree.length > 1) {
-								long id = Long.parseLong(tree[1]);
-								JSONObject json = new JSONObject(file(home() + "/node/" + tail + "/id" + Root.path(id)));
-								String key = json.getString("key");
-
-								if(json.has("name")) {
-									String name = json.getString("name");
-									full = home() + "/meta/" + head + "/" + tail + Root.path(tree[0]) + "/" + name;
-								}
-								else {
-									full = home() + "/meta/" + head + "/" + tail + Root.path(tree[0]) + "/" + key;
-								}
-							}
-						}
-						catch(Exception e) {
-							JSONObject json = new JSONObject(file(home() + "/node/" + head + "/key" + Root.path(last)));
-							String name = json.getString("name");
-							full = home() + "/meta/" + head + "/" + tail + Root.path(name);
-						}
-
-						file = new File(full);
 					}
 
 					if(file.exists() && file.isDirectory()) {
@@ -1670,16 +1673,16 @@ public class Root extends Service {
 					}
 
 					String name = Root.path(file.getString("user"));
+					
+					root = new JSONObject(file(home() + "/node/user/name" + name));
 
-					File folder = new File(home() + "/meta/user/" + type + name + "/" + ckey + path.substring(0, path.length() - end.length()));
+					String pkey = root.getString("key");
+
+					File folder = new File(home() + "/meta/user/" + type + Root.path(pkey) + "/" + ckey + path.substring(0, path.length() - end.length()));
 
 					if(!folder.exists()) {
 						throw new Exception("Path '" + path + "' parent folder not found.");
 					}
-
-					root = new JSONObject(file(home() + "/node/user/name" + name));
-
-					String pkey = root.getString("key");
 
 					JSONObject json = new JSONObject(
 							"{\"parent\":{\"key\":\"" + pkey + "\",\"type\":\"user\"}," + 
