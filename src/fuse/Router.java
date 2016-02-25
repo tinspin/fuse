@@ -797,10 +797,10 @@ public class Router implements Node {
 				public void read(String host, String body) throws Exception {
 					try {
 						JSONObject json = new JSONObject(body);
-						event.query().put("done", "load|done|" + body);
+						event.query().put("done", split[0] + "|done|" + body);
 					}
 					catch(Exception e) {
-						event.query().put("fail", "sign|fail|" + body);
+						event.query().put("fail", split[0] + "|fail|" + body);
 					}
 					
 					event.reply().wakeup(true, true);
@@ -808,7 +808,7 @@ public class Router implements Node {
 
 				public void fail(String host, Exception e) throws Exception {
 					e.printStackTrace();
-					event.query().put("fail", "load|fail|unknown problem");
+					event.query().put("fail", split[0] + "|fail|unknown problem");
 					event.reply().wakeup(true, true);
 				}
 			};
