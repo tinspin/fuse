@@ -681,8 +681,9 @@ public class Root extends Service {
 		String pname = pkey;
 		String cname = ckey;
 
-		if(p.has("name"))
-			pname = p.getString("name");
+		// This breaks user add/change name...
+		//if(p.has("name"))
+		//	pname = p.getString("name");
 
 		if(c != null && c.has("name"))
 			cname = c.getString("name");
