@@ -1274,6 +1274,7 @@ public class Root extends Service {
 						byte[] data = json.toString().getBytes("UTF-8");
 						Output out = event.reply().output(data.length);
 						out.write(data);
+						throw event;
 					}
 
 					boolean found = file.exists() && file.isDirectory();
