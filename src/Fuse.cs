@@ -13,7 +13,6 @@ using System.Text;
  * For usage scroll down to Main() method.
  */
 public class Fuse { // : MonoBehaviour { // ### 2
-	public static bool WEAK = true; // MD5 or SHA256
 	public static Fuse instance;
 	public string host = "fuse.rupy.se";
 	public int port = 80;
@@ -371,8 +370,8 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		return push;
 	}
 
-	public static string hash(string input) {
-		HashAlgorithm algo = WEAK ? (HashAlgorithm) MD5.Create() : (HashAlgorithm) SHA256.Create();
+	public string hash(string input) {
+		HashAlgorithm algo = host.Equals("fuse.rupy.se") ? (HashAlgorithm) MD5.Create() : (HashAlgorithm) SHA256.Create();
 		byte[] bytes = Encoding.UTF8.GetBytes(input);
 		byte[] hash = algo.ComputeHash(bytes);
 		StringBuilder sb = new StringBuilder();
