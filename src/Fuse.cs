@@ -48,27 +48,35 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		//DontDestroyOnLoad(gameObject);
 	}
 	
-	void Start() {
-		instance = this;
+	public void Host(string host) {
+		this.host = host;
 		bool policy = true;
 
 		//policy = Security.PrefetchSocketPolicy(host, port); // not needed for most cases ### 5
-
+		
 		if(!policy)
 			throw new Exception("Policy (" + host + ":" + port + ") failed.");
-
+		
 		IPAddress address = Dns.GetHostEntry(host).AddressList[0];
 		remote = new IPEndPoint(address, port);
-
-		input = new Queue<string>();
-		output = new Queue<string>();
-
-		thread = new Thread(PushAsync);
-		thread.Start();
-
+		
+		Log(host + " " + address);
+		
 		push = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		push.NoDelay = true;
 		push.Connect(remote);
+	}
+
+	void Start() {
+		Log("Start");
+
+		instance = this;
+		
+		input = new Queue<string>();
+		output = new Queue<string>();
+		
+		thread = new Thread(PushAsync);
+		thread.Start();
 	}
 
 	public void Pull(string salt) {
@@ -399,6 +407,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		try {
 			Fuse fuse = new Fuse();
 			fuse.Start();
+			fuse.Host("fuse.rupy.se");
 			string key;
 
 			// if no key is stored try
