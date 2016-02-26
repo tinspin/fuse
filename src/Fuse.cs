@@ -338,6 +338,20 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		return EasyPush("data|" + user + "|" + name)[2];
 	}
 	
+	public string[] ListData() {
+		string list = Push("list|data");
+
+		if(list.StartsWith("list|fail")) {
+			Log(list);
+			return null;
+		}
+
+		if(list.Length > 15)
+			return list.Substring(15).Split(';'); // from 'list|done|data|'
+		else
+			return null;
+	}
+	
 	/* tree should be either root, stem or leaf
 	 * root -> whole server, excluding others rooms
 	 * stem -> game lobby, including your own room
