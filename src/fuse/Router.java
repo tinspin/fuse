@@ -495,9 +495,9 @@ public class Router implements Node {
 		}
 
 		if(split[0].equals("list")) {
-			String what = split[2];
+			String list = split[2];
 
-			if(what.equals("room")) {
+			if(list.equals("room")) {
 				StringBuilder builder = new StringBuilder("list|done|room|");
 				Iterator it = user.game.rooms.values().iterator();
 
@@ -513,8 +513,7 @@ public class Router implements Node {
 				return builder.toString();
 			}
 
-			if(what.equals("data")) {
-				final String name = split[3];
+			if(list.equals("data")) {
 				final String key = user.json.getString("key");
 
 				Async.Work work = new Async.Work(event) {
@@ -532,7 +531,7 @@ public class Router implements Node {
 							String[] name = JSONObject.getNames(json);
 							JSONObject item = json.getJSONObject(name[0]);
 							
-							builder.append(name + "," + item.length());
+							builder.append(name[0] + "," + item.toString().length());
 							
 							if(i < list.length() - 1)
 								builder.append(";");

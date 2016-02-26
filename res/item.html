@@ -6,7 +6,18 @@
 <!-- these methods are called by play.html -->
 <script>
   <!-- item is implemented as a empty game -->
-  function head(seed) {}
+  function head(seed) {
+    var data = listdata();
+    if(data[1] == 'done')
+      clear_select('data_list');
+    console.log('listdata ' + data.length);
+    if(data.length > 3 && data[3].length > 0) {
+      var list = data[3].split(';');
+      for(var i = 0; i < list.length; i++) {
+        add_select('data_list', list[i].split(',')[0], orange);
+      }
+    }
+  }
   function make_room() { return 'item|1'; }
   function sent(user, data) {}
   function pause(hold) {}

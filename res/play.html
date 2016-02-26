@@ -481,6 +481,12 @@ public class play extends Service {
   function load(name) {
     return easypush('load|' + name)[2];
   }
+  function data(user, name) {
+    return easypush('data|' + user + '|' + name)[2];
+  }
+  function listdata() {
+    return push('list|data');
+  }
   function easypush(data) {
     var data = push(data);
     if(data[1] == 'fail')

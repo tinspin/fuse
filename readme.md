@@ -179,7 +179,7 @@ In sort of chronological order:
                             -> ally|fail|user busy
 
                             // get user data, like avatar
-*<b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> data|done|{…}
+ <b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> data|done|{…}
                             -> data|fail|user not found
                             -> data|fail|type not found
                             
