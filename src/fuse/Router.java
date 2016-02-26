@@ -528,8 +528,11 @@ public class Router implements Node {
 						JSONArray list = result.getJSONArray("list");
 
 						for(int i = 0; i < list.length(); i++) {
-							JSONObject item = list.getJSONObject(i);
-							builder.append(item.toString());
+							JSONObject json = list.getJSONObject(i);
+							String[] name = JSONObject.getNames(json);
+							JSONObject item = json.getJSONObject(name[0]);
+							
+							builder.append(name + "," + item.length());
 							
 							if(i < list.length() - 1)
 								builder.append(";");
