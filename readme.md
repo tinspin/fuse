@@ -216,9 +216,10 @@ In sort of chronological order:
 
                             // list rooms, data or items
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
+*<b><i>list</i></b>|&lt;salt&gt;|room|item      -> list|done|item|room|&lt;salt&gt;;&lt;many&gt;;&lt;spot&gt;;{"name",…};…
  <b><i>list</i></b>|&lt;salt&gt;|data           -> list|done|data|&lt;name&gt;,&lt;size&gt;;…
-*<b><i>list</i></b>|&lt;salt&gt;|item|user      -> list|done|item|user|{"name",…};…
-*<b><i>list</i></b>|&lt;salt&gt;|item|room      -> list|done|item|room|&lt;salt&gt;;&lt;many&gt;;&lt;spot&gt;;{"name",…};…
+*<b><i>list</i></b>|&lt;salt&gt;|item           -> list|done|item|user|{"name",…};…
+
                             -> list|fail|wrong type
 
                             // join room
@@ -265,13 +266,13 @@ In sort of chronological order:
                            x-> <b><i>quit</i></b>|&lt;user&gt;
 
                             // save data
- <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}     -> save|done
+ <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|&lt;type&gt;] -> save|done
                             -> save|fail|name too short
                             -> save|fail|name too long
                             -> save|fail|unknown problem
 
                             // load data
- <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;         -> load|done|{…}
+ <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;[|&lt;type&gt;] -> load|done|{…}
                             -> load|fail|not found
 
                             // play game

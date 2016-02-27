@@ -26,7 +26,7 @@ public class Router implements Node {
 	public static String fuse = "fuse.rupy.se";
 	public static String path = "fuse.rupy.se";
 	public static String what = "localhost";
-	
+
 	public static ConcurrentLinkedDeque score = new ConcurrentLinkedDeque();
 
 	ConcurrentHashMap parts = new ConcurrentHashMap();
@@ -257,7 +257,7 @@ public class Router implements Node {
 					catch(Exception e) {
 						event.query().put("fail", "sign|fail|" + body);
 					}
-					
+
 					event.reply().wakeup(true, true);
 				}
 
@@ -495,49 +495,64 @@ public class Router implements Node {
 		}
 
 		if(split[0].equals("list")) {
-			String list = split[2];
+			final String list = split[2];
+			String type = null;
+
+			if(split.length > 2)
+				type = split[3];
 
 			if(list.equals("room")) {
-				StringBuilder builder = new StringBuilder("list|done|room|");
-				Iterator it = user.game.rooms.values().iterator();
+				if(type == null) {
+					StringBuilder builder = new StringBuilder("list|done|room|");
+					Iterator it = user.game.rooms.values().iterator();
 
-				while(it.hasNext()) {
-					Room room = (Room) it.next();
-					builder.append(room);
+					while(it.hasNext()) {
+						Room room = (Room) it.next();
+						builder.append(room);
 
-					if(it.hasNext()) {
-						builder.append(";");
+						if(it.hasNext()) {
+							builder.append(";");
+						}
 					}
-				}
 
-				return builder.toString();
+					return builder.toString();
+				}
+				else {
+					// TODO: load items in room!
+				}
 			}
 
-			if(list.equals("data")) {
+			if(list.equals("data") || list.equals("item")) {
 				final String key = user.json.getString("key");
 
 				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
-						call.get("/meta/user/data/" + user.name, head());
+						call.get("/meta/user/" + list + "/" + user.name, head());
 					}
 
 					public void read(String host, String body) throws Exception {
-						StringBuilder builder = new StringBuilder("list|done|data|");
-						final JSONObject result = (JSONObject) new JSONObject(body);
-						JSONArray list = result.getJSONArray("list");
+						try {
+							JSONObject result = (JSONObject) new JSONObject(body);
+							JSONArray list = result.getJSONArray("list");
 
-						for(int i = 0; i < list.length(); i++) {
-							JSONObject json = list.getJSONObject(i);
-							String[] name = JSONObject.getNames(json);
-							JSONObject item = json.getJSONObject(name[0]);
-							
-							builder.append(name[0] + "," + item.toString().length());
-							
-							if(i < list.length() - 1)
-								builder.append(";");
+							StringBuilder builder = new StringBuilder("list|done|data|");
+
+							for(int i = 0; i < list.length(); i++) {
+								JSONObject json = list.getJSONObject(i);
+								String[] name = JSONObject.getNames(json);
+								JSONObject item = json.getJSONObject(name[0]);
+
+								builder.append(name[0] + "," + item.toString().length());
+
+								if(i < list.length() - 1)
+									builder.append(";");
+							}
+
+							event.query().put("done", builder.toString());
 						}
-
-						event.query().put("done", builder.toString());
+						catch(Exception e) {
+							event.query().put("fail", "list|fail|not found");
+						}
 						event.reply().wakeup();
 					}
 
@@ -754,19 +769,20 @@ public class Router implements Node {
 			if(split[2].length() < 3) {
 				return "save|fail|name too short";
 			}
-			
+
 			if(split[2].length() > 12) {
 				return "save|fail|name too long";
 			}
 
 			final String name = split[2];
 			final JSONObject json = new JSONObject(split[3]);
+			final String type = split.length > 3 ? split[4] : "data";
 
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.post("/meta", head(), 
 							("pkey=" + user.json.getString("key") + "&ckey=" + name + 
-									"&ptype=user&ctype=data&json=" + json).getBytes("utf-8"));
+									"&ptype=user&ctype=" + type + "&json=" + json).getBytes("utf-8"));
 				}
 
 				public void read(String host, String body) throws Exception {
@@ -804,7 +820,7 @@ public class Router implements Node {
 					catch(Exception e) {
 						event.query().put("fail", split[0] + "|fail|" + body);
 					}
-					
+
 					event.reply().wakeup(true, true);
 				}
 
@@ -814,7 +830,7 @@ public class Router implements Node {
 					event.reply().wakeup(true, true);
 				}
 			};
-			
+
 			event.daemon().client().send(what, work, 30);
 			throw event;
 		}
@@ -878,7 +894,7 @@ public class Router implements Node {
 			this.json = json;
 			this.id = Root.hash(json.getString("key"));
 			this.sign = true;
-			
+
 			try {
 				ally();
 			}
