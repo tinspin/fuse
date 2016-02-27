@@ -178,22 +178,19 @@ In sort of chronological order:
                             -> ally|fail|user not online
                             -> ally|fail|user busy
 
-                            // get user data, like avatar
+                            // get user data
  <b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> data|done|{…}
-                            -> data|fail|user not found
-                            -> data|fail|type not found
+                            -> data|fail|not found
                             
-                            // make item
-*<b><i>item</i></b>|&lt;salt&gt;|&lt;spot&gt;|&lt;name&gt;  -> item|done|&lt;salt&gt;
-                            -> item|fail|name not found
-                            -> item|fail|type not found
-                           o-> item|&lt;salt&gt;;1;&lt;spot&gt;;{"name",…}
+                            // get user item
+*<b><i>item</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> item|done|{…}
+                            -> item|fail|not found
                             
                             // drop item, how many and which
-*<b><i>drop</i></b>|&lt;salt&gt;|&lt;many&gt;|&lt;name&gt;  -> drop|done|&lt;salt&gt;
-                            -> item|fail|name not found
-                            -> item|fail|type not found
-                           o-> item|&lt;salt&gt;;&lt;many&gt;;&lt;spot&gt;;{"name",…}
+*<b><i>drop</i></b>|&lt;salt&gt;|&lt;name&gt;|&lt;many&gt;  -> drop|done|&lt;salt&gt;
+                            -> item|fail|not found
+                            -> item|fail|not enough
+                           o-> item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;
 
                             // pick item
 *<b><i>pick</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> pick|done
@@ -216,9 +213,9 @@ In sort of chronological order:
 
                             // list rooms, data or items
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
-*<b><i>list</i></b>|&lt;salt&gt;|room|item      -> list|done|item|room|&lt;salt&gt;;&lt;many&gt;;&lt;spot&gt;;{"name",…};…
+*<b><i>list</i></b>|&lt;salt&gt;|room|item      -> list|done|item|room|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|data           -> list|done|data|&lt;name&gt;,&lt;size&gt;;…
-*<b><i>list</i></b>|&lt;salt&gt;|item           -> list|done|item|user|{"name",…};…
+*<b><i>list</i></b>|&lt;salt&gt;|item           -> list|done|item|user|&lt;name&gt;,&lt;many&gt;;…
 
                             -> list|fail|wrong type
 
@@ -324,7 +321,7 @@ In sort of chronological order:
 +------------------+
 
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
-                           o-> <b><i>item</i></b>|&lt;salt&gt;;&lt;many&gt;;&lt;spot&gt;;{"name",…}  // items appearing in room
+                           o-> <b><i>item</i></b>|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;  // items appearing in room
                            o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;   // to broadcast global messages
 
 +-----------------+       
