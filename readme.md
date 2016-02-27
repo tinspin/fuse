@@ -216,7 +216,7 @@ In sort of chronological order:
 *<b><i>list</i></b>|&lt;salt&gt;|room|item      -> list|done|room|item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|data           -> list|done|data|&lt;name&gt;,&lt;size&gt;;…
 *<b><i>list</i></b>|&lt;salt&gt;|item           -> list|done|item|&lt;name&gt;,&lt;many&gt;;…
-
+                            -> list|fail|not found
                             -> list|fail|wrong type
 
                             // join room
@@ -263,12 +263,14 @@ In sort of chronological order:
                            x-> <b><i>quit</i></b>|&lt;user&gt;
 
                             // save data
+                            // to save items use &lt;type&gt; = "item"
  <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|&lt;type&gt;] -> save|done
                             -> save|fail|name too short
                             -> save|fail|name too long
                             -> save|fail|unknown problem
 
                             // load data
+                            // to load item use &lt;type&gt; = "item"
  <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;[|&lt;type&gt;] -> load|done|{…}
                             -> load|fail|not found
 

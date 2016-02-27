@@ -498,7 +498,7 @@ public class Router implements Node {
 			final String list = split[2];
 			String type = null;
 
-			if(split.length > 2)
+			if(split.length > 3)
 				type = split[3];
 
 			if(list.equals("room")) {
@@ -776,7 +776,7 @@ public class Router implements Node {
 
 			final String name = split[2];
 			final JSONObject json = new JSONObject(split[3]);
-			final String type = split.length > 3 ? split[4] : "data";
+			final String type = split.length > 4 ? split[4] : "data";
 
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
@@ -804,12 +804,13 @@ public class Router implements Node {
 
 		if(split[0].equals("load") || split[0].equals("data")) {
 			boolean load = split[0].equals("load");
-			final String username = load ? user.name : split[2];
+			final String base = load ? user.name : split[2];
 			final String name = load ? split[2] : split[3];
+			final String type = load && split.length > 3 ? split[3] : "data";
 
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					call.get("/meta/user/data/" + username + "/" + name, head());
+					call.get("/meta/user/" + type + "/" + base + "/" + name, head());
 				}
 
 				public void read(String host, String body) throws Exception {
