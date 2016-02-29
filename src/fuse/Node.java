@@ -8,7 +8,7 @@ public interface Node {
 	public String push(Event event, String data) throws Event, Exception;
 	public String push(String salt, String data, boolean wake) throws Exception;
 	public void broadcast(String message, boolean finish) throws Exception;
-	public boolean wakeup(String name);
+	public int wakeup(String name);
 	public void remove(String salt, int place) throws Exception;
 	public void exit();
 }

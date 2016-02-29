@@ -123,14 +123,16 @@ public class Server extends Service implements Node, Runnable {
 		return null;
 	}
 	
-	public boolean wakeup(String salt) {
+	public int wakeup(String salt) {
 		Queue queue = (Queue) list.get(salt); //find(salt);
 
+		//System.err.println(salt + " " + queue.size());
+		
 		if(queue != null) {
-			return queue.event.reply().wakeup() == Reply.OK;
+			return queue.event.reply().wakeup();
 		}
 		
-		return false;
+		return -2;
 	}
 
 	private void purge(boolean finish) throws Exception {

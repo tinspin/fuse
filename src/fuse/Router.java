@@ -78,7 +78,7 @@ public class Router implements Node {
 		throw new Exception("Nope");
 	}
 
-	public boolean wakeup(String name) { return false; }
+	public int wakeup(String name) { return 0; }
 
 	static SimpleDateFormat date = new SimpleDateFormat("HH:mm:ss.SSS");
 
@@ -300,9 +300,11 @@ public class Router implements Node {
 
 				if(user.game != null && u.game != null && user.game.name != u.game.name && user.name != u.name) {
 					node.push(u.salt, "here|root|" + user.name, true);
-					node.push(user.salt, "here|root|" + u.name, true);
+					node.push(user.salt, "here|root|" + u.name, false);
 				}
 			}
+			
+			node.wakeup(user.salt);
 
 			// add this user to users in same game but in rooms
 
@@ -1045,6 +1047,7 @@ public class Router implements Node {
 				System.err.println(users);
 
 			boolean wakeup = false;
+			boolean from_wakeup = false;
 
 			while(it.hasNext()) {
 				User user = (User) it.next();
@@ -1084,13 +1087,17 @@ public class Router implements Node {
 							if(user.ally(from))
 								node.push(user.salt, "ally|" + from.name, false);
 
-							node.wakeup(user.salt);
+							wakeup = true;
 						}
 						else if(data.startsWith("gone") && from.room.user != null) {
-							node.push(user.salt, data + "|" + from.room.user.name, true);
+							node.push(user.salt, data + "|" + from.room.user.name, false);
+
+							wakeup = true;
 						}
 						else {
-							node.push(user.salt, data, true);
+							node.push(user.salt, data, false);
+
+							wakeup = true;
 						}
 					}
 
@@ -1103,10 +1110,29 @@ public class Router implements Node {
 				catch(Exception e) {
 					e.printStackTrace(); // user timeout?
 				}
+
+				//System.err.println("wakeup " + from.salt + " " + user.salt + " " + wakeup);
+
+				if(wakeup)
+					if(from.salt.equals(user.salt)) {
+						from_wakeup = true;
+					}
+					else {
+						int wake = node.wakeup(user.salt);
+
+						if(wake != 0)
+							System.err.println("user wakeup " + wake);
+					}
 			}
 
-			if(wakeup)
-				node.wakeup(from.salt);
+			//System.err.println("wakeup " + from.salt + " " + from_wakeup);
+			
+			if(from_wakeup) {
+				int wake = node.wakeup(from.salt);
+
+				if(wake != 0)
+					System.err.println("from wakeup " + wake);
+			}
 
 			// broadcast stop
 
