@@ -62,6 +62,11 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		
 		Log(host + " " + address);
 		
+		Connect();
+	}
+
+	void Connect() {
+		first = true;
 		push = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		push.NoDelay = true;
 		push.Connect(remote);
@@ -151,6 +156,23 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		push.Send(Encoding.UTF8.GetBytes(text));
 		int read = push.Receive(body);
 		text = Encoding.UTF8.GetString(body, 0, read);
+
+		if(text.Length == 0) {
+			Connect();
+
+			text = "GET /push?data=" + data + " HTTP/1.1\r\nHost: " + host + "\r\n";
+			
+			if(first) {
+				text += "Head: less\r\n\r\n"; // enables TCP no delay
+				first = false;
+			}
+			else
+				text += "\r\n";
+
+			push.Send(Encoding.UTF8.GetBytes(text));
+			read = push.Receive(body);
+			text = Encoding.UTF8.GetString(body, 0, read);
+		}
 
 		string[] split = text.Split(new string[] { "\r\n\r\n" }, StringSplitOptions.None);
 		return split[1];

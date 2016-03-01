@@ -203,6 +203,9 @@ public class Router implements Node {
 		}
 
 		if(split[0].equals("salt")) {
+			if(split.length < 2)
+				return "salt|fail|name not found";
+			
 			final String name = split[1].toLowerCase();
 
 			Async.Work work = new Async.Work(event) {
