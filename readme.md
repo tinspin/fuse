@@ -128,7 +128,7 @@ In sort of chronological order:
 
                             // join a game
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
-                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]
+                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|ip]
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK
                            o-> <b><i>name</b></i>|&lt;user&gt;|&lt;name&gt;           // if &lt;id&gt; used and name set
@@ -174,7 +174,7 @@ In sort of chronological order:
 
                             // add/remove friend
  <b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> ally|done[|poll]
-                           i-> <b><i>poll</i></b>|ally|&lt;user&gt;[|&lt;info&gt;]
+                           i-> <b><i>poll</i></b>|ally|&lt;user&gt;[|info]
                             -> ally|fail|user not online
                             -> ally|fail|user busy
 
@@ -223,8 +223,8 @@ In sort of chronological order:
                             // between <i>lock</i> and <i>view</i> nobody can join
                             // this sends a poll to the user if he has no room
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> join|done|poll/room
-                           i-> <b><i>poll</i></b>|join|&lt;user&gt;[|&lt;info&gt;]
-                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]    // leaf, in new room
+                           i-> <b><i>poll</i></b>|join|&lt;user&gt;[|info]
+                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|ip]    // leaf, in new room
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;    // stem, in lobby
                            x-> <b><i>lock</i></b>|&lt;room&gt;                  // in lobby if room is full
@@ -249,7 +249,7 @@ In sort of chronological order:
  
                             // exit room
  <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
-                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|&lt;ip&gt;]    // stem, in lobby
+                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|ip]    // stem, in lobby
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK, in lobby if creator exit
                            x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;    // leaf, in old room
@@ -264,14 +264,14 @@ In sort of chronological order:
 
                             // save data
                             // to save items use &lt;type&gt; = "item"
- <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|&lt;type&gt;] -> save|done
+ <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|type]   -> save|done
                             -> save|fail|name too short
                             -> save|fail|name too long
                             -> save|fail|unknown problem
 
                             // load data
                             // to load item use &lt;type&gt; = "item"
- <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;[|&lt;type&gt;] -> load|done|{…}
+ <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;[|type]   -> load|done|{…}
                             -> load|fail|not found
 
                             // play game
