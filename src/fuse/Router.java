@@ -82,6 +82,33 @@ public class Router implements Node {
 
 	static SimpleDateFormat date = new SimpleDateFormat("HH:mm:ss.SSS");
 
+	public void salt(Event event, final String name) throws Exception {
+		Async.Work work = new Async.Work(event) {
+			public void send(Async.Call call) throws Exception {
+				call.get("/salt", head());
+			}
+
+			public void read(String host, String body) throws Exception {
+				if(parts.containsKey(body)) {
+					salt(event, name);
+				}
+				else {
+					session(event, name, body);
+					event.query().put("done", "salt|done|" + body);
+					event.reply().wakeup(true, true);
+				}
+			}
+
+			public void fail(String host, Exception e) throws Exception {
+				e.printStackTrace();
+				event.query().put("done", "salt|fail|unknown problem");
+				event.reply().wakeup(true, true);
+			}
+		};
+
+		event.daemon().client().send(what, work, 30);
+	}
+	
 	public String push(final Event event, String data) throws Event, Exception {
 		final String[] split = data.split("\\|");
 
@@ -208,25 +235,8 @@ public class Router implements Node {
 			
 			final String name = split[1].toLowerCase();
 
-			Async.Work work = new Async.Work(event) {
-				public void send(Async.Call call) throws Exception {
-					call.get("/salt", head());
-				}
+			salt(event, name);
 
-				public void read(String host, String body) throws Exception {
-					session(event, name, body);
-					event.query().put("done", "salt|done|" + body);
-					event.reply().wakeup(true, true);
-				}
-
-				public void fail(String host, Exception e) throws Exception {
-					e.printStackTrace();
-					event.query().put("done", "salt|fail|unknown problem");
-					event.reply().wakeup(true, true);
-				}
-			};
-
-			event.daemon().client().send(what, work, 30);
 			throw event;
 		}
 
