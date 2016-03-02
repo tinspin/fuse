@@ -264,14 +264,14 @@ In sort of chronological order:
 
                             // save data
                             // to save items use &lt;type&gt; = "item"
- <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|type]   -> save|done
+ <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|type] -> save|done
                             -> save|fail|name too short
                             -> save|fail|name too long
                             -> save|fail|unknown problem
 
                             // load data
                             // to load item use &lt;type&gt; = "item"
- <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;[|type]   -> load|done|{…}
+ <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;[|type]  -> load|done|{…}
                             -> load|fail|not found
 
                             // play game
