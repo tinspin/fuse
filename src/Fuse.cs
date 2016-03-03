@@ -441,11 +441,15 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	
 	public static void Main() {
 		try {
+			string key = "F9hG7K7Jwe1SmtiQ";
+			string salt = null;
+			
 			Fuse fuse = new Fuse();
 			fuse.Start();
 			fuse.Host("fuse.rupy.se");
-			string key;
-
+			
+			//Thread.Sleep(100);
+			
 			// if no key is stored try
 /*
 			try {
@@ -461,11 +465,10 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			// otherwise
 			//   get name and key
 
-			key = "F9hG7K7Jwe1SmtiQ";
+			//key = "F9hG7K7Jwe1SmtiQ";
 			//key = "yt4QACtL2uzbyUTT";
-			string salt = null;
 
-			if(key != null) {
+			//if(key != null) {
 				try {
 					salt = fuse.SignNameKey("fuse", key);
 				}
@@ -473,7 +476,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 					Log(e.Message);
 					return;
 				}
-			}
+			//}
 
 			Log("Sign: " + salt);
 

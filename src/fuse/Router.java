@@ -89,13 +89,14 @@ public class Router implements Node {
 			}
 
 			public void read(String host, String body) throws Exception {
+				System.err.println(body);
 				if(parts.containsKey(body)) {
 					salt(event, name);
 				}
 				else {
 					session(event, name, body);
 					event.query().put("done", "salt|done|" + body);
-					event.reply().wakeup(true, true);
+					System.err.println(event.reply().wakeup(true, true));
 				}
 			}
 
