@@ -668,14 +668,7 @@ public class Root extends Service {
 		JSONObject p = new JSONObject(file(parent));
 		JSONObject c = null;
 
-		if(!child.exists()) {
-			if(ctype.equals("data") && ckey.length() < LENGTH) {
-				// Free write on /meta/user/data...
-			}
-			else
-				throw new MetaFail("Child node doesn't exist. (" + child + ")");
-		}
-		else
+		if(child.exists())
 			c = new JSONObject(file(child));
 
 		String pname = pkey;
@@ -1153,6 +1146,25 @@ public class Root extends Service {
 			return arr;
 		}
 
+		private void writeArray(Event event, JSONArray arr, int length) throws Exception {
+			StringBuilder builder = new StringBuilder();
+			builder.append("{\"total\": " + length + ", \"list\":");
+			builder.append(arr == null ? "[]" : arr.toString(4));
+			builder.append("}");
+
+			event.reply().type("application/json; charset=UTF-8");
+			byte[] data = builder.toString().getBytes("UTF-8");
+			Output out = event.reply().output(data.length);
+			out.write(data);
+		}
+
+		private void writeObject(Event event, JSONObject obj) throws Exception {
+			event.reply().type("application/json; charset=UTF-8");
+			byte[] data = obj.toString(4).getBytes("UTF-8");
+			Output out = event.reply().output(data.length);
+			out.write(data);
+		}
+
 		/* Example Public Paths:
 		 * 
 		 * Node:
@@ -1220,7 +1232,7 @@ public class Root extends Service {
 			boolean remove = false; // remove key from node
 
 			try {
-				if(rule.equals("link")) { // link list
+				if(rule.equals("link")) {
 					if(last.length() > 0) {
 						full = home() + "/link/" + head + "/" + tail + Root.path(last);
 
@@ -1250,12 +1262,12 @@ public class Root extends Service {
 						raf.close();
 					}
 					else {
-						fail(2, event, full, rule, head, tail, last);
+						writeArray(event, null, 0);
 					}
 				}
 				else if(rule.equals("meta")) {
 					if(last.length() == 0)
-						fail(3, event, full, rule, head, tail, last);
+						fail(2, event, full, rule, head, tail, last);
 
 					String[] tree = last.split("/");
 					JSONObject json = null;
@@ -1274,7 +1286,7 @@ public class Root extends Service {
 					 * 
 					 * more will be added as needed.
 					 */
-					
+
 					if(tree[0].matches("[0-9]+")) { // parent id
 						long id = Long.parseLong(tree[0]);
 						json = new JSONObject(file(home() + "/node/" + head + "/id" + Root.path(id)));
@@ -1316,48 +1328,31 @@ public class Root extends Service {
 						if(json.has("key"))
 							json.remove("key");
 
-						event.reply().type("application/json; charset=UTF-8");
-						byte[] data = json.toString().getBytes("UTF-8");
-						Output out = event.reply().output(data.length);
-						out.write(data);
-						throw event;
-					}
-
-					if(file.exists() && file.isDirectory()) {
-						boolean secure = last.length() == 16 && last.indexOf("/") == -1 && !last.matches("[0-9]+");
-						JSONArray arr = recurse(file, full, from, size, 0, deep, sort, secure, time);
-						File[] files = file.listFiles();
-						int length = 0;
-
-						for(int i = 0; i < files.length; i++) {
-							Path p = Paths.get(full + "/" + files[i].getName() + "/root");
-
-							if(files[i].isFile())
-								length++;
-							else if(files[i].isDirectory() && Files.exists(p))
-								length++;
-						}
-
-						if(arr != null) {
-							StringBuilder builder = new StringBuilder();
-							builder.append("{\"total\": " + length + ", \"list\":");
-							builder.append(arr.toString(4));
-							builder.append("}");
-
-							event.reply().type("application/json; charset=UTF-8");
-							byte[] data = builder.toString().getBytes("UTF-8");
-							Output out = event.reply().output(data.length);
-							out.write(data);
-						}
-						else {
-							fail(4, event, full, rule, head, tail, last);
-						}
+						writeObject(event, json);
 					}
 					else {
-						fail(5, event, full, rule, head, tail, last);
+						int length = 0;
+						JSONArray arr = new JSONArray();
+
+						if(file.exists() && file.isDirectory()) {
+							boolean secure = last.length() == 16 && last.indexOf("/") == -1 && !last.matches("[0-9]+");
+							arr = recurse(file, full, from, size, 0, deep, sort, secure, time);
+							File[] files = file.listFiles();
+
+							for(int i = 0; i < files.length; i++) {
+								Path p = Paths.get(full + "/" + files[i].getName() + "/root");
+
+								if(files[i].isFile())
+									length++;
+								else if(files[i].isDirectory() && Files.exists(p))
+									length++;
+							}
+						}
+
+						writeArray(event, arr, length);
 					}
 				}
-				else {
+				else { // node
 					full = home() + "/node/" + head + "/" + tail + "/" + last;
 
 					String decoded = decoder.decode(last, "UTF-8");
@@ -1412,7 +1407,6 @@ public class Root extends Service {
 						File file = new File(full);
 
 						if(file.exists()) {
-							event.reply().type("application/json; charset=UTF-8");
 							JSONObject obj = new JSONObject(file(file));
 
 							if(remove) {
@@ -1420,19 +1414,17 @@ public class Root extends Service {
 								obj.remove("key");
 							}
 
-							byte[] data = obj.toString(4).getBytes("UTF-8");
-							Output out = event.reply().output(data.length);
-							out.write(data);
+							writeObject(event, obj);
 						}
 						else {
-							fail(6, event, full, rule, head, tail, last);
+							writeObject(event, new JSONObject());
 						}
 					}
 				}
 			}
 			catch(Exception e) {
 				e.printStackTrace();
-				fail(7, event, full, rule, head, tail, last);
+				fail(3, event, full, rule, head, tail, last);
 			}
 		}
 
@@ -1674,7 +1666,7 @@ public class Root extends Service {
 					}
 
 					String name = Root.path(file.getString("user"));
-					
+
 					root = new JSONObject(file(home() + "/node/user/name" + name));
 
 					String pkey = root.getString("key");
