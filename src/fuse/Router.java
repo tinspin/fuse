@@ -686,11 +686,11 @@ public class Router implements Node {
 					else {
 						room = new Room(poll, "duel", 2);
 						user.game.rooms.put(poll.name, room);
-						poll.move(poll.room, room, true);
+						poll.move(poll.room, room, false);
 					}
 
 					user.move(user.game, room, true);
-
+					
 					if(game)
 						user.game.send(user, "room|" + room);
 				}
