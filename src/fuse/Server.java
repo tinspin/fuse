@@ -177,7 +177,8 @@ public class Server extends Service implements Node, Runnable {
 					if(origin != null)
 						event.reply().header("Access-Control-Allow-Origin", origin);
 					
-					Output out = event.reply().output(send.length());
+					byte[] body = send.getBytes("UTF-8");
+					Output out = event.reply().output(body.length);
 
 					out.print(send);
 					out.finish();

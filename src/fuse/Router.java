@@ -1,6 +1,7 @@
 package fuse;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -828,6 +829,8 @@ public class Router implements Node {
 			final JSONObject json = tear ? null : new JSONObject(split[3]);
 			final String type = tear ? split[3] : split.length > 4 ? split[4] : "data";
 
+			System.out.println(name + " " + json);
+			
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.post("/meta", head(), 
@@ -860,12 +863,16 @@ public class Router implements Node {
 			final String name = load ? split[2] : split[3];
 			final String type = load && split.length > 3 ? split[3] : split[0];
 
+			System.out.println(name + " " + base + " " + type);
+			
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					call.get("/meta/user/" + type + "/" + base + "/" + name, head());
+					call.get("/meta/user/" + type + "/" + base + "/" + URLEncoder.encode(name, "UTF-8"), head());
 				}
 
 				public void read(String host, String body) throws Exception {
+					System.out.println(body);
+					
 					try {
 						JSONObject json = new JSONObject(body);
 						event.query().put("done", split[0] + "|done|" + body);

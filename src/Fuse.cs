@@ -348,16 +348,21 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	   you need to act on the response while 
 	   in the main thread */
 	   
-	public void Save(string name, string json) {
-		EasyPush("save|" + name + "|" + json);
+	public void Save(string name, string json, string type) {
+		EasyPush("save|" + Uri.EscapeDataString(name) + "|" + Uri.EscapeDataString(json) + "|" + type);
 	}
 	
-	public string Load(string name) {
-		return EasyPush("load|" + name)[2];
+	public string Load(string name, string type) {
+		return EasyPush("load|" + Uri.EscapeDataString(name) + "|" + type)[2];
+	}
+	
+	// Delete data
+	public void Tear(string name, string type) {
+		EasyPush("save|" + Uri.EscapeDataString(name) + "|" + type);
 	}
 	
 	public string Data(string user, string name) {
-		return EasyPush("data|" + user + "|" + name)[2];
+		return EasyPush("data|" + Uri.EscapeDataString(user) + "|" + Uri.EscapeDataString(name))[2];
 	}
 	
 	public string[] ListData() {

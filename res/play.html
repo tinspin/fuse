@@ -477,27 +477,27 @@ public class play extends Service {
   }
   function save(name, json, type) {
     if(type === undefined)
-      easypush('save|' + name + '|' + json);
+      easypush('save|' + encodeURIComponent(name) + '|' + encodeURIComponent(json));
     else
-      easypush('save|' + name + '|' + json + '|' + type);
+      easypush('save|' + encodeURIComponent(name) + '|' + encodeURIComponent(json) + '|' + type);
   }
   function load(name, type) {
     if(type === undefined)
-      return easypush('load|' + name)[2];
+      return easypush('load|' + encodeURIComponent(name))[2];
     else
-      return easypush('load|' + name + '|' + type)[2];
+      return easypush('load|' + encodeURIComponent(name) + '|' + type)[2];
   }
   function tear(name, type) {
     if(type === undefined)
-      return easypush('tear|' + name)[2];
+      return easypush('tear|' + encodeURIComponent(name))[2];
     else
-      return easypush('tear|' + name + '|' + type)[2];
+      return easypush('tear|' + encodeURIComponent(name) + '|' + type)[2];
   }
   function data(user, name) {
-    return easypush('data|' + user + '|' + name)[2];
+    return easypush('data|' + user + '|' + encodeURIComponent(name))[2];
   }
   function item(user, name) {
-    return easypush('item|' + user + '|' + name)[2];
+    return easypush('item|' + user + '|' + encodeURIComponent(name))[2];
   }
   function listdata(type) {
     if(type === undefined)
