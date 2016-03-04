@@ -674,16 +674,19 @@ public class Root extends Service {
 		String pname = pkey;
 		String cname = ckey;
 
-		// This breaks user add/change name...
-		//if(p.has("name"))
-		//	pname = p.getString("name");
-
 		if(c != null && c.has("name"))
 			cname = c.getString("name");
 
 		String ppname = path(pname);
 		String ccname = path(cname);
 
+		if(c != null) {
+			ccname = path(ckey);
+			
+			if(p.has("name"))
+				pname = p.getString("name");
+		}
+		
 		pname = "/" + pname;
 		cname = "/" + cname;
 
