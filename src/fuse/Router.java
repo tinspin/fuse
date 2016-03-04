@@ -22,7 +22,7 @@ import se.rupy.http.Root;
 import se.rupy.http.Service;
 
 public class Router implements Node {
-	public static boolean debug = false;
+	public static boolean debug = true;
 	
 	public static String hash = "md5";
 	public static String host = "fuse.rupy.se";
@@ -829,8 +829,6 @@ public class Router implements Node {
 			final JSONObject json = tear ? null : new JSONObject(split[3]);
 			final String type = tear ? split[3] : split.length > 4 ? split[4] : "data";
 
-			System.out.println(name + " " + json);
-			
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.post("/meta", head(), 
@@ -863,16 +861,12 @@ public class Router implements Node {
 			final String name = load ? split[2] : split[3];
 			final String type = load && split.length > 3 ? split[3] : split[0];
 
-			System.out.println(name + " " + base + " " + type);
-			
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.get("/meta/user/" + type + "/" + base + "/" + URLEncoder.encode(name, "UTF-8"), head());
 				}
 
 				public void read(String host, String body) throws Exception {
-					System.out.println(body);
-					
 					try {
 						JSONObject json = new JSONObject(body);
 						event.query().put("done", split[0] + "|done|" + body);
@@ -1043,6 +1037,7 @@ public class Router implements Node {
 					from.send(this, "gone|" + (game ? "leaf" : "stem") + "|" + name);
 			}
 
+			node.wakeup(salt);
 			lost = 0;
 
 			return drop;
@@ -1097,16 +1092,15 @@ public class Router implements Node {
 			if(data.startsWith("over"))
 				play = false;
 
-			if(!data.startsWith("send") && !data.startsWith("move"))
-				if(debug)
-					System.err.println("<-- " + from + " " + data);
+			//if(!data.startsWith("send") && !data.startsWith("move"))
+				//if(debug)
+					//System.err.println("<-- " + from + " " + data);
 
 			if(data.startsWith("here"))
 				if(debug)
 					System.err.println(users);
 
 			boolean wakeup = false;
-			boolean from_wakeup = false;
 
 			while(it.hasNext()) {
 				User user = (User) it.next();
@@ -1125,16 +1119,12 @@ public class Router implements Node {
 
 						if(user.away)
 							node.push(from.salt, "away|" + user.name, false);
-
-						wakeup = true;
 					}
 
 					// send every user in room to leaving user
 
 					if(data.startsWith("gone") && !from.name.equals(user.name)) {
 						node.push(from.salt, "gone|" + (from_game ? "stem" : "leaf") + "|" + user.name + user.peer(from), false);
-
-						wakeup = true;
 					}
 
 					// send message from user to room
@@ -1170,29 +1160,13 @@ public class Router implements Node {
 					e.printStackTrace(); // user timeout?
 				}
 
-				//System.err.println("wakeup " + from.salt + " " + user.salt + " " + wakeup);
+				if(wakeup) {
+					int wake = node.wakeup(user.salt);
 
-				if(wakeup)
-					if(from.salt.equals(user.salt)) {
-						from_wakeup = true;
-					}
-					else {
-						int wake = node.wakeup(user.salt);
-
-						if(wake != 0)
-							if(debug)
-								System.err.println("user wakeup " + wake);
-					}
-			}
-
-			//System.err.println("wakeup " + from.salt + " " + from_wakeup);
-			
-			if(from_wakeup) {
-				int wake = node.wakeup(from.salt);
-
-				if(wake != 0)
-					if(debug)
-						System.err.println("from wakeup " + wake);
+					if(wake != 0)
+						if(debug)
+							System.err.println("user wakeup " + wake);
+				}
 			}
 
 			// broadcast stop
