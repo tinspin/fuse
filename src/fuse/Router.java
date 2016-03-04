@@ -218,11 +218,13 @@ public class Router implements Node {
 						event.query().put("done", "user|done|" + user.salt + "|" + key + "|" + Root.hash(key));
 					}
 
-					event.reply().wakeup();
+					event.reply().wakeup(true, true);
 				}
 
 				public void fail(String host, Exception e) throws Exception {
 					e.printStackTrace();
+					event.query().put("fail", "user|fail|unknown problem");
+					event.reply().wakeup(true, true);
 				}
 			};
 
@@ -403,11 +405,13 @@ public class Router implements Node {
 						else
 							event.query().put("done", rule + "|done");
 
-						event.reply().wakeup();
+						event.reply().wakeup(true, true);
 					}
 
 					public void fail(String host, Exception e) throws Exception {
 						e.printStackTrace();
+						event.query().put("fail", rule + "|fail|unknown problem");
+						event.reply().wakeup(true, true);
 					}
 				};
 
@@ -459,16 +463,19 @@ public class Router implements Node {
 							user.remove(Root.hash(poll.json.getString("key")));
 							poll.remove(Root.hash(user.json.getString("key")));
 						}
+						event.query().put("done", "sign|done");
+						event.reply().wakeup(true, true);
 					}
 
 					public void fail(String host, Exception e) throws Exception {
 						System.err.println("fuse ally tear fail " + e);
+						event.query().put("fail", "sign|fail|unknown problem");
+						event.reply().wakeup(true, true);
 					}
 				};
 
 				event.daemon().client().send(what, work, 30);
-
-				return "ally|done";
+				throw event;
 			}
 
 			boolean game = user.room instanceof Game;
@@ -547,6 +554,7 @@ public class Router implements Node {
 					}
 
 					public void read(String host, String body) throws Exception {
+						System.err.println(body);
 						try {
 							JSONObject result = (JSONObject) new JSONObject(body);
 							JSONArray list = result.getJSONArray("list");
@@ -569,13 +577,13 @@ public class Router implements Node {
 						catch(Exception e) {
 							event.query().put("fail", "list|fail|not found");
 						}
-						event.reply().wakeup();
+						event.reply().wakeup(true, true);
 					}
 
 					public void fail(String host, Exception e) throws Exception {
 						System.err.println("list data " + e);
 						event.query().put("fail", "list|fail|unknown problem");
-						event.reply().wakeup();
+						event.reply().wakeup(true, true);
 					}
 				};
 
@@ -676,11 +684,13 @@ public class Router implements Node {
 								poll.add(Root.hash(user.json.getString("key")));
 							}
 							event.query().put("done", "ally|done");
-							event.reply().wakeup();
+							event.reply().wakeup(true, true);
 						}
 
 						public void fail(String host, Exception e) throws Exception {
 							System.err.println("fuse ally fail " + e);
+							event.query().put("fail", "ally|fail|unknown problem");
+							event.reply().wakeup(true, true);
 						}
 					};
 

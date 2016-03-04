@@ -7,10 +7,20 @@
 <script>
   <!-- item is implemented as a empty game -->
   function head(seed) {
-    var data = listdata();
+    data_list();
+  }
+  function make_room() { return 'item|1'; }
+  function sent(user, data) {}
+  function pause(hold) {}
+  function tail() {}
+  <!-- here are the data/item methods -->
+  function data_list() {
+    var type = element('data_type');
+    console.log('type ' + type.options[type.selectedIndex].text);
+    var data = listdata(type.options[type.selectedIndex].text);
     if(data[1] == 'done')
       clear_select('data_list');
-    console.log('listdata ' + data.length);
+    console.log('list ' + data.length);
     if(data.length > 3 && data[3].length > 0) {
       var list = data[3].split(';');
       for(var i = 0; i < list.length; i++) {
@@ -18,16 +28,12 @@
       }
     }
   }
-  function make_room() { return 'item|1'; }
-  function sent(user, data) {}
-  function pause(hold) {}
-  function tail() {}
-  <!-- here are the data/item methods -->
   function data_save() {
+    var type = element('data_type');
     var text = element('data_name');
     var area = element('data_json');
     try {
-      save(text.value, area.value);
+      save(text.value, area.value, type.options[type.selectedIndex].text);
       add_select('data_list', text.value, red);
     }
     catch(e) {
@@ -38,9 +44,10 @@
     var select = element('data_list');
     var index = select.selectedIndex;
     if(index > -1) {
+      var type = element('data_type');
       var name = select.options[index].text;
       try {
-        var data = load(name);
+        var data = load(name, type.options[type.selectedIndex].text);
         var text = element('data_name');
         var area = element('data_json');
         area.value = data;
@@ -59,7 +66,7 @@
 <tr><td align="center"><i>data</i></td><td></td>
     <td align="center"><i>json</i></td></tr>
 <tr><td rowspan="3"><select id="data_list" size="5" style="height: 100px;" multiple></select></td><td></td>
-    <td><i>type</i>&nbsp;<select style="width: 95px; height: 21px;"><option>data</option><option>item</option></select></td></tr>
+    <td><i>type</i>&nbsp;<select id="data_type" onchange="javascript:data_list();" style="width: 95px; height: 21px;"><option>data</option><option>item</option></select></td></tr>
 <tr><td></td><td><i>name</i>&nbsp;<input style="width: 95px; height: 21px;" id="data_name" type="text" size="10"></td></tr>
 <tr><td></td><td><textarea id="data_json" style="height: 50px;" rows="3"></textarea></td></tr>
 <tr><td><a href="javascript:data_load();">load</a></td><td></td>

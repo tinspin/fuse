@@ -475,17 +475,29 @@ public class play extends Service {
       }
     }
   }
-  function save(name, json) {
-    easypush('save|' + name + '|' + json);
+  function save(name, json, type) {
+    if(type === undefined)
+      easypush('save|' + name + '|' + json);
+    else
+      easypush('save|' + name + '|' + json + '|' + type);
   }
-  function load(name) {
-    return easypush('load|' + name)[2];
+  function load(name, type) {
+    if(type === undefined)
+      return easypush('load|' + name)[2];
+    else
+      return easypush('load|' + name + '|' + type)[2];
   }
   function data(user, name) {
     return easypush('data|' + user + '|' + name)[2];
   }
-  function listdata() {
-    return push('list|data');
+  function item(user, name) {
+    return easypush('item|' + user + '|' + name)[2];
+  }
+  function listdata(type) {
+    if(type === undefined)
+      return push('list|data');
+    else
+      return push('list|' + type);
   }
   function easypush(data) {
     var data = push(data);
