@@ -347,9 +347,17 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	/* use coroutines for everything where 
 	   you need to act on the response while 
 	   in the main thread */
-	   
+	
+	public void Save(string name, string json) {
+		Save(name, json, "data");
+	}
+	
 	public void Save(string name, string json, string type) {
 		EasyPush("save|" + Uri.EscapeDataString(name) + "|" + Uri.EscapeDataString(json) + "|" + type);
+	}
+	
+	public string Load(string name) {
+		return Load(name, "data");
 	}
 	
 	public string Load(string name, string type) {
