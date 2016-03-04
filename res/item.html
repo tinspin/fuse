@@ -16,11 +16,9 @@
   <!-- here are the data/item methods -->
   function data_list() {
     var type = element('data_type');
-    console.log('type ' + type.options[type.selectedIndex].text);
     var data = listdata(type.options[type.selectedIndex].text);
     if(data[1] == 'done')
       clear_select('data_list');
-    console.log('list ' + data.length);
     if(data.length > 3 && data[3].length > 0) {
       var list = data[3].split(';');
       for(var i = 0; i < list.length; i++) {

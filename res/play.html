@@ -110,7 +110,6 @@ public class play extends Service {
       xhr.open('GET', url, async); // sync is deprecated really? genious!
     }
     catch(e) {
-      console.log(url);
       return e;
     }
     if(!ie) xhr.setRequestHeader('Accept', 'text/event-stream');
@@ -171,7 +170,6 @@ public class play extends Service {
   var send_game = true;
   var game_play = false;
   function read(data) {
-    //try { console.log(data) } catch(e) {}
     if(show)
       element('pull').innerHTML += data + '\n';
     if(send_game) {
@@ -520,7 +518,6 @@ public class play extends Service {
     var data = push('list|room');
     if(data[1] == 'done')
       clear_select('join');
-    /*console.log('listroom ' + data.length);*/
     if(data.length > 3 && data[3].length > 0) {
       var list = data[3].split(';');
       for(var i = 0; i < list.length; i++) {

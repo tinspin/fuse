@@ -23,7 +23,7 @@ import se.rupy.http.Service;
 
 public class Router implements Node {
 	public static boolean debug = true;
-	
+
 	public static String hash = "md5";
 	public static String host = "fuse.rupy.se";
 	public static String fuse = "fuse.rupy.se";
@@ -115,7 +115,7 @@ public class Router implements Node {
 
 		event.daemon().client().send(what, work, 30);
 	}
-	
+
 	public String push(final Event event, String data) throws Event, Exception {
 		final String[] split = data.split("\\|");
 
@@ -246,7 +246,7 @@ public class Router implements Node {
 		if(split[0].equals("salt")) {
 			if(split.length < 2)
 				return "salt|fail|name not found";
-			
+
 			final String name = split[1].toLowerCase();
 
 			salt(event, name);
@@ -319,21 +319,25 @@ public class Router implements Node {
 			}
 
 			user.game = game;
-			user.move(null, game);
+			user.move(null, game, true);
 
 			// add this user and users in other games to each other
 
 			Iterator it = parts.values().iterator();
 
 			while(it.hasNext()) {
-				User u = (User) it.next();
+				Part p = (Part) it.next();
 
-				if(user.game != null && u.game != null && user.game.name != u.game.name && user.name != u.name) {
-					node.push(u.salt, "here|root|" + user.name, true);
-					node.push(user.salt, "here|root|" + u.name, false);
+				if(p instanceof User) {
+					User u = (User) p;
+
+					if(user.game != null && u.game != null && user.game.name != u.game.name && user.name != u.name) {
+						node.push(u.salt, "here|root|" + user.name, true);
+						node.push(user.salt, "here|root|" + u.name, false);
+					}
 				}
 			}
-			
+
 			node.wakeup(user.salt);
 
 			// add this user to users in same game but in rooms
@@ -530,7 +534,7 @@ public class Router implements Node {
 
 			user.game.rooms.put(user.name, room);
 			user.game.send(user, "room|" + room);
-			user.move(user.game, room);
+			user.move(user.game, room, true);
 
 			return "room|done";
 		}
@@ -649,7 +653,7 @@ public class Router implements Node {
 			if(room.users.size() == room.size && !room.play)
 				return "join|fail|is full";
 
-			user.move(user.room, room);
+			user.move(user.room, room, true);
 
 			if(room.users.size() == room.size)
 				user.game.send(user, "lock|" + user.room.user.name);
@@ -682,10 +686,10 @@ public class Router implements Node {
 					else {
 						room = new Room(poll, "duel", 2);
 						user.game.rooms.put(poll.name, room);
-						poll.move(poll.room, room);
+						poll.move(poll.room, room, true);
 					}
 
-					user.move(user.game, room);
+					user.move(user.game, room, true);
 
 					if(game)
 						user.game.send(user, "room|" + room);
@@ -802,7 +806,7 @@ public class Router implements Node {
 
 			Room room = user.room;
 			boolean full = room.users.size() == room.size;
-			Room drop = user.move(user.room, user.game);
+			Room drop = user.move(user.room, user.game, false);
 
 			if(drop != null) {
 				user.game.rooms.remove(drop.user.name);
@@ -811,12 +815,14 @@ public class Router implements Node {
 			else if(full)
 				user.game.send(user, "open|" + room.user.name);
 
+			user.game.wakeup();
+			
 			return "exit|done";
 		}
 
 		if(split[0].equals("save") || split[0].equals("tear")) {
 			final boolean tear = split[0].equals("tear");
-			
+
 			if(split[2].length() < 3) {
 				return split[0] + "|fail|name too short";
 			}
@@ -888,7 +894,7 @@ public class Router implements Node {
 			event.daemon().client().send(what, work, 30);
 			throw event;
 		}
-		
+
 		if(split[0].equals("chat")) {
 			String tree = split[2];
 			boolean game = user.room instanceof Game;
@@ -1013,7 +1019,7 @@ public class Router implements Node {
 			return "";
 		}
 
-		Room move(Room from, Room to) throws Exception {
+		Room move(Room from, Room to, boolean wakeup) throws Exception {
 			Room drop = null;
 			boolean game = to instanceof Game;
 
@@ -1037,7 +1043,14 @@ public class Router implements Node {
 					from.send(this, "gone|" + (game ? "leaf" : "stem") + "|" + name);
 			}
 
-			node.wakeup(salt);
+			if(wakeup) {
+				if(to != null)
+					to.wakeup();
+			
+				if(from != null)
+					from.wakeup();
+			}
+			
 			lost = 0;
 
 			return drop;
@@ -1079,6 +1092,19 @@ public class Router implements Node {
 			return false;
 		}
 
+		public void wakeup() throws Exception {
+			Iterator it = users.values().iterator();
+
+			while(it.hasNext()) {
+				Part p = (Part) it.next();
+
+				if(p instanceof User) {
+					User u = (User) p;
+					node.wakeup(u.salt);
+				}
+			}
+		}
+		
 		void send(User from, String data) throws Exception {
 			send(from, data, false);
 		}
@@ -1093,8 +1119,8 @@ public class Router implements Node {
 				play = false;
 
 			//if(!data.startsWith("send") && !data.startsWith("move"))
-				//if(debug)
-					//System.err.println("<-- " + from + " " + data);
+			//if(debug)
+			//System.err.println("<-- " + from + " " + data);
 
 			if(data.startsWith("here"))
 				if(debug)
@@ -1136,24 +1162,27 @@ public class Router implements Node {
 							if(user.ally(from))
 								node.push(user.salt, "ally|" + from.name, false);
 
-							wakeup = true;
+							//wakeup = true;
 						}
 						else if(data.startsWith("gone") && from.room.user != null) {
 							node.push(user.salt, data + "|" + from.room.user.name, false);
 
-							wakeup = true;
+							//wakeup = true;
+						}
+						else if(data.startsWith("drop")) {
+							node.push(user.salt, data, false);
 						}
 						else {
-							node.push(user.salt, data, false);
+							node.push(user.salt, data, true);
 
-							wakeup = true;
+							//wakeup = true;
 						}
 					}
 
 					// eject everyone
 
 					if(data.startsWith("stop")) {
-						user.move(null, user.game);
+						user.move(null, user.game, false);
 					}
 				}
 				catch(Exception e) {
@@ -1302,15 +1331,19 @@ public class Router implements Node {
 		Iterator it = parts.values().iterator();
 
 		while(it.hasNext()) {
-			User u = (User) it.next();
+			Part p = (Part) it.next();
 
-			boolean add = true;
+			if(p instanceof User) {
+				User u = (User) p;
 
-			if(ignore)
-				add = (u.game == null || user.game == null || !u.game.name.equals(user.game.name));
+				boolean add = true;
 
-			if(add)
-				node.push(u.salt, message, true);
+				if(ignore)
+					add = (u.game == null || user.game == null || !u.game.name.equals(user.game.name));
+
+				if(add)
+					node.push(u.salt, message, true);
+			}
 		}
 	}
 
@@ -1338,7 +1371,7 @@ public class Router implements Node {
 		parts.remove(salt);
 
 		if(user != null && user.salt != null && user.game != null) {
-			Room room = user.move(user.room, null);
+			Room room = user.move(user.room, null, false);
 			user.game.rooms.remove(user.name);
 
 			if(place != 1) {
