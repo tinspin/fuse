@@ -171,7 +171,8 @@ public class Server extends Service implements Node, Runnable {
 					String send = fail == null ? data : fail;
 					String origin = event.query().header("origin");
 					
-					System.err.println(" <- " + data);
+					if(Router.debug)
+						System.err.println(" <- " + data);
 					
 					if(origin != null)
 						event.reply().header("Access-Control-Allow-Origin", origin);
@@ -201,7 +202,8 @@ public class Server extends Service implements Node, Runnable {
 					//	throw event;
 					
 					if(!data.startsWith("send") && !data.startsWith("move"))
-						System.err.println(" <- " + response);
+						if(Router.debug)
+							System.err.println(" <- " + response);
 					
 					body = response.getBytes("UTF-8");
 					Router.add(event, response, false);
@@ -242,7 +244,8 @@ public class Server extends Service implements Node, Runnable {
 						String accept = queue.event.query().header("accept");
 						
 						if(!data.equals("noop") && !data.startsWith("move"))
-							System.err.println(queue.salt + " " + data);
+							if(Router.debug)
+								System.err.println(queue.salt + " " + data);
 						
 						if(accept != null && accept.indexOf("text/event-stream") > -1) {
 							out.print("data: " + data + "\n\n");
@@ -287,7 +290,8 @@ public class Server extends Service implements Node, Runnable {
 
 			list.put(salt, new Queue(salt, event));
 			
-			System.err.println("poll " + Router.date.format(new Date()) + " " + salt);
+			if(Router.debug)
+				System.err.println("poll " + Router.date.format(new Date()) + " " + salt);
 			
 			String accept = event.query().header("accept");
 

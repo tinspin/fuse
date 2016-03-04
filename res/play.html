@@ -487,6 +487,12 @@ public class play extends Service {
     else
       return easypush('load|' + name + '|' + type)[2];
   }
+  function tear(name, type) {
+    if(type === undefined)
+      return easypush('tear|' + name)[2];
+    else
+      return easypush('tear|' + name + '|' + type)[2];
+  }
   function data(user, name) {
     return easypush('data|' + user + '|' + name)[2];
   }

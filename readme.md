@@ -183,11 +183,11 @@ In sort of chronological order:
                             -> data|fail|not found
                             
                             // get user item
-*<b><i>item</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> item|done|{…}
+ <b><i>item</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> item|done|{…}
                             -> item|fail|not found
                             
                             // drop item, how many and which
-*<b><i>drop</i></b>|&lt;salt&gt;|&lt;name&gt;|&lt;many&gt;  -> drop|done|&lt;salt&gt;
+ <b><i>drop</i></b>|&lt;salt&gt;|&lt;name&gt;|&lt;many&gt;  -> drop|done|&lt;salt&gt;
                             -> item|fail|not found
                             -> item|fail|not enough
                            o-> item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;
@@ -263,16 +263,21 @@ In sort of chronological order:
                            x-> <b><i>quit</i></b>|&lt;user&gt;
 
                             // save data
-                            // to save items use &lt;type&gt; = "item"
+                            // to save items use [type] = "item"
  <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|type] -> save|done
                             -> save|fail|name too short
                             -> save|fail|name too long
                             -> save|fail|unknown problem
 
                             // load data
-                            // to load item use &lt;type&gt; = "item"
+                            // to load item use [type] = "item"
  <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;[|type]  -> load|done|{…}
                             -> load|fail|not found
+                            
+                            // delete data
+                            // to delete item use [type] = "item"
+ <b><i>tear</i></b>|&lt;salt&gt;|&lt;name&gt;[|type]  -> tear|done
+                            -> tear|fail|not found
 
                             // play game
  <b><i>play</i></b>|&lt;salt&gt;[|seed]         -> play|done

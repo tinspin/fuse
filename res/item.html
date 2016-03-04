@@ -58,6 +58,17 @@
       }
     }
   }
+  function data_tear() {
+    var type = element('data_type');
+    var text = element('data_name');
+    try {
+      tear(text.value, type.options[type.selectedIndex].text);
+      remove_select('data_list', text.value);
+    }
+    catch(e) {
+      element('fail3').innerHTML = e;
+    }
+  }
 </script>
 
 <div id="room">
@@ -70,6 +81,6 @@
 <tr><td></td><td><i>name</i>&nbsp;<input style="width: 95px; height: 21px;" id="data_name" type="text" size="10"></td></tr>
 <tr><td></td><td><textarea id="data_json" style="height: 50px;" rows="3"></textarea></td></tr>
 <tr><td><a href="javascript:data_load();">load</a></td><td></td>
-    <td><a href="javascript:data_save();">save</a>&nbsp;<a href="javascript:over('done');">over</a></td></tr>
+    <td><a href="javascript:data_save();">save</a>&nbsp;<a href="javascript:data_tear();">tear</a>&nbsp;<a href="javascript:over('done');">over</a></td></tr>
 </table>
 </div>

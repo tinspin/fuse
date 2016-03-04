@@ -21,6 +21,8 @@ import se.rupy.http.Root;
 import se.rupy.http.Service;
 
 public class Router implements Node {
+	public static boolean debug = false;
+	
 	public static String hash = "md5";
 	public static String host = "fuse.rupy.se";
 	public static String fuse = "fuse.rupy.se";
@@ -89,14 +91,17 @@ public class Router implements Node {
 			}
 
 			public void read(String host, String body) throws Exception {
-				System.err.println(body);
+				if(debug)
+					System.err.println(body);
 				if(parts.containsKey(body)) {
 					salt(event, name);
 				}
 				else {
 					session(event, name, body);
 					event.query().put("done", "salt|done|" + body);
-					System.err.println(event.reply().wakeup(true, true));
+					int wakeup = event.reply().wakeup(true, true);
+					if(debug)
+						System.err.println(wakeup);
 				}
 			}
 
@@ -113,8 +118,10 @@ public class Router implements Node {
 	public String push(final Event event, String data) throws Event, Exception {
 		final String[] split = data.split("\\|");
 
-		if(!split[0].equals("send") && !split[0].equals("move"))
-			System.err.println(" -> '" + data + "'");
+		if(!split[0].equals("send") && !split[0].equals("move")) {
+			if(debug)
+				System.err.println(" -> '" + data + "'");
+		}
 
 		if(split[0].equals("ping")) {
 			return "ping|done";
@@ -184,12 +191,14 @@ public class Router implements Node {
 				}
 
 				public void read(String host, String body) throws Exception {
-					System.err.println(body);
+					if(debug)
+						System.err.println(body);
 
 					if(body.indexOf("Validation") > 0) {
 						String message = body.substring(body.indexOf("[") + 1, body.indexOf("]"));
 
-						System.err.println("Validation " + message);
+						if(debug)
+							System.err.println("Validation " + message);
 
 						if(message.startsWith("name"))
 							event.query().put("fail", "user|fail|name contains bad characters");
@@ -200,7 +209,8 @@ public class Router implements Node {
 					else if(body.indexOf("Collision") > 0) {
 						String message = body.substring(body.indexOf("[") + 1, body.indexOf("]"));
 
-						System.err.println("Collision " + message);
+						if(debug)
+							System.err.println("Collision " + message);
 
 						if(message.startsWith("name"))
 							event.query().put("fail", "user|fail|name already registered");
@@ -249,8 +259,10 @@ public class Router implements Node {
 		final User user = (User) parts.get(split[1]);
 
 		if(user == null || !user.salt.equals(split[1])) {
-			System.err.println(split[1]);
-			System.err.println(user);
+			if(debug) {
+				System.err.println(split[1]);
+				System.err.println(user);
+			}
 			return "main|fail|salt not found";
 		}
 
@@ -292,7 +304,8 @@ public class Router implements Node {
 			return "main|fail|user not authorized";
 
 		if(split[0].equals("game")) {
-			System.err.println("push " + Router.date.format(new Date()) + " " + user.salt + " " + user.name);
+			if(debug)
+				System.err.println("push " + Router.date.format(new Date()) + " " + user.salt + " " + user.name);
 
 			if(!split[2].matches("[a-zA-Z]+"))
 				return "game|fail|name invalid";
@@ -392,12 +405,14 @@ public class Router implements Node {
 					}
 
 					public void read(String host, String body) throws Exception {
-						System.err.println(body);
+						if(debug)
+							System.err.println(body);
 
 						if(body.indexOf("Collision") > 0) {
 							String message = body.substring(body.indexOf("[") + 1, body.indexOf("]"));
 
-							System.err.println("Collision " + message);
+							if(debug)
+								System.err.println("Collision " + message);
 
 							if(message.startsWith("name"))
 								event.query().put("fail", "name|fail|taken");
@@ -458,7 +473,8 @@ public class Router implements Node {
 					}
 
 					public void read(String host, String body) throws Exception {
-						System.err.println("fuse ally tear read " + body);
+						if(debug)
+							System.err.println("fuse ally tear read " + body);
 						if(body.equals("1")) {
 							user.remove(Root.hash(poll.json.getString("key")));
 							poll.remove(Root.hash(user.json.getString("key")));
@@ -468,7 +484,8 @@ public class Router implements Node {
 					}
 
 					public void fail(String host, Exception e) throws Exception {
-						System.err.println("fuse ally tear fail " + e);
+						if(debug)
+							System.err.println("fuse ally tear fail " + e);
 						event.query().put("fail", "sign|fail|unknown problem");
 						event.reply().wakeup(true, true);
 					}
@@ -554,7 +571,8 @@ public class Router implements Node {
 					}
 
 					public void read(String host, String body) throws Exception {
-						System.err.println(body);
+						if(debug)
+							System.err.println(body);
 						try {
 							JSONObject result = (JSONObject) new JSONObject(body);
 							JSONArray list = result.getJSONArray("list");
@@ -581,7 +599,8 @@ public class Router implements Node {
 					}
 
 					public void fail(String host, Exception e) throws Exception {
-						System.err.println("list data " + e);
+						if(debug)
+							System.err.println("list data " + e);
 						event.query().put("fail", "list|fail|unknown problem");
 						event.reply().wakeup(true, true);
 					}
@@ -640,7 +659,8 @@ public class Router implements Node {
 		if(split[0].equals("poll")) {
 			String type = user.type;
 
-			System.err.println(split[2] + " " + names);
+			if(debug)
+				System.err.println(split[2] + " " + names);
 
 			final User poll = (User) names.get(split[2]);
 			boolean accept = split[3].toLowerCase().equals("true");
@@ -678,7 +698,8 @@ public class Router implements Node {
 						}
 
 						public void read(String host, String body) throws Exception {
-							System.err.println("fuse ally read " + body);
+							if(debug)
+								System.err.println("fuse ally read " + body);
 							if(body.equals("1")) {
 								user.add(Root.hash(poll.json.getString("key")));
 								poll.add(Root.hash(user.json.getString("key")));
@@ -688,7 +709,8 @@ public class Router implements Node {
 						}
 
 						public void fail(String host, Exception e) throws Exception {
-							System.err.println("fuse ally fail " + e);
+							if(debug)
+								System.err.println("fuse ally fail " + e);
 							event.query().put("fail", "ally|fail|unknown problem");
 							event.reply().wakeup(true, true);
 						}
@@ -791,35 +813,39 @@ public class Router implements Node {
 			return "exit|done";
 		}
 
-		if(split[0].equals("save")) {
+		if(split[0].equals("save") || split[0].equals("tear")) {
+			final boolean tear = split[0].equals("tear");
+			
 			if(split[2].length() < 3) {
-				return "save|fail|name too short";
+				return split[0] + "|fail|name too short";
 			}
 
 			if(split[2].length() > 12) {
-				return "save|fail|name too long";
+				return split[0] + "|fail|name too long";
 			}
 
 			final String name = split[2];
-			final JSONObject json = new JSONObject(split[3]);
-			final String type = split.length > 4 ? split[4] : "data";
+			final JSONObject json = tear ? null : new JSONObject(split[3]);
+			final String type = tear ? split[3] : split.length > 4 ? split[4] : "data";
 
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.post("/meta", head(), 
 							("pkey=" + user.json.getString("key") + "&ckey=" + name + 
-									"&ptype=user&ctype=" + type + "&json=" + json).getBytes("utf-8"));
+									"&ptype=user&ctype=" + type + (tear ? "&tear=true" : "&json=" + json)).getBytes("utf-8"));
 				}
 
 				public void read(String host, String body) throws Exception {
-					System.err.println("save " + body);
-					event.query().put("done", "save|done");
+					if(debug)
+						System.err.println(split[0] + " " + body);
+					event.query().put("done", split[0] + "|done");
 					event.reply().wakeup(true, true);
 				}
 
 				public void fail(String host, Exception e) throws Exception {
-					System.err.println("save " + e);
-					event.query().put("fail", "save|fail|unknown problem");
+					if(debug)
+						System.err.println(split[0] + " " + e);
+					event.query().put("fail", split[0] + "|fail|unknown problem");
 					event.reply().wakeup(true, true);
 				}
 			};
@@ -828,11 +854,11 @@ public class Router implements Node {
 			throw event;
 		}
 
-		if(split[0].equals("load") || split[0].equals("data")) {
+		if(split[0].equals("load") || split[0].equals("data") || split[0].equals("item")) {
 			boolean load = split[0].equals("load");
 			final String base = load ? user.name : split[2];
 			final String name = load ? split[2] : split[3];
-			final String type = load && split.length > 3 ? split[3] : "data";
+			final String type = load && split.length > 3 ? split[3] : split[0];
 
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
@@ -861,7 +887,7 @@ public class Router implements Node {
 			event.daemon().client().send(what, work, 30);
 			throw event;
 		}
-
+		
 		if(split[0].equals("chat")) {
 			String tree = split[2];
 			boolean game = user.room instanceof Game;
@@ -1065,10 +1091,12 @@ public class Router implements Node {
 				play = false;
 
 			if(!data.startsWith("send") && !data.startsWith("move"))
-				System.err.println("<-- " + from + " " + data);
+				if(debug)
+					System.err.println("<-- " + from + " " + data);
 
 			if(data.startsWith("here"))
-				System.err.println(users);
+				if(debug)
+					System.err.println(users);
 
 			boolean wakeup = false;
 			boolean from_wakeup = false;
@@ -1145,7 +1173,8 @@ public class Router implements Node {
 						int wake = node.wakeup(user.salt);
 
 						if(wake != 0)
-							System.err.println("user wakeup " + wake);
+							if(debug)
+								System.err.println("user wakeup " + wake);
 					}
 			}
 
@@ -1155,7 +1184,8 @@ public class Router implements Node {
 				int wake = node.wakeup(from.salt);
 
 				if(wake != 0)
-					System.err.println("from wakeup " + wake);
+					if(debug)
+						System.err.println("from wakeup " + wake);
 			}
 
 			// broadcast stop
@@ -1196,7 +1226,8 @@ public class Router implements Node {
 		long time = System.currentTimeMillis() - event.big("time");
 
 		if(time > 50) {
-			System.err.println(rule + " " + time);
+			if(debug)
+				System.err.println(rule + " " + time);
 		}
 
 		if(error)
@@ -1320,7 +1351,8 @@ public class Router implements Node {
 	public synchronized void remove(String salt, int place) throws Exception {
 		User user = (User) parts.get(salt);
 
-		System.err.println("quit " + place + " " + user + " " + salt); // + " " + stack(Thread.currentThread()));
+		if(debug)
+			System.err.println("quit " + place + " " + user + " " + salt); // + " " + stack(Thread.currentThread()));
 
 		parts.remove(salt);
 
