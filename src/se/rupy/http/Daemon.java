@@ -1803,15 +1803,23 @@ public class Daemon implements Runnable {
 	}
 
 	private synchronized Event next() {
+		queue.reset();
+		
 		if(queue.size() > 0) {
-			Event event = (Event) queue.poll(); //queue.remove(0);
+			Event event = (Event) queue.next();
 
 			while(queue.size() > 0 && event != null && event.worker() != null) {
 				//System.err.print(":");
-				event = (Event) queue.poll(); //queue.remove(0);
+				event = (Event) queue.next();
 			}
 
-			return event;
+			if(event != null) {
+				if(event.worker() != null)
+					return null;
+				
+				queue.remove(event);
+				return event;
+			}
 		}
 
 		return null;
