@@ -40,7 +40,7 @@ public class Worker implements Runnable, Chain.Link {
 
 		alive = true;
 
-		thread = new Thread(this, "" + index);
+		thread = new Thread(this, "Worker-" + index);
 		thread.start();
 	}
 

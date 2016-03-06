@@ -568,7 +568,7 @@ public class Daemon implements Runnable {
 
 			alive = true;
 
-			Thread thread = new Thread(this);
+			Thread thread = new Thread(this, "Daemon-Poll");
 			id = thread.getId();
 			thread.start();
 		} catch (Exception e) {
@@ -1016,7 +1016,7 @@ public class Daemon implements Runnable {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, "DNS");
 
 		thread.start();
 	}
@@ -1071,7 +1071,7 @@ public class Daemon implements Runnable {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, "UDP-Multicast");
 
 		thread.start();
 	}
@@ -1570,7 +1570,7 @@ public class Daemon implements Runnable {
 				}
 			}
 
-			new Thread(heart).start(); // moved this to get metrics immediately during development.
+			new Thread(heart, "Daemon-Heartbeat").start(); // moved this to get metrics immediately during development.
 
 			/*
 			 * Used to debug thread locks and file descriptor leaks.
@@ -1841,6 +1841,7 @@ public class Daemon implements Runnable {
 		boolean wakeup = true;
 
 		if(event != null && worker != null) {
+			// The order here matters a lot on multicore ARM for some reason, see below!
 			worker.event(null);
 			event.worker(null);
 			
@@ -1883,7 +1884,7 @@ public class Daemon implements Runnable {
 						+ " found each other. (" + queue.size() + ")");
 		}
 
-		// The order here matters a lot on multicore ARM for some reason!
+		// The order here matters a lot on multicore ARM for some reason, see above!
 		event.worker(worker);
 		worker.event(event);
 

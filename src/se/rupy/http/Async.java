@@ -102,7 +102,7 @@ public class Async implements Runnable {
 	protected void start(int workers) throws Exception {
 		selector = Selector.open();
 		queue = new Queue(workers);
-		new Thread(this).start();
+		new Thread(this, "Async-Poll").start();
 	}
 
 	/**
@@ -595,7 +595,7 @@ public class Async implements Runnable {
 			threads = new Worker[length];
 
 			for(int i = 0; i < threads.length; i++) {
-				threads[i] = new Worker();
+				threads[i] = new Worker(i);
 				threads[i].start();
 			}
 		}
@@ -616,6 +616,9 @@ public class Async implements Runnable {
 		}
 
 		private class Worker extends Thread {
+			public Worker(int id) {
+				super("Async-" + id);
+			}
 			public void run() {
 				Call call;
 
