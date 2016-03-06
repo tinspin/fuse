@@ -100,7 +100,7 @@ public class Router implements Node {
 				else {
 					session(event, name, body);
 					event.query().put("done", "salt|done|" + body);
-					int wakeup = event.reply().wakeup(true, true);
+					int wakeup = event.reply().wakeup(true);
 					if(debug)
 						System.err.println(wakeup);
 				}
@@ -109,7 +109,7 @@ public class Router implements Node {
 			public void fail(String host, Exception e) throws Exception {
 				e.printStackTrace();
 				event.query().put("done", "salt|fail|unknown problem");
-				event.reply().wakeup(true, true);
+				event.reply().wakeup(true);
 			}
 		};
 
@@ -229,13 +229,13 @@ public class Router implements Node {
 						event.query().put("done", "user|done|" + user.salt + "|" + key + "|" + Root.hash(key));
 					}
 
-					event.reply().wakeup(true, true);
+					event.reply().wakeup(true);
 				}
 
 				public void fail(String host, Exception e) throws Exception {
 					e.printStackTrace();
 					event.query().put("fail", "user|fail|unknown problem");
-					event.reply().wakeup(true, true);
+					event.reply().wakeup(true);
 				}
 			};
 
@@ -287,13 +287,13 @@ public class Router implements Node {
 						event.query().put("fail", "sign|fail|" + body);
 					}
 
-					event.reply().wakeup(true, true);
+					event.reply().wakeup(true);
 				}
 
 				public void fail(String host, Exception e) throws Exception {
 					e.printStackTrace();
 					event.query().put("fail", "sign|fail|unknown problem");
-					event.reply().wakeup(true, true);
+					event.reply().wakeup(true);
 				}
 			};
 
@@ -425,13 +425,13 @@ public class Router implements Node {
 						else
 							event.query().put("done", rule + "|done");
 
-						event.reply().wakeup(true, true);
+						event.reply().wakeup(true);
 					}
 
 					public void fail(String host, Exception e) throws Exception {
 						e.printStackTrace();
 						event.query().put("fail", rule + "|fail|unknown problem");
-						event.reply().wakeup(true, true);
+						event.reply().wakeup(true);
 					}
 				};
 
@@ -485,14 +485,14 @@ public class Router implements Node {
 							poll.remove(Root.hash(user.json.getString("key")));
 						}
 						event.query().put("done", "sign|done");
-						event.reply().wakeup(true, true);
+						event.reply().wakeup(true);
 					}
 
 					public void fail(String host, Exception e) throws Exception {
 						if(debug)
 							System.err.println("fuse ally tear fail " + e);
 						event.query().put("fail", "sign|fail|unknown problem");
-						event.reply().wakeup(true, true);
+						event.reply().wakeup(true);
 					}
 				};
 
@@ -600,14 +600,14 @@ public class Router implements Node {
 						catch(Exception e) {
 							event.query().put("fail", "list|fail|not found");
 						}
-						event.reply().wakeup(true, true);
+						event.reply().wakeup(true);
 					}
 
 					public void fail(String host, Exception e) throws Exception {
 						if(debug)
 							System.err.println("list data " + e);
 						event.query().put("fail", "list|fail|unknown problem");
-						event.reply().wakeup(true, true);
+						event.reply().wakeup(true);
 					}
 				};
 
@@ -710,14 +710,14 @@ public class Router implements Node {
 								poll.add(Root.hash(user.json.getString("key")));
 							}
 							event.query().put("done", "ally|done");
-							event.reply().wakeup(true, true);
+							event.reply().wakeup(true);
 						}
 
 						public void fail(String host, Exception e) throws Exception {
 							if(debug)
 								System.err.println("fuse ally fail " + e);
 							event.query().put("fail", "ally|fail|unknown problem");
-							event.reply().wakeup(true, true);
+							event.reply().wakeup(true);
 						}
 					};
 
@@ -846,14 +846,14 @@ public class Router implements Node {
 					if(debug)
 						System.err.println(split[0] + " " + body);
 					event.query().put("done", split[0] + "|done");
-					event.reply().wakeup(true, true);
+					event.reply().wakeup(true);
 				}
 
 				public void fail(String host, Exception e) throws Exception {
 					if(debug)
 						System.err.println(split[0] + " " + e);
 					event.query().put("fail", split[0] + "|fail|unknown problem");
-					event.reply().wakeup(true, true);
+					event.reply().wakeup(true);
 				}
 			};
 
@@ -881,13 +881,13 @@ public class Router implements Node {
 						event.query().put("fail", split[0] + "|fail|" + body);
 					}
 
-					event.reply().wakeup(true, true);
+					event.reply().wakeup(true);
 				}
 
 				public void fail(String host, Exception e) throws Exception {
 					e.printStackTrace();
 					event.query().put("fail", split[0] + "|fail|unknown problem");
-					event.reply().wakeup(true, true);
+					event.reply().wakeup(true);
 				}
 			};
 
