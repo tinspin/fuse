@@ -205,14 +205,14 @@ public class Reply {
 	 * - To make sure a multihomed fork latch finishes, see how Root uses it under the hood.<br>
 	 * - Fast async-async chains that reply quicker than the calling thread, when calling f.ex. Root on localhost.<br>
 	 * <br>
-	 * The queue parameter is experimental and should not be used in regular use.<br>
+	 * The queue parameter is experimental and should not be used in regular operation.<br>
 	 * 
 	 * @param wakeup Automatically wakeup the worker on this event if WORKING.
 	 * @param queue Automatically queue this event if WORKING, experimental.
 	 * @return The status of the wakeup call. {@link Reply#OK}, {@link Reply#COMPLETE}, {@link Reply#CLOSED} or {@link Reply#WORKING}
 	 */
 	public synchronized int wakeup(boolean wakeup, boolean queue) {
-		if(output.complete())
+		if(!wakeup && output.complete())
 			return COMPLETE;
 		
 		if(!event.channel().isOpen())
