@@ -198,9 +198,14 @@ public class Reply {
 	/**
 	 * To send data asynchronously, call this and the event will be re-filtered.
 	 * Just make sure you didn't already flush the reply and that you are ready to
-	 * catch the event when it recycles in {@link Service#filter(Event)}!
-	 * 
-	 * The queue is experimental and should not be used in regular use.
+	 * catch the event when it recycles in {@link Service#filter(Event)}!<br>
+	 * <br>
+	 * The wakeup parameter is used for 2 things:<br>
+	 * <br>
+	 * - To make sure a multihomed fork latch finishes, see how Root uses it under the hood.<br>
+	 * - Fast async-async chains that reply quicker than the calling thread, when calling f.ex. Root on localhost.<br>
+	 * <br>
+	 * The queue parameter is experimental and should not be used in regular use.<br>
 	 * 
 	 * @param wakeup Automatically wakeup the worker on this event if WORKING.
 	 * @param queue Automatically queue this event if WORKING, experimental.
