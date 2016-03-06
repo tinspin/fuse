@@ -100,7 +100,7 @@ public abstract class Input extends InputStream implements Event.Block {
 		if (available > 0)
 			return available;
 
-		ByteBuffer buffer = event.worker_(0).in();
+		ByteBuffer buffer = event.worker().in();
 		buffer.clear();
 
 		try {

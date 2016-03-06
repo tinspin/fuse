@@ -1803,23 +1803,14 @@ public class Daemon implements Runnable {
 	}
 
 	private synchronized Event next() {
-		queue.reset();
-		
 		if(queue.size() > 0) {
-			Event event = (Event) queue.next();
+			Event event = (Event) queue.poll();
 
 			while(queue.size() > 0 && event != null && event.worker() != null) {
-				//System.err.print(":");
-				event = (Event) queue.next();
+				event = (Event) queue.poll();
 			}
 
-			if(event != null) {
-				if(event.worker() != null)
-					return null;
-				
-				queue.remove(event);
-				return event;
-			}
+			return event;
 		}
 
 		return null;
@@ -1850,16 +1841,16 @@ public class Daemon implements Runnable {
 		boolean wakeup = true;
 
 		if(event != null && worker != null) {
-			event.worker(null);
 			worker.event(null);
-
+			event.worker(null);
+			
 			try {
 				event.register(Event.READ);
 			}
 			catch(CancelledKeyException e) {
 				event.disconnect(e);
 			}
-
+			
 			wakeup = false;
 			event = null;
 		}
@@ -1891,9 +1882,10 @@ public class Daemon implements Runnable {
 						+ " and worker " + worker.index()
 						+ " found each other. (" + queue.size() + ")");
 		}
-		
-		worker.event(event);
+
+		// The order here matters a lot on multicore ARM for some reason!
 		event.worker(worker);
+		worker.event(event);
 
 		if(wakeup) {
 			worker.wakeup(true);
