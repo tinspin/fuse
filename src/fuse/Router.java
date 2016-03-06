@@ -22,7 +22,7 @@ import se.rupy.http.Root;
 import se.rupy.http.Service;
 
 public class Router implements Node {
-	public static boolean debug = true;
+	public static boolean debug = false;
 
 	public static String hash = "md5";
 	public static String host = "fuse.rupy.se";
@@ -920,6 +920,10 @@ public class Router implements Node {
 
 		if(split[0].equals("move")) {
 			user.room.send(user, "move|" + user.name + "|" + split[2]);
+			String[] pos = split[2].split(";")[0].split(",");
+			user.x = Float.parseFloat(pos[0]);
+			user.y = Float.parseFloat(pos[1]);
+			user.z = Float.parseFloat(pos[2]);
 			return "move|done";
 		}
 
@@ -928,6 +932,7 @@ public class Router implements Node {
 
 	public static class Part {
 		String salt;
+		float x, y, z;
 	}
 
 	public static class Item extends Part {
