@@ -200,24 +200,20 @@ public class Reply {
 	 * Just make sure you didn't already flush the reply and that you are ready to
 	 * catch the event when it recycles in {@link Service#filter(Event)}!
 	 * 
-	 * Do not use queue when testing the system, or in one-to-many broadcasts.
-	 * It's specifically there for deep async-to-async chains and will stall 
-	 * the socket it used intensively over and over again.
+	 * The queue is experimental and should not be used in regular use.
 	 * 
 	 * @param wakeup Automatically wakeup the worker on this event if WORKING.
-	 * @param queue Automatically queue this event if WORKING.
+	 * @param queue Automatically queue this event if WORKING, experimental.
 	 * @return The status of the wakeup call. {@link Reply#OK}, {@link Reply#COMPLETE}, {@link Reply#CLOSED} or {@link Reply#WORKING}
 	 */
 	public synchronized int wakeup(boolean wakeup, boolean queue) {
-		if(!wakeup && output.complete())
+		if(output.complete())
 			return COMPLETE;
 		
 		if(!event.channel().isOpen())
 			return CLOSED;
 		
-		int wake = event.daemon().match(event, null);
-		
-		if(wake == 0)
+		if(event.daemon().match(event, null) == 0)
 			return OK;
 		
 		if(wakeup)
