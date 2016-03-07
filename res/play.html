@@ -182,13 +182,13 @@ public class play extends Service {
         element('chat').value = '[' + split[1] + '] ' + split[2] + ': ' + split[3] + '\n' + element('chat').value;
         type_audio.play();
       }
-      if(split[0] == 'lock') {
+      else if(split[0] == 'lock') {
         update_select('join', split[1], red);
       }
-      if(split[0] == 'open') {
+      else if(split[0] == 'open') {
         update_select('join', split[1], orange);
       }
-      if(split[0] == 'here') {
+      else if(split[0] == 'here') {
         var select = 'ally';
         var color = black;
         if(split[1] == 'root') color = red;
@@ -200,10 +200,10 @@ public class play extends Service {
         add_select(select, split[2], color);
         join_audio.play();
       }
-      if(split[0] == 'ally') {
+      else if(split[0] == 'ally') {
         update_select('ally', split[1], green);
       }
-      if(split[0] == 'gone') {
+      else if(split[0] == 'gone') {
         if(split[1] == 'root') {
           remove_select('ally', split[2]);
         }      
@@ -212,13 +212,13 @@ public class play extends Service {
           stop_game();
         }
       }
-      if(split[0] == 'room') {
+      else if(split[0] == 'room') {
         add_select('join', split[1].split(',')[0], orange);
       }
-      if(split[0] == 'drop') {
+      else if(split[0] == 'drop') {
         remove_select('join', split[1]);
       }
-      if(split[0] == 'stop' || split[0] == 'quit') {
+      else if(split[0] == 'stop' || split[0] == 'quit') {
         if(split[0] == 'quit')
           remove_select('ally', split[1]);
         if(split[0] == 'stop') {
@@ -227,7 +227,7 @@ public class play extends Service {
           list();
         }
       }
-      if(split[0] == 'play') {
+      else if(split[0] == 'play') {
         display('room', 'none');
         display('play', 'block');
         element('talk').style.position = 'absolute';
@@ -236,30 +236,30 @@ public class play extends Service {
         head(split[1]);
         game_play = true;
       }
-      if(split[0] == 'send') {
+      else if(split[0] == 'send') {
         sent(split[1], split[2]);
       }
-      if(split[0] == 'over') {
+      else if(split[0] == 'over') {
         element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
         stop_game();
       }
-      if(split[0] == 'away') {
+      else if(split[0] == 'away') {
         update_select('ally', split[1], orange);
         element('chat').value = split[1] + ': away\n' + element('chat').value;
       }
-      if(split[0] == 'back') {
+      else if(split[0] == 'back') {
         update_select('ally', split[1], blue);
         element('chat').value = split[1] + ': back\n' + element('chat').value;
       }
-      if(split[0] == 'hold') {
+      else if(split[0] == 'hold') {
         if(game_play)
       	  pause(true);
       }
-      if(split[0] == 'free') {
+      else if(split[0] == 'free') {
         if(game_play)
           pause(false);
       }
-      if(split[0] == 'poll') {
+      else if(split[0] == 'poll') {
         var join = 'Accept challenge from';
         var ally = 'Become friends with';
         if(confirm((split[1] == 'ally' ? ally : join) + ' ' + split[2] + '?\n' + (split.length > 3 ? split[3] : ''))) {
@@ -268,11 +268,14 @@ public class play extends Service {
           push('poll|' + split[2] + '|false');
         }
       }
-      if(split[0] == 'warn') {
+      else if(split[0] == 'warn') {
         alert(split[2]);
         if(split[1] == 'boot' && name == pass) {
           window.location.href = '/play.html?name=' + name + '&pass=' + pass + '&test=' + show + '&game=' + game;
         }
+      }
+      else if(split[0] == 'item') {
+        item(split[1].split(','));
       }
     }
   }
@@ -472,6 +475,12 @@ public class play extends Service {
         show_fail(join[2]);
       }
     }
+  }
+  function pick(salt) {
+    return easypush('pick|' + salt);
+  }
+  function drop(name, many) {
+    return easypush('drop|' + name + '|' + many);
   }
   function save(name, json, type) {
     if(type === undefined)
