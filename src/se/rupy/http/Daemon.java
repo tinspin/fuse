@@ -1841,7 +1841,7 @@ public class Daemon implements Runnable {
 		boolean wakeup = true;
 
 		if(event != null && worker != null) {
-			// The order here matters a lot on multicore ARM for some reason, see below!
+			// The order here matters a lot, see below!
 			worker.event(null);
 			event.worker(null);
 			
@@ -1884,7 +1884,7 @@ public class Daemon implements Runnable {
 						+ " found each other. (" + queue.size() + ")");
 		}
 
-		// The order here matters a lot on multicore ARM for some reason, see above!
+		// The order here matters a lot, see above!
 		event.worker(worker);
 		worker.event(event);
 

@@ -258,7 +258,10 @@ public class Event extends Throwable implements Chain.Link {
 		if(query.version() == null || !query.version().equalsIgnoreCase("HTTP/1.1")) {
 			reply.code("505 Not Supported");
 		}
-		else if(!query.header().containsKey("host")) {
+		else if(!query.header().containsKey("host") || 
+				 query.path().contains("//") || 
+				 query.path().contains("..") || 
+				 query.path().contains("\\")) {
 			reply.code("400 Bad Request");
 		}
 		else {

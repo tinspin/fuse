@@ -73,7 +73,7 @@ public class Query extends Hash {
 		
 		if(path.startsWith("http://"))
 			path = path.substring(path.indexOf("/", 8), path.length());
-
+		
 		version = http.nextToken();
 		line = input.line();
 		int lines = 0;
