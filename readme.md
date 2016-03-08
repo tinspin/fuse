@@ -190,9 +190,10 @@ In sort of chronological order:
                            o-> item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;
 
                             // pick item
-*<b><i>pick</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> pick|done
-                            -> pick|fail|salt not found
-                           x-> pick|user|salt
+                            // salt = user|item
+ <b><i>pick</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> pick|done
+                            -> pick|fail|not found
+                           x-> pick|&lt;user&gt;|&lt;salt&gt;
                            
                             // get user country (ISO 3166)
 *<b><i>flag</i></b>|&lt;salt&gt;|&lt;user&gt;         -> flag|done|&lt;code&gt;
@@ -361,10 +362,12 @@ In sort of chronological order:
       base
  paid rent cash sold coin earn bill sale
  tone tune mute walk
+ zero none
 
 // todo
 
- noop = zero, none?
+ - Add item if you don't have it on pick.
+ - Chat from lobby to rooms!
 
 // attribution
 

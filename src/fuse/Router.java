@@ -88,6 +88,8 @@ public class Router implements Node {
 	static SimpleDateFormat date = new SimpleDateFormat("HH:mm:ss.SSS");
 
 	public void salt(Event event, final String name) throws Exception {
+		//System.err.println("salt " + event.index());
+
 		Async.Work work = new Async.Work(event) {
 			public void send(Async.Call call) throws Exception {
 				call.get("/salt", head());
@@ -559,22 +561,20 @@ public class Router implements Node {
 				}
 				else {
 					StringBuilder builder = new StringBuilder("list|done|room|item|");
-					Iterator it = user.game.parts.values().iterator();
+					Iterator it = user.room.items.values().iterator();
 					boolean first = true;
 
 					while(it.hasNext()) {
-						Part part = (Part) it.next();
+						Item item = (Item) it.next();
 
-						if(part instanceof Item) {
-							if(first) {
-								first = false;
-							}
-							else {
-								builder.append(";");
-							}
-
-							builder.append((Item) part);
+						if(first) {
+							first = false;
 						}
+						else {
+							builder.append(";");
+						}
+
+						builder.append(item);
 					}
 
 					return builder.toString();
@@ -593,19 +593,22 @@ public class Router implements Node {
 						if(debug)
 							System.err.println(body);
 						try {
-							JSONObject result = (JSONObject) new JSONObject(body);
-							JSONArray list = result.getJSONArray("list");
+							user.item = (JSONObject) new JSONObject(body);
+							JSONArray l = user.item.getJSONArray("list");
 
 							StringBuilder builder = new StringBuilder("list|done|" + list + "|");
 
-							for(int i = 0; i < list.length(); i++) {
-								JSONObject json = list.getJSONObject(i);
+							for(int i = 0; i < l.length(); i++) {
+								JSONObject json = l.getJSONObject(i);
 								String[] name = JSONObject.getNames(json);
 								JSONObject item = json.getJSONObject(name[0]);
 
-								builder.append(name[0] + "," + item.toString().length());
+								if(list.equals("data"))
+									builder.append(name[0] + "," + item.toString().length());
+								else
+									builder.append(name[0] + "," + item.getInt("count"));
 
-								if(i < list.length() - 1)
+								if(i < l.length() - 1)
 									builder.append(";");
 							}
 
@@ -614,6 +617,7 @@ public class Router implements Node {
 						catch(Exception e) {
 							event.query().put("fail", "list|fail|not found");
 						}
+
 						event.reply().wakeup(true, queue);
 					}
 
@@ -638,7 +642,7 @@ public class Router implements Node {
 			if(room == null) {
 				boolean game = user.room instanceof Game;
 
-				if(!game && user.room.parts.size() == user.room.size && !user.room.play)
+				if(!game && user.room.users.size() == user.room.size && !user.room.play)
 					return "join|fail|is full";
 
 				User poll = (User) names.get(split[2]);
@@ -663,12 +667,12 @@ public class Router implements Node {
 			if(user.room.user != null && user.room.user.name.equals(room.user.name))
 				return "join|fail|already here";
 
-			if(room.parts.size() == room.size && !room.play)
+			if(room.users.size() == room.size && !room.play)
 				return "join|fail|is full";
 
 			user.move(user.room, room, true);
 
-			if(room.parts.size() == room.size)
+			if(room.users.size() == room.size)
 				user.game.send(user, "lock|" + user.room.user.name);
 
 			return "join|done|room";
@@ -758,7 +762,7 @@ public class Router implements Node {
 			if(user.room.user == null)
 				return "play|fail|in lobby";
 
-			if(user.room.parts.size() < 2 && !user.room.type.equals("item"))
+			if(user.room.users.size() < 2 && !user.room.type.equals("item"))
 				return "play|fail|only one player";
 
 			if(user.room.user == user)
@@ -781,7 +785,7 @@ public class Router implements Node {
 
 			user.lost++;
 
-			Iterator it = user.room.parts.values().iterator();
+			Iterator it = user.room.users.values().iterator();
 
 			while(it.hasNext()) {
 				User other = (User) it.next();
@@ -814,7 +818,7 @@ public class Router implements Node {
 				return "exit|fail|in lobby";
 
 			Room room = user.room;
-			boolean full = room.parts.size() == room.size;
+			boolean full = room.users.size() == room.size;
 			Room drop = user.move(user.room, user.game, false);
 
 			if(drop != null) {
@@ -829,12 +833,91 @@ public class Router implements Node {
 			return "exit|done";
 		}
 		else if(split[0].equals("drop")) {
-			
-			
-			return "drop|done|z4Er";
+			final String name = split[2];
+			int many = Integer.parseInt(split[3]);
+
+			JSONObject json = user.item(name);
+
+			if(json == null)
+				return "drop|fail|not found";
+
+			int count = json.getInt("count");
+
+			if(count < many)
+				return "drop|fail|not enough";
+
+			final Item item = user.room.item(user, name, many);
+			json.put("count", count - many);
+			final String save = json.toString();
+
+			Async.Work work = new Async.Work(event) {
+				public void send(Async.Call call) throws Exception {
+					call.post("/meta", head(), 
+							("pkey=" + user.json.getString("key") + "&ckey=" + name + 
+									"&ptype=user&ctype=item&json=" + save).getBytes("utf-8"));
+				}
+
+				public void read(String host, String body) throws Exception {
+					if(debug)
+						System.err.println(split[0] + " " + body);
+					user.room.send(user, "item|" + item, true);
+					event.query().put("done", split[0] + "|done|" + item.salt);
+					event.reply().wakeup(true, queue);
+				}
+
+				public void fail(String host, Exception e) throws Exception {
+					if(debug)
+						System.err.println(split[0] + " " + e);
+					event.query().put("fail", split[0] + "|fail|unknown problem");
+					event.reply().wakeup(true, queue);
+				}
+			};
+
+			event.daemon().client().send(what, work, timeout);
+			throw event;
 		}
 		else if(split[0].equals("pick")) {
-			return "pick|done";
+			String salt = split[2];
+
+			final Item item = user.room.item(salt);
+
+			if(item == null)
+				return "pick|fail|not found";
+
+			JSONObject json = user.item(item.name);
+
+			if(json == null)
+				json = new JSONObject("{count: " + item.count + "}");
+			else
+				json.put("count", json.getInt("count") + item.count);
+
+			final String save = json.toString();
+
+			Async.Work work = new Async.Work(event) {
+				public void send(Async.Call call) throws Exception {
+					call.post("/meta", head(), 
+							("pkey=" + user.json.getString("key") + "&ckey=" + item.name + 
+									"&ptype=user&ctype=item&json=" + save).getBytes("utf-8"));
+				}
+
+				public void read(String host, String body) throws Exception {
+					if(debug)
+						System.err.println(split[0] + " " + body);
+					user.room.send(user, "pick|" + user.name + "|" + item.salt, true);
+					event.query().put("done", split[0] + "|done|" + item.salt);
+					event.reply().wakeup(true, queue);
+				}
+
+				public void fail(String host, Exception e) throws Exception {
+					if(debug)
+						System.err.println(split[0] + " " + e);
+					event.query().put("fail", split[0] + "|fail|unknown problem");
+					event.reply().wakeup(true, queue);
+				}
+			};
+
+			event.daemon().client().send(what, work, timeout);
+			throw event;
 		}
 		else if(split[0].equals("save") || split[0].equals("tear")) {
 			final boolean tear = split[0].equals("tear");
@@ -861,6 +944,9 @@ public class Router implements Node {
 				public void read(String host, String body) throws Exception {
 					if(debug)
 						System.err.println(split[0] + " " + body);
+					JSONObject data = user.item(name);
+					if(data != null)
+						data = json;
 					event.query().put("done", split[0] + "|done");
 					event.reply().wakeup(true, queue);
 				}
@@ -944,11 +1030,27 @@ public class Router implements Node {
 
 	public static class Part {
 		String salt;
+		String name;
 		float x, y, z;
 	}
 
 	public static class Item extends Part {
+		int count;
 
+		public Item(String name, int count) {
+			this.name = name;
+			this.count = count;
+		}
+
+		public void position(User user) {
+			this.x = user.x;
+			this.y = user.y;
+			this.z = user.z;
+		}
+
+		public String toString() {
+			return salt + "," + x + "," + y + "," + z + "," + name + "," + count;
+		}
 	}
 
 	public static class Game extends Room {
@@ -964,8 +1066,9 @@ public class Router implements Node {
 	public static class User extends Part {
 		String[] ip;
 		JSONObject json;
+		JSONObject item;
 		LinkedList ally = new LinkedList();
-		String name, nick, flag, poll, type;
+		String nick, flag, poll, type;
 		boolean sign, away;
 		Game game;
 		Room room;
@@ -988,6 +1091,21 @@ public class Router implements Node {
 			catch(Exception e) {
 				e.printStackTrace();
 			}
+		}
+
+		JSONObject item(String name) throws Exception {
+			JSONArray list = item.getJSONArray("list");
+
+			for(int i = 0; i < list.length(); i++) {
+				JSONObject item = list.getJSONObject(i);
+				String[] names = JSONObject.getNames(item);
+
+				if(names[0].equals(name)) {
+					return item.getJSONObject(names[0]);
+				}
+			}
+
+			return null;
 		}
 
 		private void ally() throws Exception {
@@ -1089,7 +1207,8 @@ public class Router implements Node {
 	}
 
 	public static class Room {
-		ConcurrentHashMap parts = new ConcurrentHashMap();
+		ConcurrentHashMap users = new ConcurrentHashMap();
+		ConcurrentHashMap items = new ConcurrentHashMap();
 
 		boolean play;
 		String type;
@@ -1106,8 +1225,27 @@ public class Router implements Node {
 			this.size = size;
 		}
 
+		private synchronized Item item(User user, String name, int count) throws Exception {
+			String salt = Event.random(4);
+
+			while(items.get(salt) != null)
+				salt = Event.random(4);
+
+			Item item = new Item(name, count);
+			item.position(user);
+			item.salt = salt;
+
+			items.put(salt, item);
+
+			return item;
+		}
+
+		private synchronized Item item(String salt) {
+			return (Item) items.remove(salt);
+		}
+
 		boolean away() {
-			Iterator it = parts.values().iterator();
+			Iterator it = users.values().iterator();
 
 			while(it.hasNext()) {
 				User user = (User) it.next();
@@ -1120,7 +1258,7 @@ public class Router implements Node {
 		}
 
 		public void wakeup() throws Exception {
-			Iterator it = parts.values().iterator();
+			Iterator it = users.values().iterator();
 
 			while(it.hasNext()) {
 				Part p = (Part) it.next();
@@ -1137,7 +1275,7 @@ public class Router implements Node {
 		}
 
 		void send(User from, String data, boolean all) throws Exception {
-			Iterator it = parts.values().iterator();
+			Iterator it = users.values().iterator();
 
 			if(data.startsWith("play"))
 				play = true;
@@ -1151,7 +1289,7 @@ public class Router implements Node {
 
 			if(data.startsWith("here"))
 				if(debug)
-					System.err.println(parts);
+					System.err.println(users);
 
 			boolean wakeup = false;
 
@@ -1233,15 +1371,15 @@ public class Router implements Node {
 		}
 
 		void clear() {
-			parts.clear();
+			users.clear();
 		}
 
 		void add(User user) {
-			parts.put(user.name, user);
+			users.put(user.name, user);
 		}
 
 		void remove(User user) {
-			parts.remove(user.name);
+			users.remove(user.name);
 		}
 
 		public String toString() {

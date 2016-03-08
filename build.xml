@@ -91,12 +91,5 @@
 			<arg line="${fuse.rupy.se}"/>
 		</java>
 	</target>
-	<target name="meadow" depends="build">
-		<move file="bin/${root}.jar" tofile="bin/www.sheltermeadow.com.jar"/>
-		<java fork="yes" classname="se.rupy.http.Deploy" classpath="${lib}">
-			<arg line="host.sheltermeadow.com"/>
-			<arg line="bin/www.sheltermeadow.com.jar"/>
-			<arg line="${www.sheltermeadow.com}"/>
-		</java>
-	</target>
+	
 </project>

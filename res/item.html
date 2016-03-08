@@ -10,12 +10,18 @@
     data_list();
     room_list();
   }
-  function make_room() { return 'item|1'; }
+  function make_room() { return 'item|40'; }
   function sent(user, data) {}
   function pause(hold) {}
   function tail() {}
-  function item(item) {
-    alert(item);
+  function item(item) { /* salt,x,y,z,name,many */
+    add_select('room_list', item[4] + '(' + item[0] + ')', blue, item[0]);
+  }
+  function pick(user, salt) {
+    var pick = remove_select_value('room_list', salt);
+    if(user == name) {
+      add_select('data_list', pick.substring(0, pick.indexOf("(")), green);
+    }
   }
   <!-- here are the data/item methods -->
   function data_list() {
@@ -42,7 +48,7 @@
     if(data.length > 4 && data[4].length > 0) {
       var list = data[4].split(';');
       for(var i = 0; i < list.length; i++) {
-        add_select('data_list', list[i].split(',')[0], blue);
+        item(list[i].split(','));
       }
     }
   }
@@ -93,7 +99,12 @@
     if(index > -1) {
       var name = select.options[index].text;
       var value = select.options[index].value;
-      pick(value);
+      try {
+        send_pick(value);
+      }
+      catch(e) {
+        element('fail3').innerHTML = e;
+      }
     }
   }
   function room_drop() {
@@ -101,29 +112,34 @@
     if(type.value == 'item') {
       var text = element('data_name');
       var many = element('room_many');
-      drop(text.value, many.value);
+      try {
+        var done = drop(text.value, many.value);
+      }
+      catch(e) {
+        element('fail3').innerHTML = e;
+      }
     }
   }
 </script>
 
 <div id="room">
 <table border="0">
-<tr><td colspan="3"><div id="fail3"></div></td></tr>
+<tr><td colspan="4"><div id="fail3"></div></td></tr>
 <tr><td align="center"><i>user</i></td><td></td>
-    <td align="center"><i>json</i></td></tr>
+    <td colspan="2" align="center"><i>json</i></td></tr>
 <tr><td rowspan="3"><select id="data_list" style="width: 115px; height: 115px;" multiple></select></td>
     <td rowspan="3" valign="middle">&nbsp;<font color="red">&rarr;</font>&nbsp;</td>
-    <td><i>type</i>&nbsp;<select id="data_type" onchange="javascript:data_list();" style="width: 80px; height: 21px;"><option>data</option><option>item</option></select></td></tr>
-<tr><td><i>name</i>&nbsp;<input style="width: 80px; height: 21px;" id="data_name" type="text" size="10"></td></tr>
-<tr><td><textarea id="data_json" style="width: 115px; height: 65px;" rows="3"></textarea></td></tr>
+    <td colspan="2"><i>type</i>&nbsp;<select id="data_type" onchange="javascript:data_list();" style="width: 80px; height: 21px;"><option>data</option><option>item</option></select></td></tr>
+<tr><td colspan="2"><i>name</i>&nbsp;<input style="width: 80px; height: 21px;" id="data_name" type="text" size="10"></td></tr>
+<tr><td colspan="2"><textarea id="data_json" style="width: 115px; height: 65px;" rows="3"></textarea></td></tr>
 <tr><td><a href="javascript:data_load();">load</a></td><td></td>
-    <td><a href="javascript:data_save();">save</a>&nbsp;<a href="javascript:data_tear();">tear</a></td></tr>
-<tr><td align="center"><font color="red">&uarr;</font></td><td></td><td align="center"><font color="red">&darr;</font></td></tr>
+    <td><a href="javascript:data_save();">save</a></td><td align="right"><a href="javascript:data_tear();">tear</a></td></tr>
+<tr><td align="center"><font color="red">&uarr;</font></td><td></td><td colspan="2" align="center"><font color="red">&darr;</font></td></tr>
 <tr><td align="center"><i>room</i></td><td></td>
-    <td align="center"><i>item</i></td></tr>
+    <td colspan="2" align="center"><i>item</i></td></tr>
 <tr><td><select id="room_list" style="width: 115px; height: 115px;" multiple></select></td>
-    <td valign="middle">&nbsp;<font color="red">&larr;</font>&nbsp;</td><td valign="top"><i>many</i>&nbsp;<input style="width: 80px; height: 21px;" id="room_many" type="text" size="10" value="1"></td></tr>
+    <td valign="middle">&nbsp;<font color="red">&larr;</font>&nbsp;</td><td colspan="2" valign="top"><i>many</i>&nbsp;<input style="width: 80px; height: 21px;" id="room_many" type="text" size="10" value="1"></td></tr>
 <tr><td><a href="javascript:room_pick();">pick</a></td><td></td>
-    <td><a href="javascript:room_drop();">drop</a>&nbsp;<a href="javascript:over('done');">over</a></td></tr>
+    <td><a href="javascript:room_drop();">drop</a></td><td align="right"><a href="javascript:over('done');">over</a></td></tr>
 </table>
 </div>

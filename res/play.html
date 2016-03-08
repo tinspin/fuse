@@ -277,6 +277,9 @@ public class play extends Service {
       else if(split[0] == 'item') {
         item(split[1].split(','));
       }
+      else if(split[0] == 'pick') {
+        pick(split[1], split[2]);
+      }
     }
   }
   function stop_game() {
@@ -298,7 +301,23 @@ public class play extends Service {
     if(id > -1)
       select.remove(id);
   }
-  function add_select(type, name, color) {
+  function remove_select_value(type, value) {
+    var select = element(type);
+    var text = '';
+    var id = -1;
+    for(var i = 0; i < select.options.length; i++) {
+      if(select.options[i].value == value) {
+        text = select.options[i].text;
+        id = i;
+        break;
+      }
+    }
+    if(id > -1) {
+      select.remove(id);
+      return text;
+    }
+  }
+  function add_select(type, name, color, value) {
     var select = element(type);
     for(var i = 0; i < select.options.length; i++) {
       if(select.options[i].text == name) {
@@ -308,6 +327,7 @@ public class play extends Service {
     var option = document.createElement('option');
     option.style.color = color;
     option.text = name;
+    option.value = value;
     select.add(option, 0);
   }
   function update_select(type, name, color) {
@@ -323,9 +343,13 @@ public class play extends Service {
     var select = element(name);
     select.options.length = 0;
   }
-  function hide_fail(text) {
+  function hide_fail() {
     element('fail1').innerHTML = '';
     element('fail2').innerHTML = '';
+    try {
+      element('fail3').innerHTML = '';
+    }
+    catch(e) {}
   }
   function show_fail(text) {
     element('fail1').innerHTML = text;
@@ -476,7 +500,7 @@ public class play extends Service {
       }
     }
   }
-  function pick(salt) {
+  function send_pick(salt) {
     return easypush('pick|' + salt);
   }
   function drop(name, many) {
