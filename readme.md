@@ -63,9 +63,6 @@ i-> = async. send to one user for unique feedback.
 
  *  = not implemented yet
 
-<i>hash</i>() is md5 for fuse.rupy.se, 
-sha-256 for every other domain.
-
 &lt;spot&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;
 &lt;tree&gt; for <b><i>here</i></b>/<b><i>gone</i></b>/<b><i>chat</i></b>:
 

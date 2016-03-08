@@ -428,7 +428,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	public string hash(string input) {
-		HashAlgorithm algo = host.Equals("fuse.rupy.se") ? (HashAlgorithm) MD5.Create() : (HashAlgorithm) SHA256.Create();
+		HashAlgorithm algo = (HashAlgorithm) SHA256.Create();
 		byte[] bytes = Encoding.UTF8.GetBytes(input);
 		byte[] hash = algo.ComputeHash(bytes);
 		StringBuilder sb = new StringBuilder();
