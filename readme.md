@@ -193,7 +193,7 @@ In sort of chronological order:
                             // salt = user|item
  <b><i>pick</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> pick|done
                             -> pick|fail|not found
-                           x-> pick|&lt;user&gt;|&lt;salt&gt;
+                           o-> pick|&lt;user&gt;|&lt;salt&gt;
                            
                             // get user country (ISO 3166)
 *<b><i>flag</i></b>|&lt;salt&gt;|&lt;user&gt;         -> flag|done|&lt;code&gt;
