@@ -222,7 +222,7 @@ In sort of chronological order:
                             // this sends a poll to the user if he has no room
  <b><i>join</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> join|done|poll/room
                            i-> <b><i>poll</i></b>|join|&lt;user&gt;[|info]
-                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|ip]    // leaf, in new room
+                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|ip]      // leaf, in new room
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;    // stem, in lobby
                            x-> <b><i>lock</i></b>|&lt;room&gt;                  // in lobby if room is full
@@ -247,7 +247,7 @@ In sort of chronological order:
  
                             // exit room
  <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
-                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|ip]    // stem, in lobby
+                           x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|ip]      // stem, in lobby
                            x-> <b><i>ally</i></b>|&lt;user&gt;
                            x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK, in lobby if creator exit
                            x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;    // leaf, in old room
