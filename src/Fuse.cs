@@ -454,7 +454,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	
 	public static void Main() {
 		try {
-			string key = "F9hG7K7Jwe1SmtiQ";
+			string key = "TvaaS3cqJhQyK6sn";
 			string salt = null;
 			
 			Fuse fuse = new Fuse();

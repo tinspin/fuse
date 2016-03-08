@@ -596,7 +596,7 @@ public class Router implements Node {
 							JSONObject result = (JSONObject) new JSONObject(body);
 							JSONArray list = result.getJSONArray("list");
 
-							StringBuilder builder = new StringBuilder("list|done|data|");
+							StringBuilder builder = new StringBuilder("list|done|" + list + "|");
 
 							for(int i = 0; i < list.length(); i++) {
 								JSONObject json = list.getJSONObject(i);
