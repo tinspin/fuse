@@ -211,9 +211,9 @@ In sort of chronological order:
 
                             // list rooms, data or items
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
-*<b><i>list</i></b>|&lt;salt&gt;|room|item      -> list|done|room|item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;;…
+ <b><i>list</i></b>|&lt;salt&gt;|room|item      -> list|done|room|item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|data           -> list|done|data|&lt;name&gt;,&lt;size&gt;;…
-*<b><i>list</i></b>|&lt;salt&gt;|item           -> list|done|item|&lt;name&gt;,&lt;many&gt;;…
+ <b><i>list</i></b>|&lt;salt&gt;|item           -> list|done|item|&lt;name&gt;,&lt;many&gt;;…
                             -> list|fail|not found
                             -> list|fail|wrong type
 
@@ -366,7 +366,6 @@ In sort of chronological order:
 
 // todo
 
- - Add item if you don't have it on pick.
  - Chat from lobby to rooms!
 
 // attribution
