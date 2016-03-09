@@ -606,7 +606,7 @@ public class Router implements Node {
 								if(list.equals("data"))
 									builder.append(name[0] + "," + item.toString().length());
 								else
-									builder.append(name[0] + "," + item.getInt("count"));
+									builder.append(name[0] + "," + item.optInt("count"));
 
 								if(i < l.length() - 1)
 									builder.append(";");
@@ -841,7 +841,7 @@ public class Router implements Node {
 			if(json == null)
 				return "drop|fail|not found";
 
-			int count = json.getInt("count");
+			int count = json.optInt("count");
 
 			if(count < many)
 				return "drop|fail|not enough";
@@ -889,7 +889,7 @@ public class Router implements Node {
 			if(json == null)
 				json = new JSONObject("{count: " + item.count + "}");
 			else
-				json.put("count", json.getInt("count") + item.count);
+				json.put("count", json.optInt("count") + item.count);
 
 			final String save = json.toString();
 
@@ -1493,6 +1493,10 @@ public class Router implements Node {
 			if(ignore)
 				add = (u.game == null || user.game == null || !u.game.name.equals(user.game.name));
 
+			if(ignore && !add && u.room.user != null && user.room.user == null) { // fix for stem -> leaf
+				add = !u.game.name.equals(u.room.user.name);
+			}
+			
 			if(add)
 				node.push(u.salt, message, true);
 		}
