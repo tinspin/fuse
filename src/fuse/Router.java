@@ -481,8 +481,8 @@ public class Router implements Node {
 						if(debug)
 							System.err.println("fuse ally tear read " + body);
 						if(body.equals("1")) {
-							user.remove(Root.hash(poll.json.getString("key")));
-							poll.remove(Root.hash(user.json.getString("key")));
+							user.remove(poll.name);
+							poll.remove(user.name);
 						}
 						event.query().put("done", "sign|done");
 						event.reply().wakeup(true, queue);
@@ -724,8 +724,8 @@ public class Router implements Node {
 							if(debug)
 								System.err.println("fuse ally read " + body);
 							if(body.equals("1")) {
-								user.add(Root.hash(poll.json.getString("key")));
-								poll.add(Root.hash(user.json.getString("key")));
+								user.add(poll.name);
+								poll.add(user.name);
 							}
 							event.query().put("done", "ally|done");
 							event.reply().wakeup(true, queue);
@@ -1123,8 +1123,7 @@ public class Router implements Node {
 
 						for(int i = 0; i < list.length(); i++) {
 							String name = JSONObject.getNames(list.getJSONObject(i))[0];
-							File file = new File(Root.home() + "/node/user/name" + Root.path(name));
-							ally.addFirst(Root.hash(new JSONObject(Root.file(file)).getString("key")));
+							ally.addFirst(name);
 						}
 					}
 					catch(JSONException e) {}
@@ -1144,16 +1143,18 @@ public class Router implements Node {
 			this.ip[1] = event.remote();
 		}
 
-		void add(long ally) {
-			this.ally.add(new Long(ally));
+		void add(String ally) {
+			this.ally.add(ally);
 		}
 
-		void remove(long ally) {
-			this.ally.remove(new Long(ally));
+		void remove(String ally) {
+			this.ally.remove(ally);
 		}
 
 		boolean ally(User user) {
-			return ally.contains(new Long(user.id));
+			System.err.println(user.name + " " + ally);
+			
+			return ally.contains(user.name);
 		}
 
 		String peer(User other) {
