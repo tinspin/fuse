@@ -647,8 +647,10 @@ public class Router implements Node {
 
 				User poll = (User) names.get(split[2]);
 
+				boolean poll_game = poll.room instanceof Game;
+				
 				if(poll != null && user.game.name.equals(poll.game.name)) {
-					if(!game)
+					if(!game || !poll_game)
 						return "join|fail|user busy";
 
 					node.push(poll.salt, "poll|join|" + user.name + "|" + info, true);

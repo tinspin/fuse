@@ -366,7 +366,7 @@ In sort of chronological order:
 
 // todo
 
- - Chat from lobby to rooms!
+ - Hm, done?!
 
 // attribution
 
