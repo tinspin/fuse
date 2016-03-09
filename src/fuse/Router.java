@@ -1488,7 +1488,7 @@ public class Router implements Node {
 
 		while(it.hasNext()) {
 			User u = (User) it.next();
-
+			String m = message;
 			boolean add = true;
 
 			if(ignore)
@@ -1496,10 +1496,15 @@ public class Router implements Node {
 
 			if(ignore && !add && u.room.user != null && user.room.user == null) { // fix for stem -> leaf
 				add = !u.game.name.equals(u.room.user.name);
+				
+				if(add && m.startsWith("chat")) {
+					String[] split = m.split("|");
+					m = "chat|stem|" + split[2] + "|" + split[3];
+				}
 			}
 			
 			if(add)
-				node.push(u.salt, message, true);
+				node.push(u.salt, m, true);
 		}
 	}
 
