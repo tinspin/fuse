@@ -1152,8 +1152,6 @@ public class Router implements Node {
 		}
 
 		boolean ally(User user) {
-			System.err.println(user.name + " " + ally);
-			
 			return ally.contains(user.name);
 		}
 
