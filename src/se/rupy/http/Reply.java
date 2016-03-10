@@ -212,17 +212,17 @@ public class Reply {
 	 * @return The status of the wakeup call. {@link Reply#OK}, {@link Reply#COMPLETE}, {@link Reply#CLOSED} or {@link Reply#WORKING}
 	 */
 	public synchronized int wakeup(boolean wakeup, boolean queue) {
-		if(!wakeup && output.complete())
+		if(!wakeup && !queue && output.complete())
 			return COMPLETE;
 		
 		if(!event.channel().isOpen())
 			return CLOSED;
+
+		if(wakeup)
+			event.wakeup = true;
 		
 		if(event.daemon().match(event, null) == 0)
 			return OK;
-		
-		if(wakeup)
-			event.wakeup = true;
 		
 		if(queue)
 			event.daemon().queue(event);

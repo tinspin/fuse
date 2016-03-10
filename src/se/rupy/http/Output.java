@@ -32,7 +32,6 @@ public abstract class Output extends OutputStream implements Event.Block {
 	 * @return If the push has been completed.
 	 */
 	public boolean complete() {
-		//System.out.println(push + " " + done);
 		return !push && done;
 	}
 
