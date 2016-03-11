@@ -211,15 +211,12 @@ public class Reply {
 		if(!event.channel().isOpen())
 			return CLOSED;
 
-		state = event.daemon().match(event, null, queue);
-		
-		if(state == 0)
+		if(event.daemon().match(event, null, queue) == 0)
 			return OK;
 
 		return WORKING;
 	}
-	public int state;
-	public int queue;
+
 	public String toString() {
 		return "  type: " + type + Output.EOL + 
 				"  headers: " + headers + Output.EOL + 
