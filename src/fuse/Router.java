@@ -23,7 +23,7 @@ import se.rupy.http.Service;
 
 public class Router implements Node {
 	public static boolean wake = true;
-	public static boolean queue = true;
+	public static boolean queue = false;
 	public static boolean debug = true;
 	public static int timeout = 5;
 
@@ -107,7 +107,7 @@ public class Router implements Node {
 					event.query().put("done", "salt|done|" + body);
 					int wakeup = event.reply().wakeup(wake, queue);
 					if(debug)
-						System.err.println(wakeup);
+						System.err.println(wakeup + " " + event.reply().state + " " + event.reply().queue);
 				}
 			}
 
@@ -295,7 +295,7 @@ public class Router implements Node {
 					}
 					int wakeup = event.reply().wakeup(wake, queue);
 					if(debug)
-						System.err.println(wakeup);
+						System.err.println(wakeup + " " + event.reply().state + " " + event.reply().queue);
 				}
 
 				public void fail(String host, Exception e) throws Exception {
