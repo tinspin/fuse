@@ -12,16 +12,15 @@ import java.util.*;
  * The order of execution is {@link #header(String, String)}, {@link #code(String)} and
  * finally {@link #output()}. If you call the {@link #code(String)} or
  * {@link #output()} method, the reply will flush output, so then you won't be
- * able to do an asynchronous reply. To wakeup a dormant asynchronous event use
- * {@link #wakeup()}.
+ * able to do an asynchronous reply, call {@link Event#hold()} to keep the reply open until 
+ * {@link Output#finish()} is called. To wakeup a dormant asynchronous event use {@link #wakeup()}.
  */
 public class Reply {
 	final static String HTML = "text/html; charset=UTF-8";
 
 	/**
-	 * If the reply has a thread writing already. You have to wait until it finishes. this 
-	 * should not happen on a 1-to-1 wakeup, but when many threads are writing to one reply 
-	 * you can queue replies with {@link #wakeup(boolean)} instead to avoid conflicts.
+	 * If the reply has a thread writing already you can automatically queue wakeup with 
+	 * {@link #wakeup(boolean)} to assure the wakeup is successful.
 	 */
 	public final static int WORKING = -1;
 
@@ -32,7 +31,7 @@ public class Reply {
 
 	/**
 	 * If the reply has been completed. This means the {@link Event} is no longer available 
-	 * for wakeup and should probably be removed from the list.
+	 * for wakeup and should probably be removed from the list, {@link #wakeup(boolean)} ignores this.
 	 */
 	public final static int COMPLETE = 1;
 
@@ -41,11 +40,6 @@ public class Reply {
 	 * Event} is no longer available for wakeup and should probably be removed from the list.
 	 */
 	public final static int CLOSED = 2;
-
-	/**
-	 * If the reply was stalled and requeued by the wakeup call.
-	 */
-	public final static int QUEUE = 3;
 
 	private String type = HTML;
 	private HashMap headers;
@@ -193,11 +187,7 @@ public class Reply {
 	}
 
 	public synchronized int wakeup() {
-		return wakeup(false, false);
-	}
-
-	public synchronized int wakeup(boolean wakeup) {
-		return wakeup(wakeup, false);
+		return wakeup(false);
 	}
 
 	/**
@@ -205,40 +195,27 @@ public class Reply {
 	 * Just make sure you didn't already flush the reply and that you are ready to
 	 * catch the event when it recycles in {@link Service#filter(Event)}!<br>
 	 * <br>
-	 * The wakeup parameter is used for 2 things:<br>
+	 * The queue parameter is used for 2 things:<br>
 	 * <br>
 	 * - To make sure a multihomed fork latch finishes, see how Root uses it under the hood.<br>
 	 * - Fast async-async chains that reply quicker than the calling thread, when calling f.ex. Root on localhost.<br>
 	 * <br>
-	 * The queue parameter is experimental and should not be used in regular operation.<br>
 	 * 
-	 * @param wakeup Automatically wakeup the worker on this event if WORKING.
-	 * @param queue Automatically queue this event if WORKING, experimental.
+	 * @param queue Automatically wakeup this event later if WORKING.
 	 * @return The status of the wakeup call. {@link Reply#OK}, {@link Reply#COMPLETE}, {@link Reply#CLOSED} or {@link Reply#WORKING}
 	 */
-	public synchronized int wakeup(boolean wakeup, boolean queue) {
-		if(!wakeup && !queue && output.complete())
+	public synchronized int wakeup(boolean queue) {
+		if(!queue && output.complete())
 			return COMPLETE;
 
 		if(!event.channel().isOpen())
 			return CLOSED;
 
-		state = event.daemon().match(event, null, wakeup);
+		state = event.daemon().match(event, null, queue);
 		
 		if(state == 0)
 			return OK;
-/*
-		if(queue) {
-			Worker worker = event.daemon().employ(event);
 
-			if(worker != null) {
-				this.queue = event.daemon().match(event, worker);
-
-				if(this.queue == 0)
-					return QUEUE;
-			}
-		}
-*/
 		return WORKING;
 	}
 	public int state;

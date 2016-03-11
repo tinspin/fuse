@@ -224,12 +224,12 @@ public class User extends Service {
 						public void read(String host, String body) throws Exception {
 							event.query().put("redirect", "true");
 							event.session().put("salt", body);
-							event.reply().wakeup(true, true);
+							event.reply().wakeup(true);
 						}
 
 						public void fail(String host, Exception e) throws Exception {
 							e.printStackTrace();
-							event.reply().wakeup(true, true);
+							event.reply().wakeup(true);
 						}
 					};
 
@@ -333,13 +333,13 @@ public class User extends Service {
 									event.query().put("fail", body);
 								}
 
-								event.reply().wakeup(true, true);
+								event.reply().wakeup(true);
 							}
 
 							public void fail(String host, Exception e) throws Exception {
 								e.printStackTrace();
 								event.query().put("fail", "something snapped");
-								event.reply().wakeup(true, true);
+								event.reply().wakeup(true);
 							}
 						};
 
@@ -394,13 +394,13 @@ public class User extends Service {
 								event.query().put("success", user.getString("name"));
 							}
 
-							event.reply().wakeup(true, true);
+							event.reply().wakeup(true);
 						}
 
 						public void fail(String host, Exception e) throws Exception {
 							e.printStackTrace();
 							event.query().put("fail", e.toString() + "[" + Root.local + "]");
-							event.reply().wakeup(true, true);
+							event.reply().wakeup(true);
 						}
 					};
 
