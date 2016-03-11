@@ -464,8 +464,6 @@ public class Async implements Runnable {
 		public void run() {
 			try {
 				if(work == null || work.archive == null) {
-					//if(debug)
-						System.out.println("empty wakeup " + run + " " + host + " " + invalidate);
 					return;
 				}
 				

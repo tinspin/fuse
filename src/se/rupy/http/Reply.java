@@ -17,31 +17,36 @@ import java.util.*;
  */
 public class Reply {
 	final static String HTML = "text/html; charset=UTF-8";
-	
+
 	/**
 	 * If the reply has a thread writing already. You have to wait until it finishes. this 
 	 * should not happen on a 1-to-1 wakeup, but when many threads are writing to one reply 
 	 * you can queue replies with {@link #wakeup(boolean)} instead to avoid conflicts.
 	 */
-	public static int WORKING = -1;
-	
+	public final static int WORKING = -1;
+
 	/**
 	 * The reply was successfully awakened.
 	 */
-	public static int OK = 0;
-	
+	public final static int OK = 0;
+
 	/**
 	 * If the reply has been completed. This means the {@link Event} is no longer available 
 	 * for wakeup and should probably be removed from the list.
 	 */
-	public static int COMPLETE = 1;
-	
+	public final static int COMPLETE = 1;
+
 	/**
 	 * If the reply has been closed, try increasing timeout variable. This means the {@link 
 	 * Event} is no longer available for wakeup and should probably be removed from the list.
 	 */
-	public static int CLOSED = 2;
-	
+	public final static int CLOSED = 2;
+
+	/**
+	 * If the reply was stalled and requeued by the wakeup call.
+	 */
+	public final static int QUEUE = 3;
+
 	private String type = HTML;
 	private HashMap headers;
 	private Event event;
@@ -49,7 +54,7 @@ public class Reply {
 	private String code;
 
 	Output output;
-	
+
 	protected Reply(Event event) throws IOException {
 		this.event = event;
 		output = new Output.Chunked(this);
@@ -60,7 +65,7 @@ public class Reply {
 		if(Event.LOG) {
 			event.log("done " + output.push() + " " + Thread.currentThread().getId(), Event.DEBUG);
 		}
-		
+
 		if(!output.push()) {
 			output.end();
 
@@ -77,7 +82,7 @@ public class Reply {
 		type = "text/html; charset=UTF-8";
 		code = "200 OK";
 	}
-	
+
 	protected Event event() {
 		return event;
 	}
@@ -93,11 +98,11 @@ public class Reply {
 	protected int length() {
 		return output.length();
 	}
-	
+
 	protected boolean push() {
 		return output.push();
 	}
-	
+
 	/**
 	 * Important: call {@link #header(String, String)} before you call this. If
 	 * you manually set a code, the reply will flush even if empty. So do not
@@ -118,7 +123,7 @@ public class Reply {
 		if(Event.LOG) {
 			event.log("code", Event.DEBUG);
 		}
-		
+
 		this.code = code;
 		output.init(0);
 	}
@@ -164,7 +169,7 @@ public class Reply {
 	public Output output() throws IOException {
 		return output(0);
 	}
-	
+
 	/**
 	 * Important: call {@link #header(String, String)} and {@link #code(String)}
 	 * first, in that order, this method is the point of no return for delivery
@@ -178,11 +183,11 @@ public class Reply {
 		if(Event.LOG) {
 			event.log("output " + length, Event.DEBUG);
 		}
-		
+
 		output.init(length);
 		return output;
 	}
-	
+
 	protected void policy() throws IOException {
 		output.policy();
 	}
@@ -190,11 +195,11 @@ public class Reply {
 	public synchronized int wakeup() {
 		return wakeup(false, false);
 	}
-	
+
 	public synchronized int wakeup(boolean wakeup) {
 		return wakeup(wakeup, false);
 	}
-	
+
 	/**
 	 * To send data asynchronously, call this and the event will be re-filtered.
 	 * Just make sure you didn't already flush the reply and that you are ready to
@@ -214,22 +219,30 @@ public class Reply {
 	public synchronized int wakeup(boolean wakeup, boolean queue) {
 		if(!wakeup && !queue && output.complete())
 			return COMPLETE;
-		
+
 		if(!event.channel().isOpen())
 			return CLOSED;
 
-		if(wakeup)
-			event.wakeup = true;
+		state = event.daemon().match(event, null, wakeup);
 		
-		if(event.daemon().match(event, null) == 0)
+		if(state == 0)
 			return OK;
-		
-		if(queue)
-			event.daemon().queue(event);
-		
+/*
+		if(queue) {
+			Worker worker = event.daemon().employ(event);
+
+			if(worker != null) {
+				this.queue = event.daemon().match(event, worker);
+
+				if(this.queue == 0)
+					return QUEUE;
+			}
+		}
+*/
 		return WORKING;
 	}
-	
+	public int state;
+	public int queue;
 	public String toString() {
 		return "  type: " + type + Output.EOL + 
 				"  headers: " + headers + Output.EOL + 

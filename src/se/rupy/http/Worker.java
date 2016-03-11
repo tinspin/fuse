@@ -194,7 +194,6 @@ public class Worker implements Runnable, Chain.Link {
 			try {
 				if(event != null) {
 					if(event.push()) {
-						event.wakeup = false;
 						event.write();
 					} else {
 						event.read();
@@ -209,13 +208,8 @@ public class Worker implements Runnable, Chain.Link {
 				}
 			} finally {
 				if(event != null) {
-					if(event.wakeup) {
-						event.wakeup = false;
-					} else if(daemon.match(event, this) != 0) {
-						if(event != null && event.wakeup)
-							event.wakeup = false;
-						else
-							snooze();
+					if(daemon.match(event, this, false) != 0) {
+						snooze();
 					}
 				}
 				else {

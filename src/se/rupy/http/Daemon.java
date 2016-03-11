@@ -481,8 +481,12 @@ public class Daemon implements Runnable {
 
 			Calendar date = Calendar.getInstance();
 			StringBuilder b = new StringBuilder();
-
-			b.append(e.worker().log().format(date.getTime()));
+			Worker worker = e.worker();
+			
+			if(worker == null)
+				b.append(new SimpleDateFormat("yy-MM-dd HH:mm:ss.SSS").format(date.getTime()));
+			else
+				b.append(worker.log().format(date.getTime()));
 			b.append(' ');
 			b.append(e.remote());
 			b.append(' ');
@@ -507,8 +511,12 @@ public class Daemon implements Runnable {
 		if(access != null && !event.reply().push() && !event.headless) {
 			Calendar date = Calendar.getInstance();
 			StringBuilder b = new StringBuilder();
-
-			b.append(event.worker().log().format(date.getTime()));
+			Worker worker = event.worker();
+			
+			if(worker == null)
+				b.append(new SimpleDateFormat("yy-MM-dd HH:mm:ss.SSS").format(date.getTime()));
+			else
+				b.append(worker.log().format(date.getTime()));
 			b.append(' ');
 			b.append(event.remote());
 			b.append(' ');
@@ -1762,7 +1770,7 @@ public class Daemon implements Runnable {
 							if(key.isReadable() && event.push()) {
 								event.disconnect(null);
 							} else if(worker == null) {
-								match(event, null);
+								match(event, null, false);
 							} else {
 								worker.wakeup(false);
 							}
@@ -1816,7 +1824,7 @@ public class Daemon implements Runnable {
 		return null;
 	}
 
-	private synchronized Worker employ(Event event) {
+	protected synchronized Worker employ(Event event) {
 		workers.reset();
 		Worker worker = (Worker) workers.next();
 
@@ -1837,9 +1845,14 @@ public class Daemon implements Runnable {
 		return worker;
 	}
 
-	protected synchronized int match(Event event, Worker worker) {
+	protected synchronized int match(Event event, Worker worker, boolean auto) {
 		boolean wakeup = true;
 
+		if(event.wakeup) {
+			event.wakeup = false;
+			return 5;
+		}
+		
 		if(event != null && worker != null) {
 			// The order here matters a lot, see below!
 			worker.event(null);
@@ -1856,6 +1869,7 @@ public class Daemon implements Runnable {
 			event = null;
 		}
 		else if(event.worker() != null) {
+			event.wakeup = auto;
 			return 1;
 		}
 
