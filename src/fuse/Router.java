@@ -105,7 +105,7 @@ public class Router implements Node {
 					event.query().put("done", "salt|done|" + body);
 					int wakeup = event.reply().wakeup(true);
 					if(debug)
-						System.err.println(wakeup + " " + event.reply().state + " " + event.reply().queue);
+						System.err.println(wakeup);
 				}
 			}
 
@@ -293,7 +293,7 @@ public class Router implements Node {
 					}
 					int wakeup = event.reply().wakeup(true);
 					if(debug)
-						System.err.println(wakeup + " " + event.reply().state + " " + event.reply().queue);
+						System.err.println(wakeup);
 				}
 
 				public void fail(String host, Exception e) throws Exception {
