@@ -119,6 +119,8 @@ In sort of chronological order:
 | <i>Here you have to call pull()!</i> |
 +-------------------------------+
 
+<i>You have to wait until pull completes and you receive the first <b>noop</b> before you continue.</i>
+
 +------------------------------------------------------+
 | <i>Below this line &lt;name&gt;/&lt;id&gt; is replaced with &lt;user&gt;</i>. |
 +------------------------------------------------------+
