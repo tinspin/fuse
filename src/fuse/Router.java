@@ -891,6 +891,12 @@ public class Router implements Node {
 				json = new JSONObject("{count: " + item.count + "}");
 			else
 				json.put("count", json.optInt("count") + item.count);
+			
+			// Save in user items
+			JSONArray array = user.item.getJSONArray("list");
+			JSONObject object = new JSONObject();
+			object.put(item.name, json);
+			array.put(object);
 
 			final String save = json.toString();
 
