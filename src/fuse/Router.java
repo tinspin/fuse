@@ -647,7 +647,7 @@ public class Router implements Node {
 				User poll = (User) names.get(split[2]);
 
 				boolean poll_game = poll.room instanceof Game;
-				
+
 				if(poll != null && user.game.name.equals(poll.game.name)) {
 					if(!game || !poll_game)
 						return "join|fail|user busy";
@@ -887,16 +887,15 @@ public class Router implements Node {
 
 			JSONObject json = user.item(item.name);
 
-			if(json == null)
+			if(json == null) {
 				json = new JSONObject("{count: " + item.count + "}");
+				JSONArray array = user.item.getJSONArray("list");
+				JSONObject object = new JSONObject();
+				object.put(item.name, json);
+				array.put(object);
+			}
 			else
 				json.put("count", json.optInt("count") + item.count);
-			
-			// Save in user items
-			JSONArray array = user.item.getJSONArray("list");
-			JSONObject object = new JSONObject();
-			object.put(item.name, json);
-			array.put(object);
 
 			final String save = json.toString();
 
@@ -1502,13 +1501,13 @@ public class Router implements Node {
 
 			if(ignore && !add && u.room.user != null && user.room.user == null) { // fix for stem -> leaf
 				add = !u.game.name.equals(u.room.user.name);
-				
+
 				if(add && m.startsWith("chat")) {
 					String[] split = m.split("|");
 					m = "chat|stem|" + split[2] + "|" + split[3];
 				}
 			}
-			
+
 			if(add)
 				node.push(u.salt, m, true);
 		}
