@@ -208,7 +208,7 @@ public class Worker implements Runnable, Chain.Link {
 				}
 			} finally {
 				if(event != null) {
-					if(daemon.match(event, this, false) != 0) {
+					if(daemon.match(event, this, false) > 0) {
 						snooze();
 					}
 				}

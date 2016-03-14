@@ -1846,12 +1846,12 @@ public class Daemon implements Runnable {
 	}
 
 	protected synchronized int match(Event event, Worker worker, boolean auto) {
-		boolean wakeup = true;
-
 		if(event.wakeup) {
 			event.wakeup = false;
-			return 5;
+			return -1;
 		}
+		
+		boolean wakeup = true;
 		
 		if(event != null && worker != null) {
 			// The order here matters a lot, see below!
@@ -1869,7 +1869,8 @@ public class Daemon implements Runnable {
 			event = null;
 		}
 		else if(event.worker() != null) {
-			event.wakeup = auto;
+			if(auto)
+				event.wakeup = auto;
 			return 1;
 		}
 
