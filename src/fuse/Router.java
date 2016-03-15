@@ -23,7 +23,7 @@ import se.rupy.http.Service;
 
 public class Router implements Node {
 	public static boolean debug = true;
-	public static int timeout = 5;
+	public static int timeout = 30;
 
 	public static String hash = "sha-256";
 	public static String host = "root.rupy.se";

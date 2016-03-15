@@ -213,12 +213,14 @@ public class Fuse { // : MonoBehaviour { // ### 2
 				string[] split = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
 
 				if(!split[0].StartsWith("HTTP")) {
-					string[] messages = split[1].Split('\n');
+					for(int j = 1; j < split.Length; j += 2) {
+						string[] messages = split[j].Split('\n');
 
-					for(int i = 0; i < messages.Length; i++) {
-						if(messages[i].Length > 0) {
-							lock(input) {
-								input.Enqueue(messages[i]);
+						for(int i = 0; i < messages.Length; i++) {
+							if(messages[i].Length > 0) {
+								lock(input) {
+									input.Enqueue(messages[i]);
+								}
 							}
 						}
 					}
