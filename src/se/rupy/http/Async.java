@@ -525,7 +525,7 @@ public class Async implements Runnable {
 						work.read(host, read());
 					}
 
-					remove(this);
+					//remove(this);
 					work = null;
 				}
 			}
@@ -550,7 +550,7 @@ public class Async implements Runnable {
 		}
 
 		private void failure(Exception e) throws Exception {
-			async.remove(this);
+			//async.remove(this);
 
 			if(work != null) {
 				if(daemon != null && daemon.host) {
