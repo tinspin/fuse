@@ -17,7 +17,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	public string host = "fuse.rupy.se";
 	public int port = 80;
 
-	private readonly object sync = new Object();
+	private readonly object sync = new System.Object();
 	private Thread thread;
 	private Queue<string> input, output;
 	private Socket pull, push;
