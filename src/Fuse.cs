@@ -17,6 +17,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	public string host = "fuse.rupy.se";
 	public int port = 80;
 
+	private readonly object sync = new Object();
 	private Thread thread;
 	private Queue<string> input, output;
 	private Socket pull, push;
@@ -139,29 +140,14 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	public string Push(string data) {
-		byte[] body = new byte[1024];
+		lock(sync) {
+			byte[] body = new byte[1024];
 
-		if(salt != null)
-			data = data.Substring(0, 4) + '|' + salt + data.Substring(4, data.Length - 4);
+			if(salt != null)
+				data = data.Substring(0, 4) + '|' + salt + data.Substring(4, data.Length - 4);
 
-		String text = "GET /push?data=" + data + " HTTP/1.1\r\nHost: " + host + "\r\n";
+			String text = "GET /push?data=" + data + " HTTP/1.1\r\nHost: " + host + "\r\n";
 
-		if(first) {
-			text += "Head: less\r\n\r\n"; // enables TCP no delay
-			first = false;
-		}
-		else
-			text += "\r\n";
-
-		push.Send(Encoding.UTF8.GetBytes(text));
-		int read = push.Receive(body);
-		text = Encoding.UTF8.GetString(body, 0, read);
-
-		if(text.Length == 0) {
-			Connect();
-
-			text = "GET /push?data=" + data + " HTTP/1.1\r\nHost: " + host + "\r\n";
-			
 			if(first) {
 				text += "Head: less\r\n\r\n"; // enables TCP no delay
 				first = false;
@@ -170,12 +156,29 @@ public class Fuse { // : MonoBehaviour { // ### 2
 				text += "\r\n";
 
 			push.Send(Encoding.UTF8.GetBytes(text));
-			read = push.Receive(body);
+			int read = push.Receive(body);
 			text = Encoding.UTF8.GetString(body, 0, read);
-		}
 
-		string[] split = text.Split(new string[] { "\r\n\r\n" }, StringSplitOptions.None);
-		return split[1];
+			if(text.Length == 0) {
+				Connect();
+
+				text = "GET /push?data=" + data + " HTTP/1.1\r\nHost: " + host + "\r\n";
+			
+				if(first) {
+					text += "Head: less\r\n\r\n"; // enables TCP no delay
+					first = false;
+				}
+				else
+					text += "\r\n";
+
+				push.Send(Encoding.UTF8.GetBytes(text));
+				read = push.Receive(body);
+				text = Encoding.UTF8.GetString(body, 0, read);
+			}
+
+			string[] split = text.Split(new string[] { "\r\n\r\n" }, StringSplitOptions.None);
+			return split[1];
+		}
 	}
 
 	public string[] Read() {
