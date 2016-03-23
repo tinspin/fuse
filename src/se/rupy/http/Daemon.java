@@ -1610,7 +1610,8 @@ public class Daemon implements Runnable {
 						it = workers.iterator();
 						while(it.hasNext()) {
 							Worker worker = (Worker) it.next();
-							out.println("<tr><td>" + worker.index() + "</td><td>" + (worker.busy() ? "1" : "0") + "</td><td>" + worker.lock() + "</td><td>" + (worker.event() == null ? "" : "" + worker.event().index()) + "</td></tr>");
+							Event e = worker.event();
+							out.println("<tr><td>" + worker.index() + "</td><td>" + (worker.busy() ? "1" : "0") + "</td><td>" + worker.lock() + "</td><td>" + (e == null ? "" : "" + e.index()) + "</td></tr>");
 						}
 
 						out.println("</table></td></tr><tr><td colspan=\"3\" align=\"center\">selected: " + selected + ", valid: " + valid + ", accept: " + accept + ", readwrite: " + readwrite + "</td></tr></table>");
