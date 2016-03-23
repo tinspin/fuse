@@ -158,7 +158,7 @@ In sort of chronological order:
  <b><i>pass</i></b>|&lt;salt&gt;|&lt;pass&gt;         -> pass|done
  
                             // set mail
- <b><i>mail</i></b>|&lt;salt&gt;|&lt;mail&gt;         -> pass|done
+ <b><i>mail</i></b>|&lt;salt&gt;|&lt;mail&gt;         -> mail|done
                             -> mail|fail|mail invalid       // [a-zA-Z0-9.@\\-\\+]+
 
                             // AFK
