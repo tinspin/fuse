@@ -381,7 +381,7 @@ public class play extends Service {
 [[	} else { ]]
     var hash = md5(pass + name.toLowerCase());
 [[	} ]]
-    var user = push('user|' + name + '|' + mail + '|' + hash);
+    var user = push('user|' + name + '|' + hash + '|' + mail);
     if(user[1] == 'done')
       authorize(user[2]);
   }

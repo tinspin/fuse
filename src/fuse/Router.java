@@ -133,8 +133,8 @@ public class Router implements Node {
 
 		if(split[0].equals("user")) {
 			final boolean name = split.length > 1 && split[1].length() > 0;
-			final boolean mail = split.length > 2 && split[2].length() > 0;
-			final boolean pass = split.length > 3 && split[3].length() > 0;
+			final boolean pass = split.length > 2 && split[2].length() > 0;
+			final boolean mail = split.length > 3 && split[3].length() > 0;
 
 			if(name) {
 				if(split[1].length() < 3)
@@ -150,11 +150,11 @@ public class Router implements Node {
 					return "user|fail|name alpha missing"; // [0-9]+ reserved for <id>
 			}
 
-			if(mail && split[2].indexOf("@") < 1 && !split[2].matches("[a-zA-Z0-9.@\\-\\+]+"))
-				return "user|fail|mail invalid";
-
-			if(pass && split[3].length() < 3)
+			if(pass && split[2].length() < 3)
 				return "user|fail|pass too short";
+			
+			if(mail && split[3].indexOf("@") < 1 && !split[3].matches("[a-zA-Z0-9.@\\-\\+]+"))
+				return "user|fail|mail invalid";
 
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
@@ -170,21 +170,21 @@ public class Router implements Node {
 						add = true;
 					}
 
-					if(mail) {
-						if(add)
-							json += ",";
-
-						json += "\"mail\":\"" + split[2].toLowerCase() + "\"";
-						sort += ",mail";
-
-						add = true;
-					}
-
 					if(pass) {
 						if(add)
 							json += ",";
 
-						json += "\"pass\":\"" + split[3] + "\"";
+						json += "\"pass\":\"" + split[2] + "\"";
+						
+						add = true;
+					}
+					
+					if(mail) {
+						if(add)
+							json += ",";
+
+						json += "\"mail\":\"" + split[3].toLowerCase() + "\"";
+						sort += ",mail";
 					}
 
 					json += "}";

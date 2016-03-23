@@ -82,13 +82,13 @@ In sort of chronological order:
                             // register
                             // [name] if you can't store the &lt;id&gt; otherwise set
                             //        to empty string (||)
-                            // [mail] if your users want recovery otherwise set 
-                            //        to empty string (||)
                             // [pass] if you can't store the &lt;key&gt; otherwise set
                             //        to empty string (||)
                             //        preferably [pass] is a hash with salt 
                             //        we simply use <i>hash</i>(pass + name.toLowerCase())
- <b><i>user</i></b>|[name]|[mail]|[pass]  -> user|done|&lt;salt&gt;|&lt;key&gt;|&lt;id&gt;
+                            // [mail] if your users want recovery otherwise set 
+                            //        to empty string (|)
+ <b><i>user</i></b>|[name]|[pass]|[mail]  -> user|done|&lt;salt&gt;|&lt;key&gt;|&lt;id&gt;
                             -> user|fail|name too short
                             -> user|fail|name too long
                             -> user|fail|name already registered

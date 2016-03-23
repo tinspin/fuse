@@ -257,15 +257,15 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 	
 	public void User(string name, string pass) {
-		User(name, "", pass);
+		User(name, pass, "");
 	}
 
-	public void User(string name, string mail, string pass) {
-		EasyUser(name, mail, hash(pass + name.ToLower()));
+	public void User(string name, string pass, string mail) {
+		EasyUser(name, hash(pass + name.ToLower()), mail);
 	}
 
-	private string[] EasyUser(string name, string mail, string hash) {
-		string[] user = Push("user|" + name + "|" + mail + "|" + hash).Split('|');
+	private string[] EasyUser(string name, string hash, string mail) {
+		string[] user = Push("user|" + name + "|" + hash + "|" + mail).Split('|');
 
 		if(user[1].Equals("fail")) {
 			throw new Exception(user[2]);
