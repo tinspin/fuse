@@ -26,9 +26,9 @@ public class Router implements Node {
 	public static int timeout = 30;
 
 	public static String hash = "sha-256";
-	public static String host = "root.rupy.se";
-	public static String fuse = "fuse.rupy.se";
-	public static String path = "fuse.rupy.se";
+	public static String data = "root.rupy.se";
+	public static String fuse = "fuse.rupy.se"; // So .js cross domain connects to the right node; does not work with IE with XDR.
+	public static String path = "fuse.rupy.se"; // So the modular .js will load from the right domain.
 	public static String what = "localhost";
 
 	public static ConcurrentLinkedDeque score = new ConcurrentLinkedDeque();
@@ -43,7 +43,7 @@ public class Router implements Node {
 
 	private static String head() {
 		//System.out.println(host);
-		return "Head:less\r\nHost:" + host; // Head:less\r\n
+		return "Head:less\r\nHost:" + data; // Head:less\r\n
 	}
 
 	public void call(Daemon daemon, Node node) throws Exception {
@@ -275,7 +275,7 @@ public class Router implements Node {
 
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					String body = "name=" + user.name + "&pass=" + hash + "&salt=" + user.salt + "&host=" + host + "&algo=" + Router.hash;
+					String body = "name=" + user.name + "&pass=" + hash + "&salt=" + user.salt + "&host=" + Router.data + "&algo=" + Router.hash;
 					call.post("/user", head(), body.getBytes());
 				}
 

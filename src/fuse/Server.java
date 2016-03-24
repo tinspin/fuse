@@ -44,11 +44,26 @@ public class Server extends Service implements Node, Runnable {
 	}
 	
 	public void create(Daemon daemon) throws Exception {
+		Deploy.Archive archive = (Deploy.Archive) Thread.currentThread().getContextClassLoader();
+		String host = archive.host();
+		String top = host.substring(host.indexOf('.'));
+		
 		if(!daemon.domain().equals("host.rupy.se")) {
-			Router.hash = "sha-256";
-			Router.host = "data" + daemon.domain().substring(4);
-			Router.fuse = System.getProperty("host") + daemon.domain().substring(4);
-			Router.path = "www" + daemon.domain().substring(4);
+			//System.out.println(host + " " + top);
+			
+			if(host.startsWith("live")) {
+				Router.data = "data" + top;
+			}
+			else {
+				Router.data = "base" + top;
+			}
+			
+			// Only when you don't have Latency driven DNS like Route53.
+			//Router.fuse = System.getProperty("host") + top;
+			Router.fuse = host;
+			Router.path = host;
+			
+			//System.out.println(Router.data);
 		}
 		
 		if(!alive) {

@@ -91,12 +91,20 @@
 			<arg line="${fuse.rupy.se}"/>
 		</java>
 	</target>
-	<target name="meadow" depends="build">
-		<move file="bin/${root}.jar" tofile="bin/www.sheltermeadow.com.jar"/>
+	<target name="meadow-test" depends="build">
+		<move file="bin/${root}.jar" tofile="bin/test.sheltermeadow.com.jar"/>
 		<java fork="yes" classname="se.rupy.http.Deploy" classpath="${lib}">
 			<arg line="host.sheltermeadow.com"/>
-			<arg line="bin/www.sheltermeadow.com.jar"/>
-			<arg line="${www.sheltermeadow.com}"/>
+			<arg line="bin/test.sheltermeadow.com.jar"/>
+			<arg line="${test.sheltermeadow.com}"/>
+		</java>
+	</target>
+	<target name="meadow-live" depends="build">
+		<move file="bin/${root}.jar" tofile="bin/live.sheltermeadow.com.jar"/>
+		<java fork="yes" classname="se.rupy.http.Deploy" classpath="${lib}">
+			<arg line="host.sheltermeadow.com"/>
+			<arg line="bin/live.sheltermeadow.com.jar"/>
+			<arg line="${live.sheltermeadow.com}"/>
 		</java>
 	</target>
 </project>
