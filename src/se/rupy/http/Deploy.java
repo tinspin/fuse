@@ -283,8 +283,7 @@ public class Deploy extends Service {
 				/* These projects require insecure features.
 				 * The -Ddata flag allows you to hotdeploy your own ROOT database, mainly for development.
 				 */
-				
-				if(host.equals(System.getProperty("data", "root.rupy.se"))) {
+				if(System.getProperty("data", "root.rupy.se").indexOf(host) > -1) {
 					try {
 						permissions.add(new LinkPermission("hard"));
 						permissions.add(new LinkPermission("symbolic"));
