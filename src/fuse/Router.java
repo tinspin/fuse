@@ -152,7 +152,7 @@ public class Router implements Node {
 
 			if(pass && split[2].length() < 3)
 				return "user|fail|pass too short";
-			
+
 			if(mail && split[3].indexOf("@") < 1 && !split[3].matches("[a-zA-Z0-9.@\\-\\+]+"))
 				return "user|fail|mail invalid";
 
@@ -175,10 +175,10 @@ public class Router implements Node {
 							json += ",";
 
 						json += "\"pass\":\"" + split[2] + "\"";
-						
+
 						add = true;
 					}
-					
+
 					if(mail) {
 						if(add)
 							json += ",";
@@ -592,10 +592,10 @@ public class Router implements Node {
 					else
 						return split[0] + "|done|data|soft|";
 				}
-				
+
 				final String key = user.json.getString("key");
 				final String t = type;
-				
+
 				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
 						call.get("/meta/user/" + t + "/" + user.name, head());
@@ -615,7 +615,7 @@ public class Router implements Node {
 								user.item = (JSONObject) new JSONObject(body);
 								l = user.item.getJSONArray("list");
 							}
-							
+
 							event.query().put("done", user.list(t, l));
 						}
 						catch(Exception e) {
@@ -947,9 +947,9 @@ public class Router implements Node {
 
 			if(type.equals("soft")) {
 				JSONObject soft = user.data(user.soft, name);
-				
+
 				if(soft != null) {
-					user.data(user.soft, name, json);
+					user.soft = user.data(user.soft, name, json);
 				}
 				else if(!tear) {
 					if(user.soft == null)
@@ -957,10 +957,10 @@ public class Router implements Node {
 					JSONArray list = user.soft.getJSONArray("list");
 					list.put(new JSONObject("{\"" + name + "\": " + json + "}"));
 				}
-				
+
 				return split[0] + "|done";
 			}
-			
+
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.post("/meta", head(), 
@@ -971,9 +971,10 @@ public class Router implements Node {
 				public void read(String host, String body) throws Exception {
 					if(debug)
 						System.err.println(split[0] + " " + body);
-					JSONObject data = user.data(type.equals("hard") ? user.hard : user.item, name);
+					JSONObject save = type.equals("hard") ? user.hard : user.item;
+					JSONObject data = user.data(save, name);
 					if(data != null)
-						user.data(type.equals("hard") ? user.hard : user.item, name, json);
+						save = user.data(save, name, json);
 					event.query().put("done", split[0] + "|done");
 					event.reply().wakeup(true);
 				}
@@ -994,7 +995,7 @@ public class Router implements Node {
 			final String base = load ? user.name : split[2];
 			final String name = load ? split[2] : split[3];
 			final String type = load && split.length > 3 ? split[3] : split[0];
-			
+
 			if(type.equals("soft")) {
 				JSONObject soft = user.data(user.soft, name);
 				if(soft != null)
@@ -1002,7 +1003,7 @@ public class Router implements Node {
 				else
 					return split[0] + "|fail|not found";
 			}
-			
+
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.get("/meta/user/" + type + "/" + base + "/" + URLEncoder.encode(name, "UTF-8"), head());
@@ -1127,26 +1128,44 @@ public class Router implements Node {
 			}
 		}
 
-		void data(JSONObject type, String name, JSONObject json) throws Exception {
+		JSONObject data(JSONObject type, String name, JSONObject json) throws Exception {
 			if(type == null)
-				return;
-			
-			JSONArray list = type.getJSONArray("list");
-			
-			for(int i = 0; i < list.length(); i++) {
-				JSONObject item = list.getJSONObject(i);
-				String[] names = JSONObject.getNames(item);
+				return type;
 
-				if(names[0].equals(name)) {
-					list.put(i, new JSONObject("{\"" + name + "\": " + json + "}"));
+			JSONArray list = type.getJSONArray("list");
+
+			if(json == null) {
+				JSONArray a = new JSONArray();
+				
+				for(int i = 0; i < list.length(); i++) {
+					JSONObject item = list.getJSONObject(i);
+					String[] names = JSONObject.getNames(item);
+
+					if(!names[0].equals(name)) {
+						a.put(new JSONObject("{\"" + names[0] + "\": " + item.getJSONObject(names[0]) + "}"));
+					}
+				}
+				
+				type.put("list", a);
+			}
+			else {
+				for(int i = 0; i < list.length(); i++) {
+					JSONObject item = list.getJSONObject(i);
+					String[] names = JSONObject.getNames(item);
+
+					if(names[0].equals(name)) {
+						list.put(i, new JSONObject("{\"" + name + "\": " + json + "}"));
+					}
 				}
 			}
+			
+			return type;
 		}
-		
+
 		JSONObject data(JSONObject type, String name) throws Exception {
 			if(type == null)
 				return null;
-			
+
 			JSONArray list = type.getJSONArray("list");
 
 			for(int i = 0; i < list.length(); i++) {
@@ -1177,10 +1196,10 @@ public class Router implements Node {
 				if(i < list.length() - 1)
 					builder.append(";");
 			}
-			
+
 			return builder.toString();
 		}
-		
+
 		private void ally() throws Exception {
 			Async.Work work = new Async.Work(null) {
 				public void send(Async.Call call) throws Exception {
@@ -1312,7 +1331,7 @@ public class Router implements Node {
 
 			return item;
 		}
-		
+
 		private synchronized Item item(String salt) {
 			return (Item) items.remove(salt);
 		}
