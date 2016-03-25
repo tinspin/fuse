@@ -270,7 +270,7 @@ In sort of chronological order:
 
                             // data handling save/load:
                             // the default disk stored [type] is "hard"
-                            // to save inventory items use [type] = "item"
+                            // to save inventory items use [type] = "item" (needs number attribute "count")
                             // to save transient data use [type] = "soft"
 
                             // save data
