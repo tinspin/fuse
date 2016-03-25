@@ -268,17 +268,18 @@ In sort of chronological order:
  <b><i>quit</i></b>|&lt;salt&gt;                -> quit|done
                            x-> <b><i>quit</i></b>|&lt;user&gt;
 
-                            // save data
+                            // data handling save/load:
                             // the default disk stored [type] is "hard"
                             // to save inventory items use [type] = "item"
                             // to save transient data use [type] = "soft"
+
+                            // save data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|type] -> save|done
                             -> save|fail|name too short
                             -> save|fail|name too long
                             -> save|fail|unknown problem
 
                             // load data
-                            // to load item use [type] = "item"
  <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;[|type]  -> load|done|{…}
                             -> load|fail|not found
                             

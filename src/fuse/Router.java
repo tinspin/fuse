@@ -947,8 +947,12 @@ public class Router implements Node {
 
 			if(type.equals("soft")) {
 				JSONObject soft = user.data(user.soft, name);
-				if(soft != null)
-					soft = json;
+				System.out.println(soft);
+				if(soft != null) {
+					System.out.println("set");
+					//soft = json;
+					user.data(user.soft, name, json);
+				}
 				else if(!tear) {
 					if(user.soft == null)
 						user.soft = new JSONObject("{\"total\": 0, \"list\": []}");
@@ -971,7 +975,7 @@ public class Router implements Node {
 						System.err.println(split[0] + " " + body);
 					JSONObject data = user.data(type.equals("hard") ? user.hard : user.item, name);
 					if(data != null)
-						data = json;
+						user.data(type.equals("hard") ? user.hard : user.item, name, json);
 					event.query().put("done", split[0] + "|done");
 					event.reply().wakeup(true);
 				}
@@ -992,7 +996,7 @@ public class Router implements Node {
 			final String base = load ? user.name : split[2];
 			final String name = load ? split[2] : split[3];
 			final String type = load && split.length > 3 ? split[3] : split[0];
-
+			
 			if(type.equals("soft")) {
 				JSONObject soft = user.data(user.soft, name);
 				if(soft != null)
@@ -1125,9 +1129,25 @@ public class Router implements Node {
 			}
 		}
 
+		void data(JSONObject type, String name, JSONObject json) throws Exception {
+			if(type == null)
+				return;
+			
+			JSONArray list = type.getJSONArray("list");
+			
+			for(int i = 0; i < list.length(); i++) {
+				JSONObject item = list.getJSONObject(i);
+				String[] names = JSONObject.getNames(item);
+
+				if(names[0].equals(name)) {
+					list.put(i, new JSONObject("{\"" + name + "\": " + json + "}"));
+				}
+			}
+		}
+		
 		JSONObject data(JSONObject type, String name) throws Exception {
 			if(type == null)
-				type = new JSONObject("{\"total\": 0, \"list\":[]}");
+				return null;
 			
 			JSONArray list = type.getJSONArray("list");
 
