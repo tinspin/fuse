@@ -947,10 +947,8 @@ public class Router implements Node {
 
 			if(type.equals("soft")) {
 				JSONObject soft = user.data(user.soft, name);
-				System.out.println(soft);
+				
 				if(soft != null) {
-					System.out.println("set");
-					//soft = json;
 					user.data(user.soft, name, json);
 				}
 				else if(!tear) {
