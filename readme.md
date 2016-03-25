@@ -181,7 +181,7 @@ In sort of chronological order:
  <b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;[|type] -> data|done|{…}
                             -> data|fail|not found
                             
-                            // get user item inventory
+                            // get user inventory item
  <b><i>item</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> item|done|{…}
                             -> item|fail|not found
                             
