@@ -177,15 +177,15 @@ In sort of chronological order:
                             -> ally|fail|user not online
                             -> ally|fail|user busy
 
-                            // get user disk stored data
- <b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> data|done|{…}
+                            // get user persistent data
+ <b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;[|type] -> data|done|{…}
                             -> data|fail|not found
                             
-                            // get user disk stored item
+                            // get user item inventory
  <b><i>item</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> item|done|{…}
                             -> item|fail|not found
                             
-                            // get user transient memory stored data
+                            // get user transient data
  <b><i>soft</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> soft|done|{…}
                             -> soft|fail|not found
                             
@@ -215,7 +215,7 @@ In sort of chronological order:
                             -> room|fail|not in lobby
                             -> room|fail|type invalid       // [a-zA-Z]+
 
-                            // list rooms, data or items
+                            // list rooms, room items or data (hard, soft and inventory items)
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|room|item      -> list|done|room|item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|data|hard      -> list|done|data|hard|&lt;name&gt;,&lt;size&gt;;…
@@ -270,8 +270,8 @@ In sort of chronological order:
 
                             // save data
                             // the default disk stored [type] is "hard"
-                            // to save disk stored items use [type] = "item"
-                            // to save transient memory stored data use [type] = "soft"
+                            // to save inventory items use [type] = "item"
+                            // to save transient data use [type] = "soft"
  <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|type] -> save|done
                             -> save|fail|name too short
                             -> save|fail|name too long
