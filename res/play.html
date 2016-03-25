@@ -534,7 +534,7 @@ public class play extends Service {
     if(type === undefined)
       return push('list|data');
     else
-      return push('list|' + type);
+      return push('list|data|' + type);
   }
   function easypush(data) {
     var data = push(data);

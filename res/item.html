@@ -34,8 +34,10 @@
       json.value = '';
       clear_select('data_list');
     }
-    if(data.length > 3 && data[3].length > 0) {
-      var list = data[3].split(';');
+    else
+      element('fail3').innerHTML = data[2];
+    if(data.length > 4 && data[4].length > 0) {
+      var list = data[4].split(';');
       for(var i = 0; i < list.length; i++) {
         add_select('data_list', list[i].split(',')[0], orange);
       }
@@ -45,6 +47,8 @@
     var data = listdata('room|item');
     if(data[1] == 'done')
       clear_select('room_list');
+    else
+      element('fail3').innerHTML = data[2];
     if(data.length > 4 && data[4].length > 0) {
       var list = data[4].split(';');
       for(var i = 0; i < list.length; i++) {
@@ -129,7 +133,7 @@
     <td colspan="2" align="center"><i>json</i></td></tr>
 <tr><td rowspan="3"><select id="data_list" style="width: 115px; height: 115px;" multiple></select></td>
     <td rowspan="3" valign="middle">&nbsp;<font color="red">&rarr;</font>&nbsp;</td>
-    <td colspan="2"><i>type</i>&nbsp;<select id="data_type" onchange="javascript:data_list();" style="width: 80px; height: 21px;"><option>data</option><option>item</option></select></td></tr>
+    <td colspan="2"><i>type</i>&nbsp;<select id="data_type" onchange="javascript:data_list();" style="width: 80px; height: 21px;"><option>hard</option><option>item</option><option>soft</option></select></td></tr>
 <tr><td colspan="2"><i>name</i>&nbsp;<input style="width: 80px; height: 21px;" id="data_name" type="text" size="10"></td></tr>
 <tr><td colspan="2"><textarea id="data_json" style="width: 115px; height: 65px;" rows="3"></textarea></td></tr>
 <tr><td><a href="javascript:data_load();">load</a></td><td></td>

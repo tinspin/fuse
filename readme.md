@@ -177,13 +177,17 @@ In sort of chronological order:
                             -> ally|fail|user not online
                             -> ally|fail|user busy
 
-                            // get user data
+                            // get user disk stored data
  <b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> data|done|{…}
                             -> data|fail|not found
                             
-                            // get user item
+                            // get user disk stored item
  <b><i>item</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> item|done|{…}
                             -> item|fail|not found
+                            
+                            // get user transient memory stored data
+ <b><i>soft</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> soft|done|{…}
+                            -> soft|fail|not found
                             
                             // drop item, how many and which
  <b><i>drop</i></b>|&lt;salt&gt;|&lt;name&gt;|&lt;many&gt;  -> drop|done|&lt;salt&gt;
@@ -214,9 +218,11 @@ In sort of chronological order:
                             // list rooms, data or items
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;size&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|room|item      -> list|done|room|item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;;…
- <b><i>list</i></b>|&lt;salt&gt;|data           -> list|done|data|&lt;name&gt;,&lt;size&gt;;…
- <b><i>list</i></b>|&lt;salt&gt;|item           -> list|done|item|&lt;name&gt;,&lt;many&gt;;…
+ <b><i>list</i></b>|&lt;salt&gt;|data|hard      -> list|done|data|hard|&lt;name&gt;,&lt;size&gt;;…
+ <b><i>list</i></b>|&lt;salt&gt;|data|soft      -> list|done|data|soft|&lt;name&gt;,&lt;size&gt;;…
+ <b><i>list</i></b>|&lt;salt&gt;|data|item      -> list|done|data|item|&lt;name&gt;,&lt;many&gt;;…
                             -> list|fail|not found
+                            -> list|fail|type missing
                             -> list|fail|wrong type
 
                             // join room
@@ -263,7 +269,9 @@ In sort of chronological order:
                            x-> <b><i>quit</i></b>|&lt;user&gt;
 
                             // save data
-                            // to save items use [type] = "item"
+                            // the default disk stored [type] is "hard"
+                            // to save disk stored items use [type] = "item"
+                            // to save transient memory stored data use [type] = "soft"
  <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|type] -> save|done
                             -> save|fail|name too short
                             -> save|fail|name too long

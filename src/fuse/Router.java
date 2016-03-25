@@ -580,38 +580,43 @@ public class Router implements Node {
 				}
 			}
 
-			if(list.equals("data") || list.equals("item")) {
-				final String key = user.json.getString("key");
+			if(list.equals("data")) {
+				if(split.length > 3)
+					type = split[3];
+				else
+					return "list|fail|type missing";
 
+				if(type.equals("soft")) {
+					if(user.soft != null)
+						return user.list(type, user.soft.getJSONArray("list"));
+					else
+						return split[0] + "|done|data|soft|";
+				}
+				
+				final String key = user.json.getString("key");
+				final String t = type;
+				
 				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
-						call.get("/meta/user/" + list + "/" + user.name, head());
+						call.get("/meta/user/" + t + "/" + user.name, head());
 					}
 
 					public void read(String host, String body) throws Exception {
 						if(debug)
 							System.err.println(body);
 						try {
-							user.item = (JSONObject) new JSONObject(body);
-							JSONArray l = user.item.getJSONArray("list");
+							JSONArray l = null;
 
-							StringBuilder builder = new StringBuilder("list|done|" + list + "|");
-
-							for(int i = 0; i < l.length(); i++) {
-								JSONObject json = l.getJSONObject(i);
-								String[] name = JSONObject.getNames(json);
-								JSONObject item = json.getJSONObject(name[0]);
-
-								if(list.equals("data"))
-									builder.append(name[0] + "," + item.toString().length());
-								else
-									builder.append(name[0] + "," + item.optInt("count"));
-
-								if(i < l.length() - 1)
-									builder.append(";");
+							if(list.equals("hard")) {
+								user.hard = (JSONObject) new JSONObject(body);
+								l = user.hard.getJSONArray("list");
 							}
-
-							event.query().put("done", builder.toString());
+							else {
+								user.item = (JSONObject) new JSONObject(body);
+								l = user.item.getJSONArray("list");
+							}
+							
+							event.query().put("done", user.list(t, l));
 						}
 						catch(Exception e) {
 							event.query().put("fail", "list|fail|not found");
@@ -837,7 +842,7 @@ public class Router implements Node {
 			final String name = split[2];
 			int many = Integer.parseInt(split[3]);
 
-			JSONObject json = user.item(name);
+			JSONObject json = user.data(user.item, name);
 
 			if(json == null)
 				return "drop|fail|not found";
@@ -885,7 +890,7 @@ public class Router implements Node {
 			if(item == null)
 				return "pick|fail|not found";
 
-			JSONObject json = user.item(item.name);
+			JSONObject json = user.data(user.item, item.name);
 
 			if(json == null) {
 				json = new JSONObject("{count: " + item.count + "}");
@@ -938,8 +943,22 @@ public class Router implements Node {
 
 			final String name = split[2];
 			final JSONObject json = tear ? null : new JSONObject(split[3]);
-			final String type = tear ? split[3] : split.length > 4 ? split[4] : "data";
+			final String type = tear ? split[3] : split.length > 4 ? split[4] : "hard";
 
+			if(type.equals("soft")) {
+				JSONObject soft = user.data(user.soft, name);
+				if(soft != null)
+					soft = json;
+				else if(!tear) {
+					if(user.soft == null)
+						user.soft = new JSONObject("{\"total\": 0, \"list\": []}");
+					JSONArray list = user.soft.getJSONArray("list");
+					list.put(new JSONObject("{\"" + name + "\": " + json + "}"));
+				}
+				
+				return split[0] + "|done";
+			}
+			
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.post("/meta", head(), 
@@ -950,7 +969,7 @@ public class Router implements Node {
 				public void read(String host, String body) throws Exception {
 					if(debug)
 						System.err.println(split[0] + " " + body);
-					JSONObject data = user.item(name);
+					JSONObject data = user.data(type.equals("hard") ? user.hard : user.item, name);
 					if(data != null)
 						data = json;
 					event.query().put("done", split[0] + "|done");
@@ -968,12 +987,20 @@ public class Router implements Node {
 			event.daemon().client().send(what, work, timeout);
 			throw event;
 		}
-		else if(split[0].equals("load") || split[0].equals("data") || split[0].equals("item")) {
+		else if(split[0].equals("load") || split[0].equals("hard") || split[0].equals("item") || split[0].equals("soft")) {
 			boolean load = split[0].equals("load");
 			final String base = load ? user.name : split[2];
 			final String name = load ? split[2] : split[3];
 			final String type = load && split.length > 3 ? split[3] : split[0];
 
+			if(type.equals("soft")) {
+				JSONObject soft = user.data(user.soft, name);
+				if(soft != null)
+					return split[0] + "|done|" + soft;
+				else
+					return split[0] + "|fail|not found";
+			}
+			
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
 					call.get("/meta/user/" + type + "/" + base + "/" + URLEncoder.encode(name, "UTF-8"), head());
@@ -1071,8 +1098,7 @@ public class Router implements Node {
 
 	public static class User extends Part {
 		String[] ip;
-		JSONObject json;
-		JSONObject item;
+		JSONObject json, hard, item, soft;
 		LinkedList ally = new LinkedList();
 		String nick, flag, poll, type;
 		boolean sign, away;
@@ -1099,8 +1125,11 @@ public class Router implements Node {
 			}
 		}
 
-		JSONObject item(String name) throws Exception {
-			JSONArray list = item.getJSONArray("list");
+		JSONObject data(JSONObject type, String name) throws Exception {
+			if(type == null)
+				type = new JSONObject("{\"total\": 0, \"list\":[]}");
+			
+			JSONArray list = type.getJSONArray("list");
 
 			for(int i = 0; i < list.length(); i++) {
 				JSONObject item = list.getJSONObject(i);
@@ -1114,6 +1143,26 @@ public class Router implements Node {
 			return null;
 		}
 
+		String list(String type, JSONArray list) throws Exception {
+			StringBuilder builder = new StringBuilder("list|done|data|" + type + "|");
+
+			for(int i = 0; i < list.length(); i++) {
+				JSONObject json = list.getJSONObject(i);
+				String[] name = JSONObject.getNames(json);
+				JSONObject item = json.getJSONObject(name[0]);
+
+				if(type.equals("item"))
+					builder.append(name[0] + "," + item.optInt("count"));
+				else
+					builder.append(name[0] + "," + item.toString().length());
+
+				if(i < list.length() - 1)
+					builder.append(";");
+			}
+			
+			return builder.toString();
+		}
+		
 		private void ally() throws Exception {
 			Async.Work work = new Async.Work(null) {
 				public void send(Async.Call call) throws Exception {
@@ -1245,7 +1294,7 @@ public class Router implements Node {
 
 			return item;
 		}
-
+		
 		private synchronized Item item(String salt) {
 			return (Item) items.remove(salt);
 		}
