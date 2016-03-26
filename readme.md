@@ -178,8 +178,8 @@ In sort of chronological order:
                             -> ally|fail|user busy
 
                             // get user persistent data
- <b><i>data</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;[|type] -> data|done|{…}
-                            -> data|fail|not found
+ <b><i>hard</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> hard|done|{…}
+                            -> hard|fail|not found
                             
                             // get user inventory item
  <b><i>item</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> item|done|{…}
