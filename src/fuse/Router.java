@@ -1589,7 +1589,7 @@ public class Router implements Node {
 				add = !u.game.name.equals(u.room.user.name);
 
 				if(add && m.startsWith("chat")) {
-					String[] split = m.split("|");
+					String[] split = m.split("\\|");
 					m = "chat|stem|" + split[2] + "|" + split[3];
 				}
 			}
