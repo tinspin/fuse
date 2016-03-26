@@ -268,10 +268,11 @@ In sort of chronological order:
  <b><i>quit</i></b>|&lt;salt&gt;                -> quit|done
                            x-> <b><i>quit</i></b>|&lt;user&gt;
 
-                            // data handling save/load:
-                            // the default disk stored [type] is "hard"
-                            // to save inventory items use [type] = "item" (needs number attribute "count")
-                            // to save transient data use [type] = "soft"
+                            /* data handling save/load/tear:
+                             * the default disk stored [type] is "hard"
+                             * to save inventory items to disk use [type] = "item" (needs number attribute "count")
+                             * to save transient data in memory use [type] = "soft" (disappears on relogin)
+                             */
 
                             // save data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|type] -> save|done
@@ -284,7 +285,6 @@ In sort of chronological order:
                             -> load|fail|not found
                             
                             // delete data
-                            // to delete item use [type] = "item"
  <b><i>tear</i></b>|&lt;salt&gt;|&lt;name&gt;[|type]  -> tear|done
                             -> tear|fail|not found
 
