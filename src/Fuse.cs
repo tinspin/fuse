@@ -261,7 +261,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	public void User(string name, string pass, string mail) {
-		EasyUser(name, hash(pass + name.ToLower()), mail);
+		EasyUser(name, Hash(pass + name.ToLower()), mail);
 	}
 
 	private string[] EasyUser(string name, string hash, string mail) {
@@ -284,7 +284,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	public string SignNamePass(string name, string pass) {
-		return Sign(name, hash(pass + name.ToLower()));
+		return Sign(name, Hash(pass + name.ToLower()));
 	}
 	
 	private string Sign(string user, string hide) {
@@ -294,7 +294,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			throw new Exception(salt[2]);
 		}
 		
-		string[] sign = Push("sign|" + salt[2] + "|" + hash(hide + salt[2])).Split('|');
+		string[] sign = Push("sign|" + salt[2] + "|" + Hash(hide + salt[2])).Split('|');
 
 		if(sign[1].Equals("fail")) {
 			throw new Exception(sign[2]);
@@ -374,8 +374,16 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		EasyPush("save|" + Uri.EscapeDataString(name) + "|" + type);
 	}
 	
-	public string Data(string user, string name) {
-		return EasyPush("data|" + Uri.EscapeDataString(user) + "|" + Uri.EscapeDataString(name))[2];
+	public string Hard(string user, string name) {
+		return EasyPush("hard|" + Uri.EscapeDataString(user) + "|" + Uri.EscapeDataString(name))[2];
+	}
+	
+	public string Item(string user, string name) {
+		return EasyPush("item|" + Uri.EscapeDataString(user) + "|" + Uri.EscapeDataString(name))[2];
+	}
+	
+	public string Soft(string user, string name) {
+		return EasyPush("soft|" + Uri.EscapeDataString(user) + "|" + Uri.EscapeDataString(name))[2];
 	}
 	
 	public string[] ListData() {
@@ -432,7 +440,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		return push;
 	}
 
-	public string hash(string input) {
+	public string Hash(string input) {
 		HashAlgorithm algo = (HashAlgorithm) SHA256.Create();
 		byte[] bytes = Encoding.UTF8.GetBytes(input);
 		byte[] hash = algo.ComputeHash(bytes);
