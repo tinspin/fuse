@@ -191,8 +191,8 @@ In sort of chronological order:
                             
                             // drop item, how many and which
  <b><i>drop</i></b>|&lt;salt&gt;|&lt;name&gt;|&lt;many&gt;  -> drop|done|&lt;salt&gt;
-                            -> item|fail|not found
-                            -> item|fail|not enough
+                            -> drop|fail|not found
+                            -> drop|fail|not enough
                            o-> item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;
 
                             // pick item
