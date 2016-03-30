@@ -66,6 +66,15 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		Connect();
 	}
 
+	public static int Ping(string host) {
+		Fuse fuse = new Fuse();
+		fuse.Host(host);
+		fuse.Connect();
+		int time = Environment.TickCount;
+		fuse.Push("ping");
+		return Environment.TickCount - time;
+	}
+
 	void Connect() {
 		first = true;
 		push = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

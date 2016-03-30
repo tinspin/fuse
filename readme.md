@@ -173,9 +173,9 @@ In sort of chronological order:
 
                             // add/remove friend
  <b><i>ally</i></b>|&lt;salt&gt;|&lt;user&gt;[|info]  -> ally|done[|poll]
-                           i-> <b><i>poll</i></b>|ally|&lt;user&gt;[|info]
                             -> ally|fail|user not online
                             -> ally|fail|user busy
+                           i-> <b><i>poll</i></b>|ally|&lt;user&gt;[|info]
 
                             // get user persistent data
  <b><i>hard</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> hard|done|{…}
