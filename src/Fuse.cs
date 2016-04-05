@@ -363,7 +363,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	   in the main thread */
 	
 	public void Save(string name, string json) {
-		Save(name, json, "data");
+		Save(name, json, "hard");
 	}
 	
 	public void Save(string name, string json, string type) {
