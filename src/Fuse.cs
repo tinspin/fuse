@@ -384,15 +384,15 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 	
 	public string Hard(string user, string name) {
-		return EasyPush("hard|" + Uri.EscapeDataString(user) + "|" + Uri.EscapeDataString(name))[2];
+		return EasyPush("hard|" + user + "|" + Uri.EscapeDataString(name))[2];
 	}
 	
 	public string Item(string user, string name) {
-		return EasyPush("item|" + Uri.EscapeDataString(user) + "|" + Uri.EscapeDataString(name))[2];
+		return EasyPush("item|" + user + "|" + Uri.EscapeDataString(name))[2];
 	}
 	
 	public string Soft(string user, string name) {
-		return EasyPush("soft|" + Uri.EscapeDataString(user) + "|" + Uri.EscapeDataString(name))[2];
+		return EasyPush("soft|" + user + "|" + Uri.EscapeDataString(name))[2];
 	}
 	
 	public string[] ListData() {

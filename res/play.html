@@ -524,11 +524,14 @@ public class play extends Service {
     else
       return easypush('tear|' + encodeURIComponent(name) + '|' + type)[2];
   }
-  function data(user, name) {
-    return easypush('data|' + user + '|' + encodeURIComponent(name))[2];
+  function hard(user, name) {
+    return easypush('hard|' + user + '|' + encodeURIComponent(name))[2];
   }
   function item(user, name) {
     return easypush('item|' + user + '|' + encodeURIComponent(name))[2];
+  }
+  function soft(user, name) {
+    return easypush('soft|' + user + '|' + encodeURIComponent(name))[2];
   }
   function listdata(type) {
     if(type === undefined)
