@@ -1354,12 +1354,16 @@ public class Daemon implements Runnable {
 	}
 
 	public class Lock {
-		public Chain chain;
+		Chain chain;
 		boolean root;
 
 		protected Lock(Chain chain, boolean root) {
 			this.chain = chain;
 			this.root = root;
+		}
+		
+		public void filter(final Event event) throws Event, Exception {
+			chain.filter(event);
 		}
 	}
 

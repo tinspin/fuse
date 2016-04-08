@@ -12,14 +12,14 @@ import java.util.*;
 /**
  * This is the {@link Event} filter chain implementation, it has dynamic size with positional integrity.
  */
-public class Chain extends LinkedList {
+class Chain extends LinkedList {
 	private int next;
 
 	/*
 	 * Dynamic size list with positional integrity. If anyone has a better
 	 * solution to this please tell me!
 	 */
-	protected Link put(Link link) {
+	Link put(Link link) {
 		for(int i = 0; i < size(); i++) {
 			Link tmp = (Link) super.get(i);
 
@@ -37,11 +37,11 @@ public class Chain extends LinkedList {
 		return null;
 	}
 
-	public void filter(final Event event) throws Event, Exception {
+	void filter(final Event event) throws Event, Exception {
 		filter(event, true, false);
 	}
 
-	protected void filter(final Event event, boolean write, boolean root) throws Event, Exception {
+	void filter(final Event event, boolean write, boolean root) throws Event, Exception {
 		for (int i = 0; i < size(); i++) {
 			final Service service = (Service) get(i);
 
@@ -152,7 +152,7 @@ public class Chain extends LinkedList {
 		}
 	}
 
-	protected void exit(final Session session, final int type) throws Exception {
+	void exit(final Session session, final int type) throws Exception {
 		for (int i = 0; i < size(); i++) {
 			final Service service = (Service) get(i);
 
@@ -182,11 +182,11 @@ public class Chain extends LinkedList {
 		}
 	}
 
-	protected void reset() {
+	void reset() {
 		next = 0;
 	}
 
-	protected Link next() {
+	Link next() {
 		if (next >= size()) {
 			next = 0;
 			return null;

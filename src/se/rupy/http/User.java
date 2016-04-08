@@ -11,12 +11,12 @@ import org.json.JSONObject;
 import se.rupy.http.*;
 
 public class User extends Service {
-	private String host() throws Exception {
-		return Root.host();
+	private String host(Event event) throws Exception {
+		return event.query().string("root", Root.host());
 	}
-
-	private String head() throws Exception {
-		return "Head:less\r\nHost:" + host();
+	
+	private String head(Event event) throws Exception {
+		return "Head:less\r\nHost:" + event.query().string("root", host(event));
 	}
 
 	public static void redirect(Event event) throws IOException, Event {
@@ -89,13 +89,13 @@ public class User extends Service {
 		out.println("    var pass = document.getElementById('pass');");
 		out.println("    var salt = document.getElementById('salt');");
 		out.println("    if(pass.value.length > 0) {");
+		out.println("      salt.value = '" + salt + "';");
 		out.println("      if(type == 'join') {");
 		if(algo.equals("sha-256"))
 			out.println("        pass.value = CryptoJS.SHA256(pass.value + name.value.toLowerCase());");
 		else
 			out.println("        pass.value = md5(pass.value + name.value.toLowerCase());");
 		out.println("      } else {");
-		out.println("        salt.value = '" + salt + "';");
 		out.println("        if(!digits.test(name.value))");
 		if(algo.equals("sha-256")) {
 			out.println("          pass.value = CryptoJS.SHA256(pass.value + name.value.toLowerCase());");
@@ -121,6 +121,7 @@ public class User extends Service {
 		Output out = event.output();
 		String name = event.string("name");
 		String mail = event.string("mail");
+		String salt = event.string("salt");
 		String fail = event.string("fail");
 		String bare = event.query().string("bare", "");
 		String host = event.query().header("host");
@@ -147,7 +148,7 @@ public class User extends Service {
 		}
 
 		out.println("<tr>");
-		out.println("<form action=\"user\" method=\"post\" name=\"user\"><input type=\"hidden\" name=\"salt\" id=\"salt\" value=\"\"><input type=\"hidden\" name=\"url\" value=\"" + url + "\">");
+		out.println("<form action=\"user\" method=\"post\" name=\"user\"><input type=\"hidden\" name=\"salt\" id=\"salt\" value=\"" + salt + "\"><input type=\"hidden\" name=\"url\" value=\"" + url + "\">");
 		out.println("<td><i>name</i>&nbsp;</td><td><input type=\"text\" style=\"width: 100px;\" name=\"name\" id=\"name\" value=\"" + name + "\"></td></tr>");
 		out.println("<tr><td><i>pass</i></font>&nbsp;</td><td><input type=\"password\" style=\"width: 100px;\" name=\"pass\" id=\"pass\" onkeypress=\"sign(event);\"></td></tr>");
 		out.println("<tr><td><font color=\"#00cc33\"><i>mail*</i></font></td><td><input type=\"text\" style=\"width: 100px;\" name=\"mail\" value=\"" + mail + "\" onkeypress=\"join(event);\"></td></tr>");
@@ -201,7 +202,7 @@ public class User extends Service {
 			}
 			else if(event.bit("redirect")) {
 				Output out = event.output();
-				out.println("<meta http-equiv=\"refresh\" content=\"0;URL=http://" + url + "\">");
+				out.println("<meta http-equiv=\"refresh\" content=\"0;URL=http://" + url + "?name=" + name + "\">");
 				out.finish();
 				out.flush();
 				throw event;
@@ -218,7 +219,7 @@ public class User extends Service {
 					
 					Async.Work work = new Async.Work(event) {
 						public void send(Async.Call call) throws Exception {
-							call.get("/salt", head());
+							call.get("/salt", head(event));
 						}
 
 						public void read(String host, String body) throws Exception {
@@ -253,7 +254,7 @@ public class User extends Service {
 					event.query().put("fail", "name too short");
 					redirect(event);
 				}
-				
+
 				if(salt.length() > 0) {
 					if(event.session() != null)
 						event.session().put("salt", null);
@@ -270,13 +271,16 @@ public class User extends Service {
 						
 						File file = null;
 						
-						if(name.matches("[0-9]+")) {
+						if(name.indexOf("@") > -1) {
+							file = new File(Root.home() + "/node/user/mail" + Root.path(name));
+						}
+						else if(name.matches("[0-9]+")) {
 							file = new File(Root.home() + "/node/user/id" + Root.path(Long.parseLong(name)));
 						}
 						else {
 							file = new File(Root.home() + "/node/user/name" + Root.path(name));
 						}
-
+						
 						if(!file.exists()) {
 							event.output().print("name not found");
 							throw event;
@@ -319,8 +323,8 @@ public class User extends Service {
 					else {
 						Async.Work work = new Async.Work(event) {
 							public void send(Async.Call call) throws Exception {
-								String body = "name=" + name + "&pass=" + pass + "&salt=" + salt + "&host=" + host();
-								call.post("/user", head(), body.getBytes());
+								String body = "name=" + name + "&pass=" + pass + "&salt=" + salt + "&host=" + host(event);
+								call.post("/user", head(event), body.getBytes());
 							}
 
 							public void read(String host, String body) throws Exception {
@@ -375,7 +379,7 @@ public class User extends Service {
 
 					Async.Work work = new Async.Work(event) {
 						public void send(Async.Call call) throws Exception {
-							call.post("/node", head(), ("json=" + json + "&sort=" + sort + "&create").getBytes("utf-8"));
+							call.post("/node", head(event), ("json=" + json + "&sort=" + sort + "&create").getBytes("utf-8"));
 						}
 
 						public void read(String host, String body) throws Exception {
@@ -399,7 +403,7 @@ public class User extends Service {
 
 						public void fail(String host, Exception e) throws Exception {
 							e.printStackTrace();
-							event.query().put("fail", e.toString() + "[" + Root.local + "]");
+							event.query().put("fail", e.toString() + "[" + Root.local() + "]");
 							event.reply().wakeup(true);
 						}
 					};
