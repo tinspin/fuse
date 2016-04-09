@@ -739,12 +739,12 @@ public class Daemon implements Runnable {
 		}
 	}
 
-	private Listener listener;
-	private Chain listeners; // ClusterListeners
+	private JVMListener listener;
+	private Chain listeners; // UDPListeners
 
 	private ErrorListener err;
 	private DNSListener dns;
-	private Com com;
+	private ComPort com;
 
 	/**
 	 * Send Object to JVM listener. We recommend you only send bootclasspath loaded 
@@ -770,7 +770,7 @@ public class Daemon implements Runnable {
 	 * @param listener
 	 * @return success
 	 */
-	public boolean set(Listener listener) {
+	public boolean set(JVMListener listener) {
 		try {
 			secure();
 			this.listener = listener;
@@ -822,7 +822,7 @@ public class Daemon implements Runnable {
 	 * Cross class-loader communication interface. So that a class deployed 
 	 * in one archive can send messages to a class deployed in another.
 	 */
-	public interface Listener {
+	public interface JVMListener {
 		/**
 		 * @param event if applicable attach event
 		 * @param message most likely a json string
@@ -835,20 +835,20 @@ public class Daemon implements Runnable {
 	/**
 	 * Receives COM port data.
 	 */
-	public interface Listen {
+	public interface COMListener {
 		public void read(byte[] data, int length) throws Exception;
 	}
 
 	/**
 	 * COM port.
 	 */
-	public static abstract class Com {
-		public Listen listen;
+	public static abstract class ComPort {
+		public COMListener listen;
 
 		/**
 		 * To set the hot-deploy as listener.
 		 */
-		public void set(Listen listen) {
+		public void set(COMListener listen) {
 			this.listen = listen;
 		}
 
@@ -858,7 +858,7 @@ public class Daemon implements Runnable {
 	/**
 	 * To get the COM port.
 	 */
-	public Com com() {
+	public ComPort com() {
 		return com;
 	}
 
@@ -868,7 +868,7 @@ public class Daemon implements Runnable {
 	 * Don't forget to call {@link Daemon#start()} after you used this method.
 	 * @param com
 	 */
-	public void set(Com com) {
+	public void set(ComPort com) {
 		this.com = com;
 	}
 
@@ -877,7 +877,7 @@ public class Daemon implements Runnable {
 	 * on one node can send messages to instances deployed in other nodes.
 	 * @author Marc
 	 */
-	public interface ClusterListener {
+	public interface UDPListener {
 		/**
 		 * @param message the message starts with header:
 		 * [host].[node], so for example; if I send a message 
@@ -913,7 +913,7 @@ public class Daemon implements Runnable {
 		 * Here you will receive all errors before they are logged.
 		 * @param e the responsible
 		 * @param t the stack trace
-		 * @return true if you wan't this error logged.
+		 * @return true if you want this error logged.
 		 * @throws Exception
 		 */
 		public boolean log(Event e, Throwable t);
@@ -971,7 +971,7 @@ public class Daemon implements Runnable {
 	 * Add multicast listener.
 	 * @param listener
 	 */
-	public void add(ClusterListener listener) {
+	public void add(UDPListener listener) {
 		if(listeners != null) {
 			listeners.add(listener);
 		}
@@ -981,7 +981,7 @@ public class Daemon implements Runnable {
 	 * Remove multicast listener.
 	 * @param listener
 	 */
-	public void remove(ClusterListener listener) {
+	public void remove(UDPListener listener) {
 		if(listeners != null) {
 			listeners.remove(listener);
 		}
@@ -1054,7 +1054,7 @@ public class Daemon implements Runnable {
 							Iterator it = listeners.iterator();
 
 							while(it.hasNext()) {
-								final ClusterListener listener = (ClusterListener) it.next();
+								final UDPListener listener = (UDPListener) it.next();
 								final byte[] message = data;
 
 								AccessController.doPrivileged(new PrivilegedExceptionAction() {
