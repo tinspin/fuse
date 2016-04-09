@@ -22,15 +22,14 @@ import se.rupy.http.Root;
 import se.rupy.http.Service;
 
 public class Router implements Node {
-	public static boolean debug = true;
-	public static int timeout = 30;
-
+	public static boolean debug = false;
 	public static String hash = "sha-256";
 	public static String data = "root.rupy.se";
 	public static String fuse = "fuse.rupy.se"; // So .js cross domain connects to the right node; does not work with IE with XDR.
 	public static String path = "fuse.rupy.se"; // So the modular .js will load from the right domain.
 	public static String what = "localhost";
-
+	public static int time = 30;
+	
 	public static ConcurrentLinkedDeque score = new ConcurrentLinkedDeque();
 
 	ConcurrentHashMap users = new ConcurrentHashMap();
@@ -116,7 +115,7 @@ public class Router implements Node {
 			}
 		};
 
-		event.daemon().client().send(what, work, timeout);
+		event.daemon().client().send(what, work, time);
 	}
 
 	public String push(final Event event, String data) throws Event, Exception {
@@ -242,7 +241,7 @@ public class Router implements Node {
 				}
 			};
 
-			event.daemon().client().send(what, work, timeout);
+			event.daemon().client().send(what, work, time);
 			throw event;
 		}
 
@@ -303,7 +302,7 @@ public class Router implements Node {
 				}
 			};
 
-			event.daemon().client().send(what, work, timeout);
+			event.daemon().client().send(what, work, time);
 			throw event;
 		}
 
@@ -437,7 +436,7 @@ public class Router implements Node {
 					}
 				};
 
-				event.daemon().client().send(what, work, timeout);
+				event.daemon().client().send(what, work, time);
 				throw event;
 			}
 		}
@@ -495,7 +494,7 @@ public class Router implements Node {
 					}
 				};
 
-				event.daemon().client().send(what, work, timeout);
+				event.daemon().client().send(what, work, time);
 				throw event;
 			}
 
@@ -633,7 +632,7 @@ public class Router implements Node {
 					}
 				};
 
-				event.daemon().client().send(what, work, timeout);
+				event.daemon().client().send(what, work, time);
 				throw event;
 			}
 
@@ -743,7 +742,7 @@ public class Router implements Node {
 						}
 					};
 
-					event.daemon().client().send(what, work, timeout);
+					event.daemon().client().send(what, work, time);
 					throw event;
 				}
 				else
@@ -879,7 +878,7 @@ public class Router implements Node {
 				}
 			};
 
-			event.daemon().client().send(what, work, timeout);
+			event.daemon().client().send(what, work, time);
 			throw event;
 		}
 		else if(split[0].equals("pick")) {
@@ -927,7 +926,7 @@ public class Router implements Node {
 				}
 			};
 
-			event.daemon().client().send(what, work, timeout);
+			event.daemon().client().send(what, work, time);
 			throw event;
 		}
 		else if(split[0].equals("save") || split[0].equals("tear")) {
@@ -987,7 +986,7 @@ public class Router implements Node {
 				}
 			};
 
-			event.daemon().client().send(what, work, timeout);
+			event.daemon().client().send(what, work, time);
 			throw event;
 		}
 		else if(split[0].equals("load") || split[0].equals("hard") || split[0].equals("item") || split[0].equals("soft")) {
@@ -1028,7 +1027,7 @@ public class Router implements Node {
 				}
 			};
 
-			event.daemon().client().send(what, work, timeout);
+			event.daemon().client().send(what, work, time);
 			throw event;
 		}
 		else if(split[0].equals("chat")) {
@@ -1224,7 +1223,7 @@ public class Router implements Node {
 				}
 			};
 
-			daemon.client().send(what, work, timeout);
+			daemon.client().send(what, work, time);
 		}
 
 		void peer(Event event, String ip) {
