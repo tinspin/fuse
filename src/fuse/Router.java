@@ -130,6 +130,14 @@ public class Router implements Node {
 			return "ping|done";
 		}
 
+		if(split[0].equals("time")) {
+			return "time|done|" + new SimpleDateFormat("HH:mm:ss").format(new Date());
+		}
+		
+		if(split[0].equals("date")) {
+			return "date|done|" + new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+		}
+		
 		if(split[0].equals("user")) {
 			final boolean name = split.length > 1 && split[1].length() > 0;
 			final boolean pass = split.length > 2 && split[2].length() > 0;

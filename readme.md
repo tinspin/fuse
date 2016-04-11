@@ -78,6 +78,12 @@ In sort of chronological order:
 
                             // to get latency
  <b><i>ping</i></b>                       -> ping|done
+ 
+                            // to get server time
+ <b><i>time</i></b>                       -> time|done|HH:mm:ss
+
+                            // to get server date
+ <b><i>date</i></b>                       -> ping|done|yyyy/MM/dd
 
                             // register
                             // [name] if you can't store the &lt;id&gt; otherwise set

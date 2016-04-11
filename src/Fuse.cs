@@ -247,6 +247,14 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 	// ------------- PROTOCOL  -------------
 
+	public string Time() { // HH:mm:ss
+		return EasyPush("time")[2];
+	}
+	
+	public string Date() { // yyyy/MM/dd
+		return EasyPush("date")[2];
+	}
+
 	/* Anonymous user.
 	 * You need to:
 	 * - store both key and id.
@@ -476,6 +484,8 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	
 	public static void Main() {
 		try {
+			Log("Ping: " + Ping("fuse.rupy.se"));
+		
 			string key = "TvaaS3cqJhQyK6sn";
 			string salt = null;
 			
@@ -484,6 +494,9 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			fuse.Host("fuse.rupy.se");
 			
 			//Thread.Sleep(100);
+			
+			Log("Time: " + fuse.Time());
+			Log("Date: " + fuse.Date());
 			
 			// if no key is stored try
 /*
