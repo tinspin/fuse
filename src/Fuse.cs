@@ -134,6 +134,9 @@ public class Fuse { // : MonoBehaviour { // ### 2
 					}
 				}
 			}
+			catch(Exception e) {
+				Log(e.Message);
+			}
 			finally {
 				lock(thread)
 					Monitor.Wait(thread);
@@ -470,7 +473,13 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 	// ------------- INCOMING MESSAGES ---------
 	
-	void Update() {
+	void Update() { // FixedUpdate() if you read keys from another location
+		// Check key presses and send packets
+		
+		// TODO
+		
+		// Read incoming packets and update world
+	
 		string[] received = Read();
 
 		if(received != null) {
