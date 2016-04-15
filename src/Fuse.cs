@@ -197,22 +197,20 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			int EOL = text.IndexOf("\r\n", header);
 			int content = text.IndexOf("\r\n\r\n");
 			int length = Int32.Parse(text.Substring(header + 15, EOL - (header + 15)));
+			int count = read - (content + 4);
 
-			text = text.Substring(content + 4, read - (content + 4));
-
-			if(read == content + length + 4) {
+			text = text.Substring(content + 4, count);
+			
+			if(length == count) {
 				return text;
 			}
 			else {
-				read = push.Receive(body);
-				text += Encoding.UTF8.GetString(body, 0, read);
-				int count = text.Length;
-
-				while (count < length) {
+				do {
 					read = push.Receive(body);
 					text += Encoding.UTF8.GetString(body, 0, read);
 					count += text.Length;
 				}
+				while (count < length);
 
 				return text;
 			}
