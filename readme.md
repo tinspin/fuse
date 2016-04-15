@@ -193,6 +193,8 @@ In sort of chronological order:
                             
                             // get user transient data
  <b><i>soft</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> soft|done|{…}
+                            -> soft|fail|salt not found
+                            -> soft|fail|user not found
                             -> soft|fail|not found
                             
                             // drop item, how many and which
@@ -282,8 +284,8 @@ In sort of chronological order:
 
                             // save data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|type] -> save|done
-                            -> save|fail|name too short
-                            -> save|fail|name too long
+                            -> save|fail|name too short // min 3
+                            -> save|fail|name too long // max 12
                             -> save|fail|unknown problem
 
                             // load data

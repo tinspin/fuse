@@ -1010,12 +1010,14 @@ public class Router implements Node {
 
 			if(type.equals("soft")) {
 				String salt = (String) salts.get(split[2]);
+				
 				if(salt == null)
-					return split[0] + "|fail|id not found";
+					return split[0] + "|fail|salt not found";
 
 				User target = (User) users.get(salt);
+				
 				if(target == null)
-					return split[0] + "|fail|salt not found";
+					return split[0] + "|fail|user not found";
 
 				JSONObject soft = target.data(target.soft, name);
 				if(soft != null)
