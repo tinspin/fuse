@@ -1415,6 +1415,12 @@ public class Daemon implements Runnable {
 					if(chain != null) {
 						return new Lock(chain, false);
 					}
+					
+					chain = (Chain) archive.chain().get("null");
+
+					if(chain != null) {
+						return new Lock(chain, false);
+					}
 				}
 			}
 			else {

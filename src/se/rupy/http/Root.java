@@ -1293,7 +1293,8 @@ public class Root extends Service {
 					if(tree[0].matches("[0-9]+")) { // parent id
 						long id = Long.parseLong(tree[0]);
 						json = new JSONObject(file(home() + "/node/" + head + "/id" + Root.path(id)));
-
+						key = json.getString("key");
+						
 						if(tree.length == 1) {
 							full = home() + "/meta/" + head + "/" + tail + Root.path(key);
 						}
