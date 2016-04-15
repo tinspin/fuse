@@ -35,6 +35,7 @@ public class Router implements Node {
 	ConcurrentHashMap users = new ConcurrentHashMap();
 	ConcurrentHashMap names = new ConcurrentHashMap();
 	ConcurrentHashMap games = new ConcurrentHashMap();
+	ConcurrentHashMap salts = new ConcurrentHashMap();
 
 	static ConcurrentHashMap stats = new ConcurrentHashMap();
 	static Daemon daemon;
@@ -233,9 +234,11 @@ public class Router implements Node {
 						JSONObject json = new JSONObject(body);
 						String key = json.getString("key");
 
-						User user = session(event, name ? split[1] : "", session());
+						User user = session(event, name ? split[1] : "" + Root.hash(key), session());
 						user.auth(json);
 
+						salts.put("" + user.id, user.salt);
+						
 						event.query().put("done", "user|done|" + user.salt + "|" + key + "|" + Root.hash(key));
 					}
 
@@ -293,6 +296,8 @@ public class Router implements Node {
 						JSONObject json = new JSONObject(body);
 						user.auth(json);
 
+						salts.put("" + user.id, user.salt);
+						
 						event.query().put("done", "sign|done|" + user.name);
 					}
 					catch(Exception e) {
@@ -1004,7 +1009,15 @@ public class Router implements Node {
 			final String type = load && split.length > 3 ? split[3] : split[0];
 
 			if(type.equals("soft")) {
-				JSONObject soft = user.data(user.soft, name);
+				String salt = (String) salts.get(split[2]);
+				if(salt == null)
+					return split[0] + "|fail|id not found";
+
+				User target = (User) users.get(salt);
+				if(target == null)
+					return split[0] + "|fail|salt not found";
+
+				JSONObject soft = target.data(target.soft, name);
 				if(soft != null)
 					return split[0] + "|done|" + soft;
 				else

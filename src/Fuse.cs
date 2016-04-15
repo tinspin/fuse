@@ -145,6 +145,11 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	public void Async(string data) {
+		if(salt == null) {
+			Log("Login or register first.");
+			return;
+		}
+        
 		lock(output)
 			output.Enqueue(data);
 		lock(thread)
@@ -188,8 +193,33 @@ public class Fuse { // : MonoBehaviour { // ### 2
 				text = Encoding.UTF8.GetString(body, 0, read);
 			}
 
-			string[] split = text.Split(new string[] { "\r\n\r\n" }, StringSplitOptions.None);
-			return split[1];
+            int header = text.IndexOf("Content-Length:");
+            int EOL = text.IndexOf("\r\n", header);
+            int content = text.IndexOf("\r\n\r\n");
+
+            int length = Int32.Parse(text.Substring(header + 15, EOL - (header + 15)));
+
+            text = text.Substring(content + 4, read - (content + 4));
+
+            if (read == content + length + 4)
+            {
+                return text;
+            }
+            else
+            {
+                read = push.Receive(body);
+                text += Encoding.UTF8.GetString(body, 0, read);
+                int count = text.Length;
+
+                while (count < length)
+                {
+                    read = push.Receive(body);
+                    text += Encoding.UTF8.GetString(body, 0, read);
+                    count += text.Length;
+                }
+
+                return text;
+            }
 		}
 	}
 
@@ -264,11 +294,11 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	 * - set and get name (unique) or nick 
 	 * manually if you need lobby.
 	 */
-	public void User() {
-		string[] user = EasyUser("", "", "");
-		string key = user[3];
-		string id = user[4];
+	public string[] User() {
+		return EasyUser("", "", "");
 		// TODO: store both key and id
+		//string key = user[3];
+		//string id = user[4];
 	}
 	
 	// Returns key to be stored.
