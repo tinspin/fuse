@@ -193,33 +193,29 @@ public class Fuse { // : MonoBehaviour { // ### 2
 				text = Encoding.UTF8.GetString(body, 0, read);
 			}
 
-            int header = text.IndexOf("Content-Length:");
-            int EOL = text.IndexOf("\r\n", header);
-            int content = text.IndexOf("\r\n\r\n");
+			int header = text.IndexOf("Content-Length:");
+			int EOL = text.IndexOf("\r\n", header);
+			int content = text.IndexOf("\r\n\r\n");
+			int length = Int32.Parse(text.Substring(header + 15, EOL - (header + 15)));
 
-            int length = Int32.Parse(text.Substring(header + 15, EOL - (header + 15)));
+			text = text.Substring(content + 4, read - (content + 4));
 
-            text = text.Substring(content + 4, read - (content + 4));
+			if(read == content + length + 4) {
+				return text;
+			}
+			else {
+				read = push.Receive(body);
+				text += Encoding.UTF8.GetString(body, 0, read);
+				int count = text.Length;
 
-            if (read == content + length + 4)
-            {
-                return text;
-            }
-            else
-            {
-                read = push.Receive(body);
-                text += Encoding.UTF8.GetString(body, 0, read);
-                int count = text.Length;
+				while (count < length) {
+					read = push.Receive(body);
+					text += Encoding.UTF8.GetString(body, 0, read);
+					count += text.Length;
+				}
 
-                while (count < length)
-                {
-                    read = push.Receive(body);
-                    text += Encoding.UTF8.GetString(body, 0, read);
-                    count += text.Length;
-                }
-
-                return text;
-            }
+				return text;
+			}
 		}
 	}
 
