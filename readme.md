@@ -391,4 +391,8 @@ In sort of chronological order:
 
  pop.mp3 - Mark DiAngelo
  snap.mp3 - Mark DiAngelo
+ 
+// credits
+
+ Pilot user: Jonas Oien
 </pre>
