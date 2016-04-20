@@ -95,8 +95,8 @@ In sort of chronological order:
                             // [mail] if your users want recovery otherwise set 
                             //        to empty string (|)
  <b><i>user</i></b>|[name]|[pass]|[mail]  -> user|done|&lt;salt&gt;|&lt;key&gt;|&lt;id&gt;
-                            -> user|fail|name too short
-                            -> user|fail|name too long
+                            -> user|fail|name too short     // min 3
+                            -> user|fail|name too long      // max 12
                             -> user|fail|name already registered
                             -> user|fail|name invalid       // [a-zA-Z0-9.\\-]+
                             -> user|fail|name alpha missing // [0-9]+ reserved for &lt;id&gt;
