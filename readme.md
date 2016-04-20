@@ -394,5 +394,6 @@ In sort of chronological order:
  
 // credits
 
- Pilot user: Jonas Oien
+ Pilot Developer: Jonas Oien
+ Feedback: Søren Tramm
 </pre>
