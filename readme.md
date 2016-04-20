@@ -83,7 +83,7 @@ In sort of chronological order:
  <b><i>time</i></b>                       -> time|done|HH:mm:ss
 
                             // to get server date
- <b><i>date</i></b>                       -> ping|done|yyyy/MM/dd
+ <b><i>date</i></b>                       -> date|done|yyyy/MM/dd
 
                             // register
                             // [name] if you can't store the &lt;id&gt; otherwise set
