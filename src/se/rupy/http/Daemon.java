@@ -1609,7 +1609,9 @@ public class Daemon implements Runnable {
 						out.println("<tr><td colspan=\"6\" bgcolor=\"#000000\"></td></tr>");
 						while(it.hasNext()) {
 							Event e = (Event) it.next();
-							out.println("<tr><td>" + e.index() + "</td><td>" + (e.reply().output.init ? "1" : "0") + "</td><td>" + (e.push() ? "1" : "0") + "</td><td>" + (e.reply().output.done ? "1" : "0") + "</td><td>" + (System.currentTimeMillis() - e.last()) + "</td><td>" + (e.worker() == null ? "" : "" + e.worker().index()) + "</td></tr>");
+							Worker w = e.worker();
+							Reply r = e.reply();
+							out.println("<tr><td>" + e.index() + "</td><td>" + (r != null && r.output.init ? "1" : "0") + "</td><td>" + (e.push() ? "1" : "0") + "</td><td>" + (r != null && r.output.done ? "1" : "0") + "</td><td>" + (System.currentTimeMillis() - e.last()) + "</td><td>" + (w == null ? "" : "" + w.index()) + "</td></tr>");
 						}
 						out.println("</table>");
 
@@ -1619,9 +1621,9 @@ public class Daemon implements Runnable {
 						out.println("<tr><td colspan=\"4\" bgcolor=\"#000000\"></td></tr>");
 						it = workers.iterator();
 						while(it.hasNext()) {
-							Worker worker = (Worker) it.next();
-							Event e = worker.event();
-							out.println("<tr><td>" + worker.index() + "</td><td>" + (worker.busy() ? "1" : "0") + "</td><td>" + worker.lock() + "</td><td>" + (e == null ? "" : "" + e.index()) + "</td></tr>");
+							Worker w = (Worker) it.next();
+							Event e = w.event();
+							out.println("<tr><td>" + w.index() + "</td><td>" + (w.busy() ? "1" : "0") + "</td><td>" + w.lock() + "</td><td>" + (e == null ? "" : "" + e.index()) + "</td></tr>");
 						}
 
 						out.println("</table></td></tr><tr><td colspan=\"3\" align=\"center\">selected: " + selected + ", valid: " + valid + ", accept: " + accept + ", readwrite: " + readwrite + "</td></tr></table>");
