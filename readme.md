@@ -278,7 +278,7 @@ In sort of chronological order:
 
                             /* data handling save/load/tear:
                              * the default disk stored [type] is "hard"
-                             * to save inventory items to disk use [type] = "item" (needs number attribute "count")
+                             * to save inventory items to disk use [type] = "item" (needs "count" number)
                              * to save transient data in memory use [type] = "soft" (disappears on relogin)
                              */
 
