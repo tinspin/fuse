@@ -396,4 +396,5 @@ In sort of chronological order:
 
  Pilot Developer: Jonas Oien
  Feedback: Søren Tramm
+           Nicolai Farver
 </pre>
