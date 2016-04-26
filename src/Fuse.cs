@@ -28,12 +28,6 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	private IPEndPoint remote;
 	private BufferedStream stream;
 	
-	private class State {
-		public Socket socket = null;
-		public const int size = 1024;
-		public byte[] data = new byte[size];
-	}
-	
 	public static void Log(string message) {
 		//Debug.Log(message); // uncomment ### 3
 		Console.WriteLine(message); // comment ### 3
