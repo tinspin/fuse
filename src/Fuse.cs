@@ -1,5 +1,6 @@
 //using UnityEngine; // ### 1
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Collections;
@@ -25,7 +26,8 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	private string salt;
 
 	private IPEndPoint remote;
-
+	private BufferedStream stream;
+	
 	private class State {
 		public Socket socket = null;
 		public const int size = 1024;
@@ -103,12 +105,12 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 		String text = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost: " + host + "\r\nHead: less\r\n\r\n";
 
+		stream = new BufferedStream(new NetworkStream(pull));
+
 		pull.Send(Encoding.UTF8.GetBytes(text));
 
-		State state = new State();
-		state.socket = pull;
-
-		pull.BeginReceive(state.data, 0, State.size, 0, new AsyncCallback(Callback), state);
+		Thread thread = new Thread(PullSync);
+		thread.Start();
 
 		connected = true;
 	}
@@ -242,33 +244,55 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		return null;
 	}
 
-	private void Callback(IAsyncResult ar) {
-		try {
-			State state = (State) ar.AsyncState;
-			int read = state.socket.EndReceive(ar);
+	// Only works with ASCII but for now good enough.
+	private string Line(Stream input) {
+		StringBuilder buffer = new StringBuilder();
 
-			if(read > 0) {
-				string text = Encoding.UTF8.GetString(state.data, 0, read);
-				string[] split = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+		while (true) {
+			int a = input.ReadByte();
 
-				if(!split[0].StartsWith("HTTP")) {
-					for(int j = 1; j < split.Length; j += 2) {
-						string[] messages = split[j].Split('\n');
+			if (a == '\r') {
+				int b = input.ReadByte();
 
-						for(int i = 0; i < messages.Length; i++) {
-							if(messages[i].Length > 0) {
-								lock(input) {
-									input.Enqueue(messages[i]);
-								}
+				if (b == '\n') {
+					return buffer.ToString();
+				} else if (b > -1) {
+					buffer.Append((char) a);
+					buffer.Append((char) b);
+				}
+			} else if (a > -1) {
+				buffer.Append((char) a);
+			}
+		}
+	}
+
+	private void PullSync() {
+		Boolean append = false, length = true;
+
+		while(true) {
+			String line = Line(stream);
+
+			if(append) {
+				if(length) {
+					length = false;
+				}
+				else {
+					string[] messages = line.Split('\n');
+
+					for(int i = 0; i < messages.Length; i++) {
+						if(messages[i].Length > 0) {
+							lock(input) {
+								input.Enqueue(messages[i]);
 							}
 						}
 					}
-				}
 
-				state.socket.BeginReceive(state.data, 0, State.size, 0, new AsyncCallback(Callback), state);
+					length = true;
+				}
 			}
-		} catch (Exception e) {
-			Log(e.ToString());
+			else if(line.Length == 0) { // read all headers
+				append = true;
+			}
 		}
 	}
 
