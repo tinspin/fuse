@@ -208,7 +208,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 				do {
 					read = push.Receive(body);
 					text += Encoding.UTF8.GetString(body, 0, read);
-					count += text.Length;
+					count += read;
 				}
 				while (count < length);
 
