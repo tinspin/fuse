@@ -238,10 +238,9 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		return null;
 	}
 
-	// Only works with ASCII but for now good enough.
 	private string Line(Stream input) {
-		StringBuilder buffer = new StringBuilder();
-
+		MemoryStream stream = new MemoryStream();
+		
 		while (true) {
 			int a = input.ReadByte();
 
@@ -249,13 +248,13 @@ public class Fuse { // : MonoBehaviour { // ### 2
 				int b = input.ReadByte();
 
 				if (b == '\n') {
-					return buffer.ToString();
+					return Encoding.UTF8.GetString(stream.ToArray());
 				} else if (b > -1) {
-					buffer.Append((char) a);
-					buffer.Append((char) b);
+					stream.WriteByte((byte) a);
+					stream.WriteByte((byte) b);
 				}
 			} else if (a > -1) {
-				buffer.Append((char) a);
+				stream.WriteByte((byte) a);
 			}
 		}
 	}
