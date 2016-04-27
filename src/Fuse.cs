@@ -109,6 +109,11 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		connected = true;
 	}
 
+	void OnDestroy() {
+		push.Disconnect(false);
+		pull.Disconnect(false);
+	}
+
 	private void PushAsync() {
 		while(true) {
 			try {
@@ -260,6 +265,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	private void PullSync() {
+		StringBuilder builder = new StringBuilder();
 		Boolean append = false, length = true;
 
 		while(true) {
@@ -270,14 +276,21 @@ public class Fuse { // : MonoBehaviour { // ### 2
 					length = false;
 				}
 				else {
-					string[] messages = line.Split('\n');
+					builder.Append(line);
 
-					for(int i = 0; i < messages.Length; i++) {
-						if(messages[i].Length > 0) {
+					int index = builder.ToString().IndexOf('\n');
+
+					while(index > -1) {
+						String message = builder.ToString().Substring(0, index);
+
+						if(message.Length > 0) {
 							lock(input) {
-								input.Enqueue(messages[i]);
+								input.Enqueue(message);
 							}
 						}
+
+						builder.Remove(0, index + 1);
+						index = builder.ToString().IndexOf('\n');
 					}
 
 					length = true;

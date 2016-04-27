@@ -255,7 +255,7 @@ public class Server extends Service implements Node, Runnable {
 
 				if(queue != null && !queue.isEmpty()) {
 					String data = (String) queue.poll();
-
+					
 					while(data != null) {
 						String accept = queue.event.query().header("accept");
 						
