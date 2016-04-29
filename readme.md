@@ -327,7 +327,7 @@ In sort of chronological order:
  
                             // send any gameplay data to room
  <b><i>show</i></b>|&lt;salt&gt;|&lt;data&gt;         -> show|done
-                           x-> <b><i>show</i></b>|&lt;user&gt;|&lt;data&gt;
+                           o-> <b><i>show</i></b>|&lt;user&gt;|&lt;data&gt;
  
                             // motion for 3D MMO games with dynamic here/gone
  <b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
