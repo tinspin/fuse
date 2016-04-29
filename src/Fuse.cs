@@ -399,6 +399,38 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			return null;
 	}
 
+    public string[] ListItem(string type) // type can be room or user
+    {
+        string list = Push("list|" + type + "|item");
+
+        if (list.StartsWith("list|fail"))
+        {
+            Log(list);
+            return null;
+        }
+
+        Log(list);
+
+        if (list.Length > 20)
+            return list.Substring(20).Split(';'); // from 'list|done|xxxx|item|'
+        else
+            return null;
+    }
+    
+	public string[] ListUser(string type) {
+		string list = Push("list|user|" + type);
+
+		if(list.StartsWith("list|fail")) {
+			Log(list);
+			return null;
+		}
+
+		if(list.Length > 15)
+			return list.Substring(16 + type.Length).Split(';'); // from 'list|done|user|xxxx'
+		else
+			return null;
+	}
+    
 	public bool Join(string room) {
 		return BoolPush("join|" + room);
 	}
@@ -465,19 +497,9 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		return EasyPush("soft|" + user + "|" + Uri.EscapeDataString(name))[2];
 	}
 	
-	public string[] ListData() {
-		string list = Push("list|data");
-
-		if(list.StartsWith("list|fail")) {
-			Log(list);
-			return null;
-		}
-
-		if(list.Length > 15)
-			return list.Substring(15).Split(';'); // from 'list|done|data|'
-		else
-			return null;
-	}
+	public void Pick(string salt) {
+        Async("pick|" + salt);
+    }
 	
 	/* tree should be either root, stem or leaf
 	 * root -> whole server, excluding others rooms
