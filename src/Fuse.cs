@@ -399,24 +399,22 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			return null;
 	}
 
-    public string[] ListItem(string type) // type can be room or user
-    {
-        string list = Push("list|" + type + "|item");
+	public string[] ListItem(string type) { // type can be room or user
+		string list = Push("list|" + type + "|item");
 
-        if (list.StartsWith("list|fail"))
-        {
-            Log(list);
-            return null;
-        }
+		if(list.StartsWith("list|fail")) {
+			Log(list);
+			return null;
+		}
 
-        Log(list);
+		Log(list);
 
-        if (list.Length > 20)
-            return list.Substring(20).Split(';'); // from 'list|done|xxxx|item|'
-        else
-            return null;
-    }
-    
+		if (list.Length > 20)
+			return list.Substring(20).Split(';'); // from 'list|done|xxxx|item|'
+		else
+			return null;
+	}
+	
 	public string[] ListUser(string type) {
 		string list = Push("list|user|" + type);
 
