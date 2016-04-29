@@ -505,8 +505,8 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 	
 	public void Pick(string salt) {
-        Async("pick|" + salt);
-    }
+		Async("pick|" + salt);
+	}
 	
 	/* tree should be either root, stem or leaf
 	 * root -> whole server, excluding others rooms
