@@ -407,8 +407,8 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		return BoolPush("join|" + user + "|" + info);
 	}
 	
-	public bool Exit(string user) {
-		return BoolPush("exit|" + user);
+	public bool Exit() {
+		return BoolPush("exit");
 	}
 	
 	public bool Poll(string user, string accept) {
@@ -433,6 +433,11 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	
 	public void Save(string name, string json, string type) {
 		EasyPush("save|" + Uri.EscapeDataString(name) + "|" + Uri.EscapeDataString(json) + "|" + type);
+	}
+	
+	// No feedback on failure
+	public void AsyncSave(string name, string json, string type) {
+		Async("save|" + Uri.EscapeDataString(name) + "|" + Uri.EscapeDataString(json) + "|" + type);
 	}
 	
 	public string Load(string name) {
@@ -488,6 +493,10 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 	public void Send(string data) {
 		Async("send|" + data);
+	}
+	
+	public void Show(string data) {
+		Async("show|" + data);
 	}
 
 	public void Move(string data) {

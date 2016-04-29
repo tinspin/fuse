@@ -533,11 +533,11 @@ public class play extends Service {
   function soft(user, name) {
     return easypush('soft|' + user + '|' + encodeURIComponent(name))[2];
   }
-  function listdata(type) {
+  function listuser(type) {
     if(type === undefined)
-      return push('list|data');
+      return push('list|user');
     else
-      return push('list|data|' + type);
+      return push('list|user|' + type);
   }
   function easypush(data) {
     var data = push(data);

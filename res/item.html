@@ -14,8 +14,8 @@
   function sent(user, data) {}
   function pause(hold) {}
   function tail() {}
-  function item(item) { /* salt,x,y,z,name,many */
-    add_select('room_list', item[4] + '(' + item[0] + ')', blue, item[0]);
+  function item(item) { /* salt,name,many,x,y,z */
+    add_select('room_list', item[1] + '(' + item[0] + ')', blue, item[0]);
   }
   function pick(user, salt) {
     var pick = remove_select_value('room_list', salt);
@@ -26,7 +26,7 @@
   <!-- here are the data/item methods -->
   function data_list() {
     var type = element('data_type');
-    var data = listdata(type.options[type.selectedIndex].text);
+    var data = listuser(type.options[type.selectedIndex].text);
     if(data[1] == 'done') {
       var name = element('data_name');
       var json = element('data_json');
@@ -44,7 +44,7 @@
     }
   }
   function room_list() {
-    var data = listdata('room|item');
+    var data = listuser('room|item');
     if(data[1] == 'done')
       clear_select('room_list');
     else

@@ -472,10 +472,9 @@ public class Router implements Node {
 			return "back|done";
 		}
 		else if(split[0].equals("ally")) {
-			String info = split.length > 3 ? "|" + split[3] : "";
-
 			final User poll = (User) names.get(split[2]);
-
+			String info = split.length > 3 ? "|" + split[3] : "";
+			
 			if(poll == null) {
 				return "ally|fail|user not online";
 			}
@@ -592,7 +591,7 @@ public class Router implements Node {
 				}
 			}
 
-			if(list.equals("data")) {
+			if(list.equals("user")) {
 				if(split.length > 3)
 					type = split[3];
 				else
@@ -602,7 +601,7 @@ public class Router implements Node {
 					if(user.soft != null)
 						return user.list(type, user.soft.getJSONArray("list"));
 					else
-						return split[0] + "|done|data|soft|";
+						return split[0] + "|done|user|soft|";
 				}
 
 				final String key = user.json.getString("key");
@@ -639,7 +638,7 @@ public class Router implements Node {
 
 					public void fail(String host, Exception e) throws Exception {
 						if(debug)
-							System.err.println("list data " + e);
+							System.err.println("list user " + e);
 						event.query().put("fail", "list|fail|unknown problem");
 						event.reply().wakeup(true);
 					}
@@ -653,7 +652,7 @@ public class Router implements Node {
 		}
 		else if(split[0].equals("join")) {
 			Room room = (Room) user.game.rooms.get(split[2]);
-			String info = split[3];
+			String info = split.length > 3 ? "|" + split[3] : "";
 
 			if(room == null) {
 				boolean game = user.room instanceof Game;
@@ -832,8 +831,8 @@ public class Router implements Node {
 			return "over|done";
 		}
 		else if(split[0].equals("exit")) {
-			if(user.room.user == null)
-				return "exit|fail|in lobby";
+			//if(user.room.user == null)
+			//	return "exit|fail|in lobby";
 
 			Room room = user.room;
 			boolean full = room.users.size() == room.size;
@@ -864,7 +863,9 @@ public class Router implements Node {
 			if(count < many)
 				return "drop|fail|not enough";
 
-			final Item item = user.room.item(user, name, many);
+			Item temp = new Item(name, many);
+			temp.position(user.position);
+			final Item item = user.room.add(temp);
 			json.put("count", count - many);
 			final String save = json.toString();
 
@@ -1074,13 +1075,57 @@ public class Router implements Node {
 			user.room.send(user, "send|" + user.name + "|" + split[2]);
 			return "send|done";
 		}
+		else if(split[0].equals("show")) {
+			user.room.send(user, "show|" + user.name + "|" + split[2], true);
+
+			String[] show = split[2].split(",");
+
+			if(show[0].equals("ball")) {
+				Item item = (Item) user.game.items.get(show[1]);
+
+				if(item.position == null)
+					item.position = new Position();
+				
+				item.position.x = Float.parseFloat(show[2]);
+				item.position.y = Float.parseFloat(show[3]);
+				item.position.z = Float.parseFloat(show[4]);
+
+				if(item.velocity == null)
+					item.velocity = new Velocity();
+
+				item.velocity.x = Float.parseFloat(show[5]);
+				item.velocity.y = Float.parseFloat(show[6]);
+				item.velocity.z = Float.parseFloat(show[7]);
+			}
+
+			return "show|done";
+		}
 		else if(split[0].equals("move")) {
 			user.room.send(user, "move|" + user.name + "|" + split[2]);
-			String[] pos = split[2].split(";")[0].split(",");
-			user.x = Float.parseFloat(pos[0]);
-			user.y = Float.parseFloat(pos[1]);
-			user.z = Float.parseFloat(pos[2]);
-			return "move|done";
+			
+			String[] all = split[2].split(";");
+			String[] pos = all[0].split(",");
+			
+			if(user.position == null)
+				user.position = new Position();
+			
+			user.position.x = Float.parseFloat(pos[0]);
+			user.position.y = Float.parseFloat(pos[1]);
+			user.position.z = Float.parseFloat(pos[2]);
+			
+			String[] rot = all[1].split(",");
+			
+			if(user.rotation == null)
+				user.rotation = new Rotation();
+			
+			user.rotation.x = Float.parseFloat(rot[0]);
+			user.rotation.y = Float.parseFloat(rot[1]);
+			user.rotation.z = Float.parseFloat(rot[2]);
+			user.rotation.w = Float.parseFloat(rot[3]);
+			
+			user.action = all[2];
+			
+			return "move|done";	
 		}
 
 		return "main|fail|rule not found";
@@ -1089,25 +1134,107 @@ public class Router implements Node {
 	public static class Part {
 		String salt;
 		String name;
-		float x, y, z;
+		Position position;
+		Rotation rotation;
+		Velocity velocity;
 	}
 
-	public static class Item extends Part {
-		int count;
-
-		public Item(String name, int count) {
-			this.name = name;
-			this.count = count;
-		}
-
-		public void position(User user) {
-			this.x = user.x;
-			this.y = user.y;
-			this.z = user.z;
-		}
-
+	public static class Position {
+		float x, y, z;
+		
 		public String toString() {
-			return salt + "," + x + "," + y + "," + z + "," + name + "," + count;
+			return x + "," + y + "," + z;
+		}
+	}
+	
+	public static class Rotation {
+		float x, y, z, w;
+		
+		public String toString() {
+			return x + "," + y + "," + z + "," + w;
+		}
+	}
+	
+	public static class Velocity {
+		float x, y, z;
+		
+		public String toString() {
+			return x + "," + y + "," + z;
+		}
+	}
+	
+	public static class Item extends Part {
+		int id;
+		int count;
+		String data;
+		
+		public Item(String name, String data) {
+			this.name = name;
+			this.data = data;
+		}
+
+		public Item(String name, int data) {
+			this.name = name;
+			this.count = data;
+			this.data = "" + data;
+		}
+		
+		public void position(Position pos) {
+			if(pos == null)
+				pos = new Position();
+			
+			if(position == null)
+				position = new Position();
+			
+			position.x = pos.x;
+			position.y = pos.y;
+			position.z = pos.z;
+		}
+		
+		public void rotation(Rotation rot) {
+			if(rot == null)
+				rot = new Rotation();
+			
+			if(rotation == null)
+				rotation = new Rotation();
+			
+			rotation.x = rot.x;
+			rotation.y = rot.y;
+			rotation.z = rot.z;
+			rotation.w = rot.w;
+		}
+		
+		public void velocity(Velocity vel) {
+			if(vel == null)
+				vel = new Velocity();
+			
+			if(velocity == null)
+				velocity = new Velocity();
+			
+			velocity.x = vel.x;
+			velocity.y = vel.y;
+			velocity.z = vel.z;
+		}
+
+		public Item clone() {
+			Item item = new Item(this.name, this.count);
+			item.position = position;
+			if(rotation != null)
+				item.rotation = rotation;
+			if(velocity != null)
+				item.velocity = velocity;
+			return item;
+		}
+		
+		public String toString() {
+			if(velocity != null && rotation != null)
+				return salt + "," + name + "," + data + "," + position + "," + rotation + "," + velocity; // 13
+			else if(rotation != null)
+				return salt + "," + name + "," + data + "," + position + "," + rotation; // 10
+			else if(velocity != null)
+				return salt + "," + name + "," + data + "," + position + "," + velocity; // 9
+			else
+				return salt + "," + name + "," + data + "," + position; // 6
 		}
 	}
 
@@ -1123,6 +1250,7 @@ public class Router implements Node {
 
 	public static class User extends Part {
 		String[] ip;
+		String action; // what is the user doing?
 		JSONObject json, hard, item, soft;
 		LinkedList ally = new LinkedList();
 		String nick, flag, poll, type;
@@ -1339,14 +1467,12 @@ public class Router implements Node {
 			this.size = size;
 		}
 
-		private synchronized Item item(User user, String name, int count) throws Exception {
+		synchronized Item add(Item item) throws Exception {
 			String salt = Event.random(4);
 
 			while(items.get(salt) != null)
 				salt = Event.random(4);
 
-			Item item = new Item(name, count);
-			item.position(user);
 			item.salt = salt;
 
 			items.put(salt, item);
@@ -1412,7 +1538,7 @@ public class Router implements Node {
 
 				try {
 					boolean user_game = user.room instanceof Game;
-					boolean from_game = from.room instanceof Game;
+					boolean from_game = from == null ? false : from.room instanceof Game;
 
 					// send every user in room to joining user
 
@@ -1424,6 +1550,9 @@ public class Router implements Node {
 
 						if(user.away)
 							node.push(from.salt, "away|" + user.name, false);
+
+						if(user.action != null)
+							node.push(from.salt, "move|" + user.name + "|" + user.position + ";" + user.rotation + ";" + user.action, false);
 					}
 
 					// send every user in room to leaving user
@@ -1434,7 +1563,7 @@ public class Router implements Node {
 
 					// send message from user to room
 
-					if(all || !from.name.equals(user.name)) {
+					if(all || (from == null || !from.name.equals(user.name))) {
 						if(data.startsWith("here")) {
 							node.push(user.salt, data + from.peer(user), false);
 
