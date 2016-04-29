@@ -22,7 +22,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	private Thread thread;
 	private Queue<string> input, output;
 	private Socket pull, push;
-	private bool connected, first = true;
+	private bool connected, first = true, alive = true;
 	private string salt;
 
 	private IPEndPoint remote;
@@ -110,12 +110,20 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	void OnDestroy() {
-		push.Disconnect(false);
-		pull.Disconnect(false);
+		alive = false;
+	
+		lock(thread)
+			Monitor.Pulse(thread);
+		
+		if(push != null)
+			push.Disconnect(false);
+	
+		if(pull != null)
+			pull.Disconnect(false);
 	}
 
 	private void PushAsync() {
-		while(true) {
+		while(alive) {
 			try {
 				String message = null;
 
@@ -153,6 +161,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
         
 		lock(output)
 			output.Enqueue(data);
+			
 		lock(thread)
 			Monitor.Pulse(thread);
 	}
@@ -246,19 +255,19 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	private string Line(Stream input) {
 		MemoryStream stream = new MemoryStream();
 		
-		while (true) {
+		while(true) {
 			int a = input.ReadByte();
 
-			if (a == '\r') {
+			if(a == '\r') {
 				int b = input.ReadByte();
 
-				if (b == '\n') {
+				if(b == '\n') {
 					return Encoding.UTF8.GetString(stream.ToArray());
-				} else if (b > -1) {
+				} else if(b > -1) {
 					stream.WriteByte((byte) a);
 					stream.WriteByte((byte) b);
 				}
-			} else if (a > -1) {
+			} else if(a > -1) {
 				stream.WriteByte((byte) a);
 			}
 		}
@@ -268,7 +277,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		StringBuilder builder = new StringBuilder();
 		Boolean append = false, length = true;
 
-		while(true) {
+		while(alive) {
 			String line = Line(stream);
 
 			if(append) {
