@@ -1,0 +1,111 @@
+[[	package gen;
+
+import se.rupy.http.*;
+import java.util.*;
+import java.net.*;
+import java.io.*;
+
+public class fuse extends Service {
+	String red = "#ff3300";
+	String orange = "#ff9900";
+	String blue = "#6699ff";
+	String green = "#00cc33";
+	String black = "#000000";
+	String white = "#ffffff";
+	
+	public String path() { return "/fuse.html"; }
+	public void filter(Event event) throws Event, Exception {
+		event.query().parse();
+		String mail = event.string("mail");
+		Output out = event.output(); ]]
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<style>
+  a:link, a:hover, a:active, a:visited { color: [[ blue ]]; font-style: italic; }
+  img { display: block; }
+  div { font-family: monospace; }
+  table { margin: 5px; }
+  input { font-family: monospace; box-sizing: border-box; }
+  #fail { color: [[ red ]]; }
+  textarea {
+    font-family: monospace;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    resize: none;
+    width: 100%;
+  }
+  select {
+    font-family: monospace;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  #show {
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+  }
+</style>
+</head>
+<body>
+<img width="200px" src="fuse.svg">
+<div>
+--- Multiplayer Platform ---
+<ul>
+<li>Unity (C#)</li>
+<li>Javascript</li>
+<li>Java</li>
+</ul>
+<ul style="list-style-type: none;">
+<li>Generic: User - Item - Room</li>
+<li>TCP/HTTP: Traverses all firewalls<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All gameplay types</li>
+<li>Multiplayer Physics</li>
+<li>100% Read Uptime</li>
+<li>&nbsp;</li>
+<li>Low internal latency: <a href="http://fuse.rupy.se/data">statistics</a></li> (Raspberry Pi 1)
+<li>Open-Source LGPL: <a href="https://github.com/tinspin/fuse">https://github.com/tinspin/fuse</a></li>
+<li>Integrated Forum: <a href="http://binarytask.com">http://binarytask.com</a></li>
+</ul>
+Roadmap:
+<ul style="list-style-type: none;">
+<li>Bitcoin</li>
+<li>P2P Client - VR Ready</li>
+<li>UDP Multicast - High Concurrency</li>
+</ul>
+Examples:
+<table>
+<tr><td><a href="http://aeonalpha.com"><img src="http://aeonalpha.com/aeon.svg"></a></td><td>
+<a href="http://fuse.rupy.se/cube.html">
+<table cellspacing="0" cellpadding="0" style="margin: 5px;">
+<tr><td><img width="30px" src="svg/blue.svg"></td><td><img width="30px" src="svg/green.svg"></td><td></td></tr>
+<tr><td><img width="30px" src="svg/orange.svg"></td><td><img width="30px" src="svg/purple.svg"></td></tr>
+</table>
+</a></td></tr>
+</table>
+Integration:<br>
+<ul><li>Dedicated Developer: 50$/hour.</li>
+<li><i>Example: Shelter Meadows, 3 weeks = 6000$.</i></li></ul>
+Hosting:<br>
+<ul><li>You: Minimum equivalent of two micro instances on AWS.</li>
+<li>We: You get Europe, Asia, US East and West coast,<br>&nbsp;&nbsp;&nbsp;&nbsp;pricing: <a href="http://host.rupy.se">host.rupy.se</a></li></ul>
+Contact Us:<br>
+<form>
+<table style="margin: 5px;">
+<tr><td>Name:&nbsp;</td><td><input type="text"></td></tr>
+<tr><td>Mail:&nbsp;</td><td><input type="text"></td></tr>
+<tr><td></td><td><input type="submit"></td></tr>
+</table>
+
+</form>
+</div>
+</body>
+</html>
+
+[[	}
+} ]]

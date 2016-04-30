@@ -6,9 +6,6 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 
-// TODO: join fails error missing
-// TODO: room stop doesn't seem to work
-
 public class play extends Service {
 	String red = "#ff3300";
 	String orange = "#ff9900";
@@ -601,7 +598,7 @@ public class play extends Service {
 <tr><td></td><td><font color="#999999"><i>host: [[ Root.local() ]]</i></font></td></tr>
 </table>
 <table>
-[[	Iterator it = fuse.Router.score.iterator();
+[[	Iterator it = Router.score.iterator();
 
 	while(it.hasNext()) {
 		String score = (String) it.next(); ]]
