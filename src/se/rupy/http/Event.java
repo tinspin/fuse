@@ -53,13 +53,13 @@ public class Event extends Throwable implements Chain.Link {
 	's','t','u','v','w','x','y','z' };
 	
 	static Mime MIME;
-
+	static ThreadMXBean BEAN;
+	
 	static {
-		MIME = new Mime();
 		READ = SelectionKey.OP_READ;
 		WRITE = SelectionKey.OP_WRITE;
 	}
-
+	
 	private SocketChannel channel;
 	private SelectionKey key;
 
@@ -75,14 +75,6 @@ public class Event extends Throwable implements Chain.Link {
 	protected boolean wakeup = false;
 	private boolean close;
 	private long touch;
-
-	static ThreadMXBean bean;
-	
-	static {
-		bean = ManagementFactory.getThreadMXBean();
-		bean.setThreadContentionMonitoringEnabled(true);
-		//System.out.println(bean.isThreadCpuTimeSupported() + " " + bean.isThreadCpuTimeEnabled() + " " + bean.isThreadContentionMonitoringSupported() + " " + bean.isThreadContentionMonitoringEnabled() + " " + bean.isCurrentThreadCpuTimeSupported());
-	}
 	
 	/*
 	 * Since variable chunk length on HTTP requests implementations
@@ -381,7 +373,7 @@ public class Event extends Throwable implements Chain.Link {
 				}
 			}
 			
-			long cpu = bean.getThreadCpuTime(Thread.currentThread().getId());
+			long cpu = BEAN.getThreadCpuTime(Thread.currentThread().getId());
 			
 			/* Zero-Copy file stream.
 			 * This does not seem to improve speed or CPU usage when testing manually.
@@ -421,7 +413,7 @@ public class Event extends Throwable implements Chain.Link {
 			if(daemon.host) {
 				metric.req.in++;
 				metric.req.out++;
-				metric.cpu += bean.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
+				metric.cpu += BEAN.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
 				metric.net.in += query.input.total;
 				metric.net.out += reply.output.total; // + file.length();
 				query.input.total = 0;

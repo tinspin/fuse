@@ -25,6 +25,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import se.rupy.http.Event.Mime;
+
 /**
  * A tiny HTTP daemon. The whole server is non-static so that you can launch
  * multiple contained HTTP servers in one application on different ports.<br>
@@ -1551,7 +1553,7 @@ public class Daemon implements Runnable {
 
 			if(pass != null && pass.length() > 0 || host) {
 				Service deploy = null;
-
+				
 				if(host) {
 					deploy = new Deploy("app" + File.separator);
 				}
@@ -2104,6 +2106,9 @@ public class Daemon implements Runnable {
 	}
 	
 	static {
+		Event.MIME = new Mime();
+		Event.BEAN = ManagementFactory.getThreadMXBean();
+		Event.BEAN.setThreadContentionMonitoringEnabled(true);
 		javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier() {
 			public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
 				if(hostname.equals("rupy.se")) {
@@ -2126,7 +2131,6 @@ public class Daemon implements Runnable {
 					}
 				}
 		};
-
 		try {
 			SSLContext sc = SSLContext.getInstance("SSL");
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());

@@ -49,7 +49,7 @@ class Chain extends LinkedList {
 				event.session(service, event);
 			}
 
-			long cpu = Event.bean.getThreadCpuTime(Thread.currentThread().getId());
+			long cpu = Event.BEAN.getThreadCpuTime(Thread.currentThread().getId());
 
 			if(event.daemon().host && !root) {
 				try {
@@ -141,7 +141,7 @@ class Chain extends LinkedList {
 					metric.req.in++;
 				metric.req.out++;
 			}
-			metric.cpu += Event.bean.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
+			metric.cpu += Event.BEAN.getThreadCpuTime(Thread.currentThread().getId()) - cpu;
 			metric.net.in += event.query().input.total;
 			metric.net.out += event.reply().output.total;
 
