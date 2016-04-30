@@ -16,7 +16,44 @@ public class fuse extends Service {
 	public String path() { return "/fuse.html"; }
 	public void filter(Event event) throws Event, Exception {
 		event.query().parse();
-		String mail = event.string("mail");
+		
+		final String name = event.string("name");
+		final String mail = event.string("mail");
+		
+		String done = event.query().string("done");
+		String back = "";
+		
+		if(event.push()) {
+			if(done.equals("OK")) {
+				back = "We'll get back in touch shortly!";
+			}
+			else {
+				back = "Something broke! Could not send mail.";
+			}
+				
+			event.output().finish();
+		}
+		else if(name.length() > 0 && mail.length() > 0 && mail.contains("@")) {
+			Async.Work work = new Async.Work(event) {
+				public void send(Async.Call call) throws Exception {
+					call.get("/mail?to=marc@rupy.se&from=" + mail + "&title=" + URLEncoder.encode("Fuse Contact") + "&body=" + URLEncoder.encode("Please tell me more about Fuse!<br><br>" + name) + "&send", "Head:less\r\nHost:host.rupy.se");
+				}
+
+				public void read(String host, final String body) throws Exception {
+					event.query().put("done", body);
+					System.out.println(body);
+					event.reply().wakeup(true);
+				}
+
+				public void fail(String host, Exception e) throws Exception {
+					System.out.println("mail " + e);
+				}
+			};
+		
+			event.daemon().client().send("localhost", work, 0);
+			throw event;
+		}
+		
 		Output out = event.output(); ]]
 
 <!DOCTYPE HTML>
@@ -56,7 +93,7 @@ public class fuse extends Service {
 <img width="200px" src="fuse.svg">
 <div>
 --- Multiplayer Platform ---
-<ul>
+<ul style="list-style-type:circle">
 <li>Unity (C#)</li>
 <li>Javascript</li>
 <li>Java</li>
@@ -89,19 +126,19 @@ Examples:
 </a></td></tr>
 </table>
 Integration:<br>
-<ul><li>Dedicated Developer: 50$/hour.</li>
+<ul style="list-style-type: none;"><li>Dedicated Developer: 50$/hour.</li>
 <li><i>Example: Shelter Meadows, 3 weeks = 6000$.</i></li></ul>
 Hosting:<br>
-<ul><li>You: Minimum equivalent of two micro instances on AWS.</li>
-<li>We: You get Europe, Asia, US East and West coast,<br>&nbsp;&nbsp;&nbsp;&nbsp;pricing: <a href="http://host.rupy.se">host.rupy.se</a></li></ul>
+<ul style="list-style-type:circle"><li>You: Minimum equivalent of two micro instances on AWS.</li>
+<li>We: You get Europe, Asia, US East and West,<br>&nbsp;&nbsp;&nbsp;&nbsp;pricing: <a href="http://host.rupy.se">host.rupy.se</a></li></ul>
 Contact Us:<br>
-<form>
+<form method="post">
 <table style="margin: 5px;">
-<tr><td>Name:&nbsp;</td><td><input type="text"></td></tr>
-<tr><td>Mail:&nbsp;</td><td><input type="text"></td></tr>
+[[ back.length() > 0 ? "<tr><td colspan=\"2\"><font color=\"" + (done.equals("OK") ? green : red) + "\">" + back + "</font></td></tr>" : "" ]]
+<tr><td>Name:&nbsp;</td><td><input type="text" name="name" value="[[ name ]]"></td></tr>
+<tr><td>Mail:&nbsp;</td><td><input type="text" name="mail" value="[[ mail ]]"></td></tr>
 <tr><td></td><td><input type="submit"></td></tr>
 </table>
-
 </form>
 </div>
 </body>

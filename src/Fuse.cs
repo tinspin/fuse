@@ -308,6 +308,10 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			else if(line.Length == 0) { // read all headers
 				append = true;
 			}
+			
+			if(line.Equals("0")) {
+				alive = false;
+			}
 		}
 	}
 
