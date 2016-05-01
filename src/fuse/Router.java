@@ -609,7 +609,7 @@ public class Router implements Node {
 
 				Async.Work work = new Async.Work(event) {
 					public void send(Async.Call call) throws Exception {
-						call.get("/meta/user/" + t + "/" + user.name, head());
+						call.get("/meta/user/" + t + "/" + user.name + "?sort=1", head());
 					}
 
 					public void read(String host, String body) throws Exception {
