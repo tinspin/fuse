@@ -110,6 +110,14 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 
 	void OnDestroy() {
+		// This is called between scene switches.
+	}
+
+	void OnApplicationQuit() {
+		freeResources ();
+	}
+
+	private void freeResources() {
 		alive = false;
 	
 		lock(thread)
