@@ -38,7 +38,7 @@
       element('fail3').innerHTML = data[2];
     if(data.length > 4 && data[4].length > 0) {
       var list = data[4].split(';');
-      for(var i = 0; i < list.length; i++) {
+      for(var i = list.length - 1; i > -1 ; i--) {
         add_select('data_list', list[i].split(',')[0], orange);
       }
     }
