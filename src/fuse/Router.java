@@ -22,7 +22,7 @@ import se.rupy.http.Root;
 import se.rupy.http.Service;
 
 public class Router implements Node {
-	public static boolean debug = false;
+	public static boolean debug = true;
 	public static String hash = "sha-256";
 	public static String data = "root.rupy.se";
 	public static String fuse = "fuse.rupy.se"; // So .js cross domain connects to the right node; does not work with IE with XDR.
@@ -1782,7 +1782,7 @@ public class Router implements Node {
 			}
 
 			names.remove(user.name);
-			broadcast(user, "gone|root|" + user.name, false);
+			broadcast(user, "gone|root|" + user.name, true);
 		}
 	}
 

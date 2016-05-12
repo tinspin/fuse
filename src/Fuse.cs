@@ -111,10 +111,14 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 	void OnDestroy() {
 		// This is called between scene switches.
+		// Make sure you don't have multiple instances 
+		// laying around in prefabs and such!
+		freeResources();
 	}
 
 	void OnApplicationQuit() {
-		freeResources ();
+		// TODO: Why doesn't this work always?
+		//freeResources();
 	}
 
 	private void freeResources() {
