@@ -1243,7 +1243,7 @@ public class Router implements Node {
 		String name;
 
 		public Game(String name) {
-			super(null, "game", 1024);
+			super((User) null, "game", 1024);
 			this.name = name;
 		}
 	}
@@ -1453,12 +1453,12 @@ public class Router implements Node {
 		ConcurrentHashMap items = new ConcurrentHashMap();
 
 		boolean play;
-		String type;
+		String name, type;
 		User user;
 		int size;
 
 		Room(String type, int size) {
-			this(null, type, size);
+			this((User) null, type, size);
 		}
 
 		Room(User user, String type, int size) {
@@ -1466,7 +1466,13 @@ public class Router implements Node {
 			this.type = type;
 			this.size = size;
 		}
-
+		
+		Room(String name, String type, int size) {
+			this.name = name;
+			this.type = type;
+			this.size = size;
+		}
+		
 		synchronized Item add(Item item) throws Exception {
 			String salt = Event.random(4);
 
@@ -1626,7 +1632,7 @@ public class Router implements Node {
 		}
 
 		public String toString() {
-			return (user == null ? "lobby" : user.name) + "," + type + "," + size;
+			return (user == null ? name == null ? "lobby" : name : user.name) + "," + type + "," + users.size() + "," + size;
 		}
 	}
 
