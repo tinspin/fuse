@@ -221,7 +221,12 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			int length = Int32.Parse(text.Substring(header + 15, EOL - (header + 15)));
 			int count = read - (content + 4);
 
-			text = text.Substring(content + 4, count);
+			int total = count;
+
+            if(content + 4 + count > text.Length) // UTF-8
+                total = text.Length - (content + 4);
+
+			text = text.Substring(content + 4, total);
 			
 			if(length == count) {
 				return text;
