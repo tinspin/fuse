@@ -206,8 +206,8 @@ In sort of chronological order:
                             // pick item
  <b><i>pick</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> pick|done
                             -> pick|fail|not found
-                           o-> pick|&lt;user&gt;|&lt;item&gt;    // salt
-                           i-> real|{…}            // which real item was picked
+                           o-> pick|&lt;user&gt;|&lt;item&gt;           // salt
+                           i-> real|{…}                     // which real item was picked
                            
                             // get user country (ISO 3166)
 *<b><i>flag</i></b>|&lt;salt&gt;|&lt;user&gt;         -> flag|done|&lt;code&gt;
