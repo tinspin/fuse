@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#include <pthread.h>
 #ifdef __WIN32__
 # include <winsock2.h>
 #else
@@ -7,10 +8,15 @@
 #endif
 
 /*
- * TODO:
- * - socket stream buffer
- * - threading
+ * TODO: socket stream buffer
  */
+
+void *PrintHello(void *threadid)
+{
+   long tid = (long) threadid;
+   std::cout << "Hello World! Thread ID, " << tid << std::endl;
+   pthread_exit(NULL);
+}
 
 main()
 {
@@ -19,6 +25,9 @@ main()
 	WSADATA wsaData;
 	WSAStartup(versionWanted, &wsaData);
 #endif
+
+	pthread_t thread;
+	pthread_create(&thread, NULL, PrintHello, (void *) 0);
 
 	char data[100] = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n";
 
