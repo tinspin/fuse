@@ -29,12 +29,11 @@ main()
 	
 #ifdef __WIN32__
 	result = send(conn_sock, msg, strlen(msg), 0);
-	printf("out: %d\n", result);
-	shutdown(conn_sock, SD_SEND);
 #else
 	write(conn_sock, msg, strlen(msg));
-	close(conn_sock);
 #endif
+
+	printf("out: %d\n", result);
 
 	char recvbuf[1024];
 	result = recv(conn_sock, recvbuf, 1024, 0);
