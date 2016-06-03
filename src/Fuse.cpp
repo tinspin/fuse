@@ -15,9 +15,9 @@ main()
 #endif
 
 	char data[100] = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n";
-	int socket_ptr;
+
 	struct sockaddr_in address;
-	socket_ptr = socket(AF_INET, SOCK_STREAM, 0);
+	int socket_ptr = socket(AF_INET, SOCK_STREAM, 0);
 
 	address.sin_family = AF_INET;
 	address.sin_port = htons(8000);
