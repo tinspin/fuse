@@ -41,7 +41,7 @@ main()
 	
 #ifdef __WIN32__
 	closesocket(socket_ptr);
-    WSACleanup();
+	WSACleanup();
 #else
 	close(socket_ptr);
 #endif
