@@ -14,7 +14,7 @@ main()
 	WSAStartup(versionWanted, &wsaData);
 #endif
 
-	char data[100]="GET / HTTP/1.1\r\nHost: localhost\r\n\r\n";
+	char data[100] = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n";
 	int socket_ptr;
 	struct sockaddr_in address;
 	socket_ptr = socket(AF_INET, SOCK_STREAM, 0);
@@ -35,8 +35,8 @@ main()
 
 	printf("out: %d\n", result);
 
-	char recvbuf[1024];
-	result = recv(socket_ptr, recvbuf, 1024, 0);
+	char buffer[1024];
+	result = recv(socket_ptr, buffer, 1024, 0);
 	printf("in: %d\n", result);
 	
 #ifdef __WIN32__
