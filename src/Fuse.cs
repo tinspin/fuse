@@ -223,8 +223,8 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 			int total = count;
 
-            if(content + 4 + count > text.Length) // UTF-8
-                total = text.Length - (content + 4);
+			if(content + 4 + count > text.Length) // UTF-8
+				total = text.Length - (content + 4);
 
 			text = text.Substring(content + 4, total);
 			
