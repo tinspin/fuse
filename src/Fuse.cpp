@@ -14,35 +14,36 @@ main()
 	WSAStartup(versionWanted, &wsaData);
 #endif
 
-	char msg[100]="GET / HTTP/1.1\r\nHost: localhost\r\n\r\n";
-	int conn_sock;
-	struct sockaddr_in server_addr;
-	conn_sock = socket(AF_INET, SOCK_STREAM, 0);
+	char data[100]="GET / HTTP/1.1\r\nHost: localhost\r\n\r\n";
+	int socket_ptr;
+	struct sockaddr_in address;
+	socket_ptr = socket(AF_INET, SOCK_STREAM, 0);
 
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(8000);
-	server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	address.sin_family = AF_INET;
+	address.sin_port = htons(8000);
+	address.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-	connect(conn_sock, (struct sockaddr *) &server_addr, sizeof (server_addr));
+	connect(socket_ptr, (struct sockaddr *) &address, sizeof (address));
 	
 	int result = 0;
 	
 #ifdef __WIN32__
-	result = send(conn_sock, msg, strlen(msg), 0);
+	result = send(socket_ptr, data, strlen(data), 0);
 #else
-	write(conn_sock, msg, strlen(msg));
+	result = write(socket_ptr, data, strlen(data));
 #endif
 
 	printf("out: %d\n", result);
 
 	char recvbuf[1024];
-	result = recv(conn_sock, recvbuf, 1024, 0);
+	result = recv(socket_ptr, recvbuf, 1024, 0);
 	printf("in: %d\n", result);
 	
 #ifdef __WIN32__
-	shutdown(conn_sock, SD_SEND);
+	closesocket(socket_ptr);
+    WSACleanup();
 #else
-	close(conn_sock);
+	close(socket_ptr);
 #endif
 	
 	std::cout << "Hello World!";
