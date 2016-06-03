@@ -6,6 +6,12 @@
 # include <sys/socket.h>
 #endif
 
+/*
+ * TODO:
+ * - socket stream buffer
+ * - threading
+ */
+
 main()
 {
 #ifdef __WIN32__
@@ -36,7 +42,13 @@ main()
 	printf("out: %d\n", result);
 
 	char buffer[1024];
+	
+#ifdef __WIN32__
 	result = recv(socket_ptr, buffer, 1024, 0);
+#else
+	result = read(socket_ptr, buffer, 1024);
+#endif
+	
 	printf("in: %d\n", result);
 	
 #ifdef __WIN32__
