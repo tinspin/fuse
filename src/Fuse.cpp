@@ -25,12 +25,24 @@ main()
 
 	connect(conn_sock, (struct sockaddr *) &server_addr, sizeof (server_addr));
 	
+	int result = 0;
+	
 #ifdef __WIN32__
-	int result = send(conn_sock, msg, strlen(msg), 0);
-	printf("yo: %d\n", result);
+	result = send(conn_sock, msg, strlen(msg), 0);
+	printf("out: %d\n", result);
 	shutdown(conn_sock, SD_SEND);
 #else
 	write(conn_sock, msg, strlen(msg));
+	close(conn_sock);
+#endif
+
+	char recvbuf[1024];
+	result = recv(conn_sock, recvbuf, 1024, 0);
+	printf("in: %d\n", result);
+	
+#ifdef __WIN32__
+	shutdown(conn_sock, SD_SEND);
+#else
 	close(conn_sock);
 #endif
 	
