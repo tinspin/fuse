@@ -13,11 +13,11 @@ support:
   - javascript XHR/XDR, 99.9% of browsers, only IE7 missing
     - cors compliant, static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/cube.html">cube.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/bomb.html">bomb.html</a>
   - java will be added later, if somebody needs it now you can hopefully 
-    figure it out from <a href="http://rupy.se/talk.zip">src/stream/Client.java</a>.
+    figure it out from <a href="http://rupy.se/talk.zip">src/stream/client.java</a>.
   - 100% firewall pass-through
   - all gameplay types:
     - from two player turn-based
-    - to real-time action MMO
+    - to real-time action mmo
 
 protocol:
 
@@ -39,9 +39,9 @@ platform:
   - multithreaded NIO with queue, linear perf.:
     - 1000 mess./sec. on raspberry pi 1
     - 6500 mess./sec. on raspberry pi 2
-  - 100% uptime on routing with round-robin DNS
+  - 100% uptime on routing with round-robin dns
   - 100% read uptime on persistence with custom 
-    async distributed JSON file system database 
+    async distributed json file system database 
     that uses ext4 indexing
   - peak garbage collect:
     - 70 ms (raspberry pi 1)
@@ -51,7 +51,7 @@ platform:
 examples:
 
   - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source, try single-player <a href="http://fuse.rupy.se/cube.html">cube.html</a>)
-  - java 3D VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a> (closed-source)
+  - java 3D vr mmo space shooter: <a href="http://aeonalpha.com">aeon</a> (closed-source)
   
 license:
 
@@ -61,8 +61,8 @@ license:
 | <i>work in progress</i> |
 +------------------+
 
-o-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) including self
-x-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) excluding self
+o-> = async. broadcast to read() (C#) or read(data) (XHR/XDR) including self
+x-> = async. broadcast to read() (C#) or read(data) (XHR/XDR) excluding self
 i-> = async. send to one user for unique feedback.
  -> = sync. return on Push(data) or push(data)
 
