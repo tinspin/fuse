@@ -10,7 +10,7 @@ support:
   - c++ (coming soon) <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cpp">fuse.cpp</a>
   - unity
     - plugin is only one file of c# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">fuse.cs</a>, <a href="https://dl.dropboxusercontent.com/u/1352420/Fuse.zip">minimalist unity project</a>
-  - javascript XHR/XDR, 99.9% of browsers, only IE7 missing
+  - javascript xhr/xdr, 99.9% of browsers, only ie7 missing
     - cors compliant, static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/cube.html">cube.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/bomb.html">bomb.html</a>
   - java will be added later, if somebody needs it now you can hopefully 
     figure it out from <a href="http://rupy.se/talk.zip">src/stream/client.java</a>.
@@ -25,18 +25,18 @@ protocol:
     - '|' protocol
     - ';' objects
     - ',' attributes
-  - client/server triplex HTTP, comet upstream 
+  - client/server triplex http, comet upstream 
     '\n' terminated or 'data: \n\n' encapsulated
-    - dynamic presence position move packets for MMO
-  - peer-to-peer UDP, binary physics packets for VR
+    - dynamic presence position move packets for mmo
+  - peer-to-peer udp, binary physics packets for vr
     - position move and talk, look, head, body, hand packets
-  - multicast UDP on cluster for load distribution
+  - multicast udp on cluster for load distribution
     - concurrency ~25.000 mess./sec. on 4x raspberry pi 2
 
 platform:
 
   - low internal latency: <a href="http://fuse.rupy.se/data">stat</a>
-  - multithreaded NIO with queue, linear perf.:
+  - multithreaded nio with queue, linear perf.:
     - 1000 mess./sec. on raspberry pi 1
     - 6500 mess./sec. on raspberry pi 2
   - 100% uptime on routing with round-robin dns
@@ -61,8 +61,8 @@ license:
 | <i>work in progress</i> |
 +------------------+
 
-o-> = async. broadcast to read() (C#) or read(data) (XHR/XDR) including self
-x-> = async. broadcast to read() (C#) or read(data) (XHR/XDR) excluding self
+o-> = async. broadcast to read() (c#) or read(data) (javascript) including self
+x-> = async. broadcast to read() (c#) or read(data) (javascript) excluding self
 i-> = async. send to one user for unique feedback.
  -> = sync. return on Push(data) or push(data)
 
