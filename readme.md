@@ -8,8 +8,7 @@
 support:
 
   - c++ (coming soon) <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cpp">fuse.cpp</a>
-  - unity
-    - plugin is only one file of c# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">fuse.cs</a>, <a href="https://dl.dropboxusercontent.com/u/1352420/Fuse.zip">minimalist unity project</a>
+  - unity <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">fuse.cs</a>, <a href="https://dl.dropboxusercontent.com/u/1352420/Fuse.zip">minimalist unity project</a>
   - javascript xhr/xdr, 99.9% of browsers, only ie7 missing
     - cors compliant, static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/cube.html">cube.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/bomb.html">bomb.html</a>
   - java will be added later, if somebody needs it now you can hopefully 
