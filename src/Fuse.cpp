@@ -1,53 +1,51 @@
 #include <iostream>
 #include <streambuf>
+#include <queue>
+#include <string>
 #include <stdio.h>
 #include <pthread.h>
 #ifdef __WIN32__
-# include <winsock2.h>
+#	include <winsock2.h>
 #else
-# include <sys/socket.h>
+#	include <sys/socket.h>
 #endif
 
 using namespace std;
+
+queue<char*> input, output;
 
 /*
  * This uses two threads, one for each socket/queue.
  * The buffer stream is used for the chunked incoming data.
  */
 
-class BufferInputStream : public basic_streambuf<char>
-{
-private:
-	static const int SIZE = 128;
-	char ibuf[SIZE];
-	int sock;
-	
-public:
-	BufferInputStream(int sock);
-	~BufferInputStream() {}
-	
-protected:
-	int overflow(int c) { return c; }
-	int sync() { return 0; }
-	int underflow()
-	{
-		if(gptr() < egptr())
-			return *gptr();
-
+class BufferInputStream : public basic_streambuf<char> {
+	private:
+		static const int SIZE = 128;
+		char ibuf[SIZE];
+		int sock;
+	public:
+		BufferInputStream(int sock);
+		~BufferInputStream() {}
+	protected:
+		int overflow(int c) { return c; }
+		int sync() { return 0; }
+		int underflow() {
+			if(gptr() < egptr())
+				return *gptr();
 #ifdef __WIN32__
-		int num = recv(sock, reinterpret_cast<char*>(ibuf), SIZE, 0);
+			int num = recv(sock, reinterpret_cast<char*>(ibuf), SIZE, 0);
 #else
-		int num = read(sock, reinterpret_cast<char*>(ibuf), SIZE);
+			int num = read(sock, reinterpret_cast<char*>(ibuf), SIZE);
 #endif
+			if(num <= 0)
+				return EOF;
 
-		if(num <= 0)
-			return EOF;
+			cout << "IN: " << num << endl;
 
-		cout << "IN: " << num << endl;
-
-		setg(ibuf, ibuf, ibuf + num);
-		return *gptr();
-	}
+			setg(ibuf, ibuf, ibuf + num);
+			return *gptr();
+		}
 };
 
 BufferInputStream::BufferInputStream(int sock) {
@@ -55,21 +53,18 @@ BufferInputStream::BufferInputStream(int sock) {
 	setg(ibuf, ibuf, ibuf);
 }
 
-void *Pull(void *threadid)
-{
+void *Pull(void *threadid) {
 	long tid = (long) threadid;
 	cout << "THREAD: " << tid << endl;
 	pthread_exit(NULL);
 }
 
-main()
-{
+main() {
 #ifdef __WIN32__
 	WORD versionWanted = MAKEWORD(2, 2);
 	WSADATA wsaData;
 	WSAStartup(versionWanted, &wsaData);
 #endif
-
 	pthread_t thread;
 	pthread_create(&thread, NULL, Pull, (void *) 0);
 
@@ -104,10 +99,18 @@ main()
 	istream stream(&buffer);
 		
 	string line;
+	boolean hex = false;
 	
 	for(int i = 0; i < 50; i++) {
 		getline(stream, line, '\r');
-		cout << line << flush;
+		cout << line << (hex ? "T" : "F") << flush;
+		if(!hex) {
+			char* message = new char[line.size() + 1];
+			copy(line.begin(), line.end(), message);
+			message[line.size()] = '\0';
+			input.push(message);
+		}
+		hex = !hex;
 	}
 	
 	//char c;
