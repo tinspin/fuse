@@ -47,6 +47,10 @@ Examples:
 
   - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source, try single-player <a href="http://fuse.rupy.se/cube.html">cube.html</a>)
   - java 3D VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a> (closed-source)
+  
+License:
+
+  - LGPL + You have to show the logo
     
 +-------------------+
 | <i>Work in progress!</i> |
