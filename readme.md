@@ -357,7 +357,10 @@ in sort of chronological order:
 +-----------------+
 
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
-                           o-> <b><i>item</i></b>|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;  // items appearing in room
+                           o-> <b><i>item</i></b>|&lt;salt&gt,&lt;name&gt;,&lt;many&gt;,&lt;spot&gt;,&lt;rota&gt;,&lt;velo&gt; // dynamic with oriantation
+                           o-> <b><i>item</i></b>|&lt;salt&gt,&lt;name&gt;,&lt;many&gt;,&lt;spot&gt;,&lt;rota&gt; // static with orientation
+                           o-> <b><i>item</i></b>|&lt;salt&gt,&lt;name&gt;,&lt;many&gt;,&lt;spot&gt;,&lt;velo&gt; // dynamic
+                           o-> <b><i>item</i></b>|&lt;salt&gt,&lt;name&gt;,&lt;many&gt;,&lt;spot&gt; // static
                            o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;   // to broadcast global messages
 
 +----------------+       
