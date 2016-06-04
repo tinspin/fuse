@@ -143,7 +143,7 @@ in sort of chronological order:
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
                            x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|ip]
                            x-> <b><i>ally</i></b>|&lt;user&gt;
-                           x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK
+                           x-> <b><i>away</b></i>|&lt;user&gt;                  // away from keyboard
                            o-> <b><i>name</b></i>|&lt;user&gt;|&lt;name&gt;           // if &lt;id&gt; used and name set
                            o-> <b><i>nick</b></i>|&lt;user&gt;|&lt;nick&gt;           // if &lt;id&gt; used and nick set
                             -> game|fail|name invalid       // [a-zA-Z]+
@@ -175,7 +175,7 @@ in sort of chronological order:
  <b><i>mail</i></b>|&lt;salt&gt;|&lt;mail&gt;         -> mail|done
                             -> mail|fail|mail invalid       // [a-zA-Z0-9.@\\-\\+]+
 
-                            // AFK
+                            // away from keyboard
  <b><i>away</i></b>|&lt;salt&gt;                -> away|done
                            x-> <b><i>away</b></i>|&lt;user&gt;
                            o-> <b><i>hold</b></i>                         // pause
@@ -273,7 +273,7 @@ in sort of chronological order:
  <b><i>exit</i></b>|&lt;salt&gt;                -> exit|done
                            x-> <b><i>here</i></b>|&lt;tree&gt;|&lt;user&gt;[|ip]      // stem, in lobby
                            x-> <b><i>ally</i></b>|&lt;user&gt;
-                           x-> <b><i>away</b></i>|&lt;user&gt;                  // AFK, in lobby if creator exit
+                           x-> <b><i>away</b></i>|&lt;user&gt;                  // away from keyboard, if creator exit
                            x-> <b><i>gone</i></b>|&lt;tree&gt;|&lt;user&gt;|&lt;room&gt;    // leaf, in old room
                            x-> <b><i>drop</i></b>|&lt;user&gt;                  // in lobby if creator leaves
                            x-> <b><i>stop</i></b>|&lt;user&gt;                  // in old room if creator leaves
