@@ -42,6 +42,10 @@ Platform:
   - 100% read uptime on persistence with custom 
     async distributed JSON file system database 
     that uses ext4 indexing
+  - peak garbage collect:
+    - 70 ms (Raspberry Pi 1)
+    - 14 ms (Raspberry Pi 2)
+    - 7 ms (AWS Micro Instance)
 
 Examples:
 
