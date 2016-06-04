@@ -1,12 +1,13 @@
 <pre>
 <img width="140" height="80" src="https://rawgit.com/tinspin/fuse/master/res/fuse.svg">
 
-+---------------------------+
-| <i>The multiplayer solution.</i> |
-+---------------------------+
++--------------------------+
+| <i>the multiplayer solution</i> |
++--------------------------+
 
-Support:
+support:
 
+  - c++ (coming soon)
   - unity
     - plugin is only one file of C# code: <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">Fuse.cs</a>, <a href="https://dl.dropboxusercontent.com/u/1352420/Fuse.zip">Minimalist Unity Project</a>
   - javascript XHR/XDR, 99.9% of browsers, only IE7 missing
@@ -18,7 +19,7 @@ Support:
     - from two player turn-based
     - to real-time action MMO
 
-Protocol:
+protocol:
 
   - uses |;, separation:
     - '|' protocol
@@ -32,7 +33,7 @@ Protocol:
   - multicast UDP on cluster for load distribution
     - concurrency ~25.000 mess./sec. on 4x raspberry pi 2
 
-Platform:
+platform:
 
   - low internal latency: <a href="http://fuse.rupy.se/data">stat</a>
   - multithreaded NIO with queue, linear perf.:
@@ -47,18 +48,18 @@ Platform:
     - 14 ms (raspberry pi 2)
     - 7 ms (aws micro instance)
 
-Examples:
+examples:
 
   - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source, try single-player <a href="http://fuse.rupy.se/cube.html">cube.html</a>)
   - java 3D VR MMO space shooter: <a href="http://aeonalpha.com">aeon</a> (closed-source)
   
-License:
+license:
 
-  - LGPL + You have to show the logo
+  - lgpl + you have to show the logo
     
-+-------------------+
-| <i>Work in progress!</i> |
-+-------------------+
++------------------+
+| <i>work in progress</i> |
++------------------+
 
 o-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) including self
 x-> = async. broadcast to Read() (C#) or read(data) (XHR/XDR) excluding self
@@ -74,14 +75,14 @@ i-> = async. send to one user for unique feedback.
 &lt;spot&gt; = &lt;x&gt;,&lt;y&gt;,&lt;z&gt;
 &lt;tree&gt; for <b><i>here</i></b>/<b><i>gone</i></b>/<b><i>chat</i></b>:
 
-The server is the <b><i>root</i></b>
-The game is a <b><i>stem</i></b> and also a room.
-The room is a <b><i>leaf</i></b>
+server is the <b><i>root</i></b>
+game is a <b><i>stem</i></b> and also a room.
+room is a <b><i>leaf</i></b>
 
-In sort of chronological order:
+in sort of chronological order:
 
 +-----------------------------------+
-| <i>Rule</i>                      -> <i>Echo</i> |
+| <i>rule</i>                      -> <i>echo</i> |
 +-----------------------------------+
 
                             // to get latency
@@ -129,15 +130,15 @@ In sort of chronological order:
 
  <b><i>\/</i></b> anything below          -> main|fail|not authorized
 
-+-------------------------------+
-| <i>Here you have to call pull()!</i> |
-+-------------------------------+
++------------------------------+
+| <i>here you have to call pull()</i> |
++------------------------------+
 
-<i>You have to wait until pull completes and you receive the first <b>noop</b> before you continue.</i>
+<i>you have to wait until pull completes and you receive the first <b>noop</b> before you continue</i>
 
-+------------------------------------------------------+
-| <i>Below this line &lt;name&gt;/&lt;id&gt; is replaced with &lt;user&gt;</i>. |
-+------------------------------------------------------+
++-----------------------------------------------------+
+| <i>below this line &lt;name&gt;/&lt;id&gt; is replaced with &lt;user&gt;</i> |
++-----------------------------------------------------+
 
                             // join a game
  <b><i>game</i></b>|&lt;salt&gt;|&lt;name&gt;         -> game|done
@@ -320,9 +321,9 @@ In sort of chronological order:
                            o-> <b><i>over</b></i>|&lt;user&gt;[|data]           // the game is over
                             -> over|fail|not playing
 
-+------------------------------------------------------------+
-| <i>These have to be sent in a separate thread from rendering.</i> |
-+------------------------------------------------------------+
++-----------------------------------------------------------+
+| <i>these have to be sent in a separate thread from rendering</i> |
++-----------------------------------------------------------+
 
                             // chat in any room
                             // &lt;tree&gt; are root, stem or leaf
@@ -353,17 +354,17 @@ In sort of chronological order:
                             
  <b><i>/\</b></i> type not found          -> main|fail|type not found
 
-+------------------+       
-| <i>Broadcast rules.</i> |
-+------------------+
++-----------------+       
+| <i>broadcast rules</i> |
++-----------------+
 
                            o-> <b><i>noop</i></b>                         // no operation; to keep socket alive
                            o-> <b><i>item</i></b>|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;  // items appearing in room
                            o-> <b><i>warn</i></b>|boot/info/none|&lt;text&gt;   // to broadcast global messages
 
-+-----------------+       
-| <i>Sketched rules.</i> |
-+-----------------+
++----------------+       
+| <i>sketched rules</i> |
++----------------+
 
 // peer protocol
 
@@ -407,7 +408,7 @@ In sort of chronological order:
  
 // credits
 
- Pilot Developer: Jonas Oien
- Feedback: Søren Tramm
+ pilot developer: Jonas Oien
+ feedback: Søren Tramm
            Nicolai Farver
 </pre>
