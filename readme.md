@@ -286,7 +286,7 @@ In sort of chronological order:
                             // save data
  <b><i>save</i></b>|&lt;salt&gt;|&lt;name&gt;|{…}[|type] -> save|done
                             -> save|fail|name too short // min 3
-                            -> save|fail|name too long // max 12
+                            -> save|fail|name too long // max 64
                             -> save|fail|unknown problem
 
                             // load data

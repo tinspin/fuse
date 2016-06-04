@@ -648,7 +648,7 @@ public class Router implements Node {
 				throw event;
 			}
 
-			return "list|fail|wrong type";
+			return "list|fail|wrong type (" + list + ")";
 		}
 		else if(split[0].equals("join")) {
 			Room room = (Room) user.game.rooms.get(split[2]);
@@ -950,7 +950,7 @@ public class Router implements Node {
 				return split[0] + "|fail|name too short";
 			}
 
-			if(split[2].length() > 12) {
+			if(split[2].length() > 64) {
 				return split[0] + "|fail|name too long";
 			}
 
@@ -1331,7 +1331,7 @@ public class Router implements Node {
 		}
 
 		String list(String type, JSONArray list) throws Exception {
-			StringBuilder builder = new StringBuilder("list|done|data|" + type + "|");
+			StringBuilder builder = new StringBuilder("list|done|user|" + type + "|");
 
 			for(int i = 0; i < list.length(); i++) {
 				JSONObject json = list.getJSONObject(i);
@@ -1575,21 +1575,15 @@ public class Router implements Node {
 
 							if(user.ally(from))
 								node.push(user.salt, "ally|" + from.name, false);
-
-							//wakeup = true;
 						}
 						else if(data.startsWith("gone") && from.room.user != null) {
 							node.push(user.salt, data + "|" + from.room.user.name, false);
-
-							//wakeup = true;
 						}
 						else if(data.startsWith("drop")) {
 							node.push(user.salt, data, false);
 						}
 						else {
 							node.push(user.salt, data, true);
-
-							//wakeup = true;
 						}
 					}
 
@@ -1601,14 +1595,6 @@ public class Router implements Node {
 				}
 				catch(Exception e) {
 					e.printStackTrace(); // user timeout?
-				}
-
-				if(wakeup) {
-					int wake = node.wakeup(user.salt);
-
-					if(wake != 0)
-						if(debug)
-							System.err.println("user wakeup " + wake);
 				}
 			}
 
