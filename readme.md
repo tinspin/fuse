@@ -62,7 +62,7 @@ license:
 
 o-> = async. broadcast to read() (c#) or read(data) (javascript) including self
 x-> = async. broadcast to read() (c#) or read(data) (javascript) excluding self
-i-> = async. send to one user for unique feedback.
+i-> = async. send to one user for unique feedback
  -> = sync. return on push(data)
 
 <…> = mandatory
