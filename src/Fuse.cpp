@@ -1,4 +1,5 @@
 #include <iostream>
+#include <streambuf>
 #include <stdio.h>
 #include <pthread.h>
 #ifdef __WIN32__
@@ -8,14 +9,56 @@
 #endif
 
 /*
- * TODO: socket stream buffer
+ * This uses two threads, one for each socket.
+ * The buffer stream is used for the chunked incoming data.
  */
+
+class BufferInputStream : public std::basic_streambuf<char>
+{
+private:
+	static const int SIZE = 128;
+	char ibuf[SIZE];
+	int sock;
+	
+public:
+	BufferInputStream(int sock);
+	~BufferInputStream() {}
+	
+protected:
+	int overflow(int_type c)
+	{
+		return c;
+	}
+
+	int sync()
+	{
+		return 0;
+	}
+
+	int underflow()
+	{
+		if(gptr() < egptr())
+			return *gptr();
+
+		int num;
+		if((num = recv(sock, reinterpret_cast<char*>(ibuf), SIZE, 0)) <= 0)
+			return EOF;
+
+		setg(ibuf, ibuf, ibuf + num);
+		return *gptr();
+	}
+};
+
+BufferInputStream::BufferInputStream(int sock) {
+	this -> sock = sock;
+	setg(ibuf, ibuf, ibuf);
+}
 
 void *PrintHello(void *threadid)
 {
-   long tid = (long) threadid;
-   std::cout << "Hello World! Thread ID, " << tid << std::endl;
-   pthread_exit(NULL);
+	long tid = (long) threadid;
+	std::cout << "Hello World! Thread ID, " << tid << std::endl;
+	pthread_exit(NULL);
 }
 
 main()
@@ -32,39 +75,48 @@ main()
 	char data[100] = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n";
 
 	struct sockaddr_in address;
-	int socket_ptr = socket(AF_INET, SOCK_STREAM, 0);
+	int sock = socket(AF_INET, SOCK_STREAM, 0);
 
 	address.sin_family = AF_INET;
 	address.sin_port = htons(8000);
 	address.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-	connect(socket_ptr, (struct sockaddr *) &address, sizeof (address));
+	connect(sock, (struct sockaddr *) &address, sizeof (address));
 	
 	int result = 0;
 	
 #ifdef __WIN32__
-	result = send(socket_ptr, data, strlen(data), 0);
+	result = send(sock, data, strlen(data), 0);
 #else
-	result = write(socket_ptr, data, strlen(data));
+	result = write(sock, data, strlen(data));
 #endif
 
 	printf("out: %d\n", result);
-
+	
+	BufferInputStream input(sock);
+	
+	std::string line;
+	std::istream stream(&input);
+	std::getline(stream, line);
+	
+	std::cout << line << std::endl;
+	//printf("in: %d\n", line);
+/*
 	char buffer[1024];
 	
 #ifdef __WIN32__
-	result = recv(socket_ptr, buffer, 1024, 0);
+	result = recv(sock, buffer, 1024, 0);
 #else
-	result = read(socket_ptr, buffer, 1024);
+	result = read(sock, buffer, 1024);
 #endif
 	
 	printf("in: %d\n", result);
-	
+*/
 #ifdef __WIN32__
-	closesocket(socket_ptr);
+	closesocket(sock);
 	WSACleanup();
 #else
-	close(socket_ptr);
+	close(sock);
 #endif
 	
 	std::cout << "Hello World!";
