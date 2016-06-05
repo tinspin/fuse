@@ -120,10 +120,9 @@ main() {
 	
 	int result = 0;
 #ifdef __WIN32__
-	//result = send(sock, data, strlen(data), 0);
 	result = send(sock, data.c_str(), data.length(), 0);
 #else
-	result = write(sock, data, strlen(data));
+	result = write(sock, data.c_str(), data.length());
 #endif
 	cout << "OUT: " << result << endl;
 	
