@@ -4,7 +4,6 @@
 #include <iostream>
 #include <streambuf>
 #include <pthread.h>
-#include <stdio.h>
 #ifdef __WIN32__
 #	include <winsock2.h>
 #else
@@ -87,6 +86,21 @@ void *Pull(void *threadid) {
 	pthread_exit(NULL);
 }
 
+int Connect(string ip) {
+	int flag = 1;
+	int sock = socket(AF_INET, SOCK_STREAM, 0);
+	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*) &flag, sizeof(int));
+	
+	struct sockaddr_in address;
+	address.sin_family = AF_INET;
+	address.sin_port = htons(80);
+	address.sin_addr.s_addr = inet_addr(ip.c_str());
+
+	cout << ip << endl;
+	connect(sock, (struct sockaddr*) &address, sizeof (address));
+	return sock;
+}
+
 main() {
 #ifdef __WIN32__
 	WORD versionWanted = MAKEWORD(2, 2);
@@ -96,36 +110,26 @@ main() {
 	pthread_t thread;
 	pthread_create(&thread, NULL, Pull, (void *) 0);
 
-	char data[100] = "GET /pull HTTP/1.1\r\nHost: bitcoinbankbook.com\r\n\r\n";
+	string name = "bitcoinbankbook.com";
+	string data = "GET /pull HTTP/1.1\r\nHost: " + name + "\r\n\r\n";
 
-	struct hostent *host = gethostbyname("bitcoinbankbook.com");
-	struct sockaddr_in address;
-	
-	int flag = 1;
-	int sock = socket(AF_INET, SOCK_STREAM, 0);
-	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*) &flag, sizeof(int));
-	
-	address.sin_family = AF_INET;
-	address.sin_port = htons(80);
-	address.sin_addr.s_addr = inet_addr(inet_ntoa(*(struct in_addr*)(host -> h_addr_list[0]))); // inet_addr("127.0.0.1");
+	struct hostent *host = gethostbyname(name.c_str());
+	string ip(inet_ntoa(*(struct in_addr*)(host -> h_addr_list[0])));
 
-	cout << inet_ntoa(*(struct in_addr*)(host -> h_addr_list[0])) << endl;
-
-	connect(sock, (struct sockaddr*) &address, sizeof (address));
+	int sock = Connect(ip);
 	
 	int result = 0;
-	
 #ifdef __WIN32__
-	result = send(sock, data, strlen(data), 0);
+	//result = send(sock, data, strlen(data), 0);
+	result = send(sock, data.c_str(), data.length(), 0);
 #else
 	result = write(sock, data, strlen(data));
 #endif
-
-	printf("OUT: %d\n", result);
+	cout << "OUT: " << result << endl;
 	
 	BufferInputStream buffer(sock);
 	istream stream(&buffer);
-		
+	
 	string line;
 	boolean hex = false;
 	
@@ -143,18 +147,13 @@ main() {
 	
 	//char c;
 	//stream.get(c);
-	//printf("in: %d\n", c);
-	//printf("in: %d\n", 'H');
 /*
 	char buffer[1024];
-	
 #ifdef __WIN32__
 	result = recv(sock, buffer, 1024, 0);
 #else
 	result = read(sock, buffer, 1024);
 #endif
-	
-	printf("in: %d\n", result);
 */
 #ifdef __WIN32__
 	closesocket(sock);
@@ -162,6 +161,5 @@ main() {
 #else
 	close(sock);
 #endif
-	
 	return 0;
 }
