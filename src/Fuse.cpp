@@ -1,6 +1,7 @@
 #include <queue>
 #include <mutex>
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <streambuf>
 #include <pthread.h>
@@ -143,8 +144,12 @@ main() {
 		getline(stream, line, '\r');
 		cout << i << line << (hex ? "T" : "F") << flush;
 		if(!hex) {
-			string message = line;
-			input.enqueue(message);
+			string message;
+			stringstream ss(line);
+			while(getline(ss, message, '\n')) {
+				if(message.length() > 0)
+					input.enqueue(message);
+			}
 		}
 		hex = !hex;
 	}
