@@ -1,9 +1,10 @@
+#include <queue>
+#include <mutex>
+#include <string>
 #include <iostream>
 #include <streambuf>
-#include <queue>
-#include <string>
-#include <stdio.h>
 #include <pthread.h>
+#include <stdio.h>
 #ifdef __WIN32__
 #	include <winsock2.h>
 #else
@@ -12,12 +13,37 @@
 
 using namespace std;
 
-queue<char*> input, output;
-
 /*
  * This uses two threads, one for each socket/queue.
  * The buffer stream is used for the chunked incoming data.
  */
+
+class SafeQueue {
+	private:
+		queue<char*> q;
+		pthread_mutex_t m;
+	public:
+		SafeQueue();
+		~SafeQueue(void) {}
+		void enqueue(char* c) {
+			pthread_mutex_lock(&m);
+			q.push(c);
+			pthread_mutex_unlock(&m);
+		}
+		char* dequeue() {
+			pthread_mutex_lock(&m);
+			char* c = q.front();
+			q.pop();
+			return c;
+			pthread_mutex_unlock(&m);
+  		}
+};
+
+SafeQueue::SafeQueue() {
+	pthread_mutex_init(&m, NULL);
+}
+
+SafeQueue input, output;
 
 class BufferInputStream : public basic_streambuf<char> {
 	private:
@@ -108,7 +134,7 @@ main() {
 			char* message = new char[line.size() + 1];
 			copy(line.begin(), line.end(), message);
 			message[line.size()] = '\0';
-			input.push(message);
+			input.enqueue(message);
 		}
 		hex = !hex;
 	}
