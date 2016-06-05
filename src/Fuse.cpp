@@ -24,7 +24,9 @@ class SafeQueue {
 		pthread_mutex_t m;
 	public:
 		SafeQueue();
-		~SafeQueue(void) {}
+		~SafeQueue() {
+			pthread_mutex_destroy(&m);
+		}
 		void enqueue(char* c) {
 			pthread_mutex_lock(&m);
 			q.push(c);
@@ -127,9 +129,9 @@ main() {
 	string line;
 	boolean hex = false;
 	
-	for(int i = 0; i < 50; i++) {
+	for(int i = 0; i < 11; i++) {
 		getline(stream, line, '\r');
-		cout << line << (hex ? "T" : "F") << flush;
+		cout << i << line << (hex ? "T" : "F") << flush;
 		if(!hex) {
 			char* message = new char[line.size() + 1];
 			copy(line.begin(), line.end(), message);
