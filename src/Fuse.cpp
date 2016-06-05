@@ -5,37 +5,37 @@
 #include <streambuf>
 #include <pthread.h>
 #ifdef __WIN32__
-#	include <winsock2.h>
+#include <winsock2.h>
 #else
-#	include <sys/socket.h>
+#include <sys/socket.h>
 #endif
 
 using namespace std;
 
-/*
- * This uses two threads, one for each socket/queue.
- * The buffer stream is used for the chunked incoming data.
+/* TODO: Conditional async push.
+ * TODO: Windows threads.
  */
 
 class SafeQueue {
 	private:
-		queue<char*> q;
+		queue<string> q;
+		pthread_cond_t c;
 		pthread_mutex_t m;
 	public:
 		SafeQueue();
 		~SafeQueue() {
 			pthread_mutex_destroy(&m);
 		}
-		void enqueue(char* c) {
+		void enqueue(string s) {
 			pthread_mutex_lock(&m);
-			q.push(c);
+			q.push(s);
 			pthread_mutex_unlock(&m);
 		}
-		char* dequeue() {
+		string dequeue() {
 			pthread_mutex_lock(&m);
-			char* c = q.front();
+			string s = q.front();
 			q.pop();
-			return c;
+			return s;
 			pthread_mutex_unlock(&m);
   		}
 };
@@ -60,11 +60,11 @@ class BufferInputStream : public basic_streambuf<char> {
 		int underflow() {
 			if(gptr() < egptr())
 				return *gptr();
-#ifdef __WIN32__
+			#ifdef __WIN32__
 			int num = recv(sock, reinterpret_cast<char*>(ibuf), SIZE, 0);
-#else
+			#else
 			int num = read(sock, reinterpret_cast<char*>(ibuf), SIZE);
-#endif
+			#endif
 			if(num <= 0)
 				return EOF;
 
@@ -82,7 +82,14 @@ BufferInputStream::BufferInputStream(int sock) {
 
 void *Pull(void *threadid) {
 	long tid = (long) threadid;
-	cout << "THREAD: " << tid << endl;
+	for(int i = 0; i < 15; i++) {
+		cout << "THREAD: " << tid << endl;
+		#ifdef __WIN32__
+		Sleep(1000);
+		#else
+		sleep(1000);
+		#endif
+	}
 	pthread_exit(NULL);
 }
 
@@ -102,11 +109,11 @@ int Connect(string ip) {
 }
 
 main() {
-#ifdef __WIN32__
+	#ifdef __WIN32__
 	WORD versionWanted = MAKEWORD(2, 2);
 	WSADATA wsaData;
 	WSAStartup(versionWanted, &wsaData);
-#endif
+	#endif
 	pthread_t thread;
 	pthread_create(&thread, NULL, Pull, (void *) 0);
 
@@ -119,11 +126,11 @@ main() {
 	int sock = Connect(ip);
 	
 	int result = 0;
-#ifdef __WIN32__
+	#ifdef __WIN32__
 	result = send(sock, data.c_str(), data.length(), 0);
-#else
+	#else
 	result = write(sock, data.c_str(), data.length());
-#endif
+	#endif
 	cout << "OUT: " << result << endl;
 	
 	BufferInputStream buffer(sock);
@@ -136,9 +143,7 @@ main() {
 		getline(stream, line, '\r');
 		cout << i << line << (hex ? "T" : "F") << flush;
 		if(!hex) {
-			char* message = new char[line.size() + 1];
-			copy(line.begin(), line.end(), message);
-			message[line.size()] = '\0';
+			string message = line;
 			input.enqueue(message);
 		}
 		hex = !hex;
@@ -148,17 +153,17 @@ main() {
 	//stream.get(c);
 /*
 	char buffer[1024];
-#ifdef __WIN32__
+	#ifdef __WIN32__
 	result = recv(sock, buffer, 1024, 0);
-#else
+	#else
 	result = read(sock, buffer, 1024);
-#endif
+	#endif
 */
-#ifdef __WIN32__
+	#ifdef __WIN32__
 	closesocket(sock);
 	WSACleanup();
-#else
+	#else
 	close(sock);
-#endif
+	#endif
 	return 0;
 }
