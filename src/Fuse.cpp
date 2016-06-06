@@ -26,6 +26,7 @@ class SafeQueue {
 		SafeQueue();
 		~SafeQueue() {
 			pthread_mutex_destroy(&m);
+			pthread_cond_destroy(&c);
 		}
 		void enqueue(string s) {
 			pthread_mutex_lock(&m);
@@ -43,6 +44,7 @@ class SafeQueue {
 
 SafeQueue::SafeQueue() {
 	pthread_mutex_init(&m, NULL);
+	pthread_cond_init(&c, NULL);
 }
 
 SafeQueue input, output;
