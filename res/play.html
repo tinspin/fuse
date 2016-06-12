@@ -34,6 +34,7 @@ public class play extends Service {
 <meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <style>
   a:link, a:hover, a:active, a:visited { color: [[ blue ]]; font-style: italic; }
+  a.grey:link, a.grey:hover, a.grey:active, a.grey:visited { color: #999999; font-style: italic; }
   img { display: block; }
   div { font-family: monospace; }
   input { font-family: monospace; box-sizing: border-box; }
@@ -596,6 +597,7 @@ public class play extends Service {
     <td><a href="javascript:user();">register</a></td></tr>
 <tr><td></td><td><font color="[[ orange ]]"><i>*optional</i></font></td></tr>
 <tr><td></td><td><font color="#999999"><i>host: [[ Root.local() ]]</i></font></td></tr>
+<tr><td></td><td><a class="grey" href="fuse.html">about</a></td></tr>
 </table>
 <table>
 [[	Iterator it = Router.score.iterator();
