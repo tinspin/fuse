@@ -340,7 +340,7 @@ in sort of chronological order:
                             // motion for 3D MMO games with dynamic here/gone
  <b><i>move</i></b>|&lt;salt&gt;|&lt;data&gt;         -> move|done
                            x-> <b><i>move</i></b>|&lt;user&gt;|&lt;x&gt;,&lt;y&gt;,&lt;z&gt;;&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;;&lt;action&gt;(;&lt;speed&gt;;…)
-                            //             position   |rotation       |action
+                            //             position   |rotation       |key/button-down/up
 
                             // destination to interpolate to
 *<b><i>goal</i></b>|&lt;salt&gt;|&lt;spot&gt;         -> goal|done
