@@ -247,25 +247,19 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	public string[] Read() {
 		if(!connected)
 			return null;
-
-		int length = 0;
-
-		lock(input) {
-			length = input.Count;
-		}
 		
-		if(length > 0) {
+		if(input.Count > 0) {
 			string[] messages = new string[input.Count];
 
-			for(int i = 0; i < messages.Length; i++) {
-				lock(input) {
+			lock(input) {	
+				for(int i = 0; i < messages.Length; i++) {
 					messages[i] = input.Dequeue();
 				}
 			}
-
+			
 			return messages;
 		}
-
+		
 		return null;
 	}
 
