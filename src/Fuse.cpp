@@ -4,10 +4,11 @@
 #include <sstream>
 #include <iostream>
 #include <streambuf>
-#include <pthread.h>
 #ifdef __WIN32__
+#include <windows.h>
 #include <winsock2.h>
 #else
+#include <pthread.h>
 #include <sys/socket.h>
 #endif
 
@@ -20,32 +21,59 @@ using namespace std;
 class SafeQueue {
 	private:
 		queue<string> q;
-		pthread_cond_t c;
+		#ifdef __WIN32__
+		CRITICAL_SECTION m;
+		#else
 		pthread_mutex_t m;
+		#endif
 	public:
-		SafeQueue();
+		SafeQueue() {
+			#ifdef __WIN32__
+			InitializeCriticalSection(&m);
+			#else
+			pthread_mutex_init(&m, NULL);
+			#endif
+		}
 		~SafeQueue() {
+			#ifdef __WIN32__
+			DeleteCriticalSection(&m);
+			#else
 			pthread_mutex_destroy(&m);
-			pthread_cond_destroy(&c);
+			#endif
 		}
 		void enqueue(string s) {
+			#ifdef __WIN32__
+			WaitForSingleObject(&m,INFINITE);
+			#else
 			pthread_mutex_lock(&m);
+			#endif
+			
 			q.push(s);
+			
+			#ifdef __WIN32__
+			ReleaseMutex(&m);
+			#else
 			pthread_mutex_unlock(&m);
+			#endif
 		}
 		string dequeue() {
+			#ifdef __WIN32__
+			WaitForSingleObject(&m,INFINITE);
+			#else
 			pthread_mutex_lock(&m);
+			#endif
+			
 			string s = q.front();
 			q.pop();
 			return s;
+			
+			#ifdef __WIN32__
+			ReleaseMutex(&m);
+			#else
 			pthread_mutex_unlock(&m);
+			#endif
   		}
 };
-
-SafeQueue::SafeQueue() {
-	pthread_mutex_init(&m, NULL);
-	pthread_cond_init(&c, NULL);
-}
 
 SafeQueue input, output;
 
@@ -55,7 +83,10 @@ class BufferInputStream : public basic_streambuf<char> {
 		char ibuf[SIZE];
 		int sock;
 	public:
-		BufferInputStream(int sock);
+		BufferInputStream(int sock){
+			this -> sock = sock;
+			setg(ibuf, ibuf, ibuf);
+		}
 		~BufferInputStream() {}
 	protected:
 		int overflow(int c) { return c; }
@@ -78,23 +109,23 @@ class BufferInputStream : public basic_streambuf<char> {
 		}
 };
 
-BufferInputStream::BufferInputStream(int sock) {
-	this -> sock = sock;
-	setg(ibuf, ibuf, ibuf);
-}
-
-void *Pull(void *threadid) {
-	long tid = (long) threadid;
+#ifdef __WIN32__
+DWORD WINAPI Pull(void* data) {
 	for(int i = 0; i < 15; i++) {
-		cout << "THREAD: " << tid << endl;
-		#ifdef __WIN32__
+		cout << "THREAD: " << data << endl;
 		Sleep(1000);
-		#else
+	}
+	return 0;
+}
+#else
+void *Pull(void *data) {
+	for(int i = 0; i < 15; i++) {
+		cout << "THREAD: " << data << endl;
 		sleep(1000);
-		#endif
 	}
 	pthread_exit(NULL);
 }
+#endif
 
 int Connect(string ip) {
 	int flag = 1;
@@ -117,9 +148,14 @@ main() {
 	WSADATA wsaData;
 	WSAStartup(versionWanted, &wsaData);
 	#endif
+	
+	#ifdef __WIN32__
+	HANDLE thread = CreateThread(NULL, 0, Pull, NULL, 0, NULL);
+	#else
 	pthread_t thread;
 	pthread_create(&thread, NULL, Pull, (void *) 0);
-
+	#endif
+	
 	string name = "bitcoinbankbook.com";
 	string data = "GET /pull HTTP/1.1\r\nHost: " + name + "\r\n\r\n";
 
