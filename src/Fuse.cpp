@@ -83,7 +83,7 @@ class BufferInputStream : public basic_streambuf<char> {
 		char ibuf[SIZE];
 		int sock;
 	public:
-		BufferInputStream(int sock){
+		BufferInputStream(int sock) {
 			this -> sock = sock;
 			setg(ibuf, ibuf, ibuf);
 		}
