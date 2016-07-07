@@ -255,10 +255,9 @@ public class Server extends Service implements Node, Runnable {
 
 				if(queue != null && !queue.isEmpty()) {
 					String data = (String) queue.poll();
+					String accept = queue.event.query().header("accept");
 					
 					while(data != null) {
-						String accept = queue.event.query().header("accept");
-						
 						if(!data.equals("noop") && !data.startsWith("move"))
 							if(Router.debug)
 								System.err.println(queue.salt + " " + data);
