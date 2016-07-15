@@ -1,5 +1,4 @@
 #include <queue>
-#include <mutex>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -43,7 +42,7 @@ class SafeQueue {
 		}
 		void enqueue(string s) {
 			#ifdef __WIN32__
-			WaitForSingleObject(&m,INFINITE);
+			WaitForSingleObject(&m, INFINITE);
 			#else
 			pthread_mutex_lock(&m);
 			#endif
@@ -58,7 +57,7 @@ class SafeQueue {
 		}
 		string dequeue() {
 			#ifdef __WIN32__
-			WaitForSingleObject(&m,INFINITE);
+			WaitForSingleObject(&m, INFINITE);
 			#else
 			pthread_mutex_lock(&m);
 			#endif

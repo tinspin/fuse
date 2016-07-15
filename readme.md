@@ -343,8 +343,8 @@ in sort of chronological order:
                             //             position   |rotation       |key/button-down/up
 
                             // destination to interpolate to
-*<b><i>goal</i></b>|&lt;salt&gt;|&lt;spot&gt;         -> goal|done
-                           x-> <b><i>goal</i></b>|&lt;user&gt;|&lt;spot&gt;
+*<b><i>path</i></b>|&lt;salt&gt;|&lt;spot&gt;         -> path|done
+                           x-> <b><i>path</i></b>|&lt;user&gt;|&lt;spot&gt;
                             
                             // object to follow/attack
 *<b><i>hunt</i></b>|&lt;salt&gt;|&lt;salt&gt;|&lt;kill&gt;  -> hunt|done
