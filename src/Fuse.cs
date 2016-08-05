@@ -103,7 +103,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 		pull.Send(Encoding.UTF8.GetBytes(text));
 
-		Thread thread = new Thread(PullSync);
+		Thread thread = new Thread(PullAsync);
 		thread.Start();
 
 		connected = true;
@@ -284,7 +284,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		}
 	}
 
-	private void PullSync() {
+	private void PullAsync() {
 		StringBuilder builder = new StringBuilder();
 		Boolean append = false, length = true;
 

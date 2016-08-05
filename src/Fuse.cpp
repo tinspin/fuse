@@ -13,53 +13,55 @@
 
 using namespace std;
 
-/* TODO: Conditional async push.
- * TODO: Windows threads.
+/* TODO: Push loop.
  */
 
 class SafeQueue {
 	private:
 		queue<string> q;
 		#ifdef __WIN32__
-		CRITICAL_SECTION m;
+		CRITICAL_SECTION l;
 		#else
-		pthread_mutex_t m;
+		pthread_mutex_t l;
 		#endif
 	public:
 		SafeQueue() {
 			#ifdef __WIN32__
-			InitializeCriticalSection(&m);
+			InitializeCriticalSection(&l);
 			#else
-			pthread_mutex_init(&m, NULL);
+			pthread_mutex_init(&l, NULL);
 			#endif
 		}
 		~SafeQueue() {
 			#ifdef __WIN32__
-			DeleteCriticalSection(&m);
+			DeleteCriticalSection(&l);
 			#else
-			pthread_mutex_destroy(&m);
+			pthread_mutex_destroy(&l);
 			#endif
 		}
 		void enqueue(string s) {
 			#ifdef __WIN32__
-			WaitForSingleObject(&m, INFINITE);
+			EnterCriticalSection(&l);
 			#else
-			pthread_mutex_lock(&m);
+			pthread_mutex_lock(&l);
 			#endif
 			
 			q.push(s);
 			
 			#ifdef __WIN32__
-			ReleaseMutex(&m);
+			LeaveCriticalSection(&l);
 			#else
-			pthread_mutex_unlock(&m);
+			pthread_mutex_unlock(&l);
 			#endif
+		}
+		boolean empty() {
+			return q.empty();
 		}
 		string dequeue() {
 			#ifdef __WIN32__
-			WaitForSingleObject(&m, INFINITE);
+			EnterCriticalSection(&l);
 			#else
-			pthread_mutex_lock(&m);
+			pthread_mutex_lock(&l);
 			#endif
 			
 			string s = q.front();
@@ -67,14 +69,12 @@ class SafeQueue {
 			return s;
 			
 			#ifdef __WIN32__
-			ReleaseMutex(&m);
+			LeaveCriticalSection(&l);
 			#else
-			pthread_mutex_unlock(&m);
+			pthread_mutex_unlock(&l);
 			#endif
-  		}
+		}
 };
-
-SafeQueue input, output;
 
 class BufferInputStream : public basic_streambuf<char> {
 	private:
@@ -99,7 +99,7 @@ class BufferInputStream : public basic_streambuf<char> {
 			int num = read(sock, reinterpret_cast<char*>(ibuf), SIZE);
 			#endif
 			if(num <= 0)
-				return EOF;
+				return -1;
 
 			cout << "IN: " << num << endl;
 
@@ -109,22 +109,17 @@ class BufferInputStream : public basic_streambuf<char> {
 };
 
 #ifdef __WIN32__
-DWORD WINAPI Pull(void* data) {
-	for(int i = 0; i < 15; i++) {
-		cout << "THREAD: " << data << endl;
-		Sleep(1000);
-	}
-	return 0;
-}
+CRITICAL_SECTION lock;
+HANDLE sema = CreateSemaphore(NULL, 0, 1, NULL);
 #else
-void *Pull(void *data) {
-	for(int i = 0; i < 15; i++) {
-		cout << "THREAD: " << data << endl;
-		sleep(1000);
-	}
-	pthread_exit(NULL);
-}
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 #endif
+
+SafeQueue input, output;
+string host, ip;
+int push, pull; // sockets
+boolean alive = true;
 
 int Connect(string ip) {
 	int flag = 1;
@@ -141,37 +136,38 @@ int Connect(string ip) {
 	return sock;
 }
 
-main() {
-	#ifdef __WIN32__
-	WORD versionWanted = MAKEWORD(2, 2);
-	WSADATA wsaData;
-	WSAStartup(versionWanted, &wsaData);
-	#endif
-	
-	#ifdef __WIN32__
-	HANDLE thread = CreateThread(NULL, 0, Pull, NULL, 0, NULL);
-	#else
-	pthread_t thread;
-	pthread_create(&thread, NULL, Pull, (void *) 0);
-	#endif
-	
-	string name = "bitcoinbankbook.com";
-	string data = "GET /pull HTTP/1.1\r\nHost: " + name + "\r\n\r\n";
-
-	struct hostent *host = gethostbyname(name.c_str());
-	string ip(inet_ntoa(*(struct in_addr*)(host -> h_addr_list[0])));
-
-	int sock = Connect(ip);
+void Push() {
+	string data = "GET / HTTP/1.1\r\nHost: " + host + "\r\n\r\n";
 	
 	int result = 0;
 	#ifdef __WIN32__
-	result = send(sock, data.c_str(), data.length(), 0);
+	result = send(push, data.c_str(), data.length(), 0);
 	#else
-	result = write(sock, data.c_str(), data.length());
+	result = write(push, data.c_str(), data.length());
 	#endif
 	cout << "OUT: " << result << endl;
 	
-	BufferInputStream buffer(sock);
+	char buffer[1024];
+	#ifdef __WIN32__
+	result = recv(push, buffer, 1024, 0);
+	#else
+	result = read(push, buffer, 1024);
+	#endif
+	cout << "IN: " << result << endl;
+}
+
+void Pull() {
+	string data = "GET /pull HTTP/1.1\r\nHost: " + host + "\r\n\r\n";
+	
+	int result = 0;
+	#ifdef __WIN32__
+	result = send(pull, data.c_str(), data.length(), 0);
+	#else
+	result = write(pull, data.c_str(), data.length());
+	#endif
+	cout << "OUT: " << result << endl;
+	
+	BufferInputStream buffer(pull);
 	istream stream(&buffer);
 	
 	string line;
@@ -190,22 +186,96 @@ main() {
 		}
 		hex = !hex;
 	}
+}
+
+#ifdef __WIN32__
+DWORD WINAPI PullAsync(void *data) {
+	pull = Connect(ip);
+	Pull();
+	return 0;
+}
+#else
+void *PullAsync(void *data) {
+	pull = Connect(ip);
+	Pull();
+	pthread_exit(NULL);
+}
+#endif
+
+#ifdef __WIN32__
+DWORD WINAPI PushAsync(void *data) {
+	push = Connect(ip);
+	while(alive) {
+		if(output.empty())
+			WaitForSingleObject(sema, INFINITE);
+		Push();
+	}
+	return 0;
+}
+#else
+void *PushAsync(void *data) {
+	push = Connect(ip);
+	while(alive) {
+		if(output.empty())
+			pthread_cond_wait(&cond, &lock);
+		string message = output.dequeue();
+		Push();
+	}
+	pthread_exit(NULL);
+}
+#endif
+
+void Async() {
+	// TODO: Add message to queue 
+	#ifdef __WIN32__
+	EnterCriticalSection(&lock);
+	ReleaseSemaphore(sema, 1, NULL);
+	LeaveCriticalSection(&lock);
+	#else
+	pthread_mutex_lock(&lock);
+	pthread_cond_signal(&cond);
+	pthread_mutex_unlock(&lock);
+	#endif
+}
+
+main() {
+	#ifdef __WIN32__
+	WORD versionWanted = MAKEWORD(2, 2);
+	WSADATA wsaData;
+	WSAStartup(versionWanted, &wsaData);
+	InitializeCriticalSection(&lock);
+	#endif
 	
-	//char c;
-	//stream.get(c);
-/*
-	char buffer[1024];
+	host = "bitcoinbankbook.com";
+	hostent * record = gethostbyname(host.c_str());
+	in_addr * address = (in_addr * ) record->h_addr;
+	ip = inet_ntoa(* address);
+
 	#ifdef __WIN32__
-	result = recv(sock, buffer, 1024, 0);
+	HANDLE t1 = CreateThread(NULL, 0, PullAsync, NULL, 0, NULL);
+	HANDLE t2 = CreateThread(NULL, 0, PushAsync, NULL, 0, NULL);
 	#else
-	result = read(sock, buffer, 1024);
+	pthread_t t1;
+	pthread_t t2;
+	pthread_create(&t1, NULL, PullAsync, (void *) 0);
+	pthread_create(&t2, NULL, PushAsync, (void *) 0);
 	#endif
-*/
+	
 	#ifdef __WIN32__
-	closesocket(sock);
-	WSACleanup();
+	Sleep(5000);
 	#else
-	close(sock);
+	sleep(5000);
 	#endif
+	
+	Async();
+	
+	#ifdef __WIN32__
+	Sleep(5000);
+	#else
+	sleep(5000);
+	#endif
+
+	alive = false;
+
 	return 0;
 }
