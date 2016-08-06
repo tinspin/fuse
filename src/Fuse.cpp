@@ -322,7 +322,7 @@ string Push(string data) {
 }
 
 void Pull() {
-	string data = "GET /pull HTTP/1.1\r\nHost: " + host + "\r\n\r\n";
+	string data = "GET /pull HTTP/1.1\r\nHost: " + host + "\r\nHead: less\r\n\r\n";
 	
 	#ifdef __WIN32__
 	send(pull, data.c_str(), data.length(), 0);
