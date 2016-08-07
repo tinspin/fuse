@@ -440,12 +440,12 @@ void Start() {
 
 vector<string> Split(const string &s) {
 	vector<string> v;
-    stringstream ss(s);
-    string item;
-    while(getline(ss, item, '|')) {
-        v.push_back(item);
-    }
-    return v;
+	stringstream ss(s);
+	string item;
+	while(getline(ss, item, '|')) {
+		v.push_back(item);
+	}
+	return v;
 }
 
 vector<string> EasyUser(string name, string hash, string mail) {
@@ -537,8 +537,8 @@ boolean Game(string game) {
 
 string to(int i) {
 	ostringstream ss;
-    ss << i;
-    return ss.str();
+	ss << i;
+	return ss.str();
 }
 
 boolean Room(string type, int size) {
