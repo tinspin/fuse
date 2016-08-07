@@ -3,6 +3,9 @@
 #include <sstream>
 #include <iostream>
 #include <streambuf>
+#include <algorithm>
+#include <iterator>
+#include <vector>
 #include <stdio.h>
 #ifdef __WIN32__
 #include <windows.h>
@@ -49,7 +52,7 @@ unsigned int k[64] = {
 	0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
 };
 
-void transform(CTX *ctx, unsigned char data[]) {
+void SHAtransform(CTX *ctx, unsigned char data[]) {
 	unsigned int a, b, c, d, e, f, g, h, i, j, t1, t2, m[64];
 
 	for (i = 0, j = 0; i < 16; ++i, j += 4)
@@ -89,7 +92,7 @@ void transform(CTX *ctx, unsigned char data[]) {
 	ctx->state[7] += h;
 }
 
-void init(CTX *ctx) {
+void SHAinit(CTX *ctx) {
 	ctx->datalen = 0;
 	ctx->bitlen[0] = 0;
 	ctx->bitlen[1] = 0;
@@ -103,19 +106,19 @@ void init(CTX *ctx) {
 	ctx->state[7] = 0x5be0cd19;
 }
 
-void update(CTX *ctx, unsigned char data[], unsigned int len) {
+void SHAupdate(CTX *ctx, unsigned char data[], unsigned int len) {
 	for (unsigned int i = 0; i < len; ++i) {
 		ctx->data[i] = data[i];
 		ctx->datalen++;
 		if (ctx->datalen == 64) {
-			transform(ctx, ctx->data);
+			SHAtransform(ctx, ctx->data);
 			DBL_INT_ADD(ctx->bitlen[0], ctx->bitlen[1], 512);
 			ctx->datalen = 0;
 		}
 	}
 }
 
-void final(CTX *ctx, unsigned char hash[]) {
+void SHAfinal(CTX *ctx, unsigned char hash[]) {
 	unsigned int i = ctx->datalen;
 
 	if (ctx->datalen < 56) {
@@ -130,7 +133,7 @@ void final(CTX *ctx, unsigned char hash[]) {
 		while (i < 64)
 			ctx->data[i++] = 0x00;
 
-		transform(ctx, ctx->data);
+		SHAtransform(ctx, ctx->data);
 		memset(ctx->data, 0, 56);
 	}
 
@@ -143,7 +146,7 @@ void final(CTX *ctx, unsigned char hash[]) {
 	ctx->data[58] = ctx->bitlen[1] >> 8;
 	ctx->data[57] = ctx->bitlen[1] >> 16;
 	ctx->data[56] = ctx->bitlen[1] >> 24;
-	transform(ctx, ctx->data);
+	SHAtransform(ctx, ctx->data);
 
 	for (i = 0; i < 4; ++i) {
 		hash[i] = (ctx->state[0] >> (24 - i * 8)) & 0x000000ff;
@@ -157,20 +160,22 @@ void final(CTX *ctx, unsigned char hash[]) {
 	}
 }
 
-string SHA256(char* data) {
+//string hash(char* data) {
+string hash(string s) {
+	const char *data = s.c_str();
 	int strLen = strlen(data);
 	CTX ctx;
 	unsigned char hash[32];
 	string hashStr = "";
 
-	init(&ctx);
-	update(&ctx, (unsigned char*) data, strLen);
-	final(&ctx, hash);
+	SHAinit(&ctx);
+	SHAupdate(&ctx, (unsigned char*) data, strLen);
+	SHAfinal(&ctx, hash);
 
-	char s[3];
+	char c[3];
 	for (int i = 0; i < 32; i++) {
-		sprintf(s, "%02x", hash[i]);
-		hashStr += s;
+		sprintf(c, "%02x", hash[i]);
+		hashStr += c;
 	}
 
 	return hashStr;
@@ -251,7 +256,7 @@ int Connect(string ip) {
 }
 
 string Push(string data) {
-	if(salt.length() < 3)
+	if(salt.length() > 3)
 		data = data.substr(0, 4) + '|' + salt + data.substr(4, data.length() - 4);
 
 	string text = "GET /push?data=" + data + " HTTP/1.1\r\nHost: " + host + "\r\n";
@@ -322,7 +327,7 @@ string Push(string data) {
 }
 
 void Pull() {
-	string data = "GET /pull HTTP/1.1\r\nHost: " + host + "\r\nHead: less\r\n\r\n";
+	string data = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost: " + host + "\r\nHead: less\r\n\r\n";
 	
 	#ifdef __WIN32__
 	send(pull, data.c_str(), data.length(), 0);
@@ -365,7 +370,6 @@ DWORD WINAPI PullAsync(void *data) {
 	return 0;
 }
 DWORD WINAPI PushAsync(void *data) {
-	push = Connect(ip);
 	while(alive) {
 		if(output.empty())
 			WaitForSingleObject(sema, INFINITE);
@@ -382,7 +386,6 @@ void *PullAsync(void *data) {
 	pthread_exit(NULL);
 }
 void *PushAsync(void *data) {
-	push = Connect(ip);
 	while(alive) {
 		if(output.empty())
 			pthread_cond_wait(&cond, &lock);
@@ -404,6 +407,15 @@ void Async(string message) {
 	#endif
 }
 
+void DoPull() {
+	#ifdef __WIN32__
+	CreateThread(NULL, 0, PullAsync, NULL, 0, NULL);
+	#else
+	pthread_t t;
+	pthread_create(&t, NULL, PullAsync, (void *) 0);
+	#endif
+}
+
 void Start() {
 	#ifdef __WIN32__
 	WORD versionWanted = MAKEWORD(2, 2);
@@ -416,44 +428,139 @@ void Start() {
 	in_addr * address = (in_addr * ) record->h_addr;
 	ip = inet_ntoa(* address);
 
+	push = Connect(ip);
+
 	#ifdef __WIN32__
-	//HANDLE t1 = CreateThread(NULL, 0, PullAsync, NULL, 0, NULL);
 	HANDLE t2 = CreateThread(NULL, 0, PushAsync, NULL, 0, NULL);
 	#else
-	pthread_t t1;
-	pthread_t t2;
-	pthread_create(&t1, NULL, PullAsync, (void *) 0);
+	pthread_t t;
 	pthread_create(&t2, NULL, PushAsync, (void *) 0);
 	#endif
-	
-	#ifdef __WIN32__
-	Sleep(1000);
-	#else
-	sleep(1000);
-	#endif
-	
-	Async("ping");
-	
-	#ifdef __WIN32__
-	Sleep(5000);
-	#else
-	sleep(5000);
-	#endif
-	
-	Async("ping");
-	
-	#ifdef __WIN32__
-	Sleep(5000);
-	#else
-	sleep(5000);
-	#endif
+}
 
-	alive = false;
+vector<string> Split(const string &s) {
+	vector<string> v;
+    stringstream ss(s);
+    string item;
+    while(getline(ss, item, '|')) {
+        v.push_back(item);
+    }
+    return v;
+}
+
+vector<string> EasyUser(string name, string hash, string mail) {
+	vector<string> user = Split(Push("user|" + name + "|" + hash + "|" + mail));
+
+	if(user.at(1).compare("fail")) {
+		//throw new exception(user[2]);
+	}
+
+	salt = user.at(2);
+	return user;
+}
+
+void User(string name, string pass, string mail) {
+	string s = name;
+	transform(s.begin(), s.end(), s.begin(), ::tolower);
+	EasyUser(name, hash(pass + s), mail);
+}
+	
+void User(string name, string pass) {
+	User(name, pass, "");
+}
+	
+// Returns key to be stored.
+string User(string name) {
+	return EasyUser(name, "", "")[3];
+}
+
+vector<string> User() {
+	return EasyUser("", "", "");
+}
+
+string Sign(string user, string hide) {
+	vector<string> salt = Split(Push("salt|" + user));
+	
+	cout << "1" << endl;
+	copy(salt.begin(), salt.end(), ostream_iterator<string>(cout, " "));
+		
+	if(salt.at(1).compare("fail")) {
+		//throw new exception(salt.at(2));
+	}
+
+	vector<string> sign = Split(Push("sign|" + salt.at(2) + "|" + hash(hide + salt.at(2))));
+
+	if(sign.at(1).compare("fail")) {
+		//throw new exception(sign.at(2));
+	}
+
+	return salt.at(2);
+}
+
+string SignIdKey(string id, string key) {
+	return Sign(id, key);
+}
+
+string SignNameKey(string name, string key) {
+	return Sign(name, key);
+}
+
+string SignNamePass(string name, string pass) {
+	string s = name;
+	transform(s.begin(), s.end(), s.begin(), ::tolower);
+	return Sign(name, hash(pass + s));
+}
+
+vector<string> EasyPush(string data) {
+	vector<string> push = Split(Push(data));
+	
+	if(push.at(1).compare("fail")) {
+		//throw new exception(push.at(2));
+	}
+		
+	return push;
+}
+
+boolean BoolPush(string data) {
+	vector<string> push = EasyPush(data);
+
+	if(push.size() == 0) {
+		return false;
+	}
+
+	return true;
+}
+
+boolean Game(string game) {
+	return BoolPush("game|" + game);
+}
+
+string to(int i) {
+	ostringstream ss;
+    ss << i;
+    return ss.str();
+}
+
+boolean Room(string type, int size) {
+	return BoolPush("room|" + type + "|" + to(size));
 }
 
 main() {
-	char data[] = "hello";
-	cout << SHA256(data) << endl;
+	string key = "TvaaS3cqJhQyK6sn";
+	
 	Start();
+	
+	salt = SignNameKey("fuse", key);
+	
+	DoPull();
+	
+	#ifdef __WIN32__
+	Sleep(60000);
+	#else
+	sleep(60000);
+	#endif
+
+	alive = false;
+	
 	return 0;
 }
