@@ -5,7 +5,6 @@
 #include <streambuf>
 #include <algorithm>
 #include <iterator>
-#include <vector>
 #include <stdio.h>
 #ifdef __WIN32__
 #include <windows.h>
