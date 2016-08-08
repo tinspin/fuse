@@ -325,6 +325,40 @@ string Push(string data) {
 	}
 }
 
+vector<string> Split(const string &s) {
+	vector<string> v;
+	stringstream ss(s);
+	string item;
+	while(getline(ss, item, '|')) {
+		v.push_back(item);
+	}
+	return v;
+}
+
+vector<string> EasyPush(string data) {
+	vector<string> push = Split(Push(data));
+	
+	if(push.at(1).compare("fail")) {
+		//throw new exception(push.at(2));
+	}
+		
+	return push;
+}
+
+boolean BoolPush(string data) {
+	vector<string> push = EasyPush(data);
+
+	if(push.size() == 0) {
+		return false;
+	}
+
+	return true;
+}
+
+boolean Game(string game) {
+	return BoolPush("game|" + game);
+}
+
 void Pull() {
 	string data = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost: " + host + "\r\nHead: less\r\n\r\n";
 	
@@ -339,6 +373,7 @@ void Pull() {
 	
 	string line;
 	boolean hex = true;
+	boolean first = true;
 	boolean append = false;
 	
 	while(alive) {
@@ -349,6 +384,10 @@ void Pull() {
 				stringstream ss(line);
 				while(getline(ss, message, '\n')) {
 					if(message.length() > 0) {
+						if(first) {
+							first = false;
+							Game("race");
+						}
 						cout << "pull " << message << endl;
 						input.enqueue(message);
 					}
@@ -437,16 +476,6 @@ void Start() {
 	#endif
 }
 
-vector<string> Split(const string &s) {
-	vector<string> v;
-	stringstream ss(s);
-	string item;
-	while(getline(ss, item, '|')) {
-		v.push_back(item);
-	}
-	return v;
-}
-
 vector<string> EasyUser(string name, string hash, string mail) {
 	vector<string> user = Split(Push("user|" + name + "|" + hash + "|" + mail));
 
@@ -508,30 +537,6 @@ string SignNamePass(string name, string pass) {
 	string s = name;
 	transform(s.begin(), s.end(), s.begin(), ::tolower);
 	return Sign(name, hash(pass + s));
-}
-
-vector<string> EasyPush(string data) {
-	vector<string> push = Split(Push(data));
-	
-	if(push.at(1).compare("fail")) {
-		//throw new exception(push.at(2));
-	}
-		
-	return push;
-}
-
-boolean BoolPush(string data) {
-	vector<string> push = EasyPush(data);
-
-	if(push.size() == 0) {
-		return false;
-	}
-
-	return true;
-}
-
-boolean Game(string game) {
-	return BoolPush("game|" + game);
 }
 
 string to(int i) {
