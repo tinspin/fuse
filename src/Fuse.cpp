@@ -236,7 +236,7 @@ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 #endif
 
 Queue input, output;
-string host, ip, salt = "";
+string host, ip, salt = "", game;
 int push, pull;
 boolean alive = true, first = true;
 
@@ -258,6 +258,8 @@ string Push(string data) {
 	if(salt.length() > 3)
 		data = data.substr(0, 4) + '|' + salt + data.substr(4, data.length() - 4);
 
+	cout << "-> " << data << endl;
+
 	string text = "GET /push?data=" + data + " HTTP/1.1\r\nHost: " + host + "\r\n";
 	
 	if(first) {
@@ -267,15 +269,15 @@ string Push(string data) {
 	else
 		text += "\r\n";
 		
-	cout << "push " << text << endl;
+	//cout << "push " << text << endl;
 	
 	char buffer[1024];
 
 	#ifdef __WIN32__
 	int sent = send(push, text.c_str(), text.length(), 0);
-	cout << "sent " << sent << endl;
+	//cout << "sent " << sent << endl;
 	int read = recv(push, buffer, 1024, 0);
-	cout << "read " << read << endl;
+	//cout << "read " << read << endl;
 	#else
 	int sent = write(push, text.c_str(), text.length());
 	int read = read(push, buffer, 1024);
@@ -285,7 +287,7 @@ string Push(string data) {
 	
 	text = string(buffer, read);
 	
-	cout << "push " << text << endl;
+	//cout << "push " << text << endl;
 	
 	int header = text.find("Content-Length:");
 	int EOL = text.find("\r\n", header);
@@ -294,7 +296,7 @@ string Push(string data) {
 	istringstream(text.substr(header + 15, EOL - (header + 15))) >> length;
 	int count = read - (content + 4);
 	
-	cout << "push " << header << " " << EOL << " " << content << " " << length << " " << count << endl;
+	//cout << "push " << header << " " << EOL << " " << content << " " << length << " " << count << endl;
 	
 	int total = count;
 
@@ -304,6 +306,8 @@ string Push(string data) {
 	text = text.substr(content + 4, total);
 	
 	if(length == count) {
+		cout << "<- " << text << endl;
+		
 		return text;
 	}
 	else {
@@ -337,11 +341,11 @@ vector<string> Split(const string &s) {
 
 vector<string> EasyPush(string data) {
 	vector<string> push = Split(Push(data));
-	
+
 	if(push.at(1).compare("fail")) {
 		//throw new exception(push.at(2));
 	}
-		
+
 	return push;
 }
 
@@ -386,7 +390,7 @@ void Pull() {
 					if(message.length() > 0) {
 						if(first) {
 							first = false;
-							Game("race");
+							Game(game);
 						}
 						cout << "pull " << message << endl;
 						input.enqueue(message);
@@ -454,14 +458,16 @@ void DoPull() {
 	#endif
 }
 
-void Start() {
+void Start(string h, string g) {
 	#ifdef __WIN32__
 	WORD versionWanted = MAKEWORD(2, 2);
 	WSADATA wsaData;
 	WSAStartup(versionWanted, &wsaData);
 	#endif
 	
-	host = "fuse.rupy.se";
+	host = h;
+	game = g;
+		
 	hostent * record = gethostbyname(host.c_str());
 	in_addr * address = (in_addr * ) record->h_addr;
 	ip = inet_ntoa(* address);
@@ -509,8 +515,7 @@ vector<string> User() {
 string Sign(string user, string hide) {
 	vector<string> salt = Split(Push("salt|" + user));
 	
-	cout << "1" << endl;
-	copy(salt.begin(), salt.end(), ostream_iterator<string>(cout, " "));
+	//copy(salt.begin(), salt.end(), ostream_iterator<string>(cout, " "));
 		
 	if(salt.at(1).compare("fail")) {
 		//throw new exception(salt.at(2));
@@ -552,7 +557,7 @@ boolean Room(string type, int size) {
 main() {
 	string key = "TvaaS3cqJhQyK6sn";
 	
-	Start();
+	Start("fuse.rupy.se", "race");
 	
 	salt = SignNameKey("fuse", key);
 	
