@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <iterator>
 #include <stdio.h>
-#ifdef __WIN32__
+#ifdef WIN32
 #include <windows.h>
 #include <winsock2.h>
 #else
@@ -159,8 +159,7 @@ void SHAfinal(CTX *ctx, unsigned char hash[]) {
 	}
 }
 
-//string hash(char* data) {
-string hash(string s) {
+string SHAhash(string s) {
 	const char *data = s.c_str();
 	int strLen = strlen(data);
 	CTX ctx;
@@ -216,7 +215,7 @@ class BufferInputStream : public basic_streambuf<char> {
 		int underflow() {
 			if(gptr() < egptr())
 				return *gptr();
-			#ifdef __WIN32__
+			#ifdef WIN32
 			int num = recv(socket, reinterpret_cast<char*>(buffer), SIZE, 0);
 			#else
 			int num = read(socket, reinterpret_cast<char*>(buffer), SIZE);
@@ -228,7 +227,7 @@ class BufferInputStream : public basic_streambuf<char> {
 		}
 };
 
-#ifdef __WIN32__
+#ifdef WIN32
 HANDLE sema = CreateSemaphore(NULL, 0, 10, NULL);
 #else
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
@@ -273,7 +272,7 @@ string Push(string data) {
 	
 	char buffer[1024];
 
-	#ifdef __WIN32__
+	#ifdef WIN32
 	int sent = send(push, text.c_str(), text.length(), 0);
 	//cout << "sent " << sent << endl;
 	int read = recv(push, buffer, 1024, 0);
@@ -314,7 +313,7 @@ string Push(string data) {
 		stringstream ss;
 		
 		do {
-			#ifdef __WIN32__
+			#ifdef WIN32
 			read = recv(push, buffer, 1024, 0);
 			#else
 			read = read(push, buffer, 1024);
@@ -366,7 +365,7 @@ boolean Game(string game) {
 void Pull() {
 	string data = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost: " + host + "\r\nHead: less\r\n\r\n";
 	
-	#ifdef __WIN32__
+	#ifdef WIN32
 	send(pull, data.c_str(), data.length(), 0);
 	#else
 	write(pull, data.c_str(), data.length());
@@ -405,7 +404,7 @@ void Pull() {
 	}
 }
 
-#ifdef __WIN32__
+#ifdef WIN32
 DWORD WINAPI PullAsync(void *data) {
 	pull = Connect(ip);
 	Pull();
@@ -440,7 +439,7 @@ void *PushAsync(void *data) {
 
 void Async(string message) {
 	output.enqueue(message);
-	#ifdef __WIN32__
+	#ifdef WIN32
 	ReleaseSemaphore(sema, 1, NULL);
 	#else
 	pthread_mutex_lock(&lock);
@@ -450,7 +449,7 @@ void Async(string message) {
 }
 
 void DoPull() {
-	#ifdef __WIN32__
+	#ifdef WIN32
 	CreateThread(NULL, 0, PullAsync, NULL, 0, NULL);
 	#else
 	pthread_t t;
@@ -459,7 +458,7 @@ void DoPull() {
 }
 
 void Start(string h, string g) {
-	#ifdef __WIN32__
+	#ifdef WIN32
 	WORD versionWanted = MAKEWORD(2, 2);
 	WSADATA wsaData;
 	WSAStartup(versionWanted, &wsaData);
@@ -474,7 +473,7 @@ void Start(string h, string g) {
 
 	push = Connect(ip);
 
-	#ifdef __WIN32__
+	#ifdef WIN32
 	HANDLE t2 = CreateThread(NULL, 0, PushAsync, NULL, 0, NULL);
 	#else
 	pthread_t t;
@@ -496,7 +495,7 @@ vector<string> EasyUser(string name, string hash, string mail) {
 void User(string name, string pass, string mail) {
 	string s = name;
 	transform(s.begin(), s.end(), s.begin(), ::tolower);
-	EasyUser(name, hash(pass + s), mail);
+	EasyUser(name, SHAhash(pass + s), mail);
 }
 	
 void User(string name, string pass) {
@@ -521,7 +520,7 @@ string Sign(string user, string hide) {
 		//throw new exception(salt.at(2));
 	}
 
-	vector<string> sign = Split(Push("sign|" + salt.at(2) + "|" + hash(hide + salt.at(2))));
+	vector<string> sign = Split(Push("sign|" + salt.at(2) + "|" + SHAhash(hide + salt.at(2))));
 
 	if(sign.at(1).compare("fail")) {
 		//throw new exception(sign.at(2));
@@ -541,7 +540,7 @@ string SignNameKey(string name, string key) {
 string SignNamePass(string name, string pass) {
 	string s = name;
 	transform(s.begin(), s.end(), s.begin(), ::tolower);
-	return Sign(name, hash(pass + s));
+	return Sign(name, SHAhash(pass + s));
 }
 
 string to(int i) {
@@ -563,7 +562,7 @@ main() {
 	
 	DoPull();
 	
-	#ifdef __WIN32__
+	#ifdef WIN32
 	Sleep(60000);
 	#else
 	sleep(60000);
