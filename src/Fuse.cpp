@@ -553,7 +553,7 @@ boolean Room(string type, int size) {
 	return BoolPush("room|" + type + "|" + to(size));
 }
 
-main() {
+int main() {
 	string key = "TvaaS3cqJhQyK6sn";
 	
 	Start("fuse.rupy.se", "race");
