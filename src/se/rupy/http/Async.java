@@ -94,6 +94,10 @@ public class Async implements Runnable {
 		public Timeout(String host) {
 			this.host = host;
 		}
+		
+		public String getMessage() {
+			return host;
+		}
 	}
 
 	/**
@@ -112,8 +116,8 @@ public class Async implements Runnable {
 	 */
 	public synchronized void send(String host, Work work, int invalidate) throws Exception {
 		// Fixes FUSE "opened output without flush" cascade.
-		if(work.event != null && work.event.reply().output.init)
-			work.event.reply().output.flush();
+		//if(work.event != null && work.event.reply().output.init)
+		//	work.event.reply().output.flush();
 		
 		if(invalidate > 0) {
 			Iterator it = calls.iterator();
@@ -174,7 +178,7 @@ public class Async implements Runnable {
 		private int state, run;
 		private Async async;
 		private Work work;
-		private String host, cookie;
+		private String host, cookie, version;
 		private SocketChannel channel;
 		private long time;
 		private boolean running;
@@ -188,6 +192,14 @@ public class Async implements Runnable {
 			time = System.currentTimeMillis();
 		}
 
+		/* This was a nice try but the spec. says you can also just close the connection 
+		 * after the response has finished instead of providing a content-length header 
+		 * so this will only work well on some web servers.
+		 */
+		public void version() {
+			this.version = "HTTP/1.0";
+		}
+		
 		private void state(int state) {
 			this.state = state;
 		}
@@ -257,7 +269,7 @@ public class Async implements Runnable {
 		}
 
 		private void write(String method, String path, String headers, byte[] body) throws Exception {
-			String http = method + " " + path + " HTTP/1.1\r\n" + 
+			String http = method + " " + path + " " + version + "\r\n" + 
 					(body == null ? "" : "Content-Length: " + body.length + "\r\n") + 
 					(cookie == null ? "" : "Cookie: " + cookie + "\r\n") + 
 					headers + 
@@ -298,7 +310,7 @@ public class Async implements Runnable {
 		}
 
 		private void write(String path, String headers, File file) throws Exception {
-			String http = "POST " + path + " HTTP/1.1\r\n" + 
+			String http = "POST " + path + " " + version + "\r\n" + 
 					(file == null ? "" : "Content-Length: " + file.length() + "\r\n") + 
 					(cookie == null ? "" : "Cookie: " + cookie + "\r\n") + 
 					headers + 
@@ -395,7 +407,7 @@ public class Async implements Runnable {
 					if(length == null) {
 						if(find(data)) {
 							String text = new String(body, "utf-8");
-							if(head.startsWith("HTTP/1.1 500"))
+							if(head.startsWith(version + " 500"))
 								throw new Exception(text);
 							else
 								return text.trim();
@@ -403,7 +415,7 @@ public class Async implements Runnable {
 					}
 					else if(full == body.length) {
 						String text = new String(body, "utf-8");
-						if(head.startsWith("HTTP/1.1 500"))
+						if(head.startsWith(version + " 500"))
 							throw new Exception(text);
 						else
 							return text.trim();
@@ -481,6 +493,7 @@ public class Async implements Runnable {
 						AccessController.doPrivileged(new PrivilegedExceptionAction() {
 							public Object run() throws Exception {
 								try {
+									call.version = "HTTP/1.1";
 									work.send(call);
 								}
 								catch(Throwable t) {
@@ -493,6 +506,7 @@ public class Async implements Runnable {
 						}, work.archive.access());
 					}
 					else {
+						version = "HTTP/1.1";
 						work.send(this);
 					}
 

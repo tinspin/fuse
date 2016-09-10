@@ -89,13 +89,13 @@ public class User extends Service {
 		out.println("    var pass = document.getElementById('pass');");
 		out.println("    var salt = document.getElementById('salt');");
 		out.println("    if(pass.value.length > 0) {");
-		out.println("      salt.value = '" + salt + "';");
 		out.println("      if(type == 'join') {");
 		if(algo.equals("sha-256"))
 			out.println("        pass.value = CryptoJS.SHA256(pass.value + name.value.toLowerCase());");
 		else
 			out.println("        pass.value = md5(pass.value + name.value.toLowerCase());");
 		out.println("      } else {");
+		out.println("        salt.value = '" + salt + "';");
 		out.println("        if(!digits.test(name.value))");
 		if(algo.equals("sha-256")) {
 			out.println("          pass.value = CryptoJS.SHA256(pass.value + name.value.toLowerCase());");
