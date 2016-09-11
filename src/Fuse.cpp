@@ -433,15 +433,23 @@ void Pull() {
 	boolean hex = true;
 	boolean first = true;
 	boolean append = false;
+	stringstream ss;
+	string message;
 	
 	while(alive) {
 		getline(stream, line, '\r');
+		line.erase(0, 1);
 		if(append) {
 			if(!hex) {
-				string message;
-				stringstream ss(line);
+				ss << line;
 				while(getline(ss, message, '\n')) {
-					if(message.length() > 0) {
+					if(ss.eof()) {
+						ss.clear();
+						ss.str("");
+						ss << message;
+						break;
+					}
+					else if(message.length() > 0) {
 						if(first) {
 							first = false;
 							Game(game);
@@ -450,10 +458,14 @@ void Pull() {
 						input.enqueue(message);
 					}
 				}
+				if(ss.eof()) {
+					ss.clear();
+					ss.str("");
+				}
 			}
 			hex = !hex;
 		}
-		else if(line.length() == 1) {
+		else if(line.length() == 0) {
 			append = true;
 		}
 	}
