@@ -1413,8 +1413,8 @@ public class Router implements Node {
 			if(to != null) {
 				this.room = to;
 
-				to.add(this);
 				to.send(this, "here|" + (to_game ? "stem" : "leaf") + "|" + name);
+				to.add(this);
 			}
 
 			if(from != null) {

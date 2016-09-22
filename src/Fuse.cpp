@@ -12,7 +12,13 @@
 #include <winsock2.h>
 #else
 #include <pthread.h>
+#include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 #endif
 
 using namespace std;
@@ -243,7 +249,7 @@ class Queue {
 		void enqueue(string message) {
 			queue.push(message);
 		}
-		boolean empty() {
+		bool empty() {
 			return queue.empty();
 		}
 		string dequeue() {
@@ -284,8 +290,10 @@ class BufferInputStream : public basic_streambuf<char> {
 
 #ifdef WIN32
 HANDLE sema = CreateSemaphore(NULL, 0, 10, NULL);
+CRITICAL_SECTION crit;
 #else
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t qlock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t plock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 #endif
 
@@ -309,6 +317,12 @@ int Connect(string ip) {
 }
 
 string Push(string data) {
+	#ifdef WIN32
+	EnterCriticalSection(&crit);
+	#else
+	pthread_mutex_lock(&plock);
+	#endif
+	
 	if(salt.length() > 3)
 		data = data.substr(0, 4) + '|' + salt + data.substr(4, data.length() - 4);
 
@@ -330,16 +344,29 @@ string Push(string data) {
 	#ifdef WIN32
 	int sent = send(push, text.c_str(), text.length(), 0);
 	//cout << "sent " << sent << endl;
-	int read = recv(push, buffer, 1024, 0);
+	int _read = recv(push, buffer, 1024, 0);
 	//cout << "read " << read << endl;
 	#else
 	int sent = write(push, text.c_str(), text.length());
-	int read = read(push, buffer, 1024);
+	int _read = read(push, buffer, 1024);
 	#endif
 	
-	// TODO: Reconnect if zero bytes read!
+	// reconnect if zero bytes read!
+	if(_read < 1) {
+		push = Connect(ip);
+
+		text = "GET /push?data=" + data + " HTTP/1.1\r\nHost: " + host + "\r\nHead: less\r\n\r\n"; // enables TCP no delay
+
+		#ifdef WIN32
+		sent = send(push, text.c_str(), text.length(), 0);
+		_read = recv(push, buffer, 1024, 0);
+		#else
+		sent = write(push, text.c_str(), text.length());
+		_read = read(push, buffer, 1024);
+		#endif
+	}
 	
-	text = string(buffer, read);
+	text = string(buffer, _read);
 	
 	//cout << "push " << text << endl;
 	
@@ -348,7 +375,7 @@ string Push(string data) {
 	int content = text.find("\r\n\r\n");
 	int length = 0;
 	istringstream(text.substr(header + 15, EOL - (header + 15))) >> length;
-	int count = read - (content + 4);
+	int count = _read - (content + 4);
 	
 	//cout << "push " << header << " " << EOL << " " << content << " " << length << " " << count << endl;
 	
@@ -359,38 +386,45 @@ string Push(string data) {
 	
 	text = text.substr(content + 4, total);
 	
-	if(length == count) {
-		cout << "<- " << text << endl;
-		
-		return text;
-	}
-	else {
+	if(length != count) {
 		stringstream ss;
-		
+		ss << text;
 		do {
 			#ifdef WIN32
-			read = recv(push, buffer, 1024, 0);
+			_read = recv(push, buffer, 1024, 0);
 			#else
-			read = read(push, buffer, 1024);
+			_read = read(push, buffer, 1024);
 			#endif
-			text = string(buffer, read);
+			text = string(buffer, _read);
 			ss << text;
-			count += read;
+			count += _read;
 		}
 		while(count < length);
 
-		return ss.str();
+		text = ss.str();
 	}
+
+	#ifdef WIN32
+	LeaveCriticalSection(&crit);
+	#else
+	pthread_mutex_unlock(&plock);
+	#endif
+
+	return text;
 }
 
-vector<string> Split(const string &s) {
+vector<string> Split(const string &s, char c) {
 	vector<string> v;
 	stringstream ss(s);
 	string item;
-	while(getline(ss, item, '|')) {
+	while(getline(ss, item, c)) {
 		v.push_back(item);
 	}
 	return v;
+}
+
+vector<string> Split(const string &s) {
+	return Split(s, '|');
 }
 
 vector<string> EasyPush(string data) {
@@ -413,7 +447,7 @@ boolean BoolPush(string data) {
 	return true;
 }
 
-boolean Game(string game) {
+bool Game(string game) {
 	return BoolPush("game|" + game);
 }
 
@@ -430,9 +464,9 @@ void Pull() {
 	istream stream(&buffer);
 	
 	string line;
-	boolean hex = true;
-	boolean first = true;
-	boolean append = false;
+	bool hex = true;
+	bool first = true;
+	bool append = false;
 	stringstream ss;
 	string message;
 	
@@ -483,7 +517,12 @@ DWORD WINAPI PushAsync(void *data) {
 			WaitForSingleObject(sema, INFINITE);
 		string message = output.dequeue();
 		cout << message << endl;
-		Push(message);
+		if(message.length() > 0) {
+			vector<string> done = Split(Push(message), '|');
+			if(!done.at(1).compare("fail")) {
+				// error
+			}
+		}
 	}
 	return 0;
 }
@@ -498,7 +537,12 @@ void *PushAsync(void *data) {
 		if(output.empty())
 			pthread_cond_wait(&cond, &lock);
 		string message = output.dequeue();
-		Push(message);
+		if(message.length() > 0) {
+			vector<string> done = Split(Push(message), '|');
+			if(!done.at(1).compare("fail")) {
+				// error
+			}
+		}
 	}
 	pthread_exit(NULL);
 }
@@ -509,9 +553,9 @@ void Async(string message) {
 	#ifdef WIN32
 	ReleaseSemaphore(sema, 1, NULL);
 	#else
-	pthread_mutex_lock(&lock);
+	pthread_mutex_lock(&qlock);
 	pthread_cond_signal(&cond);
-	pthread_mutex_unlock(&lock);
+	pthread_mutex_unlock(&qlock);
 	#endif
 }
 
@@ -529,6 +573,7 @@ void Start(string h, string g) {
 	WORD versionWanted = MAKEWORD(2, 2);
 	WSADATA wsaData;
 	WSAStartup(versionWanted, &wsaData);
+	InitializeCriticalSection(&crit);
 	#endif
 	
 	host = h;
@@ -541,10 +586,10 @@ void Start(string h, string g) {
 	push = Connect(ip);
 
 	#ifdef WIN32
-	HANDLE t2 = CreateThread(NULL, 0, PushAsync, NULL, 0, NULL);
+	CreateThread(NULL, 0, PushAsync, NULL, 0, NULL);
 	#else
 	pthread_t t;
-	pthread_create(&t2, NULL, PushAsync, (void *) 0);
+	pthread_create(&t, NULL, PushAsync, (void *) 0);
 	#endif
 }
 
