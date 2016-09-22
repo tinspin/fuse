@@ -300,7 +300,7 @@ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 Queue input, output;
 string host, ip, salt = "", game;
 int push, pull;
-boolean alive = true, first = true;
+bool alive = true, first = true;
 
 int Connect(string ip) {
 	int flag = 1;
@@ -437,7 +437,7 @@ vector<string> EasyPush(string data) {
 	return push;
 }
 
-boolean BoolPush(string data) {
+bool BoolPush(string data) {
 	vector<string> push = EasyPush(data);
 
 	if(push.size() == 0) {
@@ -489,7 +489,8 @@ void Pull() {
 							Game(game);
 						}
 						cout << "pull " << message << endl;
-						input.enqueue(message);
+						// NOTE: input queue is not needed in a fully threaded c++ environment
+						//input.enqueue(message);
 					}
 				}
 				if(ss.eof()) {
@@ -661,7 +662,7 @@ string to(int i) {
 	return ss.str();
 }
 
-boolean Room(string type, int size) {
+bool Room(string type, int size) {
 	return BoolPush("room|" + type + "|" + to(size));
 }
 
