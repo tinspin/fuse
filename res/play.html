@@ -537,6 +537,12 @@ public class play extends Service {
     else
       return push('list|user|' + type);
   }
+  function listroom(type) {
+    if(type === undefined)
+      return push('list|room');
+    else
+      return push('list|room|' + type);
+  }
   function easypush(data) {
     var data = push(data);
     if(data[1] == 'fail')

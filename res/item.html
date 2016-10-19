@@ -44,7 +44,7 @@
     }
   }
   function room_list() {
-    var data = listuser('room|item');
+    var data = listroom('item');
     if(data[1] == 'done')
       clear_select('room_list');
     else

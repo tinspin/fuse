@@ -549,10 +549,10 @@ public class Router implements Node {
 		else if(split[0].equals("list")) {
 			final String list = split[2];
 			String type = null;
-
+			
 			if(split.length > 3)
 				type = split[3];
-
+			
 			if(list.equals("room")) {
 				if(type == null) {
 					StringBuilder builder = new StringBuilder("list|done|room|");
@@ -618,7 +618,7 @@ public class Router implements Node {
 						try {
 							JSONArray l = null;
 
-							if(list.equals("hard")) {
+							if(t.equals("hard")) {
 								user.hard = (JSONObject) new JSONObject(body);
 								l = user.hard.getJSONArray("list");
 							}
@@ -1010,17 +1010,27 @@ public class Router implements Node {
 			final String type = load && split.length > 3 ? split[3] : split[0];
 
 			if(type.equals("soft")) {
-				String salt = (String) salts.get(split[2]);
+				String salt = null;
 				
-				if(salt == null)
-					return split[0] + "|fail|salt not found";
+				if(!split[0].equals("load")) {
+					salt = (String) salts.get(split[2]);
+				
+					if(salt == null) {
+						return split[0] + "|fail|id not found";
+					}
+				}
+				else {
+					salt = split[1];
+				}
 
 				User target = (User) users.get(salt);
 				
-				if(target == null)
-					return split[0] + "|fail|user not found";
+				if(target == null) {
+					return split[0] + "|fail|salt not found";
+				}
 
 				JSONObject soft = target.data(target.soft, name);
+				
 				if(soft != null)
 					return split[0] + "|done|" + soft;
 				else
