@@ -346,9 +346,13 @@ in sort of chronological order:
 *<b><i>path</i></b>|&lt;salt&gt;|&lt;spot&gt;         -> path|done
                            x-> <b><i>path</i></b>|&lt;user&gt;|&lt;spot&gt;
                             
-                            // object to follow/attack
+                            // object to follow
 *<b><i>hunt</i></b>|&lt;salt&gt;|&lt;salt&gt;|&lt;kill&gt;  -> hunt|done
-                           x-> <b><i>hunt</i></b>|&lt;user&gt;|&lt;salt&gt;|&lt;kill&gt;
+                           x-> <b><i>hunt</i></b>|&lt;user&gt;|&lt;salt&gt;
+                           
+                            // object to attack
+*<b><i>kill</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> hunt|done
+                           x-> <b><i>kill</i></b>|&lt;user&gt;|&lt;salt&gt;
                             
  <b><i>/\</b></i> type not found          -> main|fail|type not found
 

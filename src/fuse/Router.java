@@ -494,14 +494,14 @@ public class Router implements Node {
 							user.remove(poll.name);
 							poll.remove(user.name);
 						}
-						event.query().put("done", "sign|done");
+						event.query().put("done", "ally|done");
 						event.reply().wakeup(true);
 					}
 
 					public void fail(String host, Exception e) throws Exception {
 						if(debug)
 							System.err.println("fuse ally tear fail " + e);
-						event.query().put("fail", "sign|fail|unknown problem");
+						event.query().put("fail", "ally|fail|unknown problem");
 						event.reply().wakeup(true);
 					}
 				};
