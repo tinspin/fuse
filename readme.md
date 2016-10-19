@@ -347,7 +347,7 @@ in sort of chronological order:
                            x-> <b><i>path</i></b>|&lt;user&gt;|&lt;spot&gt;
                             
                             // object to follow
-*<b><i>hunt</i></b>|&lt;salt&gt;|&lt;salt&gt;|&lt;kill&gt;  -> hunt|done
+*<b><i>hunt</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> hunt|done
                            x-> <b><i>hunt</i></b>|&lt;user&gt;|&lt;salt&gt;
                            
                             // object to attack
