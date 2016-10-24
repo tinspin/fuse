@@ -351,7 +351,7 @@ in sort of chronological order:
                            x-> <b><i>hunt</i></b>|&lt;user&gt;|&lt;salt&gt;
                            
                             // object to attack
-*<b><i>kill</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> hunt|done
+*<b><i>kill</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> kill|done
                            x-> <b><i>kill</i></b>|&lt;user&gt;|&lt;salt&gt;
                             
  <b><i>/\</b></i> type not found          -> main|fail|type not found
