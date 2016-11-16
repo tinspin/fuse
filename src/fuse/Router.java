@@ -1772,7 +1772,10 @@ public class Router implements Node {
 
 		if(debug)
 			System.err.println("quit " + place + " " + user + " " + salt); // + " " + stack(Thread.currentThread()));
-
+		
+		if(place == 6 && user == null)
+			throw new Exception("Prune salt " + salt);
+		
 		users.remove(salt);
 
 		if(user != null && user.salt != null && user.game != null) {

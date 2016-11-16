@@ -321,13 +321,14 @@ public class Server extends Service implements Node, Runnable {
 			
 			Output out = event.output();
 
-			String padding = ie ? this.padding.toString() : "";
+			//String padding = ie ? this.padding.toString() : "";
+			// AVG Anti-Virus buffers the chunks so we need to push a large amount in the beginning for all browser types.
 			
 			if(stream) {
-				out.print("data: noop" + padding + "\n\n");
+				out.print("data: noop" + this.padding + "\n\n");
 			}
 			else {
-				out.print("noop" + padding + "\n");
+				out.print("noop" + this.padding + "\n");
 			}
 
 			out.flush();

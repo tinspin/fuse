@@ -92,11 +92,11 @@ public class fuse extends Service {
 </ul>
 Roadmap:
 <ul style="list-style-type: none;">
-<li>C++ OpenGL Engine (collada/<a href="https://github.com/RandyGaul/qu3e">cuBe</a>)</li>
+<li>C++ Collada - OpenGL Engine</li>
 <li>Bitcoin - Micropayments</li>
 <li>UDP Multicast - High Concurrency</li>
-<li><strike>WebGL - three.js - ammo.js</strike> (javascript is dead with moore's law)</li>
-<li><strike>P2P Client - WebRTC - VR Ready</strike> (waiting in infinity for IPv6)</li>
+<li><strike>WebGL</strike> - <strike>three.js</strike> - <strike>ammo.js</strike></li>
+<li><strike>P2P Client</strike> - <strike>WebRTC</strike> - <strike>VR Ready</strike></li>
 </ul>
 Examples:
 <table border="0">
@@ -107,7 +107,14 @@ Examples:
 <tr><td><img width="30px" src="svg/orange.svg"></td><td><img width="30px" src="svg/purple.svg"></td></tr>
 </table>
 </a></td></tr>
-<tr><td colspan="2" align="center"><a href="http://store.steampowered.com/app/486310/"><img src="meadow.jpg"></a></td></tr>
+<tr><td colspan="2" align="left"><a name="meadow" href="http://store.steampowered.com/app/486310/"><img src="meadow.jpg"></a>
+<br><font color="#00cc33">Meadow preliminary performance statistics are promising:</font>
+<ul style="list-style-type: none;"><li><font color="#ff3300">- 150 CU ~30% CPU on AWS T2 Micro</font></li>
+<li><font color="#6699ff">Then we upgraded because CPU credits were<br>running low and not replenishing at night:</font></li>
+<li><font color="#ff3300">- 200 CU ~12.5% CPU on AWS T2 Medium</font></li>
+<li><i><font color="#ff9900">- scales linearly / zero io-wait</font></i></li>
+<li><i><font color="#ff9900">- 100% stable / zero leakage</font></i></li></ul></td></tr>
+<tr><td colspan="2" align="left"><!--a href="http://starstable.com"><img src="starstable.svg"></a--></td></tr>
 </table>
 Integration:<br>
 <ul style="list-style-type: none;"><li>Dedicated Developer: 50$/hour</li>
