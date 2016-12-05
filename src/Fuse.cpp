@@ -452,8 +452,9 @@ bool Game(string game) {
 }
 
 void Pull() {
-	string data = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost: " + host + "\r\nHead: less\r\n\r\n";
-	
+	//string data = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost:" + host + "\r\nHead:less\r\n\r\n";
+	string data = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost:" + host + "\r\nAccept:text/event-stream\r\nHead:less\r\n\r\n";
+
 	#ifdef WIN32
 	send(pull, data.c_str(), data.length(), 0);
 	#else
@@ -469,6 +470,7 @@ void Pull() {
 	bool append = false;
 	stringstream ss;
 	string message;
+	string prefix("data: ");
 	
 	while(alive) {
 		getline(stream, line, '\r');
@@ -487,6 +489,9 @@ void Pull() {
 						if(first) {
 							first = false;
 							Game(game);
+						}
+						if(!message.compare(0, prefix.size(), prefix)) { // Removes the event-stream prefix.
+							message = message.substr(6, message.length());
 						}
 						cout << "pull " << message << endl;
 						// NOTE: input queue is not needed in a fully threaded c++ environment

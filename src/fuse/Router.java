@@ -1517,12 +1517,8 @@ public class Router implements Node {
 			Iterator it = users.values().iterator();
 
 			while(it.hasNext()) {
-				Part p = (Part) it.next();
-
-				if(p instanceof User) {
-					User u = (User) p;
-					node.wakeup(u.salt);
-				}
+				User u = (User) it.next();
+				node.wakeup(u.salt);
 			}
 		}
 

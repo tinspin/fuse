@@ -97,8 +97,9 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		pull.NoDelay = true;
 		pull.Connect(remote);
 
-		String text = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost: " + host + "\r\nHead: less\r\n\r\n";
-
+		//String text = "GET /pull?salt=" + salt + " HTTP/1.1\r\nHost:" + host + "\r\nHead:less\r\n\r\n";
+		String text = "GET /pull?salt=" + salt + " HTTP/1.1\r\nAccept:text/event-stream\r\nHost:" + host + "\r\nHead:less\r\n\r\n";
+		
 		stream = new BufferedStream(new NetworkStream(pull));
 
 		pull.Send(Encoding.UTF8.GetBytes(text));
@@ -304,6 +305,9 @@ public class Fuse { // : MonoBehaviour { // ### 2
 						String message = builder.ToString().Substring(0, index);
 
 						if(message.Length > 0) {
+							if(message.StartsWith("data:")) {
+								message = message.Substring(6);
+							}
 							lock(input) {
 								input.Enqueue(message);
 							}
