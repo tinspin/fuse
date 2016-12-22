@@ -148,6 +148,8 @@ public class Fuse { // : MonoBehaviour { // ### 2
 				while(message != null) {
 					Push(message);
 
+					/* Here you can act on async push responses */
+
 					lock(output) {
 						if(output.Count > 0)
 							message = output.Dequeue();
@@ -481,10 +483,6 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		Async("over|" + data);
 	}
 	
-	/* use coroutines for everything where 
-	   you need to act on the response while 
-	   in the main thread */
-	
 	public void Save(string name, string json) {
 		Save(name, json, "hard");
 	}
@@ -508,7 +506,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	
 	// Delete data
 	public void Tear(string name, string type) {
-		EasyPush("save|" + Uri.EscapeDataString(name) + "|" + type);
+		EasyPush("tear|" + Uri.EscapeDataString(name) + "|" + type);
 	}
 	
 	public string Hard(string user, string name) {
