@@ -11,7 +11,7 @@ support:
   - c++ <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cpp">fuse.cpp</a>
   - java will be added later, if somebody needs it now you 
     can hopefully figure it out from <a href="http://rupy.se/talk.zip">src/stream/client.java</a>.
-  - javascript xhr/xdr, 99.9% of browsers, only ie7 missing
+  - html5 xhr/xdr, 99.9% of browsers, only ie7 missing
     cors static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/cube.html">cube.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/bomb.html">bomb.html</a>
   - 100% firewall pass-through
   - all gameplay types:
@@ -26,9 +26,6 @@ protocol:
     - ',' attributes
   - client/server triplex http, comet upstream 
     '\n' terminated or 'data: \n\n' encapsulated
-    - dynamic presence position move packets for mmo
-  - peer-to-peer udp, binary physics packets for vr
-    - position move and talk, look, head, body, hand packets
   - multicast udp on cluster for load distribution
     - concurrency ~25.000 mess./sec. on 4x raspberry pi 2
 
@@ -51,6 +48,7 @@ examples:
 
   - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source, try single-player <a href="http://fuse.rupy.se/cube.html">cube.html</a>)
   - java 3D vr mmo space shooter: <a href="http://aeonalpha.com">aeon</a> (closed-source)
+  - unity mmo: <a href="http://store.steampowered.com/app/486310/">meadow</a> (closed-source)
   
 license:
 
@@ -194,17 +192,17 @@ in sort of chronological order:
                             // get user persistent data
  <b><i>hard</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> hard|done|{…}
                             -> hard|fail|not found
-                            
+
                             // get user inventory item
  <b><i>item</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> item|done|{…}
                             -> item|fail|not found
-                            
+
                             // get user transient data
  <b><i>soft</i></b>|&lt;salt&gt;|&lt;user&gt;|&lt;name&gt;  -> soft|done|{…}
                             -> soft|fail|salt not found
                             -> soft|fail|user not found
                             -> soft|fail|not found
-                            
+
                             // drop item, how many and which
  <b><i>drop</i></b>|&lt;salt&gt;|&lt;name&gt;|&lt;many&gt;  -> drop|done|&lt;salt&gt;
                             -> drop|fail|not found
@@ -215,7 +213,7 @@ in sort of chronological order:
  <b><i>pick</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> pick|done
                             -> pick|fail|not found
                            o-> pick|&lt;user&gt;|&lt;item&gt;           // salt
-                           
+
                             // get user country (ISO 3166)
 *<b><i>flag</i></b>|&lt;salt&gt;|&lt;user&gt;         -> flag|done|&lt;code&gt;
 
@@ -299,7 +297,7 @@ in sort of chronological order:
                             // load data
  <b><i>load</i></b>|&lt;salt&gt;|&lt;name&gt;[|type]  -> load|done|{…}
                             -> load|fail|not found
-                            
+
                             // delete data
  <b><i>tear</i></b>|&lt;salt&gt;|&lt;name&gt;[|type]  -> tear|done
                             -> tear|fail|not found
@@ -345,15 +343,15 @@ in sort of chronological order:
                             // destination to interpolate to
 *<b><i>path</i></b>|&lt;salt&gt;|&lt;spot&gt;         -> path|done
                            x-> <b><i>path</i></b>|&lt;user&gt;|&lt;spot&gt;
-                            
+
                             // object to follow
 *<b><i>hunt</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> hunt|done
                            x-> <b><i>hunt</i></b>|&lt;user&gt;|&lt;salt&gt;
-                           
+
                             // object to attack
 *<b><i>kill</i></b>|&lt;salt&gt;|&lt;salt&gt;         -> kill|done
                            x-> <b><i>kill</i></b>|&lt;user&gt;|&lt;salt&gt;
-                            
+
  <b><i>/\</b></i> type not found          -> main|fail|type not found
 
 +-----------------+       

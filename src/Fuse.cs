@@ -491,7 +491,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		EasyPush("save|" + Uri.EscapeDataString(name) + "|" + Uri.EscapeDataString(json) + "|" + type);
 	}
 	
-	// No feedback on failure
+	// No feedback on failure unless handled in AsyncPush() above!
 	public void AsyncSave(string name, string json, string type) {
 		Async("save|" + Uri.EscapeDataString(name) + "|" + Uri.EscapeDataString(json) + "|" + type);
 	}
