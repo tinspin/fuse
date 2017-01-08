@@ -41,7 +41,7 @@ public class Async implements Runnable {
 		timeout = 1000;
 		debug = true;
 	}
-	
+
 	protected Async(Daemon daemon, int timeout, boolean debug) {
 		calls = new CopyOnWriteArrayList();
 		this.timeout = timeout;
@@ -60,10 +60,16 @@ public class Async implements Runnable {
 	public static abstract class Work {
 		protected Event event;
 		protected Deploy.Archive archive;
-		
+
 		public Work(Event event) throws Exception {
 			this.event = event;
-			archive = (Deploy.Archive) Thread.currentThread().getContextClassLoader();
+
+			try {
+				archive = (Deploy.Archive) Thread.currentThread().getContextClassLoader();
+			}
+			catch(Exception e) {
+				// On standalone (non hosted) this might fail.
+			}
 		}
 
 		/**
@@ -90,11 +96,11 @@ public class Async implements Runnable {
 	 */
 	public static class Timeout extends Exception {
 		String host;
-		
+
 		public Timeout(String host) {
 			this.host = host;
 		}
-		
+
 		public String getMessage() {
 			return host;
 		}
@@ -118,7 +124,7 @@ public class Async implements Runnable {
 		// Fixes FUSE "opened output without flush" cascade.
 		//if(work.event != null && work.event.reply().output.init)
 		//	work.event.reply().output.flush();
-		
+
 		if(invalidate > 0) {
 			Iterator it = calls.iterator();
 
@@ -199,7 +205,7 @@ public class Async implements Runnable {
 		public void version() {
 			this.version = "HTTP/1.0";
 		}
-		
+
 		private void state(int state) {
 			this.state = state;
 		}
@@ -277,7 +283,7 @@ public class Async implements Runnable {
 
 			if(debug)
 				System.out.println("  request " + http);
-			
+
 			byte[] head = http.getBytes("utf-8");
 			long length, write;
 
@@ -296,7 +302,7 @@ public class Async implements Runnable {
 					System.out.println("  body " + body.length);
 					System.out.println("  data " + new String(data));
 				}
-				
+
 				length = data.length;
 				write = channel.write(ByteBuffer.wrap(data));
 			}
@@ -322,7 +328,7 @@ public class Async implements Runnable {
 			write = channel.write(ByteBuffer.wrap(head));
 
 			length = file.length();
-			
+
 			FileChannel out = new FileInputStream(file).getChannel();
 
 			try {
@@ -360,10 +366,10 @@ public class Async implements Runnable {
 
 					if(body == null) {
 						head = new String(data, "utf-8");
-						
+
 						if(debug)
 							System.out.println("  head " + head);
-						
+
 						int boundary = head.indexOf("\r\n\r\n");
 
 						if(boundary == -1)
@@ -375,7 +381,7 @@ public class Async implements Runnable {
 							cookie = header(head, "Set-Cookie:");
 							if(cookie != null)
 								cookie = cookie.substring(0, cookie.indexOf(";"));
-							
+
 							//System.out.println("COOKIE " + cookie);
 						}
 
@@ -428,12 +434,12 @@ public class Async implements Runnable {
 						read(selector);
 						selector.wakeup();
 						read = channel.read(buffer);
-						
+
 						if(read == 0) {
 							zero++;
-							
+
 							Thread.currentThread().sleep(zero * 20);
-							
+
 							if(zero > 10)
 								throw new Exception("Pipe broken.");
 						}
@@ -475,10 +481,20 @@ public class Async implements Runnable {
 
 		public void run() {
 			try {
-				if(work == null || work.archive == null) {
+				if(daemon != null && daemon.host) {
+					if(work == null || work.archive == null) {
+						if(debug)
+							System.out.println("run return;");
+						return;
+					}
+				}
+				else if(work == null) {
+					if(debug)
+						System.out.println("run return;");
 					return;
 				}
-				
+				if(debug)
+					System.out.println("run " + run);
 				if(run == CONNECT) {
 					channel.finishConnect();
 					state(Call.WRITE);
