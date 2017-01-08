@@ -483,18 +483,13 @@ public class Async implements Runnable {
 			try {
 				if(daemon != null && daemon.host) {
 					if(work == null || work.archive == null) {
-						if(debug)
-							System.out.println("run return;");
 						return;
 					}
 				}
 				else if(work == null) {
-					if(debug)
-						System.out.println("run return;");
 					return;
 				}
-				if(debug)
-					System.out.println("run " + run);
+
 				if(run == CONNECT) {
 					channel.finishConnect();
 					state(Call.WRITE);
