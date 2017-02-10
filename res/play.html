@@ -14,6 +14,16 @@ public class play extends Service {
 	String black = "#000000";
 	String white = "#ffffff";
 	
+	private String hide(String pass) {
+		StringBuilder hide = new StringBuilder();
+		
+		for(int i = 0; i < pass.length(); i++) {
+			hide.append("•");
+		}
+		
+		return hide.toString();
+	}
+	
 	public String path() { return "/play.html"; }
 	public void filter(Event event) throws Event, Exception {
 		event.query().parse();
@@ -28,7 +38,7 @@ public class play extends Service {
 		
 		Output out = event.output(); ]]
 
-<!DOCTYPE HTML>
+<!doctype html>
 <html>
 <head>
 <meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -357,14 +367,14 @@ public class play extends Service {
 <!-- fuse view handling -->
 <script>
   var name = '';
-  var pass = '';
+  var pass = '[[ pass ]]';
   function user() {
     name = id('name');
     if(name.length < 3) {
       show_fail('name too short');
       return;
     }
-    pass = id('pass');
+    //pass = id('pass');
     if(pass.length < 3) {
       show_fail('pass too short');
       return;
@@ -390,7 +400,7 @@ public class play extends Service {
       show_fail('name too short');
       return;
     }
-    pass = id('pass');
+    //pass = id('pass');
     if(pass.length < 3) {
       show_fail('pass too short');
       return;
@@ -438,8 +448,26 @@ public class play extends Service {
   function hash_code(e) {
     e = e || window.event;
     var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+    console.log(unicode);
+    var s = String.fromCharCode(unicode);
+    console.log(s);
+    if(!e.shiftKey)
+      s = s.toLowerCase();
     if(unicode == 13) {
       hash();
+    }
+    else if(unicode == 8) {
+      pass = pass.substring(0, pass.length - 1);
+    }
+    else if(unicode > 31) {
+      pass += s;
+      var hide = element('hide');
+      hide.value = '';
+      for(var i = 0; i < pass.length; i++) {
+        hide.value += "•"; /* so weird, here i need to use ", but on another site ' works fine!? */
+      }
+      console.log(hide.value);
+      return false;
     }
   }
   function user_code(e) {
@@ -592,11 +620,11 @@ public class play extends Service {
 <body style="margin: 0px;">
 
 <div id="user"><table>
-<tr><td colspan="3"><a href="https://github.com/tinspin/fuse"><img border="0" width="140" height="80" src="fuse.svg"></a></td></tr>
+<tr><input type="hidden" name="pass" id="pass" value=""><td colspan="3"><a href="https://github.com/tinspin/fuse"><img border="0" width="140" height="80" src="fuse.svg"></a></td></tr>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
 <tr><td><i>name</i>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" size="10"></td></tr>
 <tr><td><i>pass</i>&nbsp;</td>
-    <td><input id="pass" name="pass" value="[[ pass ]]" type="password" size="10" onkeypress="hash_code(event);"></td>
+    <td><input id="hide" name="hide" size="10" onkeydown="return hash_code(event);"></td>
     <td><a href="javascript:hash();">login</a></td></tr>
 <tr><td><font color="[[ green ]]"><i>mail*</i></font></td>
     <td><input id="mail" name="mail" size="10" onkeypress="user_code(event);"></td>

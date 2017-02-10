@@ -62,9 +62,10 @@ public class Server extends Service implements Node, Runnable {
 			//Router.fuse = System.getProperty("host") + top;
 			Router.fuse = host;
 			Router.path = host;
-			
-			//System.out.println(Router.data);
 		}
+		
+		System.out.println("data " + Router.data);
+		System.out.println("host " + host);
 		
 		if(!alive) {
 			list = new ConcurrentHashMap();

@@ -18,7 +18,8 @@
     for(var i = 1; i < split.length; i++) {
       if(contains(used, split[i]))
         high += 50;
-      add_cube(color[math_random(0, 3)], split[i] * 50, -50 - high, 8);
+      //add_cube(color[math_random(0, 3)], split[i] * 50, -50 - high, 8);
+      add_cube('red', split[i] * 50, -50 - high, 8);
       used.push(split[i]);
       drops++;
     }
@@ -87,6 +88,9 @@
 </script>
 <!-- the game logic -->
 <script>
+  function math_random(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
   function reset() {
     element('cube').innerHTML = '';
     height = [0, 0, 0, 0, 0];
@@ -165,7 +169,10 @@
               height[col] += 50;
               cube.fuse.speed = 0;
               cube.style.zIndex = 0;
-              landed.push(cube);
+              if(cube.src.indexOf('svg/red.svg') < 0)
+                landed.push(cube);
+              else
+                snap.play();
               if(cube === current) {
                 spawn();
                 combo = 0;
@@ -195,6 +202,15 @@
       var cube = landed[i];
       if(cube) {
         fork(cube);
+        if(cube.fuse.row < 6) {
+          var temp = grid[cube.fuse.col][cube.fuse.row + 1];
+          if(temp && temp.src.indexOf('svg/red.svg') > 0) {
+            var color_ = color[math_random(0, 3)];
+            temp.src = 'svg/' + color_ + '.svg';
+            temp.fuse.color = color_;
+            landed.push(temp);
+          }
+        }
         if(remove.length > 3) {
           var data = cube.fuse.color;
           var block = 2 - combo * 2;
@@ -254,7 +270,7 @@
       return;
     }
     var other = grid[col][row];
-    if(other && other.fuse.speed == 0 && cube.src === other.src && !contains(remove, other)) {
+    if(other && other.fuse.speed == 0 && cube.src === other.src && !contains(remove, other) && cube.src.indexOf('svg/red.svg') < 0) {
       remove.push(other);
       fork(other);
     }
@@ -307,9 +323,25 @@
   div.addEventListener('touchstart', touchstart);
   div.addEventListener('touchmove', touchmove);
   document.addEventListener('keydown', keydown);
+  /*
+  document.addEventListener('touchstart', function(event) {
+    event.preventDefault();
+  });
+  document.addEventListener('touchmove', function(event) {
+    event.preventDefault();
+  });
+  */
   var url = window.location.href.split('/');
   if(url[url.length - 1] === 'cube.html') {
     head(232423);
+    add_cube('red', 0, -50, 8);
+    add_cube('red', 0, -50, 8);
+    add_cube('red', 0, -50, 8);
+    add_cube('red', 0, -50, 8);
+    add_cube('red', 50, -50, 8);
+    add_cube('red', 50, -100, 8);
+    add_cube('red', 50, -150, 8);
+    add_cube('red', 50, -200, 8);
     document.write("<div style='font-family: monospace'>You are playing a singleplayer demo!<br>Login <a href='http://fuse.rupy.se'>here</a> to play multiplayer!</div>");
   }
 </script>
@@ -325,4 +357,6 @@
 <img id="6" src="svg/greens.svg" style="position: absolute; left: 0px; top: 0px;"/>
 <img id="7" src="svg/oranges.svg" style="position: absolute; left: 0px; top: 0px;"/>
 <img id="8" src="svg/purples.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="9" src="svg/red.svg" style="position: absolute; left: 0px; top: 0px;"/>
+<img id="10" src="svg/reds.svg" style="position: absolute; left: 0px; top: 0px;"/>
 </div>

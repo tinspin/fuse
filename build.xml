@@ -56,6 +56,7 @@
 			<fileset dir="tmp/cls"/>
 		</copy>
 		<java classname="Page" classpath="${lib}">
+			<sysproperty key="file.encoding" value="UTF-8"/>
 			<arg line="bin/${name}.jar"/>
 			<arg line="res"/>
 		</java>
