@@ -63,7 +63,7 @@ public class User extends Service {
 		Output out = event.output();
 		String salt = event.session().string("salt");
 		String algo = event.query().string("algo", "sha-256");
-
+/*
 		if(algo.equals("sha-256"))
 			out.println("<script src=\"sha256.js\"></script>");
 		else
@@ -115,6 +115,75 @@ public class User extends Service {
 		out.println("  div { font-family: monospace; }");
 		out.println("  input { font-family: monospace; }");
 		out.println("</style>");
+		*/
+		if(algo.equals("sha-256"))
+			out.println("<script src=\"sha256.js\"></script>");
+		else
+			out.println("<script src=\"md5.js\"></script>");
+		out.println("<script>");
+		out.println("  var word = '';");
+		out.println("  function join(e) {");
+		out.println("    e = e || window.event;");
+		out.println("    var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;");
+		out.println("    if(unicode == 13) {");
+		out.println("      hash('join');");
+		out.println("    }");
+		out.println("  }");
+		out.println("  function sign(e) {");
+		out.println("    e = e || window.event;");
+		out.println("    var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;");
+		out.println("    var s = String.fromCharCode(unicode);");
+		out.println("    if(!e.shiftKey)");
+		out.println("      s = s.toLowerCase();");
+		out.println("    if(unicode == 13) {");
+		out.println("      hash('sign');");
+		out.println("    }");
+		out.println("    else if(unicode == 8) {");
+		out.println("      word = word.substring(0, word.length - 1);");
+		out.println("    }");
+		out.println("    else if(unicode > 31) {");
+		out.println("      word += s;");
+		out.println("      var hide = document.getElementById('hide');");
+		out.println("      hide.value = '';");
+		out.println("      for(var i = 0; i < word.length; i++) {");
+		out.println("        hide.value += '•';");
+		out.println("      }");
+		out.println("      return false;");
+		out.println("    }");
+		out.println("  }");
+		out.println("  var digits = /^\\d+$/;");
+		out.println("  function hash(type) {");
+		out.println("    var name = document.getElementById('name');");
+		out.println("    var hide = document.getElementById('hide');");
+		out.println("    var salt = document.getElementById('salt');");
+		out.println("    if(word.length > 0) {");
+		out.println("      if(type == 'join') {");
+		if(algo.equals("sha-256"))
+			out.println("        pass.value = CryptoJS.SHA256(word + name.value.toLowerCase());");
+		else
+			out.println("        pass.value = md5(word + name.value.toLowerCase());");
+		out.println("      } else {");
+		out.println("        salt.value = '" + salt + "';");
+		out.println("        var id_login = digits.test(name.value);");
+		out.println("        if(!id_login)");
+		if(algo.equals("sha-256")) {
+			out.println("          pass.value = CryptoJS.SHA256(word + name.value.toLowerCase());");
+			out.println("        pass.value = CryptoJS.SHA256(id_login ? word : pass.value + salt.value);");
+		}
+		else {
+			out.println("          pass.value = md5(word + name.value.toLowerCase());");
+			out.println("        pass.value = md5(id_login ? word : pass.value + salt.value);");
+		}
+		out.println("      }");
+		out.println("      document.forms['user'].submit();");
+		out.println("    }");
+		out.println("  }");
+		out.println("</script>");
+		out.println("<style>");
+		out.println("  a:link, a:hover, a:active, a:visited { color: #6699ff; font-style: italic; }");
+		out.println("  div { font-family: monospace; }");
+		out.println("  input { font-family: monospace; }");
+		out.println("</style>");
 	}
 
 	private void print(Event event, String feedback) throws Event, Exception {
@@ -131,6 +200,7 @@ public class User extends Service {
 			out.println("<!doctype html>");
 			out.println("<html>");
 			out.println("<head>");
+			out.println("<meta charset=\"utf-8\">");
 			out.println("<meta name=\"viewport\" content=\"width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0\">");
 		}
 
@@ -148,9 +218,9 @@ public class User extends Service {
 		}
 
 		out.println("<tr>");
-		out.println("<form action=\"user\" method=\"post\" name=\"user\"><input type=\"hidden\" name=\"salt\" id=\"salt\" value=\"" + salt + "\"><input type=\"hidden\" name=\"url\" value=\"" + url + "\">");
+		out.println("<form action=\"user\" method=\"post\" name=\"user\"><input type=\"hidden\" name=\"salt\" id=\"salt\" value=\"" + salt + "\"><input type=\"hidden\" name=\"pass\" id=\"pass\" value=\"\"><input type=\"hidden\" name=\"url\" value=\"" + url + "\">");
 		out.println("<td><i>name</i>&nbsp;</td><td><input type=\"text\" style=\"width: 100px;\" name=\"name\" id=\"name\" value=\"" + name + "\"></td></tr>");
-		out.println("<tr><td><i>pass</i></font>&nbsp;</td><td><input type=\"password\" style=\"width: 100px;\" name=\"pass\" id=\"pass\" onkeypress=\"sign(event);\"></td></tr>");
+		out.println("<tr><td><i>pass</i></font>&nbsp;</td><td><input type=\"text\" style=\"width: 100px;\" name=\"hide\" id=\"hide\" onkeydown=\"return sign(event);\"></td></tr>");
 		out.println("<tr><td><font color=\"#00cc33\"><i>mail*</i></font></td><td><input type=\"text\" style=\"width: 100px;\" name=\"mail\" value=\"" + mail + "\" onkeypress=\"join(event);\"></td></tr>");
 		out.println("<tr><td></td><td><a href=\"javascript:hash('sign');\">login</a>&nbsp;<a href=\"javascript:hash('join');\">register</a></td></tr>");
 		out.println("<tr><td></td><td><font color=\"#ff9900\"><i>*optional</i></font></td></tr>");
