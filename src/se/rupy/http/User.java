@@ -63,59 +63,7 @@ public class User extends Service {
 		Output out = event.output();
 		String salt = event.session().string("salt");
 		String algo = event.query().string("algo", "sha-256");
-/*
-		if(algo.equals("sha-256"))
-			out.println("<script src=\"sha256.js\"></script>");
-		else
-			out.println("<script src=\"md5.js\"></script>");
-		out.println("<script>");
-		out.println("  function join(e) {");
-		out.println("    e = e || window.event;");
-		out.println("    var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;");
-		out.println("    if(unicode == 13) {");
-		out.println("      hash('join');");
-		out.println("    }");
-		out.println("  }");
-		out.println("  function sign(e) {");
-		out.println("    e = e || window.event;");
-		out.println("    var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;");
-		out.println("    if(unicode == 13) {");
-		out.println("      hash('sign');");
-		out.println("    }");
-		out.println("  }");
-		out.println("  var digits = /^\\d+$/;");
-		out.println("  function hash(type) {");
-		out.println("    var name = document.getElementById('name');");
-		out.println("    var pass = document.getElementById('pass');");
-		out.println("    var salt = document.getElementById('salt');");
-		out.println("    if(pass.value.length > 0) {");
-		out.println("      if(type == 'join') {");
-		if(algo.equals("sha-256"))
-			out.println("        pass.value = CryptoJS.SHA256(pass.value + name.value.toLowerCase());");
-		else
-			out.println("        pass.value = md5(pass.value + name.value.toLowerCase());");
-		out.println("      } else {");
-		out.println("        salt.value = '" + salt + "';");
-		out.println("        if(!digits.test(name.value))");
-		if(algo.equals("sha-256")) {
-			out.println("          pass.value = CryptoJS.SHA256(pass.value + name.value.toLowerCase());");
-			out.println("        pass.value = CryptoJS.SHA256(pass.value + salt.value);");
-		}
-		else {
-			out.println("          pass.value = md5(pass.value + name.value.toLowerCase());");
-			out.println("        pass.value = md5(pass.value + salt.value);");
-		}
-		out.println("      }");
-		out.println("      document.forms['user'].submit();");
-		out.println("    }");
-		out.println("  }");
-		out.println("</script>");
-		out.println("<style>");
-		out.println("  a:link, a:hover, a:active, a:visited { color: #6699ff; font-style: italic; }");
-		out.println("  div { font-family: monospace; }");
-		out.println("  input { font-family: monospace; }");
-		out.println("</style>");
-		*/
+
 		if(algo.equals("sha-256"))
 			out.println("<script src=\"sha256.js\"></script>");
 		else
