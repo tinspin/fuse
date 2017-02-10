@@ -41,6 +41,7 @@ public class play extends Service {
 <!doctype html>
 <html>
 <head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <style>
   a:link, a:hover, a:active, a:visited { color: [[ blue ]]; font-style: italic; }
@@ -448,9 +449,7 @@ public class play extends Service {
   function hash_code(e) {
     e = e || window.event;
     var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-    console.log(unicode);
     var s = String.fromCharCode(unicode);
-    console.log(s);
     if(!e.shiftKey)
       s = s.toLowerCase();
     if(unicode == 13) {
@@ -464,9 +463,8 @@ public class play extends Service {
       var hide = element('hide');
       hide.value = '';
       for(var i = 0; i < pass.length; i++) {
-        hide.value += "•"; /* so weird, here i need to use ", but on another site ' works fine!? */
+        hide.value += '•';
       }
-      console.log(hide.value);
       return false;
     }
   }
@@ -620,11 +618,11 @@ public class play extends Service {
 <body style="margin: 0px;">
 
 <div id="user"><table>
-<tr><input type="hidden" name="pass" id="pass" value=""><td colspan="3"><a href="https://github.com/tinspin/fuse"><img border="0" width="140" height="80" src="fuse.svg"></a></td></tr>
+<tr><input type="hidden" name="pass" id="pass" value="[[ pass ]]"><td colspan="3"><a href="https://github.com/tinspin/fuse"><img border="0" width="140" height="80" src="fuse.svg"></a></td></tr>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
 <tr><td><i>name</i>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" size="10"></td></tr>
 <tr><td><i>pass</i>&nbsp;</td>
-    <td><input id="hide" name="hide" size="10" onkeydown="return hash_code(event);"></td>
+    <td><input id="hide" name="hide" size="10" value="[[ hide(pass) ]]" onkeydown="return hash_code(event);"></td>
     <td><a href="javascript:hash();">login</a></td></tr>
 <tr><td><font color="[[ green ]]"><i>mail*</i></font></td>
     <td><input id="mail" name="mail" size="10" onkeypress="user_code(event);"></td>
