@@ -133,7 +133,7 @@ class Chain extends LinkedList {
 				service.metric.put(path, metric);
 			}
 
-			System.out.println(path + " " + metric.req.in + " " + metric.req.out);
+			//System.out.println(path + " " + metric.req.in + " " + metric.req.out);
 			
 			if(i == 0) {
 				if(!write)
