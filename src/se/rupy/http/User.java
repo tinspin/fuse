@@ -289,7 +289,7 @@ public class User extends Service {
 						
 						File file = null;
 						
-						if(name.indexOf("@") > -1) {
+						if(name.indexOf("@") > -1) { // this doesen't work because name is used as salt!
 							file = new File(Root.home() + "/node/user/mail" + Root.path(name));
 						}
 						else if(name.matches("[0-9]+")) {

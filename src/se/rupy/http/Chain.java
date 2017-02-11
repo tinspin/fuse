@@ -50,7 +50,8 @@ class Chain extends LinkedList {
 			}
 
 			long cpu = Event.BEAN.getThreadCpuTime(Thread.currentThread().getId());
-
+			Object o = null;
+			
 			if(event.daemon().host && !root) {
 				try {
 					final Deploy.Archive archive = event.daemon().archive(event.query().header("host"), true);
@@ -64,7 +65,7 @@ class Chain extends LinkedList {
 						// recursive chaining fails here, no worries! ;)
 					}
 
-					Object o = AccessController.doPrivileged(new PrivilegedExceptionAction() {
+					o = AccessController.doPrivileged(new PrivilegedExceptionAction() {
 						public Object run() throws Exception {
 							try {
 								service.filter(event);
@@ -82,10 +83,6 @@ class Chain extends LinkedList {
 							}
 						}
 					}, archive.access());
-
-					if(o != null) {
-						throw (Event) o;
-					}
 				}
 				catch(PrivilegedActionException e) {
 					if(e.getCause() != null) {
@@ -130,12 +127,14 @@ class Chain extends LinkedList {
 
 			String path = event.query().path();
 			Daemon.Metric metric = (Daemon.Metric) service.metric.get(path);
-
+			
 			if(metric == null) {
 				metric = new Daemon.Metric();
 				service.metric.put(path, metric);
 			}
 
+			System.out.println(path + " " + metric.req.in + " " + metric.req.out);
+			
 			if(i == 0) {
 				if(!write)
 					metric.req.in++;
@@ -149,6 +148,10 @@ class Chain extends LinkedList {
 
 			event.query().input.total = 0;
 			event.reply().output.total = 0;
+			
+			if(o != null) {
+				throw (Event) o;
+			}
 		}
 	}
 
