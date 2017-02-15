@@ -10,6 +10,14 @@ import org.json.JSONObject;
 
 import se.rupy.http.*;
 
+/* Making a generic user HTML login/registration system 
+ * with async-to-async is very complex. There are two ways to go:
+ * 1) require AJAX javascript modules (not great for all use cases).
+ * 2) require extremely complex redirect loops, async pushes and user flows.
+ * Right now we opt for no. 2 with simplified requirements that you
+ * include the /user "module" on the root path (/), 
+ * we will make an example project soon.
+ */
 public class User extends Service {
 	private String host(Event event) throws Exception {
 		return event.query().string("root", Root.host());
@@ -165,13 +173,18 @@ public class User extends Service {
 			out.println("<tr><td colspan=\"2\"><i><font color=\"#ff3300\">" + fail + "</font></i></td></tr>");
 		}
 
+		// mail is not compatible with distributed database on user creation.
+		// if the "insert" fails, nodes will have the mail and successive registers
+		// will fail. add mail when user has been successfully registered for
+		// password reset and account recovery.
+		
 		out.println("<tr>");
 		out.println("<form action=\"user\" method=\"post\" name=\"user\"><input type=\"hidden\" name=\"salt\" id=\"salt\" value=\"" + salt + "\"><input type=\"hidden\" name=\"pass\" id=\"pass\" value=\"\"><input type=\"hidden\" name=\"url\" value=\"" + url + "\">");
 		out.println("<td><i>name</i>&nbsp;</td><td><input type=\"text\" style=\"width: 100px;\" name=\"name\" id=\"name\" value=\"" + name + "\"></td></tr>");
 		out.println("<tr><td><i>pass</i></font>&nbsp;</td><td><input type=\"text\" style=\"width: 100px;\" name=\"hide\" id=\"hide\" onkeydown=\"return sign(event);\"></td></tr>");
-		out.println("<tr><td><font color=\"#00cc33\"><i>mail*</i></font></td><td><input type=\"text\" style=\"width: 100px;\" name=\"mail\" value=\"" + mail + "\" onkeypress=\"join(event);\"></td></tr>");
+		//out.println("<tr><td><font color=\"#00cc33\"><i>mail*</i></font></td><td><input type=\"text\" style=\"width: 100px;\" name=\"mail\" value=\"" + mail + "\" onkeypress=\"join(event);\"></td></tr>");
 		out.println("<tr><td></td><td><a href=\"javascript:hash('sign');\">login</a>&nbsp;<a href=\"javascript:hash('join');\">register</a></td></tr>");
-		out.println("<tr><td></td><td><font color=\"#ff9900\"><i>*optional</i></font></td></tr>");
+		//out.println("<tr><td></td><td><font color=\"#ff9900\"><i>*optional</i></font></td></tr>");
 		out.println("</form>");
 		out.println("</table></div>");
 
