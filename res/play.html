@@ -188,7 +188,10 @@ public class play extends Service {
     var split = data.split('|');
     if(split.length > 0) {
       if(split[0] == 'chat') {
-        element('chat').value = '[' + split[1] + '] ' + split[2] + ': ' + split[3] + '\n' + element('chat').value;
+      	var area = element('chat');
+        area.value = area.value + (area.value.length > 0 ? '\n' : '') + '[' + split[1] + '] ' + split[2] + ': ' + split[3];
+        area.scrollTop = area.scrollHeight;
+        console.log(area.scrollTop);
         type_audio.play();
       }
       else if(split[0] == 'lock') {
@@ -620,14 +623,9 @@ public class play extends Service {
 <div id="user"><table>
 <tr><input type="hidden" name="pass" id="pass" value="[[ pass ]]"><td colspan="3"><a href="https://github.com/tinspin/fuse"><img border="0" width="140" height="80" src="fuse.svg"></a></td></tr>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
-<tr><td><i>name</i>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" size="10"></td></tr>
-<tr><td><i>pass</i>&nbsp;</td>
-    <td><input id="hide" name="hide" size="10" value="[[ hide(pass) ]]" onkeydown="return hash_code(event);"></td>
-    <td><a href="javascript:hash();">login</a></td></tr>
-<tr><td><font color="[[ green ]]"><i>mail*</i></font></td>
-    <td><input id="mail" name="mail" size="10" onkeypress="user_code(event);"></td>
-    <td><a href="javascript:user();">register</a></td></tr>
-<tr><td></td><td><font color="[[ orange ]]"><i>*optional</i></font></td></tr>
+<tr><td><i>name</i>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" style="width: 100px;"></td></tr>
+<tr><td><i>pass</i>&nbsp;</td><td><input id="hide" name="hide" value="[[ hide(pass) ]]" style="width: 100px;" onkeydown="return hash_code(event);"></td></tr>
+<tr><td></td><td><a href="javascript:hash();">login</a> <a href="javascript:user();">register</a></td></tr>
 <tr><td></td><td><font color="#999999"><i>host: [[ Root.local() ]]</i></font></td></tr>
 <tr><td></td><td><a class="grey" href="fuse.html">about</a></td></tr>
 </table>
