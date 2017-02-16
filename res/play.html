@@ -46,6 +46,7 @@ public class play extends Service {
 <style>
   a:link, a:hover, a:active, a:visited { color: [[ blue ]]; font-style: italic; }
   a.grey:link, a.grey:hover, a.grey:active, a.grey:visited { color: #999999; font-style: italic; }
+  a.orange:link, a.orange:hover, a.orange:active, a.orange:visited { color: #ff9900; font-style: italic; }
   img { display: block; }
   div { font-family: monospace; }
   input { font-family: monospace; box-sizing: border-box; }
@@ -623,9 +624,9 @@ public class play extends Service {
 <div id="user"><table>
 <tr><input type="hidden" name="pass" id="pass" value="[[ pass ]]"><td colspan="3"><a href="https://github.com/tinspin/fuse"><img border="0" width="140" height="80" src="fuse.svg"></a></td></tr>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
-<tr><td><i>name</i>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" style="width: 100px;"></td></tr>
-<tr><td><i>pass</i>&nbsp;</td><td><input id="hide" name="hide" value="[[ hide(pass) ]]" style="width: 100px;" onkeydown="return hash_code(event);"></td></tr>
-<tr><td></td><td><a href="javascript:hash();">login</a> <a href="javascript:user();">register</a></td></tr>
+<tr><td><font color="#00cc33"><i>name</i></font>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" style="width: 100px;"></td></tr>
+<tr><td><font color="#00cc33"><i>pass</i></font>&nbsp;</td><td><input id="hide" name="hide" value="[[ hide(pass) ]]" style="width: 100px;" onkeydown="return hash_code(event);"></td></tr>
+<tr><td></td><td><a href="javascript:hash();">login</a> <a class="orange" href="javascript:user();">register</a></td></tr>
 <tr><td></td><td><font color="#999999"><i>host: [[ Root.local() ]]</i></font></td></tr>
 <tr><td></td><td><a class="grey" href="fuse.html">about</a></td></tr>
 </table>
