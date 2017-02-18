@@ -10,6 +10,7 @@ import java.nio.file.LinkPermission;
 import java.security.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.*;
 
 /**
@@ -223,8 +224,9 @@ public class Deploy extends Service {
 	 */
 	public static class Archive extends ClassLoader {
 		private AccessControlContext access;
-		private TreeMap service, chain, files;
+		private TreeMap service, chain;
 		private String name, host;
+		private HashMap files;
 		private long date;
 
 		long rom;
@@ -251,7 +253,7 @@ public class Deploy extends Service {
 		Archive(Daemon daemon, File file, Event event) throws Exception {
 			service = new TreeMap();
 			chain = new TreeMap();
-			files = new TreeMap();
+			files = new HashMap();
 			name = file.getName();
 			date = file.lastModified();
 
@@ -478,7 +480,7 @@ public class Deploy extends Service {
 			return date;
 		}
 
-		protected TreeMap files() {
+		protected HashMap files() {
 			return files;
 		}
 
