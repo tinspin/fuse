@@ -5,12 +5,10 @@
 	 width="53px" height="30px" viewBox="0 0 53 30" enable-background="new 0 0 53 30" xml:space="preserve">
 <defs>
     <filter id="dropshadow" height="200%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="0.2"/>
-      <feOffset dx="0.3" dy="0.3" result="offsetblur"/>
-      <feMerge>
-        <feMergeNode/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+      <feOffset result="offOut" in="SourceGraphic" dx="0.45" dy="0.45" />
+      <feColorMatrix result="matrixOut" in="offOut" type="matrix"
+      values="0.2 0 0 0 0 0 0.2 0 0 0 0 0 0.2 0 0 0 0 0 1 0" />
+      <feBlend in="SourceGraphic" in2="matrixOut" mode="normal" />
     </filter>
   </defs>
   <g filter="url(#dropshadow)">
