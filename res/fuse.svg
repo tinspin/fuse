@@ -3,6 +3,17 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="53px" height="30px" viewBox="0 0 53 30" enable-background="new 0 0 53 30" xml:space="preserve">
+<defs>
+    <filter id="dropshadow" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="0.2"/>
+      <feOffset dx="0.3" dy="0.3" result="offsetblur"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#dropshadow)">
 <path fill="#EF4524" d="M6.418,16.785H3.08c-1.104,0-2-0.895-2-2s0.896-2,2-2h3.338c1.104,0,2,0.896,2,2S7.522,16.785,6.418,16.785
 	L6.418,16.785z"/>
 <path fill="#4AB749" d="M24.232,25.098c-1.104,0-2-0.896-2-2v-8.643c0-1.104,0.896-2,2-2s2,0.896,2,2v8.643
@@ -28,7 +39,8 @@
 	c0,2.359,1.919,4.278,4.277,4.278c1.104,0,2,0.896,2,2S51.317,28.646,50.213,28.646L50.213,28.646z"/>
 <path fill="#7592CA" d="M15.971,16.785H8.849c-1.104,0-2-0.895-2-2s0.896-2,2-2h7.123c1.104,0,2,0.896,2,2
 	S17.076,16.785,15.971,16.785L15.971,16.785z"/>
-<g>
+</g>
+<g filter="url(#dropshadow)">
 	<circle fill="#4AB749" cx="50.213" cy="20.368" r="1.786"/>
 	<path fill="#4AB749" d="M50.213,22.654c-1.26,0-2.285-1.025-2.285-2.286s1.025-2.286,2.285-2.286c1.261,0,2.287,1.025,2.287,2.286
 		S51.474,22.654,50.213,22.654L50.213,22.654z M50.213,19.082c-0.709,0-1.285,0.577-1.285,1.286s0.576,1.286,1.285,1.286
