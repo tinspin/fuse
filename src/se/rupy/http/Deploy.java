@@ -226,7 +226,7 @@ public class Deploy extends Service {
 		private AccessControlContext access;
 		private TreeMap service, chain;
 		private String name, host;
-		private HashMap files;
+		private ConcurrentHashMap files;
 		private long date;
 
 		long rom;
@@ -253,7 +253,7 @@ public class Deploy extends Service {
 		Archive(Daemon daemon, File file, Event event) throws Exception {
 			service = new TreeMap();
 			chain = new TreeMap();
-			files = new HashMap();
+			files = new ConcurrentHashMap();
 			name = file.getName();
 			date = file.lastModified();
 
@@ -480,7 +480,7 @@ public class Deploy extends Service {
 			return date;
 		}
 
-		protected HashMap files() {
+		protected ConcurrentHashMap files() {
 			return files;
 		}
 
