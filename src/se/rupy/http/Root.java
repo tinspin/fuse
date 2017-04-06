@@ -1,7 +1,5 @@
 package se.rupy.http;
 
-import Root;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
