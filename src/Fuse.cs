@@ -334,12 +334,8 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 	// ------------- PROTOCOL  -------------
 
-	public string Time() { // HH:mm:ss
+	public string Time() { // millisec from 1970
 		return EasyPush("time")[2];
-	}
-	
-	public string Date() { // yyyy/MM/dd
-		return EasyPush("date")[2];
 	}
 
 	/* Anonymous user.
@@ -614,7 +610,6 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			//Thread.Sleep(100);
 			
 			Log("Time: " + fuse.Time());
-			Log("Date: " + fuse.Date());
 			
 			// if no key is stored try
 /*

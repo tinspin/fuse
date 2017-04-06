@@ -132,11 +132,7 @@ public class Router implements Node {
 		}
 
 		if(split[0].equals("time")) {
-			return "time|done|" + new SimpleDateFormat("HH:mm:ss").format(new Date());
-		}
-		
-		if(split[0].equals("date")) {
-			return "date|done|" + new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+			return "time|done|" + System.currentTimeMillis();
 		}
 		
 		if(split[0].equals("user")) {

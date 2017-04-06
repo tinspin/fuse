@@ -85,11 +85,8 @@ in sort of chronological order:
                             // to get latency
  <b><i>ping</i></b>                       -> ping|done
  
-                            // to get server time
- <b><i>time</i></b>                       -> time|done|HH:mm:ss
-
-                            // to get server date
- <b><i>date</i></b>                       -> date|done|yyyy/MM/dd
+                            // to get server time in millisec from 1970
+ <b><i>time</i></b>                       -> time|done|<time>
 
                             // register
                             // [name] if you can't store the &lt;id&gt; otherwise set
@@ -379,7 +376,7 @@ in sort of chronological order:
 
 // name pool
 
- lead
+ lead date
  head tail
  push pull
  show hide
