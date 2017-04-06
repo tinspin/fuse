@@ -86,7 +86,7 @@ in sort of chronological order:
  <b><i>ping</i></b>                       -> ping|done
  
                             // to get server time in millisec from 1970
- <b><i>time</i></b>                       -> time|done|<time>
+ <b><i>time</i></b>                       -> time|done|&lt;time&gt;
 
                             // register
                             // [name] if you can't store the &lt;id&gt; otherwise set
