@@ -1,5 +1,7 @@
 package se.rupy.http;
 
+import Root;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -1281,6 +1283,7 @@ public class Root extends Service {
 					 * combinations:
 					 * 
 					 * /meta/<head>/<tail>/<id>
+					 * /meta/<head>/<tail>/<id>/<id>
 					 * /meta/<head>/<tail>/<id>/<name>
 					 * /meta/<head>/<tail>/<name>/<id>
 					 * /meta/<head>/<tail>/<name>/<name>
@@ -1299,7 +1302,16 @@ public class Root extends Service {
 							full = home() + "/meta/" + head + "/" + tail + Root.path(key);
 						}
 						else if(tree.length > 1) {
-							full = home() + "/meta/" + head + "/" + tail + "/" + Root.path(key) + "/" + tree[1];
+							if(tree[1].matches("[0-9]+")) { // child id
+								long id2 = Long.parseLong(tree[1]);
+								JSONObject json2 = new JSONObject(file(home() + "/node/" + tail + "/id" + Root.path(id2)));
+								String key2 = json2.getString("key");
+
+								full = home() + "/meta/" + head + "/" + tail + "/" + Root.path(key) + "/" + key2;
+							}
+							else {
+								full = home() + "/meta/" + head + "/" + tail + "/" + Root.path(key) + "/" + tree[1];
+							}
 						}
 					}
 					else if(tree[0].length() < LENGTH) { // parent name
