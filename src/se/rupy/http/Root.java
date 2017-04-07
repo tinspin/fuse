@@ -1118,11 +1118,16 @@ public class Root extends Service {
 						name = "" + Root.hash(name);
 
 					if(Files.isDirectory(path)) {
-						JSONArray child = recurse(path.toFile(), path.toString(), from, size, level + 1, deep, sort, secure, time);
+						if(deep == 0) {
+							arr.put(name);
+						}
+						else {
+							JSONArray child = recurse(path.toFile(), path.toString(), from, size, level + 1, deep, sort, secure, time);
 
-						if(child != null) {
-							add = true;
-							obj.put(name, child);
+							if(child != null) {
+								add = true;
+								obj.put(name, child);
+							}
 						}
 					}
 					else {
