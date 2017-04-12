@@ -132,7 +132,7 @@ public class Router implements Node {
 		}
 
 		if(split[0].equals("time")) {
-			return "time|done|" + System.currentTimeMillis();
+			return "time|done|" + System.currentTimeMillis(); // TODO: this needs timezone!
 		}
 		
 		if(split[0].equals("user")) {
@@ -807,12 +807,12 @@ public class Router implements Node {
 					StringBuilder builder = new StringBuilder();
 
 					if(user.flag != null)
-						builder.append("<img style=\"display: inline;\" src=\"flag/" + user.flag + ".gif\">&nbsp;");
+						builder.append("<img style=\"display: inline;\" width=\"16\" height=\"16\" src=\"http://host.rupy.se/flag/" + user.flag + ".svg\">&nbsp;");
 
 					builder.append("<font color=\"#ff3300\">" + user.name + "(" + user.lost + ")</font> vs. ");
 
 					if(other.flag != null)
-						builder.append("<img style=\"display: inline;\" src=\"flag/" + other.flag + ".gif\">&nbsp;");
+						builder.append("<img style=\"display: inline;\" width=\"16\" height=\"16\" src=\"http://host.rupy.se/flag/" + other.flag + ".svg\">&nbsp;");
 
 					builder.append("<font color=\"#00cc33\">" + other.name + "</font>");
 

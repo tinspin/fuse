@@ -403,8 +403,9 @@ in sort of chronological order:
 
 // attribution
 
- pop.mp3 - Mark DiAngelo
- snap.mp3 - Mark DiAngelo
+ res/mp3/pop.mp3 - Mark DiAngelo
+ res/mp3/snap.mp3 - Mark DiAngelo
+ res/svg/animal/* - Freepik
  
 // credits
 
