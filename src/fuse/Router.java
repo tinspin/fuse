@@ -807,12 +807,12 @@ public class Router implements Node {
 					StringBuilder builder = new StringBuilder();
 
 					if(user.flag != null)
-						builder.append("<img style=\"display: inline;\" width=\"16\" height=\"16\" src=\"http://host.rupy.se/flag/" + user.flag + ".svg\">&nbsp;");
+						builder.append("<div class=\"parent\"><img class=\"animal\" width=\"32\" height=\"32\" src=\"svg/animal/penguin.svg\"><img class=\"flag\" width=\"14\" height=\"14\" src=\"http://host.rupy.se/flag/" + user.flag + ".svg\"></div>&nbsp;");
 
 					builder.append("<font color=\"#ff3300\">" + user.name + "(" + user.lost + ")</font> vs. ");
 
 					if(other.flag != null)
-						builder.append("<img style=\"display: inline;\" width=\"16\" height=\"16\" src=\"http://host.rupy.se/flag/" + other.flag + ".svg\">&nbsp;");
+						builder.append("<div class=\"parent\"><img class=\"animal\" width=\"32\" height=\"32\" src=\"svg/animal/cat.svg\"><img class=\"flag\" width=\"14\" height=\"14\" src=\"http://host.rupy.se/flag/" + other.flag + ".svg\"></div>&nbsp;");
 
 					builder.append("<font color=\"#00cc33\">" + other.name + "</font>");
 
