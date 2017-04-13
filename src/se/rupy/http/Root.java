@@ -180,7 +180,6 @@ public class Root extends Service {
 			event.reply().code("302 Found");
 		}
 	}</pre>
-	 * @return
 	 * @throws Exception
 	 */
 	public static String home() throws Exception {

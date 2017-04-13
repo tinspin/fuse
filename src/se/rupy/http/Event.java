@@ -33,7 +33,6 @@ import se.rupy.http.Daemon.Lock;
  * Where X marks the potential Comet pause point.
  */
 public class Event extends Throwable implements Chain.Link {
-	public static final String WARN = "<svg viewBox=\"0 0 294.995 294.995\" width=\"32px\" height=\"32px\"><path fill=\"#ff0000\" d=\"M291.874,248.279L165.605,26.526c-4.007-7.037-10.776-11.26-18.107-11.26s-14.101,4.202-18.107,11.239L3.121,248.238 c-3.979,6.989-4.164,15.013-0.493,21.326c3.67,6.313,10.663,10.165,18.705,10.165h252.329c8.042,0,15.035-3.852,18.705-10.165 C296.038,263.251,295.854,255.268,291.874,248.279z M146.665,86.229c9.665,0,17.5,7.835,17.5,17.5v63c0,9.665-7.835,17.5-17.5,17.5 c-9.665,0-17.5-7.835-17.5-17.5v-63C129.165,94.064,137,86.229,146.665,86.229z M147.498,204.005c9.665,0,17.5,7.835,17.5,17.5 c0,9.665-7.835,17.5-17.5,17.5c-9.665,0-17.5-7.835-17.5-17.5C129.998,211.84,137.833,204.005,147.498,204.005z\"/></svg>";
 	// waste of time it seems. hotspot does this optimisation for me! :)
 	protected final static boolean LOG = true;
 
@@ -289,8 +288,7 @@ public class Event extends Throwable implements Chain.Link {
 					}
 					else if(!service(daemon.chain(this, "null"), false)) {
 						reply.code("404 Not Found");
-						reply.output().print(
-								"<!doctype html><html><body>" + WARN + "<pre>'" + encode(query.path()) + "' was not found.</pre></body></html>");
+						reply.output().print(warn("'" + encode(query.path()) + "' was not found."));
 					}
 				}
 			}
@@ -469,7 +467,7 @@ public class Event extends Throwable implements Chain.Link {
 			e.printStackTrace(print);
 			
 			reply.code("500 Internal Server Error");
-			reply.output().print("<!doctype html><html><body>" + WARN + "<pre>{" + System.getProperty("host", "???") + "} " + encode(trace.toString()) + "</pre></body></html>");
+			reply.output().print(warn("{" + System.getProperty("host", "???") + "} " + encode(trace.toString())));
 			
 			if(reply.push()) {
 				reply.output().finish();
@@ -480,6 +478,13 @@ public class Event extends Throwable implements Chain.Link {
 		return true;
 	}
 
+	/**
+	 * Wraps a message with HTML and an inline SVG warning triangle.
+	 */
+	public String warn(String message) {
+		return "<!doctype html><html><body><svg viewBox=\"0 0 294.995 294.995\" width=\"32px\" height=\"32px\"><path fill=\"#ff0000\" d=\"M291.874,248.279L165.605,26.526c-4.007-7.037-10.776-11.26-18.107-11.26s-14.101,4.202-18.107,11.239L3.121,248.238 c-3.979,6.989-4.164,15.013-0.493,21.326c3.67,6.313,10.663,10.165,18.705,10.165h252.329c8.042,0,15.035-3.852,18.705-10.165 C296.038,263.251,295.854,255.268,291.874,248.279z M146.665,86.229c9.665,0,17.5,7.835,17.5,17.5v63c0,9.665-7.835,17.5-17.5,17.5 c-9.665,0-17.5-7.835-17.5-17.5v-63C129.165,94.064,137,86.229,146.665,86.229z M147.498,204.005c9.665,0,17.5,7.835,17.5,17.5 c0,9.665-7.835,17.5-17.5,17.5c-9.665,0-17.5-7.835-17.5-17.5C129.998,211.84,137.833,204.005,147.498,204.005z\"/></svg><pre>" + message + "</pre></body></html>";
+	}
+	
 	protected void write() throws IOException {
 		touch();
 		service(daemon.chain(this), true);
