@@ -406,6 +406,7 @@ in sort of chronological order:
  res/mp3/pop.mp3 - Mark DiAngelo
  res/mp3/snap.mp3 - Mark DiAngelo
  res/svg/animal/* - Freepik
+ res/console.svg - Freepik
  res/fuse.svg - Freepik
   
 // credits
