@@ -72,6 +72,8 @@
   };
   function keydown(event) {
     action(event.keyCode);
+    if(event.keyCode > 36 && event.keyCode < 41)
+      event.preventDefault();
   }
   function action(key) {
     if(key === 37)
