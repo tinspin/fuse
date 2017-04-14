@@ -806,14 +806,14 @@ public class Router implements Node {
 				if(user.salt != other.salt) {
 					StringBuilder builder = new StringBuilder();
 
-					if(user.flag != null)
-						builder.append("<div class=\"parent\"><img class=\"animal\" width=\"32\" height=\"32\" src=\"svg/animal/penguin.svg\"><img class=\"flag\" width=\"14\" height=\"14\" src=\"http://host.rupy.se/flag/" + user.flag + ".svg\"></div>&nbsp;");
-
+					//if(user.flag != null)
+					//	builder.append("<img style=\"display: inline;\" width=\"18\" height=\"18\" src=\"http://host.rupy.se/flag/" + user.flag + ".svg\">");
+//builder.append("<div class=\"parent\"><img class=\"animal\" width=\"32\" height=\"32\" src=\"svg/animal/penguin.svg\"><img class=\"flag\" width=\"14\" height=\"14\" src=\"http://host.rupy.se/flag/" + user.flag + ".svg\"></div>&nbsp;");
 					builder.append("<font color=\"#ff3300\">" + user.name + "(" + user.lost + ")</font> vs. ");
 
-					if(other.flag != null)
-						builder.append("<div class=\"parent\"><img class=\"animal\" width=\"32\" height=\"32\" src=\"svg/animal/cat.svg\"><img class=\"flag\" width=\"14\" height=\"14\" src=\"http://host.rupy.se/flag/" + other.flag + ".svg\"></div>&nbsp;");
-
+					//if(other.flag != null)
+					//	builder.append("<img style=\"display: inline;\" width=\"18\" height=\"18\" src=\"http://host.rupy.se/flag/" + other.flag + ".svg\">");
+//builder.append("<div class=\"parent\"><img class=\"animal\" width=\"32\" height=\"32\" src=\"svg/animal/cat.svg\"><img class=\"flag\" width=\"14\" height=\"14\" src=\"http://host.rupy.se/flag/" + other.flag + ".svg\"></div>&nbsp;");
 					builder.append("<font color=\"#00cc33\">" + other.name + "</font>");
 
 					score.add(builder.toString());

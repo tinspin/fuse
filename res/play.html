@@ -13,6 +13,7 @@ public class play extends Service {
 	String green = "#00cc33";
 	String black = "#000000";
 	String white = "#ffffff";
+	String font = "18pt";
 	
 	private String hide(String pass) {
 		StringBuilder hide = new StringBuilder();
@@ -44,6 +45,10 @@ public class play extends Service {
 <meta charset="utf-8">
 <meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <style>
+  @font-face {
+    font-family: '8-bit';
+    src: url('8-bit.ttf');
+  }
   .parent {
     position: relative;
     top: 0px;
@@ -59,29 +64,35 @@ public class play extends Service {
     bottom: 0px;
     left: 18px;
   }
-  a:link, a:hover, a:active, a:visited { color: [[ blue ]]; font-style: italic; }
-  a.grey:link, a.grey:hover, a.grey:active, a.grey:visited { color: #999999; font-style: italic; }
-  a.orange:link, a.orange:hover, a.orange:active, a.orange:visited { color: #ff9900; font-style: italic; }
+  a:link, a:hover, a:active, a:visited { color: [[ blue ]]; text-decoration: none; }
+  a.grey:link, a.grey:hover, a.grey:active, a.grey:visited { color: #999999; text-decoration: none; }
+  a.orange:link, a.orange:hover, a.orange:active, a.orange:visited { color: #ff9900; text-decoration: none; }
   img { display: block; }
-  div { font-family: monospace; }
-  input { font-family: monospace; box-sizing: border-box; }
+  div { font-family: '8-bit', monospace; }
+  input { background-color: transparent; outline: none; font-family: '8-bit', monospace; font-size: [[ font ]]; box-sizing: border-box; }
   table { margin: 5px; }
   #fail1 { color: [[ red ]]; }
   #fail2 { color: [[ red ]]; }
   textarea {
-    font-family: monospace;
+    outline: none;
+    background-color: transparent;
+    font-family: '8-bit', monospace;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     resize: none;
     width: 100%;
+    font-size: [[ font ]];
   }
   select {
-    font-family: monospace;
+    outline: none;
+    background-color: transparent;
+    font-family: '8-bit', monospace;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     width: 100%;
+    font-size: [[ font ]];
   }
   #show {
     position: fixed;
@@ -207,7 +218,6 @@ public class play extends Service {
       	var area = element('chat');
         area.value = area.value + (area.value.length > 0 ? '\n' : '') + '[' + split[1] + '] ' + split[2] + ': ' + split[3];
         area.scrollTop = area.scrollHeight;
-        console.log(area.scrollTop);
         type_audio.play();
       }
       else if(split[0] == 'lock') {
@@ -250,7 +260,10 @@ public class play extends Service {
         if(split[0] == 'quit')
           remove_select('ally', split[1]);
         if(split[0] == 'stop') {
-          element('chat').value = split[1] + ': quit\n' + element('chat').value;
+          var area = element('chat');
+          area.value = area.value + (area.value.length > 0 ? '\n' : '') + split[1] + ': quit';
+          area.scrollTop = area.scrollHeight;
+          /*element('chat').value = split[1] + ': quit\n' + element('chat').value;*/
           stop_game();
           list();
         }
@@ -268,7 +281,10 @@ public class play extends Service {
         sent(split[1], split[2]);
       }
       else if(split[0] == 'over') {
-        element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;
+        var area = element('chat');
+        area.value = area.value + (area.value.length > 0 ? '\n' : '') + split[1] + ': ' + split[2];
+        area.scrollTop = area.scrollHeight;
+        /*element('chat').value = split[1] + ': ' + split[2] + '\n' + element('chat').value;*/
         stop_game();
       }
       else if(split[0] == 'away') {
@@ -634,15 +650,15 @@ public class play extends Service {
   }
 </script>
 </head>
-<body style="margin: 0px;">
-<img style="position: absolute;" src="console.svg">
+<body style="margin: 0px; font-size: [[ font ]];">
+<img style="position: absolute; z-index: -1;" src="console.svg">
 <div id="user"><table>
 <tr><input type="hidden" name="pass" id="pass" value="[[ pass ]]"><td colspan="3"><a href="https://github.com/tinspin/fuse">
 <img border="0" width="150" height="150" src="fuse.svg">
 </a></td></tr>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
-<tr><td><font color="#00cc33"><i>name</i></font>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" style="width: 100px;"></td></tr>
-<tr><td><font color="#00cc33"><i>pass</i></font>&nbsp;</td><td><input id="hide" name="hide" value="[[ hide(pass) ]]" style="width: 100px;" onkeydown="return hash_code(event);"></td></tr>
+<tr><td><font color="#00cc33">name</font>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" style="width: 100px;"></td></tr>
+<tr><td><font color="#00cc33">pass</font>&nbsp;</td><td><input id="hide" name="hide" value="[[ hide(pass) ]]" style="width: 100px;" onkeydown="return hash_code(event);"></td></tr>
 <tr><td></td><td><a href="javascript:hash();">login</a> <a class="orange" href="javascript:user();">register</a></td></tr>
 <tr><td></td><td><a class="grey" href="fuse.html">about</a></td></tr>
 </table>
@@ -652,7 +668,7 @@ public class play extends Service {
 	while(it.hasNext()) {
 		String score = (String) it.next(); ]]
 
-<tr><td><i>[[ score ]]</i></td></tr>
+<tr><td>[[ score ]]</td></tr>
 
 [[	} ]]
 </table>
@@ -660,8 +676,8 @@ public class play extends Service {
 
 <div id="room" style="display: none;"><table>
 <tr><td colspan="3"><div id="fail2"></div></td></tr>
-<tr><td align="center"><i>user</i></td><td></td>
-    <td align="center"><i>room</i></td></tr>
+<tr><td align="center">user</td><td></td>
+    <td align="center">room</td></tr>
 <tr><td><select id="ally" size="5" multiple></select></td><td></td>
     <td><select id="join" size="5" multiple></select></td></tr>
 <tr><td><a href="javascript:ally();">ally</a></td><td></td>
@@ -708,7 +724,7 @@ public class play extends Service {
 <div id="talk" style="display: none;"><table>
 <tr><td colspan="3"><textarea id="chat" name="chat" rows="5" readonly></textarea></td></tr>
 <tr><td colspan="3">
-<select id="tree" style="width: 60px;"><option>root</option><option>stem</option><option>leaf</option></select>
+<select id="tree" style="width: 120px;"><option>root</option><option>stem</option><option>leaf</option></select>
 <input id="text" name="text" size="12" onkeypress="chat_code(event);">
 <a href="javascript:chat();">chat</a>
 </td></tr>
