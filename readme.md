@@ -52,7 +52,7 @@ examples:
   
 license:
 
-  - lgpl + you have to show the logo
+  - lgpl
     
 +------------------+
 | <i>work in progress</i> |

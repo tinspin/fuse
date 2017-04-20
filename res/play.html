@@ -74,6 +74,8 @@ public class play extends Service {
   #fail1 { color: [[ red ]]; }
   #fail2 { color: [[ red ]]; }
   textarea {
+    border-style: inset;
+    border-width: 2px;
     outline: none;
     background-color: transparent;
     font-family: '8-bit', monospace;
@@ -85,6 +87,8 @@ public class play extends Service {
     font-size: [[ font ]];
   }
   select {
+    border-style: inset;
+    border-width: 2px;
     outline: none;
     background-color: transparent;
     font-family: '8-bit', monospace;
@@ -653,9 +657,9 @@ public class play extends Service {
 <body style="margin: 0px; font-size: [[ font ]];">
 <img style="position: absolute; z-index: -1;" src="console.svg">
 <div id="user"><table>
-<tr><input type="hidden" name="pass" id="pass" value="[[ pass ]]"><td colspan="3"><a href="https://github.com/tinspin/fuse">
-<img border="0" width="150" height="150" src="fuse.svg">
-</a></td></tr>
+<tr><input type="hidden" name="pass" id="pass" value="[[ pass ]]"><td colspan="3">
+<!--a href="https://github.com/tinspin/fuse"><img border="0" width="150" height="150" src="fuse.svg"--></a>
+</td></tr>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
 <tr><td><font color="#00cc33">name</font>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" style="width: 100px;"></td></tr>
 <tr><td><font color="#00cc33">pass</font>&nbsp;</td><td><input id="hide" name="hide" value="[[ hide(pass) ]]" style="width: 100px;" onkeydown="return hash_code(event);"></td></tr>
