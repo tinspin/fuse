@@ -357,6 +357,7 @@ public class Event extends Throwable implements Chain.Link {
 		String type = MIME.content(query.path(), "application/octet-stream");
 
 		reply.type(type);
+		reply.cache();
 		reply.modified(stream.date());
 
 		if(query.modified() == 0 || query.modified() < reply.modified()) {

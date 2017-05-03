@@ -46,6 +46,7 @@ public class Reply {
 	private Event event;
 	private long modified;
 	private String code;
+	private boolean cache; // Used to only write max-age on files.
 
 	Output output;
 
@@ -75,8 +76,18 @@ public class Reply {
 		modified = 0;
 		type = "text/html; charset=UTF-8";
 		code = "200 OK";
+		cache = false;
 	}
 
+	
+	protected void cache() {
+		cache = true;
+	}
+	
+	protected boolean cached() {
+		return cache;
+	}
+	
 	protected Event event() {
 		return event;
 	}

@@ -201,6 +201,9 @@ public class Async implements Runnable {
 		/* This was a nice try but the spec. says you can also just close the connection 
 		 * after the response has finished instead of providing a content-length header 
 		 * so this will only work well on some web servers.
+		 * I even tried setting Connection: keep-alive but Apache ignores it and serves a 
+		 * HTTP/1.0 response without Content-Length or Transfer-Encoding with Connection: close
+		 * The HTTP spec is not async. to async. friendly.
 		 */
 		public void version() {
 			this.version = "HTTP/1.0";
@@ -278,6 +281,7 @@ public class Async implements Runnable {
 			String http = method + " " + path + " " + version + "\r\n" + 
 					(body == null ? "" : "Content-Length: " + body.length + "\r\n") + 
 					(cookie == null ? "" : "Cookie: " + cookie + "\r\n") + 
+					(version.equals("HTTP/1.0") ? "Connection: keep-alive\r\n" : "") + 
 					headers + 
 					"\r\n\r\n";
 

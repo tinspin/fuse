@@ -174,7 +174,7 @@ public abstract class Output extends OutputStream implements Event.Block {
 						.getBytes());
 			}
 
-			if (fixed && reply.event().daemon().properties.getProperty("live") != null) {
+			if (reply.cached() && reply.event().daemon().properties.getProperty("live") != null) {
 				wrote(("Cache-Control: max-age=" + reply.event().daemon().cache + EOL)
 						.getBytes());
 			}
