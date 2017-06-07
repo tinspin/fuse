@@ -1,5 +1,9 @@
 package fuse;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.RandomAccessFile;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -342,6 +346,66 @@ public class Server extends Service implements Node, Runnable {
 			event.reply().header("Location", "play.html");
 			event.reply().code("302 Found");
 		}
+	}
+	
+	private final static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
+	
+	/* Ok, so if you use javascript to set the source of an image to animate a sprite some browsers will 
+	 * spam the server with GET requests. Since I want to use the z-index and preload images I don't use 
+	 * canvas and the only solution around this bug is to inline the images with base64.
+	 */
+	public static class Encode extends Service {
+		public String path() { return "/encode"; }
+		public void filter(Event event) throws Event, Exception {
+			File[] file = new File("app/fuse.rupy.se/gif").listFiles(new Filter());
+			Arrays.sort(file);
+			Output out = event.output();
+			for(int i = 0; i < file.length; i++) {
+				String name = file[i].getName().substring(0, file[i].getName().length() - 4);
+				String base = encode(read(file[i])); 
+				out.println("<img id=\"" + name + "\" src=\"data:image/png;base64," + base + "\"/>");
+			}
+		}
+		
+		class Filter implements FilenameFilter {
+			public boolean accept(File dir, String name) {
+				if(name.endsWith(".png")) {
+					return true;
+				}
+				return false;
+			}
+		}
+		
+		public static byte[] read(File file) throws Exception {
+			RandomAccessFile f = new RandomAccessFile(file, "r");
+			byte[] b = new byte[(int)f.length()];
+			f.readFully(b);
+			f.close();
+			return b;
+		}
+		
+	    public static String encode(byte[] buf){
+	        int size = buf.length;
+	        char[] ar = new char[((size + 2) / 3) * 4];
+	        int a = 0;
+	        int i=0;
+	        while(i < size){
+	            byte b0 = buf[i++];
+	            byte b1 = (i < size) ? buf[i++] : 0;
+	            byte b2 = (i < size) ? buf[i++] : 0;
+
+	            int mask = 0x3F;
+	            ar[a++] = ALPHABET[(b0 >> 2) & mask];
+	            ar[a++] = ALPHABET[((b0 << 4) | ((b1 & 0xFF) >> 4)) & mask];
+	            ar[a++] = ALPHABET[((b1 << 2) | ((b2 & 0xFF) >> 6)) & mask];
+	            ar[a++] = ALPHABET[b2 & mask];
+	        }
+	        switch(size % 3){
+	            case 1: ar[--a] = '=';
+	            case 2: ar[--a] = '=';
+	        }
+	        return new String(ar);
+	    }
 	}
 	
 	/*

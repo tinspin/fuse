@@ -273,12 +273,21 @@ public class play extends Service {
         }
       }
       else if(split[0] == 'play') {
+        var position = 0;
+        var select = element('join');
+        for(var i = 0; i < select.options.length; i++) {
+          if(console) console.log(i + ' ' + select.options[i].text + ' ' + name);
+          if(select.options[i].text > name) {
+            if(console) console.log('yo' + i + ' ' + select.options[i].text + ' ' + name);
+            position++;
+          }
+        }
         display('room', 'none');
         display('play', 'block');
         element('talk').style.position = 'absolute';
         element('talk').style.left = '0px';
         element('talk').style.top = '350px';
-        head(split[1]);
+        head(split[1], position);
         game_play = true;
       }
       else if(split[0] == 'send') {
@@ -663,7 +672,8 @@ public class play extends Service {
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
 <tr><td><font color="#00cc33">name</font>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" style="width: 100px;"></td></tr>
 <tr><td><font color="#00cc33">pass</font>&nbsp;</td><td><input id="hide" name="hide" value="[[ hide(pass) ]]" style="width: 100px;" onkeydown="return hash_code(event);"></td></tr>
-<tr><td></td><td><a href="javascript:hash();">login</a> <a class="orange" href="javascript:user();">register</a></td></tr>
+<tr><td></td><td><a href="javascript:hash();">login</a></td></tr>
+<tr><td></td><td><a class="orange" href="javascript:user();">register</a></td></tr>
 <tr><td></td><td><a class="grey" href="fuse.html">about</a></td></tr>
 </table>
 <table>
