@@ -114,8 +114,7 @@ Examples:
 <li><font color="#ff3300">- 250 concurrent users ~15% CPU on AWS T2 Medium</font></li>
 <li><font color="#ff3300">- 450 concurrent users ~25% CPU on AWS T2 Medium (8 ECU peak?)</font></li>
 <li><font color="#ff3300">- 450 concurrent users ~40% CPU on AWS M4 Large (6.5 ECU)</font></li>
-<li><font color="#ff3300">&nbsp;&nbsp;We tried M3 Large</font></li>
-<li><font color="#ff3300">&nbsp;&nbsp;By extrapolation AWS T2 Medium should<br>&nbsp;&nbsp;handle ~1600 concurrent users.</font></li>
+<li><font color="#ff9900">&nbsp;&nbsp;450 concurrent users means >100.000 messages per second<br>&nbsp;&nbsp;being routed with 0.2ms internal latency on average.</font></li>
 <li><i><font color="#ff9900">- scales linearly / zero io-wait</font></i></li>
 <li><i><font color="#ff9900">- 100% stable / zero leakage</font></i></li></ul></td></tr>
 </table>
@@ -138,7 +137,7 @@ Advantages:
 </ul>
 Hosting:<br>
 <ul style="list-style-type:circle"><li>Dedicated: Minimum equivalent of two micro instances on AWS</li>
-<li>"Cloud": We host and maintain on AWS; pricing: <a href="http://host.rupy.se">host.rupy.se</a></li></ul>
+<li>"Cloud": We host and maintain on Google Cloud; pricing: <a href="http://host.binarytask.com">host.binarytask.com</a></li></ul>
 License:<br>
 <ul style="list-style-type:circle">
 <li>LGPL</li>

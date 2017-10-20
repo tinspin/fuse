@@ -27,7 +27,7 @@ public class Router implements Node {
 	public static String data = "root.rupy.se";
 	public static String fuse = "fuse.rupy.se"; // So .js cross domain connects to the right node; does not work with IE with XDR.
 	public static String path = "fuse.rupy.se"; // So the modular .js will load from the right domain.
-	public static String what = "localhost";
+	public static String what = "92.63.174.125";
 	public static int time = 30;
 	
 	public static ConcurrentLinkedDeque score = new ConcurrentLinkedDeque();

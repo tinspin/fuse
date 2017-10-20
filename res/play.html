@@ -43,6 +43,7 @@ public class play extends Service {
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <style>
   @font-face {
@@ -147,12 +148,30 @@ public class play extends Service {
     }
     url += "&time=" + new Date().getTime();
     try {
-      xhr.open('GET', url, async); // sync is deprecated really? genious!
+      if(!window.fetch || state == 3 || async == false)
+        xhr.open('GET', url, async); // sync is deprecated really? genious!
+      else {
+        /* fetch might be better for performance
+         * but the User-Agent header problem with
+         * chrome is still there 3 years later:
+         * https://codereview.chromium.org/2254693002/
+         */
+        fetch(url, {
+	      headers: new Headers({
+	        'User-Agent': 'fuse',
+	        'Accept-Language': 'en',
+		    'Head': 'less'
+	      })
+        }).then(function() {});
+      }
     }
     catch(e) {
       return e;
     }
-    if(!ie) xhr.setRequestHeader('Accept', 'text/event-stream');
+    if(!ie) {
+      xhr.setRequestHeader('Accept', 'text/event-stream');
+      xhr.setRequestHeader('User-Agent', 'fuse');
+    }
     if(state == 3) {
       if(ie)
         xhr.onprogress = function() {
@@ -276,9 +295,9 @@ public class play extends Service {
         var position = 0;
         var select = element('join');
         for(var i = 0; i < select.options.length; i++) {
-          if(console) console.log(i + ' ' + select.options[i].text + ' ' + name);
+          if(window.console) console.log(i + ' ' + select.options[i].text + ' ' + name);
           if(select.options[i].text > name) {
-            if(console) console.log('yo' + i + ' ' + select.options[i].text + ' ' + name);
+            if(window.console) console.log('yo' + i + ' ' + select.options[i].text + ' ' + name);
             position++;
           }
         }

@@ -49,7 +49,7 @@
 	<target name="build" depends="http, page, util, check" unless="required">
 		<echo>Building (${name})</echo>
 		<mkdir dir="tmp/cls"/>
-		<javac srcdir="src" target="1.5" source="1.5" destdir="tmp/cls" debug="on" deprecation="off" classpath="src;${lib}" encoding="UTF-8"/>
+		<javac srcdir="src" target="1.6" source="1.6" destdir="tmp/cls" debug="on" deprecation="off" classpath="src;${lib}" encoding="UTF-8"/>
 		<mkdir dir="tmp/jar"/>
 		<copy todir="tmp/jar">
 		    <!--fileset dir="res/"/-->
@@ -60,12 +60,12 @@
 			<arg line="bin/${name}.jar"/>
 			<arg line="res"/>
 		</java>
-		<javac srcdir="res" target="1.4" source="1.4" destdir="res" nowarn="on" debug="on" deprecation="off" classpath="${lib};bin;tmp/cls" encoding="UTF-8"/>
+		<javac srcdir="res" target="1.6" source="1.6" destdir="res" nowarn="on" debug="on" deprecation="off" classpath="${lib};bin;tmp/cls" encoding="UTF-8"/>
 		<copy preservelastmodified="true" todir="tmp/jar">
 			<fileset dir="res">
 				<exclude name="**/*.jpg"/>
 				<exclude name="**/*.png"/>
-				<exclude name="**/*.svg"/>
+				<!--exclude name="**/*.svg"/-->
 				<exclude name="**/*.java"/>
 			</fileset>
 		</copy>
