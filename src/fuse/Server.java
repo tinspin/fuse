@@ -48,9 +48,10 @@ public class Server extends Service implements Node, Runnable {
 	}
 	
 	public void create(Daemon daemon) throws Exception {
-		Deploy.Archive archive = (Deploy.Archive) Thread.currentThread().getContextClassLoader();
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
-		if(archive != null) {
+		if(loader != null && loader instanceof Deploy.Archive) {
+            Deploy.Archive archive = (Deploy.Archive) loader;
             String host = archive.host();
             String top = host.substring(host.indexOf('.'));
 
