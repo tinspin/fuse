@@ -50,34 +50,29 @@ public class Server extends Service implements Node, Runnable {
 	public void create(Daemon daemon) throws Exception {
 		Deploy.Archive archive = (Deploy.Archive) Thread.currentThread().getContextClassLoader();
 
-		if(archive == null) {
-            System.out.println("Running as single node.");
-            return;
-        }
+		if(archive != null) {
+            String host = archive.host();
+            String top = host.substring(host.indexOf('.'));
 
-		String host = archive.host();
-		String top = host.substring(host.indexOf('.'));
-		
-		if(!daemon.domain().equals("host.rupy.se")) {
-			//System.out.println(host + " " + top);
-			
-			if(host.startsWith("live")) {
-				Router.data = "data" + top;
-			}
-			else {
-				Router.data = "base" + top;
-			}
-			
-			// Only when you don't have Latency driven DNS like Route53.
-			//Router.fuse = System.getProperty("host") + top;
-			Router.fuse = host;
-			Router.path = host;
-		}
-		
-		System.out.println("data " + Router.data);
-		System.out.println("host " + host);
+            if (!daemon.domain().equals("host.rupy.se")) {
+                //System.out.println(host + " " + top);
+
+                if (host.startsWith("live")) {
+                    Router.data = "data" + top;
+                } else {
+                    Router.data = "base" + top;
+                }
+
+                // Only when you don't have Latency driven DNS like Route53.
+                //Router.fuse = System.getProperty("host") + top;
+                Router.fuse = host;
+                Router.path = host;
+            }
+        }
 		
 		if(!alive) {
+            System.out.println(Router.data + " / " + Router.fuse);
+
 			list = new ConcurrentHashMap();
 			alive = true;
 
