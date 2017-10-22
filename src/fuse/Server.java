@@ -49,6 +49,12 @@ public class Server extends Service implements Node, Runnable {
 	
 	public void create(Daemon daemon) throws Exception {
 		Deploy.Archive archive = (Deploy.Archive) Thread.currentThread().getContextClassLoader();
+
+		if(archive == null) {
+            System.out.println("Running as single node.");
+            return;
+        }
+
 		String host = archive.host();
 		String top = host.substring(host.indexOf('.'));
 		
