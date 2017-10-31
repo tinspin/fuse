@@ -108,7 +108,7 @@ Examples:
 </table>
 </a></td></tr>
 <tr><td colspan="2" align="left"><a name="meadow" href="http://store.steampowered.com/app/486310/"><img src="meadow.jpg"></a>
-<br><font color="#00cc33">Meadow preliminary performance statistics are promising:</font>
+<br><font color="#00cc33">Meadow preliminary performance statistics are promising:<br><br></font>
 <ul style="list-style-type: none;"><li><font color="#ff3300">- 150 concurrent users ~30% CPU on AWS T2 Micro (3 ECU peak?)</font></li>
 <li><font color="#6699ff">&nbsp;&nbsp;Then we upgraded because CPU credits were<br>&nbsp;&nbsp;running low and not replenishing at night:</font></li>
 <li><font color="#ff3300">- 200 concurrent users ~12.5% CPU on AWS T2 Medium</font></li>
@@ -128,14 +128,18 @@ Advantages:
 <li>Scalability - 1000M/s on Raspberry Pi 1 / Distributed DB</li>
 <li>Simplicity - Virtual Host Hotdeploy / HTTP JSON File DB / HTTP API</li>
 <li>Stability - Long Uptime / No Maintenance / 8 Years Old<br><br></li>
-<li>Open!</li>
-<li>Free!?</li>
+<li>200KB total size (excl. Java)</li>
+<li>Open & Free</li>
 </ul>
+Competition:
 <ul style="list-style-type: none;">
-<li>Competition:</li>
-<li>&nbsp;&nbsp;&nbsp;<a href="http://developer.muchdifferent.com/unitypark">Much Different</a> (C#)</li>
-<li>&nbsp;&nbsp;&nbsp;<a href="http://www.smartfoxserver.com">Goto & Play</a> (Java)</li>
-<li>&nbsp;&nbsp;&nbsp;<a href="https://www.photonengine.com/en-US/Photon">Exit Games</a> (C++/C#)</li>
+<li>None of the competition has an integrated<br>async-to-async distributed database that can<br>scale across continents.<br><br></li>
+<li><a href="https://forums.improbable.io/t/newer-dependencies/3042">SpatialOS</a> (Java, uses netty/akka) <font color="red">80MB total size = x400!</font></li>
+<li><br>None of the systems below can scale on<br>multiple threads across the same room<br>instance:<br><br></li>
+<li><a href="http://developer.muchdifferent.com/unitypark">Much Different</a> (C#) <font color="red">Defunct</font></li>
+<li><a href="http://www.smartfoxserver.com">Goto & Play</a> (Java) <font color="red">Still in use?</font></li>
+<li><a href="https://www.photonengine.com/en-US/Photon">Exit Games</a> (C++/C#) <font color="red">Only Windows</font></li>
+<li><a href="https://github.com/heroiclabs/nakama">Nakama</a> (Go)</li>
 </ul>
 Hosting:<br>
 <ul style="list-style-type:circle"><li>Dedicated: Minimum equivalent of two micro instances on AWS</li>
