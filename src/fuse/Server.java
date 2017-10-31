@@ -70,8 +70,8 @@ public class Server extends Service implements Node, Runnable {
                 Router.path = host;
             }
         }
-		
-		if(!alive) {
+
+        if(!alive) {
             System.out.println(Router.data + " / " + Router.fuse);
 
 			list = new ConcurrentHashMap();

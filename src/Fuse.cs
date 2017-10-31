@@ -15,8 +15,8 @@ using System.Text;
  */
 public class Fuse { // : MonoBehaviour { // ### 2
 	public static Fuse instance;
-	public string host = "fuse.rupy.se";
-	public int port = 80;
+	public static string host = "localhost";//"fuse.rupy.se";
+	public int port = 8000;//80;
 
 	private readonly object sync = new System.Object();
 	private Thread thread;
@@ -46,15 +46,15 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	}
 	
 	public void Host(string host) {
-		this.host = host;
+		Fuse.host = host;
 		bool policy = true;
 
 		//policy = Security.PrefetchSocketPolicy(host, port); // not needed for most cases ### 5
 		
 		if(!policy)
 			throw new Exception("Policy (" + host + ":" + port + ") failed.");
-		
-		IPAddress address = Dns.GetHostEntry(host).AddressList[0];
+		//Log(host);
+		IPAddress address = Dns.GetHostEntry(host).AddressList[host.Equals("localhost") ? 1 : 0];
 		remote = new IPEndPoint(address, port);
 		
 		Log(host + " " + address);
@@ -598,14 +598,14 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	
 	public static void Main() {
 		try {
-			Log("Ping: " + Ping("fuse.rupy.se"));
+			Log("Ping: " + Ping(host));
 		
 			string key = "TvaaS3cqJhQyK6sn";
 			string salt = null;
 			
 			Fuse fuse = new Fuse();
 			fuse.Start();
-			fuse.Host("fuse.rupy.se");
+			fuse.Host(host);
 			
 			//Thread.Sleep(100);
 			

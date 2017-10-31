@@ -25,7 +25,7 @@ public class Router implements Node {
 	public static boolean debug = true;
 	public static String hash = "sha-256";
 	public static String data = "root.rupy.se";
-	public static String fuse = "fuse.rupy.se"; // So .js cross domain connects to the right node; does not work with IE with XDR.
+	public static String fuse = "localhost:8000"; // So .js cross domain connects to the right node; does not work with IE with XDR.
 	public static String path = "fuse.rupy.se"; // So the modular .js will load from the right domain.
 	public static String what = "92.63.174.125";
 	public static int time = 30;
@@ -66,9 +66,12 @@ public class Router implements Node {
 		names.put(name, user);
 
 		// This uses host.rupy.se specific MaxMind GeoLiteCity.dat
-		JSONObject country = new JSONObject((String) daemon.send(null, "{\"type\":\"country\",\"ip\":\"" + event.remote() + "\"}"));
-		if(!country.getString("code").equals("--"))
-			user.flag = country.getString("code").toLowerCase();
+        try {
+            JSONObject country = new JSONObject((String) daemon.send(null, "{\"type\":\"country\",\"ip\":\"" + event.remote() + "\"}"));
+            if (!country.getString("code").equals("--"))
+                user.flag = country.getString("code").toLowerCase();
+        }
+        catch(Exception e) {}
 		// End
 
 		return user;
