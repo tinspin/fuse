@@ -82,7 +82,7 @@ public class fuse extends Service {
 <ul style="list-style-type: none;">
 <li>Generic: User - Item - Room</li>
 <li>JSON: Distributed async. database</li>
-<li>TCP/HTTP: Traverses all firewalls<br>(but not all antiviruses, 0.3% of<br>users refunded because of this)</li>
+<li>TCP/HTTP: Traverses all firewalls</li>
 <li>&nbsp;</li>
 <li>Completely Async.</li>
 <li>Multiplayer Physics</li>
@@ -95,7 +95,7 @@ public class fuse extends Service {
 Roadmap:
 <ul style="list-style-type: none;">
 <li>1) C++ Collada OpenGL Engine<br><br><img src="http://sprout.rupy.se/file/2/7/9/walk.gif"><br></li>
-<li>2) Bitcoin Micropayments (if bitcoind<br>accounts, which are deprecated, works<br>with segwit and when/if price reaches<br>high plateau)</li>
+<li>2) Bitcoin Micropayments (Off-chain)</li>
 </ul>
 Examples:
 <ul style="list-style-type: none;">
@@ -107,22 +107,20 @@ Examples:
 <tr><td><img width="30px" src="svg/orange.svg"></td><td><img width="30px" src="svg/purple.svg"></td></tr>
 </table>
 </a></td></tr>
-<tr><td colspan="2" align="left"><a name="meadow" href="http://store.steampowered.com/app/486310/"><img src="meadow.jpg"></a>
-<br><font color="#00cc33">Meadow preliminary performance statistics are promising:<br><br></font>
-<ul style="list-style-type: none;"><li><font color="#ff3300">- 150 concurrent users ~30% CPU on AWS T2 Micro (3 ECU peak?)</font></li>
-<li><font color="#6699ff">&nbsp;&nbsp;Then we upgraded because CPU credits were<br>&nbsp;&nbsp;running low and not replenishing at night:</font></li>
-<li><font color="#ff3300">- 200 concurrent users ~12.5% CPU on AWS T2 Medium</font></li>
-<li><font color="#ff3300">- 250 concurrent users ~15% CPU on AWS T2 Medium</font></li>
-<li><font color="#ff3300">- 450 concurrent users ~25% CPU on AWS T2 Medium (8 ECU peak?)</font></li>
-<li><font color="#ff3300">- 450 concurrent users ~40% CPU on AWS M4 Large (6.5 ECU)</font></li>
-<li><font color="#ff9900">&nbsp;&nbsp;450 concurrent users means >100.000 messages per second<br>&nbsp;&nbsp;being routed with 0.2ms internal latency on average.</font></li>
-<li><i><font color="#ff9900">- scales linearly / zero io-wait</font></i></li>
-<li><i><font color="#ff9900">- 100% stable / zero leakage</font></i></li></ul></td></tr>
+<tr><td colspan="2" align="left"><a name="meadow" href="http://store.steampowered.com/app/486310/"><img src="meadow.jpg"></a></td></tr>
 </table></li>
 </ul>
-Integration:<br>
-<ul style="list-style-type: none;"><li>Dedicated Developer: 50$/hour</li>
-<li><i>Practical Example: Simple MMO, 3 weeks = 6000$</i></li></ul>
+<font>Performance: (Meadow)</font>
+<ul style="list-style-type: none;"><li><font>- 150 concurrent users ~30% CPU on AWS T2 Micro (3 ECU peak?)</font></li>
+<li><font color="#6699ff">&nbsp;&nbsp;Then we upgraded because CPU credits were<br>&nbsp;&nbsp;running low and not replenishing at night:</font></li>
+<li><font>- 200 concurrent users ~12.5% CPU on AWS T2 Medium</font></li>
+<li><font>- 250 concurrent users ~15% CPU on AWS T2 Medium</font></li>
+<li><font>- 450 concurrent users ~25% CPU on AWS T2 Medium (8 ECU peak?)</font></li>
+<li><font>- 450 concurrent users ~40% CPU on AWS M4 Large (6.5 ECU)</font></li>
+<li><font color="#ff3300">&nbsp;&nbsp;At peak the 3x node intercontinental cluster ran with<br>&nbsp;&nbsp;1.350 concurrent players for ~20$/day.</font></li>
+<li><font color="#00cc33">&nbsp;&nbsp;When at 450 concurrent users each server routed >100.000<br>&nbsp;&nbsp;messages per second with 0.2ms internal latency on average.</font></li>
+<li><i><font color="#00cc33">&nbsp;&nbsp;- scales linearly / zero io-wait</font></i></li>
+<li><i><font color="#00cc33">&nbsp;&nbsp;- 100% stable / zero leakage</font></i></li></ul>
 Advantages:
 <ul style="list-style-type:circle">
 <li>Scalability - 1000M/s on Raspberry Pi 1 / Distributed DB</li>
@@ -131,13 +129,18 @@ Advantages:
 <li>200KB total size (excl. Java)</li>
 <li>Open & Free</li>
 </ul>
+Flaws:
+<ul style="list-style-type:circle">
+<li>0.3% of all users refund because their antivirus blocks the pull HTTP stream</li>
+<li>The database runs out of inodes if you don't configure the /app mount with 'mkfs.ext4 -T small'</li>
+</ul>
 Competition:
 <ul style="list-style-type: none;">
 <li>None of the competition has an integrated<br>async-to-async distributed database that can<br>scale across continents.<br><br></li>
 <li><a href="https://forums.improbable.io/t/newer-dependencies/3042">SpatialOS</a> (Java, uses netty/akka) <font color="red">80MB total size = x400!</font></li>
-<li><br>None of the systems below can scale on<br>multiple threads across the same room<br>instance:<br><br></li>
+<li><br>None of the systems below can scale on<br>multiple cores across the same room<br>instance:<br><br></li>
 <li><a href="http://developer.muchdifferent.com/unitypark">Much Different</a> (C#) <font color="red">Defunct</font></li>
-<li><a href="http://www.smartfoxserver.com">Goto & Play</a> (Java) <font color="red">Still in use?</font></li>
+<li><a href="http://www.smartfoxserver.com">Goto & Play</a> (Java)</li>
 <li><a href="https://www.photonengine.com/en-US/Photon">Exit Games</a> (C++/C#) <font color="red">Only Windows</font></li>
 <li><a href="https://github.com/heroiclabs/nakama">Nakama</a> (Go)</li>
 </ul>
