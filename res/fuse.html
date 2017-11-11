@@ -85,8 +85,8 @@ Multiplayer Platform
 <li>JSON: Distributed async. database</li>
 <li>TCP/HTTP: Traverses all firewalls</li>
 <li>&nbsp;</li>
-<li>Completely Async. (first platform in the world)</li>
 <li>Multiplayer Physics (like Rocket League)</li>
+<li>Completely Multicore Async. (first platform in the world)</li>
 <li>100% Read Uptime (registered users will always be able to login and play)</li>
 <li>&nbsp;</li>
 <li>Low internal latency: <a href="http://fuse.rupy.se/data">statistics</a> (Raspberry Pi 1)</li>
@@ -130,9 +130,10 @@ Examples:
 <li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100% stable / zero leakage</font></li></ul>
 Advantages:
 <ul style="list-style-type:circle">
-<li>Scalability - 1000M/s on Raspberry Pi 1 / Distributed DB</li>
+<li>Scalability - 1000M/s on Raspberry Pi 1 / Distr. Async. DB</li>
 <li>Simplicity - Virtual Host Hotdeploy / HTTP JSON File DB / HTTP API</li>
-<li>Stability - Long Uptime / No Maintenance / 8 Years Old<br><br></li>
+<li>Stability - Infinite Uptime / No Maintenance / 8 Years Old</li>
+<li>Security - Salted Hash Password Login<br><br></li>
 <li><font color="#00cc33">One process for C#, C++ and HTML5 cross play, website and database!</font></li>
 <li>200KB total size (excl. Java)</li>
 <li>Open & Free</li>
@@ -141,10 +142,11 @@ Flaws:
 <ul style="list-style-type: circle">
 <li><font color="#ff3300">3 out of 1000 customers refund because their antivirus blocks the pull HTTP stream</font></li>
 <li>You need large hard-drives; Meadow uses 100KB per user, also<br>inodes run out if you don't configure the /app mount with 'mkfs.ext4 -T small'</li>
+    <li>Peak garbage collect is <font color="#ff3300">7ms</font> on AWS T2 Micro instance</li>
 </ul>
 Todo:
 <ul style="list-style-type: circle">
-<li>Try to modify the inventory to save on session end, in one file; to improve the last flaw.</li>
+<li>Try to modify the inventory to save on session end, in one file; to improve the hard-drive flaw.</li>
 <li>Master billing account for many installations, both on different hardware and different games.</li>
 </ul>
 Competition:
