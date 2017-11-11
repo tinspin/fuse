@@ -7,7 +7,7 @@
 
 about:
 
-  <a href="http://fuse.rupy.se/about.html\">technical sales pitch</a>
+  <a href="http://fuse.rupy.se/about.html">technical sales pitch</a>
 
 protocol:
 
