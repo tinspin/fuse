@@ -17,8 +17,6 @@ protocol:
     - ',' attributes
   - client/server triplex http, comet upstream 
     '\n' terminated or 'data: \n\n' encapsulated
-  - multicast udp on cluster for load distribution
-    - concurrency ~25.000 mess./sec. on 4x raspberry pi 2
 
 platform:
 
@@ -26,10 +24,9 @@ platform:
   - multithreaded nio with queue, linear perf.:
     - 1000 mess./sec. on raspberry pi 1
     - 6500 mess./sec. on raspberry pi 2
-  - 100% uptime on routing with round-robin dns
+  - 100% uptime on routing with round-robin dns or region select
   - 100% read uptime on persistence with custom 
-    async distributed json file system database 
-    that uses ext4 indexing
+    async distributed json file system database
   - peak garbage collect:
     - 70 ms (raspberry pi 1)
     - 14 ms (raspberry pi 2)
