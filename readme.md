@@ -5,18 +5,9 @@
 | <i>the multiplayer solution</i> |
 +--------------------------+
 
-support:
+about:
 
-  - c# <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cs">fuse.cs</a>, <a href="https://dl.dropboxusercontent.com/u/1352420/Fuse.zip">minimalist unity project</a>
-  - c++ <a href="https://github.com/tinspin/fuse/blob/master/src/Fuse.cpp">fuse.cpp</a>
-  - java will be added later, if somebody needs it now you 
-    can hopefully figure it out from <a href="http://rupy.se/talk.zip">src/stream/client.java</a>.
-  - html5 xhr/xdr, 99.9% of browsers, only ie7 missing
-    cors static hosting: <a href="https://github.com/tinspin/fuse/blob/master/res/play.html">play.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/cube.html">cube.html</a>, <a href="https://github.com/tinspin/fuse/blob/master/res/bomb.html">bomb.html</a>
-  - 100% firewall pass-through
-  - all gameplay types:
-    - from two player turn-based
-    - to real-time action mmo
+  <a href="http://fuse.rupy.se/about.html\">technical sales pitch</a>
 
 protocol:
 
@@ -44,12 +35,6 @@ platform:
     - 14 ms (raspberry pi 2)
     - 7 ms (aws micro instance)
 
-examples:
-
-  - javascript block-drop game: <a href="http://fuse.rupy.se">cube</a> (open-source, try single-player <a href="http://fuse.rupy.se/cube.html">cube.html</a>)
-  - java 3D vr mmo space shooter: <a href="http://aeonalpha.com">aeon</a> (closed-source)
-  - unity mmo: <a href="http://store.steampowered.com/app/486310/">meadow</a> (closed-source)
-  
 license:
 
   - lgpl

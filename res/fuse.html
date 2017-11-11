@@ -13,7 +13,7 @@ public class fuse extends Service {
 	String black = "#000000";
 	String white = "#ffffff";
 	
-	public String path() { return "/fuse.html"; }
+	public String path() { return "/fuse.html:/about.html"; }
 	public void filter(Event event) throws Event, Exception {
 		event.query().parse();
 		
@@ -60,24 +60,25 @@ public class fuse extends Service {
 <html>
 <head>
 <meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Fredoka%20One">
 <style>
   html { -webkit-text-size-adjust: none; }
-  a:link, a:hover, a:active, a:visited { color: [[ blue ]]; font-style: italic; }
-  img { display: block; }
-  div { font-family: monospace; }
+  a:link, a:hover, a:active, a:visited { color: [[ blue ]]; text-decoration: none; }
+  /*img { display: block; }*/
+  div { font-family: 'Fredoka One', monospace; color: #333333; }
   table { margin: 5px; }
-  input { font-family: monospace; box-sizing: border-box; }
+  input { font-family: 'Fredoka One', monospace; box-sizing: border-box; }
 </style>
 </head>
 <body bgcolor="eeeeee">
 <img width="170px" src="fuse.svg">
 <div>
---- Multiplayer Platform ---
+Multiplayer Platform
 <ul style="list-style-type:circle">
-<li>C# (client)</li>
-<li>C++ (client)</li>
-<li>Java (server uses <a href="https://github.com/tinspin/rupy">rupy</a>)</li>
-<li>HTML5 (client)</li>
+<li><img height="16" src="svg/unity.svg"> C# (client)</li>
+<li><img height="16" src="svg/cpp.svg"> C++ (client)</li>
+<li><img height="16" src="svg/java.svg"> Java (server uses <a href="https://github.com/tinspin/rupy">rupy</a>)</li>
+<li><img height="16" src="svg/html5.svg"> HTML5 (client)</li>
 </ul>
 <ul style="list-style-type: none;">
 <li>Generic: User - Item - Room</li>
@@ -94,8 +95,14 @@ public class fuse extends Service {
 </ul>
 Roadmap:
 <ul style="list-style-type: none;">
-<li>1) C++ Collada OpenGL Engine<br><br><img src="http://sprout.rupy.se/file/2/7/9/walk.gif"><br></li>
-<li>2) Bitcoin Micropayments (Off-chain)</li>
+<li>C++ Collada OpenGL Engine</li>
+<li>Bitcoin Micropayments (Off-Chain)</li>
+<li><br>
+<div style="width: 200px; position: relative; left: 0; top: 0;">
+<img src="http://sprout.rupy.se/file/2/7/9/walk.gif" style="position: relative; top: 0; left: 0;"/>
+<img height="32" src="svg/cpp.svg" style="position: absolute; top: 10px; left: 10px;"/>
+<img height="32" src="svg/bitcoin.svg" style="position: absolute; top: 10px; right: 10px;"/>
+</div></li>
 </ul>
 Examples:
 <ul style="list-style-type: none;">
@@ -103,7 +110,7 @@ Examples:
 <tr><td width="50"><a href="http://aeonalpha.com"><img src="http://aeonalpha.com/aeon.svg"></a></td><td>
 <a href="http://fuse.rupy.se/cube.html">
 <table cellspacing="0" cellpadding="0" style="margin: 5px;">
-<tr><td><img width="30px" src="svg/blue.svg"></td><td><img width="30px" src="svg/green.svg"></td><td></td></tr>
+<tr><td><img width="30px" style="display: block;" src="svg/blue.svg"></td><td><img width="30px" style="display: block;" src="svg/green.svg"></td><td></td></tr>
 <tr><td><img width="30px" src="svg/orange.svg"></td><td><img width="30px" src="svg/purple.svg"></td></tr>
 </table>
 </a></td></tr>
@@ -111,32 +118,38 @@ Examples:
 </table></li>
 </ul>
 <font>Performance: (Meadow)</font>
-<ul style="list-style-type: none;"><li><font>- 150 concurrent users ~30% CPU on AWS T2 Micro (3 ECU peak?)</font></li>
-<li><font color="#6699ff">&nbsp;&nbsp;Then we upgraded because CPU credits were<br>&nbsp;&nbsp;running low and not replenishing at night:</font></li>
-<li><font>- 200 concurrent users ~12.5% CPU on AWS T2 Medium</font></li>
-<li><font>- 250 concurrent users ~15% CPU on AWS T2 Medium</font></li>
-<li><font>- 450 concurrent users ~25% CPU on AWS T2 Medium (8 ECU peak?)</font></li>
-<li><font>- 450 concurrent users ~40% CPU on AWS M4 Large (6.5 ECU)</font></li>
-<li><font color="#ff3300">&nbsp;&nbsp;At peak the 3x node intercontinental cluster ran with<br>&nbsp;&nbsp;1.350 concurrent players for ~20$/day.</font></li>
-<li><font color="#00cc33">&nbsp;&nbsp;When at 450 concurrent users each server routed >100.000<br>&nbsp;&nbsp;messages per second with 0.2ms internal latency on average.</font></li>
-<li><i><font color="#00cc33">&nbsp;&nbsp;- scales linearly / zero io-wait</font></i></li>
-<li><i><font color="#00cc33">&nbsp;&nbsp;- 100% stable / zero leakage</font></i></li></ul>
+<ul style="list-style-type: none;"><li><font>150 concurrent users ~30% CPU on AWS T2 Micro (3 ECU peak?)</font></li>
+<li><font color="#ff9900">&nbsp;&nbsp;&nbsp;&nbsp;Then we upgraded because CPU credits were<br>&nbsp;&nbsp;&nbsp;&nbsp;running low and not replenishing at night:</font></li>
+<li><font>200 concurrent users ~12.5% CPU on AWS T2 Medium</font></li>
+<li><font>250 concurrent users ~15% CPU on AWS T2 Medium</font></li>
+<li><font>450 concurrent users ~25% CPU on AWS T2 Medium (8 ECU peak?)</font></li>
+<li><font>450 concurrent users ~40% CPU on AWS M4 Large (6.5 ECU)</font></li>
+<li><font color="#ff9900">&nbsp;&nbsp;&nbsp;&nbsp;At peak the 3x node intercontinental cluster ran with<br>&nbsp;&nbsp;&nbsp;&nbsp;1100 concurrent players for ~20$/day.</font></li>
+<li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;When at 450 concurrent users each server routes >100.000<br>&nbsp;&nbsp;&nbsp;&nbsp;messages per second with 0.2ms internal latency on average.</font></li>
+<li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales linearly / zero io-wait</font></li>
+<li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100% stable / zero leakage</font></li></ul>
 Advantages:
 <ul style="list-style-type:circle">
 <li>Scalability - 1000M/s on Raspberry Pi 1 / Distributed DB</li>
 <li>Simplicity - Virtual Host Hotdeploy / HTTP JSON File DB / HTTP API</li>
 <li>Stability - Long Uptime / No Maintenance / 8 Years Old<br><br></li>
+<li><font color="#00cc33">One process for C#, C++ and HTML5 cross play, website and database!</font></li>
 <li>200KB total size (excl. Java)</li>
 <li>Open & Free</li>
 </ul>
 Flaws:
-<ul style="list-style-type:circle">
-<li>0.3% of all users refund because their antivirus blocks the pull HTTP stream</li>
-<li>The database runs out of inodes if you don't configure the /app mount with 'mkfs.ext4 -T small'</li>
+<ul style="list-style-type: circle">
+<li><font color="#ff3300">3 out of 1000 customers refund because their antivirus blocks the pull HTTP stream</font></li>
+<li>You need large hard-drives; Meadow uses 100KB per user, also<br>inodes run out if you don't configure the /app mount with 'mkfs.ext4 -T small'</li>
+</ul>
+Todo:
+<ul style="list-style-type: circle">
+<li>Modify the item/inventory stucture to save on session end, in one file; to solve the last flaw.</li>
+<li>Master billing account for many installations, both on different hardware and different games.</li>
 </ul>
 Competition:
 <ul style="list-style-type: none;">
-<li>None of the competition has an integrated<br>async-to-async distributed database that can<br>scale across continents.<br><br></li>
+<li>None of the competition has an integrated<br>async-to-async distributed database or web<br>server that can scale across continents.<br><br></li>
 <li><a href="https://forums.improbable.io/t/newer-dependencies/3042">SpatialOS</a> (Java, uses netty/akka) <font color="red">80MB total size = x400!</font></li>
 <li><br>None of the systems below can scale on<br>multiple cores across the same room<br>instance:<br><br></li>
 <li><a href="http://developer.muchdifferent.com/unitypark">Much Different</a> (C#) <font color="red">Defunct</font></li>
@@ -155,9 +168,9 @@ Contact:<br>
 <form method="post">
 <table style="margin: 5px;">
 [[ back.length() > 0 ? "<tr><td colspan=\"2\"><font color=\"" + (done.equals("OK") ? green : red) + "\">" + back + "</font></td></tr>" : "" ]]
-<tr><td>Name:&nbsp;</td><td><input type="text" name="name" value="[[ name ]]"></td></tr>
-<tr><td>Mail:&nbsp;</td><td><input type="text" name="mail" value="[[ mail ]]"></td></tr>
-<tr><td></td><td><input type="submit"></td></tr>
+<tr><td>Name:&nbsp;</td><td><input type="text" name="name" style="color: #00cc33;" value="[[ name ]]"></td></tr>
+<tr><td>Mail:&nbsp;</td><td><input type="text" name="mail" style="color: #ff9900;" value="[[ mail ]]"></td></tr>
+<tr><td></td><td><input style="color: #6699ff;" type="submit"></td></tr>
 </table>
 </form>
 </div>
