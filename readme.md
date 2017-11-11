@@ -80,9 +80,7 @@ in sort of chronological order:
                             //        to empty string (||)
                             //        preferably [pass] is a hash with salt 
                             //        we simply use <i>hash</i>(pass + name.toLowerCase())
-                            // [mail] if your users want recovery otherwise set 
-                            //        to empty string (|)
- <b><i>user</i></b>|[name]|[pass]|[mail]  -> user|done|&lt;salt&gt;|&lt;key&gt;|&lt;id&gt;
+ <b><i>user</i></b>|[name]|[pass]         -> user|done|&lt;salt&gt;|&lt;key&gt;|&lt;id&gt;
                             -> user|fail|name too short     // min 3
                             -> user|fail|name too long      // max 12
                             -> user|fail|name already registered
