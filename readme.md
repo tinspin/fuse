@@ -24,9 +24,10 @@ platform:
   - multithreaded nio with queue, linear perf.:
     - 1000 mess./sec. on raspberry pi 1
     - 6500 mess./sec. on raspberry pi 2
-  - 100% uptime on routing with round-robin dns or region select
+  - 100% uptime on hosting and routing with round-robin dns
   - 100% read uptime on persistence with custom 
     async distributed json file system database
+    with region select
   - peak garbage collect:
     - 70 ms (raspberry pi 1)
     - 14 ms (raspberry pi 2)
