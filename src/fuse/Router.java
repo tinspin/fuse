@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -806,7 +807,8 @@ public class Router implements Node {
 
 			user.lost++;
 
-			Iterator it = user.room.users.values().iterator();
+			//Iterator it = user.room.users.values().iterator();
+            Iterator it = user.room.users.iterator();
 
 			while(it.hasNext()) {
 				User other = (User) it.next();
@@ -1463,8 +1465,9 @@ public class Router implements Node {
 	}
 
 	public static class Room {
-		ConcurrentHashMap users = new ConcurrentHashMap();
-		ConcurrentHashMap items = new ConcurrentHashMap();
+		//ConcurrentHashMap users = new ConcurrentHashMap();
+        CopyOnWriteArrayList users = new CopyOnWriteArrayList();
+        ConcurrentHashMap items = new ConcurrentHashMap();
 
 		boolean play;
 		String name, type;
@@ -1505,7 +1508,8 @@ public class Router implements Node {
 		}
 
 		boolean away() {
-			Iterator it = users.values().iterator();
+			//Iterator it = users.values().iterator();
+            Iterator it = users.iterator();
 
 			while(it.hasNext()) {
 				User user = (User) it.next();
@@ -1518,7 +1522,8 @@ public class Router implements Node {
 		}
 
 		public void wakeup() throws Exception {
-			Iterator it = users.values().iterator();
+            //Iterator it = users.values().iterator();
+            Iterator it = users.iterator();
 
 			while(it.hasNext()) {
 				User u = (User) it.next();
@@ -1531,7 +1536,8 @@ public class Router implements Node {
 		}
 
 		void send(User from, String data, boolean all) throws Exception {
-			Iterator it = users.values().iterator();
+            //Iterator it = users.values().iterator();
+            Iterator it = users.iterator();
 
 			if(data.startsWith("play"))
 				play = true;
@@ -1620,11 +1626,17 @@ public class Router implements Node {
 		}
 
 		void add(User user) {
-			users.put(user.name, user);
+		    //users.put(user.name, user);
+            users.add(user);
 		}
 
 		void remove(User user) {
-			users.remove(user.name);
+		    int kill = users.indexOf(user);
+            int last = users.size() - 1;
+            if(kill < last)
+		        users.set(kill, users.get(last));
+		    users.remove(last);
+		    //users.remove(user.name);
 		}
 
 		public String toString() {

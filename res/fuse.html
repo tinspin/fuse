@@ -96,7 +96,7 @@ Multiplayer Platform
 Roadmap:
 <ul style="list-style-type: none;">
 <li>C++ Collada OpenGL Engine</li>
-<li>Bitcoin Micropayments (Off-Chain)</li>
+<li>Bitcoin Off-Chain Micropayments</li>
 <li><br>
 <div style="width: 200px; position: relative; left: 0; top: 0;">
 <img src="http://sprout.rupy.se/file/2/7/9/walk.gif" style="position: relative; top: 0; left: 0;"/>
@@ -145,11 +145,6 @@ Flaws:
 <li>You need large hard-drives; Meadow uses <font color="#ff3300">100KB per user</font>, also<br>inodes run out if you don't configure the /app mount with 'mkfs.ext4 -T small'</li>
 <li>Peak garbage collect is <font color="#ff3300">7ms</font> on AWS T2 Micro instance</li>
 </ul>
-Todo:
-<ul style="list-style-type: circle">
-<li>Try to modify the inventory to save on session end, in one file; to improve the hard-drive flaw.</li>
-<li>Master billing account for many installations, both on different hardware and different games.</li>
-</ul>
 Competition:
 <ul style="list-style-type: none;">
 <li>None of the competition has an integrated<br>async-to-async distributed database or web<br>server that can scale across continents.<br><br></li>
@@ -173,7 +168,7 @@ Contact:<br>
 [[ back.length() > 0 ? "<tr><td colspan=\"2\"><font color=\"" + (done.equals("OK") ? green : red) + "\">" + back + "</font></td></tr>" : "" ]]
 <tr><td>Name:&nbsp;</td><td><input type="text" name="name" style="color: #00cc33;" value="[[ name ]]"></td></tr>
 <tr><td>Mail:&nbsp;</td><td><input type="text" name="mail" style="color: #ff9900;" value="[[ mail ]]"></td></tr>
-<tr><td></td><td><input style="color: #6699ff;" type="submit"></td></tr>
+<tr><td></td><td><input style="color: #333333;" type="submit"></td></tr>
 </table>
 </form>
 </div>
