@@ -144,6 +144,29 @@ public class Server extends Service implements Node, Runnable {
 
 		return null;
 	}
+
+    public String push(int salt, String data, boolean wake) throws Exception {
+        Queue queue = (Queue) list.get(salt); //find(salt);
+
+        if(queue != null) {
+            queue.add(data);
+
+            if(!wake)
+                return null;
+
+            int wakeup = queue.event.reply().wakeup();
+
+            if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
+                remove(queue.salt, 1);
+                list.remove(queue.salt);
+            }
+        }
+        else {
+            remove(Router.User.salt(salt), 6);
+        }
+
+        return null;
+    }
 	
 	public int wakeup(String salt) {
 		Queue queue = (Queue) list.get(salt); //find(salt);
@@ -306,7 +329,9 @@ public class Server extends Service implements Node, Runnable {
 				}
 			}
 
-			list.put(salt, new Queue(salt, event));
+            Queue q = new Queue(salt, event);
+			list.put(salt, q);
+            list.put(Router.User.salt(salt), q); // TODO: remove these too!!!
 			
 			if(Router.debug)
 				System.err.println("poll " + Router.date.format(new Date()) + " " + salt);

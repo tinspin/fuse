@@ -7,6 +7,7 @@ public interface Node {
 	public void call(Daemon daemon, Node node) throws Exception;
 	public String push(Event event, String data) throws Event, Exception;
 	public String push(String salt, String data, boolean wake) throws Exception;
+    public String push(int salt, String data, boolean wake) throws Exception;
 	public void broadcast(String message, boolean finish) throws Exception;
 	public int wakeup(String name);
 	public void remove(String salt, int place) throws Exception;

@@ -744,6 +744,7 @@ public class play extends Service {
 				if(code == 200) {
 					InputStream in = conn.getInputStream();
 					int size = Deploy.pipe(in, event.output());
+    System.out.println("Shimmed: " + size);
 					in.close();
 				}
 			}

@@ -91,6 +91,10 @@ public class Router implements Node {
 		throw new Exception("Nope");
 	}
 
+    public String push(int salt, String data, boolean wake) throws Exception {
+        throw new Exception("Nope");
+    }
+
 	public int wakeup(String name) { return 0; }
 
 	static SimpleDateFormat date = new SimpleDateFormat("HH:mm:ss.SSS");
@@ -1281,6 +1285,20 @@ public class Router implements Node {
 			this.salt = salt;
 		}
 
+		public static int salt(String salt) {
+            return salt.charAt(0) << 24 |
+                  (salt.charAt(1) & 0xFF) << 16 |
+                  (salt.charAt(2) & 0xFF) << 8 |
+                  (salt.charAt(3) & 0xFF);
+        }
+
+        public static String salt(int salt) {
+            return "" + (byte) (salt >> 24) +
+                        (byte) (salt >> 16) +
+                        (byte) (salt >> 8) +
+                        (byte) salt;
+        }
+
 		private void auth(JSONObject json) throws Exception {
 			this.json = json;
 			this.id = Root.hash(json.getString("key"));
@@ -1468,6 +1486,7 @@ public class Router implements Node {
 		//ConcurrentHashMap users = new ConcurrentHashMap();
         CopyOnWriteArrayList users = new CopyOnWriteArrayList();
         ConcurrentHashMap items = new ConcurrentHashMap();
+        int[] salts; // To try and avoid cache misses in the loop for move packets.
 
 		boolean play;
 		String name, type;
@@ -1482,12 +1501,14 @@ public class Router implements Node {
 			this.user = user;
 			this.type = type;
 			this.size = size;
+			salts = new int[size];
 		}
 		
 		Room(String name, String type, int size) {
 			this.name = name;
 			this.type = type;
 			this.size = size;
+            salts = new int[size];
 		}
 		
 		synchronized Item add(Item item) throws Exception {
@@ -1537,7 +1558,7 @@ public class Router implements Node {
 
 		void send(User from, String data, boolean all) throws Exception {
             //Iterator it = users.values().iterator();
-            Iterator it = users.iterator();
+            //Iterator it = users.iterator();
 
 			if(data.startsWith("play"))
 				play = true;
@@ -1554,6 +1575,22 @@ public class Router implements Node {
 					System.err.println(users);
 
 			boolean wakeup = false;
+
+			/* Will this really help when the Server.push uses a
+			 * ConcurrentLinkedQueue in a ConcurrentHashMap?
+			 */
+			if(data.startsWith("move") || data.startsWith("send")) {
+			    for(int i = 0; i < salts.length; i++) {
+			        if(salts[i] == 0)
+			            return;
+
+                    node.push(salts[i], data, true);
+                }
+
+                return;
+            }
+
+            Iterator it = users.iterator();
 
 			while(it.hasNext()) {
 				User user = (User) it.next();
@@ -1628,14 +1665,25 @@ public class Router implements Node {
 		void add(User user) {
 		    //users.put(user.name, user);
             users.add(user);
+
+            for(int i = 0; i < salts.length; i++) {
+                if(salts[i] == 0) {
+                    salts[i] = User.salt(user.salt);
+                    return;
+                }
+            }
 		}
 
 		void remove(User user) {
 		    int kill = users.indexOf(user);
             int last = users.size() - 1;
-            if(kill < last)
-		        users.set(kill, users.get(last));
+            if(kill < last) {
+                User u = (User) users.get(last);
+                users.set(kill, u);
+                salts[kill] = User.salt(u.salt);
+            }
 		    users.remove(last);
+            salts[last] = 0;
 		    //users.remove(user.name);
 		}
 
