@@ -1277,12 +1277,13 @@ public class Router implements Node {
 		boolean sign, away;
 		Game game;
 		Room room;
-		int lost;
+		int lost, intsalt;
 		long id;
 
 		User(String name, String salt) throws Exception {
 			this.name = name;
 			this.salt = salt;
+			this.intsalt = salt(salt);
 		}
 
 		public static int salt(String salt) {
@@ -1560,6 +1561,21 @@ public class Router implements Node {
             //Iterator it = users.values().iterator();
             //Iterator it = users.iterator();
 
+            /* Will this really help when the Server.push uses a
+			 * ConcurrentLinkedQueue in a ConcurrentHashMap?
+			 */
+            if(data.startsWith("move") || data.startsWith("send")) {
+                for(int i = 0; i < salts.length; i++) {
+                    if(salts[i] == 0)
+                        return;
+
+                    if(salts[i] != from.intsalt)
+                        node.push(salts[i], data, true);
+                }
+
+                return;
+            }
+
 			if(data.startsWith("play"))
 				play = true;
 
@@ -1575,20 +1591,6 @@ public class Router implements Node {
 					System.err.println(users);
 
 			boolean wakeup = false;
-
-			/* Will this really help when the Server.push uses a
-			 * ConcurrentLinkedQueue in a ConcurrentHashMap?
-			 */
-			if(data.startsWith("move") || data.startsWith("send")) {
-			    for(int i = 0; i < salts.length; i++) {
-			        if(salts[i] == 0)
-			            return;
-
-                    node.push(salts[i], data, true);
-                }
-
-                return;
-            }
 
             Iterator it = users.iterator();
 
