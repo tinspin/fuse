@@ -161,34 +161,30 @@ public abstract class Output extends OutputStream implements Event.Block {
 			}
 		}
 		else {
-			wrote(("Date: " + reply.event().worker().date().format(new Date()) + EOL)
-					.getBytes());
+			wrote(("Date: " + reply.event().worker().date().format(new Date()) + EOL).getBytes());
 
 			if(!zero()) {
 				wrote(("Content-Type: " + reply.type() + EOL).getBytes());
 			}
 
-			if (reply.modified() > 0) {
-				wrote(("Last-Modified: "
-						+ reply.event().worker().date().format(new Date(reply.modified())) + EOL)
-						.getBytes());
+			if(reply.modified() > 0) {
+				wrote(("Last-Modified: " + reply.event().worker().date().format(new Date(reply.modified())) + EOL).getBytes());
 			}
 
-			if (reply.cached() && reply.event().daemon().properties.getProperty("live") != null) {
-				wrote(("Cache-Control: max-age=" + reply.event().daemon().cache + EOL)
-						.getBytes());
+			if(reply.cached() && reply.event().daemon().properties.getProperty("live") != null) {
+				/* Ok, so if you use javascript to set the source of an image to animate a sprite some browsers will 
+				 * spam the server with GET requests. Since I want to use the z-index and preload images I don't use 
+				 * canvas and the only solution around this bug is to inline the images with base64.
+				 */
+				//wrote(("Expires: " + reply.event().worker().date().format(new Date(System.currentTimeMillis() + reply.event().daemon().cache * 1000)) + EOL).getBytes());
+				wrote(("Cache-Control: public, max-age=" + reply.event().daemon().cache + ", immutable" + EOL).getBytes());
 			}
 
-			if (reply.event().session() != null && !reply.event().session().set()) {
+			if(reply.event().session() != null && !reply.event().session().set()) {
 				Session session = reply.event().session();
-				String cookie = "Set-Cookie: key="
-						+ session.key()
-						+ ";"
-						+ (session.expires() > 0 ? " expires="
-								+ reply.event().worker().date().format(new Date(session
-										.expires())) + ";" : "")
-										+ (session.domain() != null ? " domain=" + session.domain()
-												+ ";" : "") + " path=/";
+				String cookie = "Set-Cookie: key=" + session.key() + ";"
+						+ (session.expires() > 0 ? " expires=" + reply.event().worker().date().format(new Date(session.expires())) + ";" : "")
+						+ (session.domain() != null ? " domain=" + session.domain() + ";" : "") + " path=/";
 
 				wrote((cookie + EOL).getBytes());
 
@@ -201,7 +197,7 @@ public abstract class Output extends OutputStream implements Event.Block {
 				}
 			}
 
-			if (reply.event().close()) {
+			if(reply.event().close()) {
 				wrote(close);
 			} else {
 				wrote(alive);

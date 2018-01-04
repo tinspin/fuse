@@ -11,5 +11,5 @@ Next release (Cloud 1.3) will be added to github once it is ready.
 ![http://host.rupy.se](http://host.rupy.se/cluster.jpg)
 
 <a href='http://rupy.se'><img src='http://host.rupy.se/powered.png' border="0"/></a>
-<a href='http://bitcoinbankbook.com'><img src='http://host.rupy.se/btc.png' border="0"/></a>
+<a href='http://bitcoin.org'><img src='http://host.rupy.se/btc.png' border="0"/></a>
 <a href='http://raspberrypi.org'><img src='http://host.rupy.se/rpi.png' border="0"/></a>
