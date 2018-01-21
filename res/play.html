@@ -13,13 +13,13 @@ public class play extends Service {
 	String green = "#00cc33";
 	String black = "#000000";
 	String white = "#ffffff";
-	String font = "18pt";
+	String font = "font-size: 200%;";
 	
 	private String hide(String pass) {
 		StringBuilder hide = new StringBuilder();
 		
 		for(int i = 0; i < pass.length(); i++) {
-			hide.append("•");
+			hide.append("*");
 		}
 		
 		return hide.toString();
@@ -48,7 +48,7 @@ public class play extends Service {
 <style>
   @font-face {
     font-family: '8-bit';
-    src: url('8-bit.ttf');
+    src: url('BitPotionExt.ttf');
   }
   .parent {
     position: relative;
@@ -70,7 +70,7 @@ public class play extends Service {
   a.orange:link, a.orange:hover, a.orange:active, a.orange:visited { color: #ff9900; text-decoration: none; }
   img { display: block; }
   div { font-family: '8-bit', monospace; }
-  input { background-color: transparent; outline: none; font-family: '8-bit', monospace; font-size: [[ font ]]; box-sizing: border-box; }
+  input { background-color: transparent; outline: none; font-family: '8-bit', monospace; box-sizing: border-box; font-size: 100%; }
   table { margin: 5px; }
   #fail1 { color: [[ red ]]; }
   #fail2 { color: [[ red ]]; }
@@ -85,7 +85,7 @@ public class play extends Service {
     box-sizing: border-box;
     resize: none;
     width: 100%;
-    font-size: [[ font ]];
+    font-size: 100%;
   }
   select {
     border-style: inset;
@@ -97,7 +97,7 @@ public class play extends Service {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     width: 100%;
-    font-size: [[ font ]];
+    font-size: 100%;
   }
   #show {
     position: fixed;
@@ -530,7 +530,7 @@ public class play extends Service {
       var hide = element('hide');
       hide.value = '';
       for(var i = 0; i < pass.length; i++) {
-        hide.value += '•';
+        hide.value += '*';
       }
       return false;
     }
@@ -682,7 +682,7 @@ public class play extends Service {
   }
 </script>
 </head>
-<body style="margin: 0px; font-size: [[ font ]];">
+<body bgcolor="#cccccc" style="margin: 0px; [[ font ]]">
 <img style="position: absolute; z-index: -1; width: 100%;" src="advance.svg">
 <div id="user"><table>
 <tr><input type="hidden" name="pass" id="pass" value="[[ pass ]]"><td colspan="3">

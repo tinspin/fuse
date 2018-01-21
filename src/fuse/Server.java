@@ -40,6 +40,8 @@ public class Server extends Service implements Node, Runnable {
 	}
 
 	public void remove(String salt, int place) throws Exception {
+        list.remove(salt);
+        list.remove(Router.User.salt(salt));
 		node.remove(salt, place);
 	}
 
@@ -135,7 +137,7 @@ public class Server extends Service implements Node, Runnable {
 			
 			if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
 				remove(queue.salt, 1);
-				list.remove(queue.salt);
+
 			}
 		}
 		else {
@@ -158,7 +160,6 @@ public class Server extends Service implements Node, Runnable {
 
             if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
                 remove(queue.salt, 1);
-                list.remove(queue.salt);
             }
         }
         else {
@@ -307,7 +308,6 @@ public class Server extends Service implements Node, Runnable {
 			}
 			catch(Exception e) {
 				remove(queue.salt, 3);
-				list.remove(queue.salt);
 				throw e;
 			}
 		}
@@ -320,7 +320,6 @@ public class Server extends Service implements Node, Runnable {
 			if(queue != null) {
 				if(queue.event.remote().equals(event.remote())) {
 					remove(queue.salt, 4);
-					list.remove(queue.salt);
 				}
 				else {
 					System.out.println("### IP fuse hack " + event.remote());
@@ -331,7 +330,7 @@ public class Server extends Service implements Node, Runnable {
 
             Queue q = new Queue(salt, event);
 			list.put(salt, q);
-            list.put(Router.User.salt(salt), q); // TODO: remove these too!!!
+            list.put(Router.User.salt(salt), q);
 			
 			if(Router.debug)
 				System.err.println("poll " + Router.date.format(new Date()) + " " + salt);

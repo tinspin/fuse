@@ -1561,15 +1561,17 @@ public class Router implements Node {
             //Iterator it = users.values().iterator();
             //Iterator it = users.iterator();
 
-            /* Will this really help when the Server.push uses a
+            /* Cache-misses!
+             * Will this really help when the Server.push uses a
 			 * ConcurrentLinkedQueue in a ConcurrentHashMap?
+			 * Specially since compacting the array is not thread safe
+			 * so we end up looping through the whole array every send!
+			 * There must be some fillrate at which this becomes worth it?
+			 * size / 2 maybe?!
 			 */
-            if(data.startsWith("move") || data.startsWith("send")) {
+            if(users.size() > size / 2 && (data.startsWith("move") || data.startsWith("send"))) {
                 for(int i = 0; i < salts.length; i++) {
-                    if(salts[i] == 0)
-                        return;
-
-                    if(salts[i] != from.intsalt)
+                    if(salts[i] > 0 && salts[i] != from.intsalt)
                         node.push(salts[i], data, true);
                 }
 
@@ -1677,6 +1679,7 @@ public class Router implements Node {
 		}
 
 		void remove(User user) {
+		    /* not thread safe!
 		    int kill = users.indexOf(user);
             int last = users.size() - 1;
             if(kill < last) {
@@ -1686,6 +1689,14 @@ public class Router implements Node {
             }
 		    users.remove(last);
             salts[last] = 0;
+            */
+            users.remove(user);
+            for(int i = 0; i < salts.length; i++) {
+                if (salts[i] == user.intsalt) {
+                    salts[i] = 0;
+                    return;
+                }
+            }
 		    //users.remove(user.name);
 		}
 
