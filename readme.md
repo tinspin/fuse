@@ -22,8 +22,11 @@ platform:
 
   - low internal latency: <a href="http://fuse.rupy.se/data">stat</a>
   - multithreaded nio with queue, linear perf.:
-    - 1000 mess./sec. on raspberry pi 1
-    - 6500 mess./sec. on raspberry pi 2
+    - 1.000 mess./sec. on raspberry pi 1
+    - 6.500 mess./sec. on raspberry pi 2
+    - 100.000 mess./sec. on T2 Micro
+    - 200.000 mess./sec. on M4 Large
+    - 300.000 mess./sec. on T2 Medium
   - 100% uptime on hosting and routing with round-robin dns
   - 100% read uptime on persistence with custom 
     async distributed json file system database

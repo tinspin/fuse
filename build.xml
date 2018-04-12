@@ -65,7 +65,7 @@
 			<fileset dir="res">
 				<exclude name="**/*.jpg"/>
 				<exclude name="**/*.png"/>
-				<!--exclude name="**/*.svg"/-->
+				<exclude name="**/*.svg"/>
 				<exclude name="**/*.java"/>
 			</fileset>
 		</copy>
@@ -90,7 +90,7 @@
 	
 	<target name="remote" depends="build">
 		<java fork="yes" classname="se.rupy.http.Deploy" classpath="lib/http.jar">
-			<arg line="host.rupy.se"/>
+			<arg line="fuse.rupy.se"/>
 			<arg line="bin/${root}.jar"/>
 			<arg line="${fuse.rupy.se}"/>
 		</java>

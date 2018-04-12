@@ -28,23 +28,22 @@ public class play extends Service {
 	public String path() { return "/play.html"; }
 	public void filter(Event event) throws Event, Exception {
 		event.query().parse();
+
 		String host = event.query().string("host", Router.fuse);
 		String game = event.query().string("game", "cube");
 		String path = event.query().string("path", game + ".html");
-		
 		boolean test = event.query().bit("test", false);
-		
 		String name = event.string("name");
 		String pass = event.string("pass");
 		
 		Output out = event.output(); ]]
 
 <!doctype html>
-<html>
+<html style="margin: 0px; padding: 0px; height: 100%; min-height: 100%; overflow: hidden;">
 <head>
 <meta charset="utf-8">
 <meta name="referrer" content="no-referrer">
-<meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<!--meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"-->
 <style>
   @font-face {
     font-family: '8-bit';
@@ -70,7 +69,14 @@ public class play extends Service {
   a.orange:link, a.orange:hover, a.orange:active, a.orange:visited { color: #ff9900; text-decoration: none; }
   img { display: block; }
   div { font-family: '8-bit', monospace; }
-  input { background-color: transparent; outline: none; font-family: '8-bit', monospace; box-sizing: border-box; font-size: 100%; }
+  input {
+    background-color: transparent;
+    outline: none;
+    font-family: '8-bit', monospace;
+    box-sizing: border-box;
+    font-size: 100%;
+    color: #FFFFFF;
+  }
   table { margin: 5px; }
   #fail1 { color: [[ red ]]; }
   #fail2 { color: [[ red ]]; }
@@ -86,6 +92,7 @@ public class play extends Service {
     resize: none;
     width: 100%;
     font-size: 100%;
+    color: #000000;
   }
   select {
     border-style: inset;
@@ -98,6 +105,7 @@ public class play extends Service {
     box-sizing: border-box;
     width: 100%;
     font-size: 100%;
+    color: #000000;
   }
   #show {
     position: fixed;
@@ -228,6 +236,9 @@ public class play extends Service {
   var type_audio = new Audio('mp3/select.mp3');
   var send_game = true;
   var game_play = false;
+  function setcolor(color) {
+    element('gamebg').style.backgroundColor = color;
+  }
   function read(data) {
     if(show)
       element('pull').innerHTML += data + '\n';
@@ -303,10 +314,12 @@ public class play extends Service {
         }
         display('room', 'none');
         display('play', 'block');
-        element('talk').style.position = 'absolute';
-        element('talk').style.left = '0px';
-        element('talk').style.top = '350px';
+        //element('talk').style.position = 'absolute';
+        //element('talk').style.left = '0px';
+        //element('talk').style.top = '350px';
         head(split[1], position);
+        if(game === 'bomb')
+          setcolor('#90c527');
         game_play = true;
       }
       else if(split[0] == 'send') {
@@ -359,6 +372,8 @@ public class play extends Service {
     }
   }
   function stop_game() {
+    if(game === 'bomb')
+      setcolor('#000000');
     display('room', 'block');
     display('play', 'none');
     element('talk').style.position = 'static';
@@ -682,9 +697,23 @@ public class play extends Service {
   }
 </script>
 </head>
-<body bgcolor="#cccccc" style="margin: 0px; [[ font ]]">
-<img style="position: absolute; z-index: -1; width: 100%;" src="advance.svg">
-<div id="user"><table>
+<body bgcolor="#cccccc" style="margin: 0px; padding: 0px; [[ font ]] height: 100%;">
+
+<img src="gif/logo.png" style="position: absolute; margin-left: calc(50vw - 79px); margin-top: calc(34vw + 75px);">
+
+<!-- only for background color!!! -->
+<table border="0" style="width: 100%; height: 49vw; min-height: 49vw; overflow: auto; z-index: -2; position: absolute;">
+<tr><td colspan="3" style="height: 3vw;"></td></tr>
+<tr><td style="width: 20%"></td><td id="gamebg" align="center" valign="middle" style="height: 33vw; width: 60%; text-align: center; vertical-align: middle; background-color: #000000;">
+</td><td style="width: 20%"></td></tr></table>
+
+<!-- the frame for real content -->
+<table border="0" style="background: url('advance.svg') no-repeat; background-size: 100% auto; width: 100%; height: 70vw; min-height: 50vw; overflow: auto;">
+<tr><td colspan="3" style="height: 8vw;"></td></tr>
+<tr><td style="width: 20%"></td><td align="center" valign="middle" style="height: 34vw; width: 60%; text-align: center; vertical-align: middle;">
+
+<!--center><img style="display: block; margin-left: auto; margin-right: auto; width: 90%;" src="advance.svg"></center-->
+<div id="user" style="vertical-align: middle;"><center><table>
 <tr><input type="hidden" name="pass" id="pass" value="[[ pass ]]"><td colspan="3">
 <!--a href="https://github.com/tinspin/fuse"><img border="0" width="150" height="150" src="fuse.svg"--></a>
 </td></tr>
@@ -693,7 +722,7 @@ public class play extends Service {
 <tr><td><font color="#00cc33">pass</font>&nbsp;</td><td><input id="hide" name="hide" value="[[ hide(pass) ]]" style="width: 100px;" onkeydown="return hash_code(event);"></td></tr>
 <tr><td></td><td><a href="javascript:hash();">login</a></td></tr>
 <tr><td></td><td><a class="orange" href="javascript:user();">register</a></td></tr>
-<tr><td></td><td><a class="grey" href="fuse.html">about</a></td></tr>
+<tr><td></td><td><a class="grey" href="about.html">about</a></td></tr>
 </table>
 <table>
 [[	Iterator it = Router.score.iterator();
@@ -704,13 +733,13 @@ public class play extends Service {
 <tr><td>[[ score ]]</td></tr>
 
 [[	} ]]
-</table>
+</table></center>
 </div>
 
-<div id="room" style="display: none;"><table>
+<div id="room" style="display: none;"><center><table>
 <tr><td colspan="3"><div id="fail2"></div></td></tr>
-<tr><td align="center">user</td><td></td>
-    <td align="center">room</td></tr>
+<tr><td align="center" style="color: #FFFFFF;">user</td><td></td>
+    <td align="center" style="color: #FFFFFF;">room</td></tr>
 <tr><td><select id="ally" size="5" multiple></select></td><td></td>
     <td><select id="join" size="5" multiple></select></td></tr>
 <tr><td><a href="javascript:ally();">ally</a></td><td></td>
@@ -718,7 +747,7 @@ public class play extends Service {
         <a href="javascript:join();">join</a>
         <a href="javascript:exit();">exit</a>
         <a href="javascript:play();">play</a></td></tr>
-</table>
+</table></center>
 </div>
 
 <div id="play" style="display: none;">
@@ -755,15 +784,21 @@ public class play extends Service {
 
 </div>
 
-<div id="talk" style="display: none;"><table>
-<tr><td colspan="3"><textarea id="chat" name="chat" rows="5" readonly></textarea></td></tr>
+</td><td style="width: 20%"></td></tr>
+<tr><td colspan="3"><!--/td></tr>
+<tr><td colspan="3" style="height: 10vw;"-->
+
+<div id="talk" style="display: none;"><center><table>
+<tr><td colspan="3"><textarea id="chat" name="chat" rows="5" width="300" readonly></textarea></td></tr>
 <tr><td colspan="3">
 <select id="tree" style="width: 120px;"><option>root</option><option>stem</option><option>leaf</option></select>
-<input id="text" name="text" size="12" onkeypress="chat_code(event);">
+<input id="text" name="text" size="24" style="color: #000000;" onkeypress="chat_code(event);">
 <a href="javascript:chat();">chat</a>
 </td></tr>
-</table>
+</table></center>
 </div>
+
+</td></tr></table>
 
 <div id="show">
 <div id="pull">pull:</div>

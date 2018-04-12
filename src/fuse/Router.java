@@ -832,7 +832,7 @@ public class Router implements Node {
 
 					score.add(builder.toString());
 
-					if(score.size() > 10) {
+					if(score.size() > 3) {
 						score.poll();
 					}
 				}
