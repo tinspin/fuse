@@ -262,9 +262,8 @@ public class Event extends Throwable implements Chain.Link {
 			
 			if(!service(daemon.chain(this), false)) {
 				if(daemon.host && query.path().startsWith("/root/")) {
-					reply.code("403 Forbidden");
-					reply.output().print(
-							"<pre>'" + query.path() + "' is forbidden.</pre>");
+					reply.code("404 Not Found");
+					reply.output().print(warn("'" + encode(query.path()) + "' is forbidden."));
 				}
 				else if(!content()) {
 					//System.out.println(daemon.host + " " + 
@@ -282,8 +281,7 @@ public class Event extends Throwable implements Chain.Link {
 							!host.equals("root.rupy.se")) {
 						if(!service(daemon.root(), false)) {
 							reply.code("404 Not Found");
-							reply.output().print(
-									"<pre>'" + encode(query.path()) + "' was not found.</pre>");
+							reply.output().print(warn("'" + encode(query.path()) + "' was not found."));
 						}
 					}
 					else if(!service(daemon.chain(this, "null"), false)) {

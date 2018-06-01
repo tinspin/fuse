@@ -13,7 +13,7 @@
 	<target name="build" depends="check" unless="required">
 		<echo>Building (${name})</echo>
 		<mkdir dir="tmp/cls"/>
-		<javac srcdir="src" target="1.5" source="1.5" destdir="tmp/cls" debug="on" deprecation="off" classpath="src;lib/json.jar" encoding="UTF-8"/>
+		<javac srcdir="src" target="1.6" source="1.6" destdir="tmp/cls" debug="on" deprecation="off" classpath="src;lib/json.jar" encoding="UTF-8"/>
 		<mkdir dir="tmp/jar"/>
 		<copy todir="tmp/jar">
 			<fileset dir="tmp/cls"/>

@@ -1553,8 +1553,8 @@ public class Root extends Service {
 
 		private void fail(int spot, Event event, String path, String rule, String head, String tail, String last) throws Event, Exception {
 			event.reply().code("404 Not Found");
-			event.output().print("<pre>" + toCase(rule) + " '" + event.query().path() + "' was not found on host " + local + ".</pre>");
-
+			//event.output().print("<pre>" + toCase(rule) + " '" + event.query().path() + "' was not found on host " + local + ".</pre>");
+			event.output().print(Event.warn(toCase(rule) + " '" + event.query().path() + "' was not found on host " + local + "."));
 			JSONObject obj = new JSONObject("{\"spot\":\"" + spot + "\",\"path\":\"" + path + "\",\"rule\":\"" + rule + "\",\"head\":\"" + head + "\",\"tail\":\"" + tail + "\",\"last\":\"" + last + "\"}");
 			System.out.println(obj.toString(4));
 

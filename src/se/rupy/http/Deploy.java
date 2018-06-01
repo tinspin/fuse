@@ -296,7 +296,7 @@ public class Deploy extends Service {
 				// GWT requires some nasty privileges.
 				// I don't know the impact of these yet.
 				if(daemon.domain.equals("host.rupy.se")) {
-					if(host.equals("bank.rupy.se") || host.equals("www.bitcoinbankbook.com")) {
+					if(host.equals("bank.rupy.se") || host.equals("bank.binarytask.com")) {
 						try {
 							permissions.add(new RuntimePermission("accessDeclaredMembers"));
 							permissions.add(new ReflectPermission("suppressAccessChecks"));
