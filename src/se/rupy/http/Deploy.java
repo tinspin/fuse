@@ -282,10 +282,9 @@ public class Deploy extends Service {
 				permissions.add(new RuntimePermission("getClassLoader"));
 				permissions.add(new RuntimePermission("getStackTrace"));
 
-				/* These projects require insecure features.
-				 * The -Ddata flag allows you to hotdeploy your own ROOT database, mainly for development.
+				/* The -Ddata flag allows you to hotdeploy your own ROOT database, mainly for development.
 				 */
-				if(System.getProperty("data", "root.rupy.se").indexOf(host) > -1) {
+				if(System.getProperty("data", "root.rupy.se").equals(host)) {
 					try {
 						permissions.add(new LinkPermission("hard"));
 						permissions.add(new LinkPermission("symbolic"));
