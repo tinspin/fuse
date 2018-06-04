@@ -284,7 +284,7 @@ public class Deploy extends Service {
 
 				/* The -Ddata flag allows you to hotdeploy your own ROOT database, mainly for development.
 				 */
-				if(System.getProperty("data", "root.rupy.se").equals(host)) {
+				if(daemon.roots.contains(host)) {
 					try {
 						permissions.add(new LinkPermission("hard"));
 						permissions.add(new LinkPermission("symbolic"));

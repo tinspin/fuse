@@ -42,6 +42,7 @@ public class Daemon implements Runnable {
 	private Selector selector;
 	private String name, bind;
 
+	HashSet roots;
 	Chain workers, queue;
 	Properties properties;
 	PrintStream out, access, error;
@@ -389,6 +390,14 @@ public class Daemon implements Runnable {
 
 		archive = new TreeMap();
 		service = new TreeMap();
+        roots = new HashSet();
+
+        String[] roots_ = System.getProperty("data", "root.rupy.se").split(",");
+
+        for(int i = 0; i < roots_.length; i++) {
+            roots.add(roots_[i]);
+        }
+
 		session = new ConcurrentHashMap();
 		events = new ConcurrentHashMap();
 
