@@ -1,9 +1,9 @@
 <pre>
-<img width="140" height="80" src="https://rawgit.com/tinspin/fuse/master/res/fuse.svg">
+<img width="140" height="140" src="https://rawgit.com/tinspin/fuse/master/res/fuse.svg">
 
-+--------------------------+
-| <i>the multiplayer solution</i> |
-+--------------------------+
++---------------------------+
+| <i>multiplayer online system</i> |
++---------------------------+
 
 about:
 
