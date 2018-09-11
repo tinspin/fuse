@@ -1,5 +1,5 @@
 <pre>
-<img width="140" height="140" src="https://rawgit.com/tinspin/fuse/master/res/fuse.svg">
+<img width="170" src="https://rawgit.com/tinspin/fuse/master/res/svg/mos.svg">
 
 +---------------------------+
 | <i>multiplayer online system</i> |
