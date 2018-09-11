@@ -366,7 +366,7 @@ in sort of chronological order:
  show hide
  gain lose
  item info data      tape task step
- time host           solo      slow slot
+ time host prey      solo      slow slot
                      skip skin size site
       fill full make seal seek sell
  slay ruin rise poll said rank rate star

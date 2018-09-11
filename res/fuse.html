@@ -73,16 +73,19 @@ public class fuse extends Service {
 <body bgcolor="eeeeee">
 <img width="170px" src="fuse.svg">
 <div>
-Multiplayer Standard
+    Multiplayer Online System<br>
+Reference Implementation<br>
+Protocol Standard
+
 <ul style="list-style-type:circle">
 <li><img height="16" src="svg/unity.svg"> C# (client)</li>
 <li><img height="16" src="svg/cpp.svg"> C++ (client)</li>
 <li><img height="16" src="svg/java.svg"> Java (server uses <a href="https://github.com/tinspin/rupy">rupy</a>)</li>
 <li><img height="16" src="svg/html5.svg"> HTML5 (client)</li>
+    <li><img height="12" src="svg/64.svg"> 64 (client) <font color="#ff3300">in progress</font></li>
 </ul>
     <ul style="list-style-type: none;"><li>
     <img width="150" src="console.svg">
-    <img height="200" src="advance.svg">
     </li></ul>
 <ul style="list-style-type: none;">
 <li>Generic: User - Item - Room</li>
@@ -90,29 +93,12 @@ Multiplayer Standard
 <li>TCP/HTTP: Traverses all firewalls</li>
 <li>&nbsp;</li>
 <li>Multiplayer Physics (like Rocket League)</li>
-<li>Completely <i>Concurrent Multicore Non-Blocking Async.</i></li>
+<li>Completely <i>Parallel Non-Blocking Async.</i></li>
 <li>Global 100% Read Uptime (registered users<br>will always be able to login and play)</li>
 <li>&nbsp;</li>
 <li>Low internal latency: <a href="http://fuse.rupy.se/data">statistics</a> (Raspberry Pi 1)</li>
 <li>Open-Source: <a href="https://github.com/tinspin/fuse">https://github.com/tinspin/fuse</a></li>
 <li>Integrated Forum: <a href="http://binarytask.com">http://binarytask.com</a></li>
-</ul>
-Roadmap:
-<ul style="list-style-type: none;">
-<li>C++ Khronos Client</li>
-<li>Off-Chain Micropayments</li>
-<li><br>
-<div style="width: 200px; position: relative; left: 0; top: 0;">
-<img src="http://ahoy.rupy.se/girl.gif" style="position: relative; top: 0; left: 0;"/>
-<!--img height="32" src="svg/cpp.svg" style="position: absolute; top: 10px; left: 10px;"/-->
-    <div style="position: absolute; left: 0; top: 0;">
-        <svg style="position: relative; top: 0px; left: 0px;" height="50" width="50">
-            <circle cx="25" cy="25" r="25" fill="#333333" />
-        </svg>
-        <img style="position: absolute; top: 13px; left: 8px;" src="http://aeonalpha.com/vanilla.svg" height="25">
-    </div>
-<!--img height="32" src="http://aeonalpha.com/vanilla.svg" style="position: absolute; top: 10px; left: 10px;"/-->
-</div></li>
 </ul>
 Examples:
 <ul style="list-style-type: none;">
@@ -134,8 +120,12 @@ Examples:
 <li><font>250 concurrent users ~15% CPU on AWS T2 Medium (10 ECU burst?)</font></li>
 <li><font>450 concurrent users ~25% CPU on AWS T2 Medium (10 ECU burst?)</font></li>
 <li><font>450 concurrent users ~40% CPU on AWS M4 Large (6.5 ECU)</font></li>
-<li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;At peak the 3x node intercontinental cluster ran with<br>&nbsp;&nbsp;&nbsp;&nbsp;1100 concurrent players for ~20$/day.</font></li>
-<li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;When at 450 concurrent users each server receives 2.000<br>&nbsp;&nbsp;&nbsp;&nbsp;and sends 100.000 move messages per second while<br>&nbsp;&nbsp;&nbsp;&nbsp;keeping internal latency low enough for FPS games.</font></li>
+<li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;At peak the 3x node intercontinental cluster ran with<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;1100 concurrent players for ~20$/day.</font></li>
+    <li><font color="#6699ff">&nbsp;&nbsp;&nbsp;&nbsp;This was during a 3 day surge where we added 50.000 players<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;which meant a revenue of ~50.000$/day.</font></li>
+<li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;When at 450 concurrent users each server receives 2.000<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;and sends 100.000 move messages per second while<br>&nbsp;&nbsp;&nbsp;&nbsp;keeping internal latency low enough for FPS games.</font></li>
 <li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales linearly / zero io-wait</font></li>
 <li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100% stable / zero leakage</font></li></ul>
 Advantages:
@@ -143,7 +133,11 @@ Advantages:
 <li>Scalable - 1000 mess.in+out/s on Raspberry Pi 1 / Distr. Async. DB</li>
 <li>Simple - Virtual Host Hotdeploy / HTTP JSON File DB / HTTP API</li>
 <li>Stable - Infinite Uptime / No Maintenance / 8 Years Old</li>
-<li>Secure - One-Time Salt Password Hash Login<br><br></li>
+    <li>Secure - One-Time Salt Password Hash Login<br></li></ul>
+    <ul style="list-style-type: none;"><li>
+        <img height="175" src="advance.svg">
+    </li></ul>
+    <ul style="list-style-type:circle">
 <li><font color="#00cc33">One process for C#, C++ and HTML5 cross play, website and database!</font></li>
 <li>200KB total size (excl. Java)</li>
 <li>Global 100% Read Uptime</li>
@@ -152,25 +146,51 @@ Advantages:
 Flaws:
 <ul style="list-style-type: circle">
 <li><font color="#ff3300">300 out of 100.000 customers refunded</font> because their antivirus blocks the pull HTTP stream</li>
-<li>You need large database hard-drives; Meadow uses <font color="#ff3300">100KB per user</font>, also<br>inodes run out before disk space if you don't configure the /app mount with 'mkfs.ext4 -T small'</li>
-<li>Peak garbage collect is <font color="#ff3300">7ms</font> on AWS T2 Micro instance</li>
+<li>You need large database hard-drives; Meadow uses <font color="#ff3300">100KB per user</font>, also inodes run out<br>before disk space if you don't configure the /app mount with 'mkfs.ext4 -T small'</li>
+<li>Peak garbage collect is <font color="#ff3300">7ms</font> once per minute on AWS T2 Micro instance</li>
 </ul>
-Competition:
+    Roadmap:
+    <ul style="list-style-type: none;">
+        <li>Commodore 64 Client</li>
+        <li>Khronos (Collada + OpenGL) Engine</li>
+        <li>Off-Chain Micropayments</li>
+        <li><br>
+            <div style="width: 200px; position: relative; left: 0; top: 0;">
+                <img src="http://ahoy.rupy.se/girl.gif" style="position: relative; top: 0; left: 0;"/>
+                <!--img height="32" src="svg/cpp.svg" style="position: absolute; top: 10px; left: 10px;"/-->
+                <div style="position: absolute; left: 0; top: 0;">
+                    <svg style="position: relative; top: 0px; left: 0px;" height="50" width="50">
+                        <circle cx="25" cy="25" r="25" fill="#333333" />
+                    </svg>
+                    <img style="position: absolute; top: 13px; left: 8px;" src="http://aeonalpha.com/vanilla.svg" height="25">
+                </div>
+                <img style="position: relative; bottom: 25px; right: 0px;" width="50" src="svg/mos.svg">
+                <!--img height="32" src="http://aeonalpha.com/vanilla.svg" style="position: absolute; top: 10px; left: 10px;"/-->
+            </div></li>
+    </ul>
+    Competition:
 <ul style="list-style-type: none;">
 <li>None of the competition has an integrated<br>async-to-async distributed database or web<br>server that can scale across continents.<br><br></li>
 <li><a href="https://forums.improbable.io/t/newer-dependencies/3042">SpatialOS</a> (Java, uses netty/akka) <font color="red">80MB total size = x400!</font></li>
 <li><br>None of the systems below can scale on<br>multiple cores across the same room<br>instance:<br><br></li>
-<li><a href="http://developer.muchdifferent.com/unitypark">Much Different</a> (C#) <font color="red">Defunct</font></li>
+<li><a href="http://defunct">Much Different</a> (C#) <font color="red">Defunct</font></li>
 <li><a href="http://www.smartfoxserver.com">Goto & Play</a> (Java)</li>
 <li><a href="https://www.photonengine.com/en-US/Photon">Exit Games</a> (C++/C#) <font color="red">Only Windows</font></li>
 <li><a href="https://github.com/heroiclabs/nakama">Nakama</a> (Go)</li>
 </ul>
 Hosting:<br>
-<ul style="list-style-type:circle"><li>Dedicated: Minimum equivalent of two micro instances on AWS</li>
+    <ul style="list-style-type: none;"><li><a href="http://sprout.rupy.se/article?id=290"><img src="http://sprout.rupy.se/file/2/9/1/cluster-200.jpeg"></a></li></ul>
+<ul style="list-style-type: circle"><li>Dedicated: Minimum equivalent of two micro instances on AWS, Java SE 8u181 is free forever:</li>
+    <ul style="list-style-type: circle">
+    <li><a href="http://move.rupy.se/file/jdk-8u181-linux-arm32-vfp-hflt.tar.gz">linux-arm32</a></li>
+    <li><a href="http://move.rupy.se/file/jdk-8u181-linux-arm64-vfp-hflt.tar.gz">linux-arm64</a></li>
+    <li><a href="http://move.rupy.se/file/jdk-8u181-linux-x64.rpm">linux-x64</a></li>
+    <li><a href="http://move.rupy.se/file/jdk-8u181-windows-x64.exe">windows-x64</a></li>
+    </ul>
 <li>"Cloud": We host and maintain on Google Cloud; pricing: <a href="http://host.binarytask.com">host.binarytask.com</a></li></ul>
 License:<br>
 <ul style="list-style-type:circle">
-<li>LGPL</li>
+<li>LGPL but without any restrictions on having to share the modified original source.</li>
 </ul>
 Contact:<br>
 <form method="post">

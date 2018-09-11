@@ -121,6 +121,13 @@ public class play extends Service {
   var show = [[ test ]];
   var size = 0;
   var salt;
+  if(Object.defineProperty) {
+    Object.defineProperty(navigator, 'userAgent', {
+      get: function () {
+        return "fuse";
+      }
+    });
+  }
   function pull(salt) {
     this.salt = salt;
     http('pull', null);
@@ -171,14 +178,18 @@ public class play extends Service {
 		    'Head': 'less'
 	      })
         }).then(function() {});
+        return;
       }
     }
     catch(e) {
       return e;
     }
     if(!ie) {
-      xhr.setRequestHeader('Accept', 'text/event-stream');
-      xhr.setRequestHeader('User-Agent', 'fuse');
+      try {
+        xhr.setRequestHeader('Accept', 'text/event-stream');
+        xhr.setRequestHeader('User-Agent', 'fuse');
+      }
+      catch(e) {}
     }
     if(state == 3) {
       if(ie)
@@ -699,8 +710,6 @@ public class play extends Service {
 </head>
 <body bgcolor="#cccccc" style="margin: 0px; padding: 0px; [[ font ]] height: 100%;">
 
-<img src="gif/logo.png" style="position: absolute; margin-left: calc(50vw - 79px); margin-top: calc(34vw + 75px);">
-
 <!-- only for background color!!! -->
 <table border="0" style="width: 100%; height: 49vw; min-height: 49vw; overflow: auto; z-index: -2; position: absolute;">
 <tr><td colspan="3" style="height: 3vw;"></td></tr>
@@ -709,7 +718,7 @@ public class play extends Service {
 
 <!-- the frame for real content -->
 <table border="0" style="background: url('advance.svg') no-repeat; background-size: 100% auto; width: 100%; height: 70vw; min-height: 50vw; overflow: auto;">
-<tr><td colspan="3" style="height: 8vw;"></td></tr>
+<tr><td colspan="3" style="height: 8vw; min-height: 8vw;"></td></tr>
 <tr><td style="width: 20%"></td><td align="center" valign="middle" style="height: 34vw; width: 60%; text-align: center; vertical-align: middle;">
 
 <!--center><img style="display: block; margin-left: auto; margin-right: auto; width: 90%;" src="advance.svg"></center-->
@@ -785,10 +794,10 @@ public class play extends Service {
 </div>
 
 </td><td style="width: 20%"></td></tr>
-<tr><td colspan="3"><!--/td></tr>
+<tr><td colspan="3" valign="top"><!--/td></tr>
 <tr><td colspan="3" style="height: 10vw;"-->
 
-<div id="talk" style="display: none;"><center><table>
+<div id="talk" style="display: none; z-index: 5"><center><table>
 <tr><td colspan="3"><textarea id="chat" name="chat" rows="5" width="300" readonly></textarea></td></tr>
 <tr><td colspan="3">
 <select id="tree" style="width: 120px;"><option>root</option><option>stem</option><option>leaf</option></select>
