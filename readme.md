@@ -1,5 +1,4 @@
 <img width="170" src="https://rawgit.com/tinspin/fuse/master/res/svg/mos.svg"><br>
-<br>
 <pre>
 +---------------------------+
 | <i>multiplayer online system</i> |
