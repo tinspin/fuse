@@ -1,0 +1,25 @@
+https://www.reddit.com/r/gamedev/comments/a6mzdr/game_networking_json_vs_custom_binary_protocol/ebx1r2n/
+
+I use just text, sometimes with JSON for rare+persistent data, f.ex:
+
+Movement: "move|<session>|<x>,<y>,<z>|<x>,<y>,<z>,<w>|walk" (where x,y,z,w are floats)
+
+Storage: "save|<session>|{"name": "torch", "amount": 3}"
+
+I use triplex HTTP/1.1 over 2 TCP sockets, so request/response for async. (separate thread on client) and sync. client<->server push and comet stream response for async. client<-server pull. Therefore I have to pad/separate the messages with:
+
+push: "GET /push?data=" and " HTTP/1.1\r\nHost: my.host.name", then you get back "200 OK\r\nContent-Length: <length>\r\n\r\n<content>".
+
+pull: "data:" and "\n\n" because "Transfer-Encoding: chunked" does not go through some bad antiviruses without "Accept: text/event-stream".
+
+That way I can use only HTTP for everything on one server process (real-time data, persistent data (distributed JSON file database), file data (site, patches etc.)) that allows for crossplay across all clients (JavaScript, C#, C++).
+
+Nothing is simpler!
+
+Binary and encryption are bad because you can't use tcpdump to see what is happening on the live server and implementing these will waste precious CPU cycles on the server (it's really hard to avoid cache misses with binary objects and if you are going to use contiguous data you might as well use a string which is a byte array)
+
+You will be surprised how much more performant my solution is to all current binary protocols (everything is sync. WoW, UE4, WebSocket, HTTP/2+ etc.) if you make it completely async. parallel on the CPU, so all cores can co-operate on all messages without any IO-wait and with less cache misses.
+
+You should however use an event-based protocol instead of tick-based; so one move per event (keypress/threshold) this means analogue movements have to be chunked.
+
+For security I use hashing with random server generated session key as salt.

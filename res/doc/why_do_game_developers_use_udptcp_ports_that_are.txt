@@ -1,0 +1,21 @@
+https://www.reddit.com/r/gamedev/comments/9w65kx/why_do_game_developers_use_udptcp_ports_that_are/e9i4xh2/
+
+I have used port 80 for a MMO. It's by no means a easy solution. Instead of being blocked by firewalls, you are hindered by antiviruses that don't like when apps, that are not browsers, communicate over HTTP.
+
+Two workarounds I had to implement was: 1) pushing a big amount of data upfront and 2) switching to "Accept: text/event-stream" with server sent events to get past AVG and Bitdefender respectively.
+
+The upside when using a standard port is that you can use one port for many things like in my case make everything HTTP/JSON so db, app server and real-time protocol (Transfer-Encoding: chunked) run over HTTP on port 80 on one process.
+
+This way you can focus on making the one solution scale well on the CPU (which is the first and only bottleneck by far if you use event based protocol) with async. parallel execution and not have a fragmented back-end that costs more in terms of development, run time and maintenance.
+
+I would not recommend port 443 because you will have to encrypt data on that port because firewalls detect if the data is not SSL and block you. Also encryption costs a lot of CPU.
+
+Also you might want clear text protocols, binary protocols like WebSockets or most multiplayer protocols are harder to debug and lead to CPU overhead for encoding/decodeing. Most old multiplayer programmers will dismiss this because they have invested so much time into binary protocols when the internet was slower.
+
+The way around analogue movement like mouse look or thumb stick movement is to chunk these into value groups so that you only send a new event once a threshold has been crossed.
+
+As for all other ports, you could use any >1024 but I guess you will have more problems than I had with both firewalls and antiviruses. Best option here if you use UDP would be to choose the same port as big multiplayer games like CS or Starcraft and hope it slips through most setups.
+
+But again, I don't recommend tick based multiplayer protocols and instead encourage everyone to use event based over HTTP. Eventually there will be no antiviruses that block this. Only 3 in 1000 players that downloaded our game refunded because they could not connect with HTTP from a Unity client.
+
+I think we only had a great success with China because our game was not blocked by the great firewall and had a global distributed database, but I can't really prove it. Just a gut feeling.
