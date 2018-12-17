@@ -82,7 +82,6 @@ Protocol Standard
 <li><img height="16" src="svg/cpp.svg"> C++ (client)</li>
 <li><img height="16" src="svg/java.svg"> Java (server uses <a href="https://github.com/tinspin/rupy">rupy</a>)</li>
 <li><img height="16" src="svg/html5.svg"> HTML5 (client)</li>
-    <li><img height="12" src="svg/64.svg"> 64 (client) <font color="#ff3300">in progress</font></li>
 </ul>
     <ul style="list-style-type: none;"><li>
     <img width="150" src="console.svg">
@@ -145,14 +144,13 @@ Advantages:
 </ul>
 Flaws:
 <ul style="list-style-type: circle">
-<li><font color="#ff3300">300 out of 100.000 customers refunded</font> because their antivirus blocks the pull HTTP stream</li>
+<li><font color="#ff3300">759 out of 205.875 customers refunded</font> because their antivirus blocks the pull HTTP stream</li>
 <li>You need large database hard-drives; Meadow uses <font color="#ff3300">100KB per user</font>, also inodes run out<br>before disk space if you don't configure the /app mount with 'mkfs.ext4 -T small'</li>
 <li>Peak garbage collect is <font color="#ff3300">7ms</font> once per minute on AWS T2 Micro instance</li>
 </ul>
     Roadmap:
     <ul style="list-style-type: none;">
-        <li>Commodore 64 Client</li>
-        <li>Khronos (Collada + OpenGL) Engine</li>
+        <li>Khronos (OpenGL/AL and Collada) C++ Engine</li>
         <li>Off-Chain Micropayments</li>
         <li><br>
             <div style="width: 200px; position: relative; left: 0; top: 0;">
@@ -190,7 +188,8 @@ Hosting:<br>
 <li>"Cloud": We host and maintain on Google Cloud; pricing: <a href="http://host.binarytask.com">host.binarytask.com</a></li></ul>
 License:<br>
 <ul style="list-style-type:circle">
-<li>LGPL but without any restrictions on having to share the modified original source.</li>
+<li>LGPL but you have to show the logo on startup and without any <br>
+    restrictions on having to share the modified original source.</li>
 </ul>
 Contact:<br>
 <form method="post">

@@ -65,7 +65,7 @@
 			<fileset dir="res">
 				<exclude name="**/*.jpg"/>
 				<exclude name="**/*.png"/>
-				<exclude name="**/*.svg"/>
+				<!--exclude name="**/*.svg"/-->
 				<exclude name="**/*.java"/>
 			</fileset>
 		</copy>

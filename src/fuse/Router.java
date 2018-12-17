@@ -670,7 +670,7 @@ public class Router implements Node {
 					return "join|fail|is full";
 
 				User poll = (User) names.get(split[2]);
-
+System.out.println(poll + " " + names);
 				boolean poll_game = poll.room instanceof Game;
 
 				if(poll != null && user.game.name.equals(poll.game.name)) {
@@ -823,7 +823,7 @@ public class Router implements Node {
 					//if(user.flag != null)
 					//	builder.append("<img style=\"display: inline;\" width=\"18\" height=\"18\" src=\"http://host.rupy.se/flag/" + user.flag + ".svg\">");
 //builder.append("<div class=\"parent\"><img class=\"animal\" width=\"32\" height=\"32\" src=\"svg/animal/penguin.svg\"><img class=\"flag\" width=\"14\" height=\"14\" src=\"http://host.rupy.se/flag/" + user.flag + ".svg\"></div>&nbsp;");
-					builder.append("<font color=\"#ff3300\">" + user.name + "(" + user.lost + ")</font> vs. ");
+					builder.append("<font color=\"#ff3300\">" + user.name + "(" + user.lost + ")</font> <font color=\"#ffffff\">vs.</font> ");
 
 					//if(other.flag != null)
 					//	builder.append("<img style=\"display: inline;\" width=\"18\" height=\"18\" src=\"http://host.rupy.se/flag/" + other.flag + ".svg\">");
