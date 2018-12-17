@@ -26,7 +26,7 @@ platform:
     - 100.000 mess./sec. on T2 Micro
     - 200.000 mess./sec. on M4 Large
     - 300.000 mess./sec. on T2 Medium
-    - 7.200.000 mess./sec. on M5.18xlarge
+    - 7.200.000 mess./sec. on C5.18xlarge
     - 9.600.000 mess./sec. on M5d.24xlarge
   - 100% uptime on hosting and routing with round-robin dns
   - 100% read uptime on persistence with custom 
