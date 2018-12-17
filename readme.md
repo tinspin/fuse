@@ -39,7 +39,8 @@ platform:
 
 license:
 
-  - lgpl
+  - lgpl but you have to show the logo on startup and without any
+    restrictions on having to share the modified original source.
     
 +------------------+
 | <i>work in progress</i> |
