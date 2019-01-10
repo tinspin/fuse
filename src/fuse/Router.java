@@ -27,7 +27,7 @@ public class Router implements Node {
 	public static String hash = "sha-256";
 
 	public static String data = "root.rupy.se";
-    public static String what = "92.63.174.125";
+    public static String what = "195.67.191.192";
 
     // change these to localhost:8000 if
     // you are developing with HTML5 on localhost
