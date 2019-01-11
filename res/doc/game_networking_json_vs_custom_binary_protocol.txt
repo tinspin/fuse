@@ -1,5 +1,13 @@
 https://www.reddit.com/r/gamedev/comments/a6mzdr/game_networking_json_vs_custom_binary_protocol/ebx1r2n/
 
+Q:
+
+JSON has simplicity, but there are potentially performance benefits to using a custom binary protocol. What do you all think?
+
+As some background: JSON is likely getting faster to parse as parser libraries are made more efficient. I've personally built a realtime online multiplayer game using a JSON protocol which performed extremely well, but also have worked with custom binary protocols.
+
+A:
+
 I use just text, sometimes with JSON for rare+persistent data, f.ex:
 
 Movement: "move|<session>|<x>,<y>,<z>|<x>,<y>,<z>,<w>|walk" (where x,y,z,w are floats)

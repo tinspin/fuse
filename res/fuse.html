@@ -102,14 +102,14 @@ Protocol Standard
 Examples:
 <ul style="list-style-type: none;">
 <li><table border="0">
-<tr><td width="50"><a href="http://aeonalpha.com"><img src="http://aeonalpha.com/aeon.svg"></a></td><td>
+<tr><td width="50"><a href="http://aeonalpha.com"><img src="http://aeonalpha.com/aeon.svg"></a></td><td width="50">
 <a href="http://fuse.rupy.se/cube.html">
 <table cellspacing="0" cellpadding="0" style="margin: 5px;">
 <tr><td><img width="30px" style="display: block;" src="svg/blue.svg"></td><td><img width="30px" style="display: block;" src="svg/green.svg"></td><td></td></tr>
 <tr><td><img width="30px" src="svg/orange.svg"></td><td><img width="30px" src="svg/purple.svg"></td></tr>
 </table>
 </a></td></tr>
-<tr><td colspan="2" align="left"><a name="meadow" href="http://store.steampowered.com/app/486310/"><img src="meadow.jpg"></a></td></tr>
+<tr><td colspan="3" align="left"><a name="meadow" href="http://store.steampowered.com/app/486310/"><img width="640" src="meadow.jpg"></a></td></tr>
 </table></li>
 </ul>
 <font>Performance: (Meadow)</font>
@@ -150,20 +150,20 @@ Flaws:
 </ul>
     Roadmap:
     <ul style="list-style-type: none;">
-        <li>Khronos (OpenGL/AL and Collada) C++ Engine</li>
+        <li>Khronos (OpenGL/AL and Collada) C+ (C syntax compiled with gcc) Engine</li>
         <li>Off-Chain Micropayments</li>
         <li><br>
             <div style="width: 200px; position: relative; left: 0; top: 0;">
                 <img src="http://ahoy.rupy.se/girl.gif" style="position: relative; top: 0; left: 0;"/>
-                <!--img height="32" src="svg/cpp.svg" style="position: absolute; top: 10px; left: 10px;"/-->
-                <div style="position: absolute; left: 0; top: 0;">
+                <img height="50" src="svg/cp.svg" style="position: absolute; top: 0px; left: 0px;"/>
+                <div style="position: absolute; left: 0px; bottom: 0px;">
                     <svg style="position: relative; top: 0px; left: 0px;" height="50" width="50">
                         <circle cx="25" cy="25" r="25" fill="#333333" />
                     </svg>
                     <img style="position: absolute; top: 13px; left: 8px;" src="http://aeonalpha.com/vanilla.svg" height="25">
                 </div>
-                <img style="position: relative; bottom: 25px; right: 0px;" width="50" src="svg/mos.svg">
-                <!--img height="32" src="http://aeonalpha.com/vanilla.svg" style="position: absolute; top: 10px; left: 10px;"/-->
+                <!--img style="position: relative; bottom: 25px; right: 0px;" width="50" src="svg/mos.svg"-->
+                <!--img height="32" src="http://aeonalpha.com/vanilla.svg" style="position: absolute; bottom: 10px; left: 10px;"/-->
             </div></li>
     </ul>
     Competition:
@@ -176,6 +176,22 @@ Flaws:
 <li><a href="https://www.photonengine.com/en-US/Photon">Exit Games</a> (C++/C#) <font color="red">Only Windows</font></li>
 <li><a href="https://github.com/heroiclabs/nakama">Nakama</a> (Go)</li>
 </ul>
+    Tutorial:<br>
+    <ul style="list-style-type: none"><li>
+        1) Install JDK and Ant, add their /bin folders to OS path.<br>
+        2) Download/clone fuse-master from github.<br><br>
+        Local (prototyping):<br><br>
+        3a) Run "ant local" in the local fuse folder.<br>
+        <br>
+        Remote (use separate domains for test and live):<br><br>
+        4a) Register on <a href="http://host.binarytask.com">binarytask</a>. You will need a domain name and know how to add CNAME or A registers.<br>
+        4b) Edit build.xml with your domain and the password from binarytask registration.<br>
+        4c) Run "ant remote" in the local fuse folder.<br>
+        <br>
+        5) Copy Fuse.cs/Fuse.cpp to your client project.<br>
+        6) Edit to localhost or change from fuse.rupy.se to your domain depending on local/remote.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;By default the project will use root.rupy.se as database, see Router.java.
+    </li></ul>
 Hosting:<br>
     <ul style="list-style-type: none;"><li><a href="http://sprout.rupy.se/article?id=290"><img src="http://sprout.rupy.se/file/2/9/1/cluster-200.jpeg"></a></li></ul>
 <ul style="list-style-type: circle"><li>Dedicated: Minimum equivalent of two micro instances on AWS, Java SE 8u181 is free forever:</li>
@@ -193,8 +209,8 @@ License:<br>
     </ul>
     Documentation:<br>
     <ul style="list-style-type:circle">
-        <li><a href="doc/game_networking_json_vs_custom_binary_protocol.txt">game_networking_json_vs_custom_binary_protocol</a></li>
-        <li><a href="doc/why_do_game_developers_use_udptcp_ports_that_are.txt">why_do_game_developers_use_udptcp_ports_that_are</a></li>
+        <li><a href="doc/game_networking_json_vs_custom_binary_protocol.txt">game_networking_json_vs_custom_binary_protocol_over_TLS/TCP</a></li>
+        <li><a href="doc/why_do_game_developers_use_udptcp_ports_that_are.txt">why_do_game_developers_use_udptcp_ports_that_are_not_open_by_default?</a></li>
     </ul>
 
 Contact:<br>

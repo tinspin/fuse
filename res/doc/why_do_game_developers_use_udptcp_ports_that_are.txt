@@ -1,5 +1,11 @@
 https://www.reddit.com/r/gamedev/comments/9w65kx/why_do_game_developers_use_udptcp_ports_that_are/e9i4xh2/
 
+Q:
+
+Why do game developers use UDP/TCP ports that are not open by default?
+
+A:
+
 I have used port 80 for a MMO. It's by no means a easy solution. Instead of being blocked by firewalls, you are hindered by antiviruses that don't like when apps, that are not browsers, communicate over HTTP.
 
 Two workarounds I had to implement was: 1) pushing a big amount of data upfront and 2) switching to "Accept: text/event-stream" with server sent events to get past AVG and Bitdefender respectively.
