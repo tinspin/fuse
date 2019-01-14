@@ -88,14 +88,14 @@ Protocol Standard
     </li></ul>
 <ul style="list-style-type: none;">
 <li>Generic: User - Item - Room</li>
-<li>JSON: Distributed async. database</li>
+    <li>JSON: Distributed async. <a href="http://root.rupy.se">database</a></li>
 <li>TCP/HTTP: Traverses all firewalls</li>
 <li>&nbsp;</li>
 <li>Multiplayer Physics (like Rocket League)</li>
 <li>Completely <i>Parallel Non-Blocking Async.</i></li>
 <li>Global 100% Read Uptime (registered users<br>will always be able to login and play)</li>
 <li>&nbsp;</li>
-<li>Low internal latency: <a href="http://fuse.rupy.se/data">statistics</a> (Raspberry Pi 1)</li>
+<li>Low internal latency: <a href="http://fuse.rupy.se/data">statistics</a> (Raspberry Pi 2)</li>
 <li>Open-Source: <a href="https://github.com/tinspin/fuse">https://github.com/tinspin/fuse</a></li>
 <li>Integrated Forum: <a href="http://binarytask.com">http://binarytask.com</a></li>
 </ul>
@@ -170,27 +170,29 @@ Flaws:
 <ul style="list-style-type: none;">
 <li>None of the competition has an integrated<br>async-to-async distributed database or web<br>server that can scale across continents.<br><br></li>
 <li><a href="https://forums.improbable.io/t/newer-dependencies/3042">SpatialOS</a> (Java, uses netty/akka) <font color="red">80MB total size = x400!</font></li>
-<li><br>None of the systems below can scale on<br>multiple cores across the same room<br>instance:<br><br></li>
+    <li><a href="http://www.smartfoxserver.com">Goto & Play</a> (Java)</li>
+    <li><br>None of the systems below can scale on<br>multiple cores across the same room<br>instance:<br><br></li>
 <li><a href="http://defunct">Much Different</a> (C#) <font color="red">Defunct</font></li>
-<li><a href="http://www.smartfoxserver.com">Goto & Play</a> (Java)</li>
 <li><a href="https://www.photonengine.com/en-US/Photon">Exit Games</a> (C++/C#) <font color="red">Only Windows</font></li>
 <li><a href="https://github.com/heroiclabs/nakama">Nakama</a> (Go)</li>
 </ul>
     Tutorial:<br>
     <ul style="list-style-type: none"><li>
-        1) Install JDK and Ant, add their /bin folders to OS path.<br>
-        2) Download/clone fuse-master from github.<br><br>
-        Local (prototyping):<br><br>
-        3a) Run "ant local" in the local fuse folder.<br>
+        --- Server ---<br><br>
+        1) Install JDK (See below for my own backups of free Java) and <a href="https://ant.apache.org/bindownload.cgi">Ant</a>, add their /bin folders to OS path.<br>
+        2) Download/clone fuse-master from <a href="https://github.com/tinspin/fuse">github</a>.<br><br>
+        Local (single developer; testing, learning, prototype):<br><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;3a) Run "ant local" in the local fuse folder.<br>
         <br>
-        Remote (use separate domains for test and live):<br><br>
-        4a) Register on <a href="http://host.binarytask.com">binarytask</a>. You will need a domain name and know how to add CNAME or A registers.<br>
-        4b) Edit build.xml with your domain and the password from binarytask registration.<br>
-        4c) Run "ant remote" in the local fuse folder.<br>
+        Remote (global cluster, multiple developers; separate domains for test and live):<br><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;4a) Register on <a href="http://host.binarytask.com">binarytask</a>. You will need a domain name and know how to add CNAME or A registers.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;4b) Edit root property in build.xml to your domain and add the password to a ../pass.txt file with "your.domain.com = &lt;16_char_pass&gt;" from registration, also change the reference to fuse.rupy.se in the remote task to your.domain.com.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;4c) Run "ant remote" in the local fuse folder.<br>
         <br>
+        --- Client ---<br><br>
         5) Copy Fuse.cs/Fuse.cpp to your client project.<br>
         6) Edit to localhost or change from fuse.rupy.se to your domain depending on local/remote.<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;By default the project will use root.rupy.se as database, see Router.java.
+        &nbsp;&nbsp;&nbsp;&nbsp;By default the project will use root.rupy.se as database, see Router.java.
     </li></ul>
 Hosting:<br>
     <ul style="list-style-type: none;"><li><a href="http://sprout.rupy.se/article?id=290"><img src="http://sprout.rupy.se/file/2/9/1/cluster-200.jpeg"></a></li></ul>
