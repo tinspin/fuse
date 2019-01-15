@@ -180,15 +180,16 @@ Flaws:
     <ul style="list-style-type: none"><li>
         --- Server ---<br><br>
         1) Install JDK (See below for my own backups of free Java) and <a href="https://ant.apache.org/bindownload.cgi">Ant</a>, add their /bin folders to OS path.<br>
-        2) Download/clone fuse-master from <a href="https://github.com/tinspin/fuse">github</a>.<br><br>
+        2) Download/clone fuse-master from <a href="https://github.com/tinspin/fuse">github</a>, all instructions below are from inside the fuse-master folder.<br><br>
         Local (single developer; testing, learning, prototype):<br><br>
-        &nbsp;&nbsp;&nbsp;&nbsp;3a) Run "ant local" in the local fuse folder.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;3a) Start the server with run.sh or run.bat.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;3b) Run "ant local".<br>
         &nbsp;&nbsp;&nbsp;&nbsp;By default the project will use root.rupy.se as database.<br>
         <br>
-        Remote (global cluster, multiple developers; separate domains for test and live):<br><br>
+        Remote (global cluster, multiple developers; separate domains for test and live etc.):<br><br>
         &nbsp;&nbsp;&nbsp;&nbsp;4a) Register on <a href="http://host.binarytask.com">binarytask</a>. You will need a domain name and know how to add CNAME or A registers.<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;4b) Edit root property in build.xml to your domain and add the password to a ../pass.txt file with "your.domain.com = &lt;16_char_pass&gt;" from registration, also change the reference to fuse.rupy.se in the remote task to your.domain.com.<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;4c) Run "ant remote" in the local fuse folder.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;4b) Edit root property in build.xml to your domain and add the password to a ../pass.txt file with "your.domain.com = &lt;16_char_pass&gt;" from registration, also change the reference to ${fuse.rupy.se} in the remote task to ${your.domain.com}.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;4c) Run "ant remote".<br>
         &nbsp;&nbsp;&nbsp;&nbsp;By default the project will use base.binarytask.com as database so the TvaaS3cqJhQyK6sn user will not be present.<br>
         <br>
         --- Client ---<br><br>
