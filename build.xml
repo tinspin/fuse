@@ -90,10 +90,10 @@
 	
 	<target name="remote" depends="build">
 		<java fork="yes" classname="se.rupy.http.Deploy" classpath="lib/http.jar">
-			<arg line="${root}"/>
+			<arg line="host.binarytask.com"/>
 			<arg line="bin/${root}.jar"/>
 			<arg line="${fuse.rupy.se}"/>
 		</java>
 	</target>
-	
+
 </project>

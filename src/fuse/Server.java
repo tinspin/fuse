@@ -70,6 +70,7 @@ public class Server extends Service implements Node, Runnable {
                 //Router.fuse = System.getProperty("host") + top;
                 Router.fuse = host;
                 Router.path = host;
+                Router.what = "localhost";
             }
         }
 
