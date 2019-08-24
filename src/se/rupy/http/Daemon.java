@@ -27,6 +27,7 @@ import javax.net.ssl.X509TrustManager;
 
 import se.rupy.http.Event.Mime;
 
+
 /**
  * A tiny HTTP daemon. The whole server is non-static so that you can launch
  * multiple contained HTTP servers in one application on different ports.<br>
@@ -378,7 +379,7 @@ public class Daemon implements Runnable {
 			
 			PermissionCollection permissions = new Permissions();
 			permissions.add(new PropertyPermission("host", "read"));
-			permissions.add(new SocketPermission("*", "resolve,connect"));
+			permissions.add(new SocketPermission("*", "listen,accept,resolve,connect"));
 			
 			control = new AccessControlContext(new ProtectionDomain[] {
 					new ProtectionDomain(null, permissions)});
@@ -397,6 +398,8 @@ public class Daemon implements Runnable {
         for(int i = 0; i < roots_.length; i++) {
             roots.add(roots_[i]);
         }
+
+        //System.out.println(roots);
 
 		session = new ConcurrentHashMap();
 		events = new ConcurrentHashMap();
@@ -1847,6 +1850,8 @@ public class Daemon implements Runnable {
 
 		return null;
 	}
+
+	// TEST
 
 	protected synchronized Worker employ(Event event) {
 		workers.reset();

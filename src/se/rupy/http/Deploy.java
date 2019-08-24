@@ -370,7 +370,23 @@ public class Deploy extends Service {
 				event.output().flush();
 			}
 		}
+/*
+        public Class loadClass(String name) throws ClassNotFoundException {
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
+		    if(loader instanceof Deploy.Archive) {
+                if (name.equals("java.io.FileOutputStream")) {
+                    return Class.forName("se.rupy.http.Deploy$RupyFileOutputStream");
+                }
+
+                if (name.equals("java.io.BufferedReader")) {
+                    return Class.forName("se.rupy.http.Deploy$RupyBufferedReader");
+                }
+            }
+
+            return super.loadClass(name);
+        }
+*/
 		protected Class findClass(String name) throws ClassNotFoundException {
 			Small small = null;
 
@@ -496,7 +512,63 @@ public class Deploy extends Service {
 		}
 	}
 
-	static class Big implements Stream {
+static class RupyFileOutputStream extends FileOutputStream {
+    int count;
+
+    public RupyFileOutputStream(File file) throws FileNotFoundException {
+        super(file);
+    }
+
+    public void write(int b) throws IOException {
+        count++;
+        System.out.println("write int " + count);
+        super.write(b);
+    }
+
+    public void write(byte[] b) throws IOException {
+        count += b.length;
+        System.out.println("write byte[] " + count);
+        super.write(b);
+    }
+
+    public void write(byte[] b, int off, int len) throws IOException {
+        count += len;
+        System.out.println("write byte[] off len " + count);
+        super.write(b, off, len);
+    }
+}
+
+static class RupyBufferedReader extends BufferedReader {
+    int count;
+
+    public RupyBufferedReader(Reader reader) {
+        super(reader);
+    }
+
+    public int read() throws IOException {
+        count++;
+        System.out.println("read int " + count);
+        return super.read();
+    }
+
+    public int read(char[] cbuf) throws IOException {
+        count += cbuf.length;
+        System.out.println("read char[] " + count);
+        return super.read(cbuf);
+    }
+
+    public int read(char[] cbuf, int off, int len) throws IOException {
+        count += len;
+        System.out.println("read char[] off len " + count);
+        return super.read(cbuf, off, len);
+    }
+
+    public void close() throws IOException {
+        super.close();
+    }
+}
+
+static class Big implements Stream {
 		File file;
 		private FileInputStream in;
 		private String name;
@@ -761,6 +833,8 @@ public class Deploy extends Service {
 	public static void deploy(String host, File file, String pass) throws IOException, NoSuchAlgorithmException {
 		deploy(host, file, pass, true);
 	}
+
+	// TEST
 
 	/**
 	 * Async hot-deploy.

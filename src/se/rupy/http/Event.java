@@ -367,7 +367,7 @@ public class Event extends Throwable implements Chain.Link {
 				
 				if(metric == null) {
 					metric = new Daemon.Metric();
-					archive.files().put(query.path(), metric); // TODO: Threadlock. Edit: NM, this was raspberry pi with corrupt SD card.
+					archive.files().put(query.path(), metric);
 				}
 			}
 			
