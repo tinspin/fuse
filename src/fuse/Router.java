@@ -1016,6 +1016,7 @@ System.out.println(poll + " " + names);
 		else if(split[0].equals("load") || split[0].equals("hard") || split[0].equals("item") || split[0].equals("soft")) {
 			boolean load = split[0].equals("load");
 			final String base = load ? user.name : split[2];
+            //final String base = split[2]; // jonas
 			final String name = load ? split[2] : split[3];
 			final String type = load && split.length > 3 ? split[3] : split[0];
 
@@ -1484,7 +1485,6 @@ System.out.println(poll + " " + names);
 	}
 
 	public static class Room {
-		//ConcurrentHashMap users = new ConcurrentHashMap();
         CopyOnWriteArrayList users = new CopyOnWriteArrayList();
         ConcurrentHashMap items = new ConcurrentHashMap();
         int[] salts; // To try and avoid cache misses in the loop for move packets.
@@ -1503,6 +1503,8 @@ System.out.println(poll + " " + names);
 			this.type = type;
 			this.size = size;
 			salts = new int[size];
+			for(int i = 0; i < salts.length; i++)
+			    salts[i] = -1;
 		}
 		
 		Room(String name, String type, int size) {
@@ -1510,6 +1512,8 @@ System.out.println(poll + " " + names);
 			this.type = type;
 			this.size = size;
             salts = new int[size];
+            for(int i = 0; i < salts.length; i++)
+                salts[i] = -1;
 		}
 		
 		synchronized Item add(Item item) throws Exception {
@@ -1530,7 +1534,6 @@ System.out.println(poll + " " + names);
 		}
 
 		boolean away() {
-			//Iterator it = users.values().iterator();
             Iterator it = users.iterator();
 
 			while(it.hasNext()) {
@@ -1544,7 +1547,6 @@ System.out.println(poll + " " + names);
 		}
 
 		public void wakeup() throws Exception {
-            //Iterator it = users.values().iterator();
             Iterator it = users.iterator();
 
 			while(it.hasNext()) {
@@ -1558,19 +1560,12 @@ System.out.println(poll + " " + names);
 		}
 
 		void send(User from, String data, boolean all) throws Exception {
-            //Iterator it = users.values().iterator();
-            //Iterator it = users.iterator();
-
             /* Cache-misses!
-             * Will this really help when the Server.push uses a
-			 * ConcurrentLinkedQueue in a ConcurrentHashMap?
-			 * Specially since compacting the array is not thread safe
-			 * so we end up looping through the whole array every send!
-			 * There must be some fillrate at which this becomes worth it?
-			 * size / 2 maybe?!
+			 * Compacting from the end.
 			 */
-            if(users.size() > size / 2 && (data.startsWith("move") || data.startsWith("send"))) {
+            if(data.startsWith("move") || data.startsWith("send")) {
                 for(int i = 0; i < salts.length; i++) {
+                    if(salts[i] == -1) return;
                     if(salts[i] > 0 && salts[i] != from.intsalt)
                         node.push(salts[i], data, true);
                 }
@@ -1583,10 +1578,6 @@ System.out.println(poll + " " + names);
 
 			if(data.startsWith("over"))
 				play = false;
-
-			//if(!data.startsWith("send") && !data.startsWith("move"))
-			//if(debug)
-			//System.err.println("<-- " + from + " " + data);
 
 			if(data.startsWith("here"))
 				if(debug)
@@ -1666,38 +1657,28 @@ System.out.println(poll + " " + names);
 			users.clear();
 		}
 
-		void add(User user) {
-		    //users.put(user.name, user);
+        synchronized void add(User user) {
             users.add(user);
 
             for(int i = 0; i < salts.length; i++) {
-                if(salts[i] == 0) {
+                if(salts[i] < 1) {
                     salts[i] = User.salt(user.salt);
                     return;
                 }
             }
 		}
 
-		void remove(User user) {
-		    /* not thread safe!
-		    int kill = users.indexOf(user);
-            int last = users.size() - 1;
-            if(kill < last) {
-                User u = (User) users.get(last);
-                users.set(kill, u);
-                salts[kill] = User.salt(u.salt);
-            }
-		    users.remove(last);
-            salts[last] = 0;
-            */
+        synchronized void remove(User user) {
             users.remove(user);
             for(int i = 0; i < salts.length; i++) {
                 if (salts[i] == user.intsalt) {
-                    salts[i] = 0;
+                    if(i < salts.length - 1 && salts[i + 1] == -1)
+                        salts[i] = -1;
+                    else
+                        salts[i] = 0;
                     return;
                 }
             }
-		    //users.remove(user.name);
 		}
 
 		public String toString() {
