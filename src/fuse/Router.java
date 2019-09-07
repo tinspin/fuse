@@ -1285,7 +1285,15 @@ System.out.println(poll + " " + names);
 			this.name = name;
 			this.salt = salt;
 			this.intsalt = salt(salt);
-		}
+            // 0 is the lowest ASCII with 48.
+            // z is the highest with 122.
+			// Lowest "0000" for cache-friendly forward pointer is 808.464.432
+            // Highest "zzzz" is 2.054.847.098 which does not overflow.
+            // Limit for 4 character base-58 is 58^4 = 11.316.496
+
+            // System.out.println(salt("0000"));
+            // System.out.println(salt("zzzz"));
+        }
 
 		public static int salt(String salt) {
             return salt.charAt(0) << 24 |
@@ -1562,6 +1570,7 @@ System.out.println(poll + " " + names);
 		void send(User from, String data, boolean all) throws Exception {
             /* Cache-misses!
 			 * Compacting from the end.
+			 * TODO: Add forward pointer.
 			 */
             if(data.startsWith("move") || data.startsWith("send")) {
                 for(int i = 0; i < salts.length; i++) {
@@ -1674,8 +1683,10 @@ System.out.println(poll + " " + names);
                 if (salts[i] == user.intsalt) {
                     if(i < salts.length - 1 && salts[i + 1] == -1)
                         salts[i] = -1;
-                    else
+                    else {
+                        // TODO: Add forward pointer.
                         salts[i] = 0;
+                    }
                     return;
                 }
             }
