@@ -1666,28 +1666,33 @@ System.out.println(poll + " " + names);
 			users.clear();
 		}
 
-        synchronized void add(User user) {
+        void add(User user) {
             users.add(user);
 
-            for(int i = 0; i < salts.length; i++) {
-                if(salts[i] < 1) {
-                    salts[i] = User.salt(user.salt);
-                    return;
+            synchronized(salts) {
+                for (int i = 0; i < salts.length; i++) {
+                    if (salts[i] < 1) {
+                        salts[i] = User.salt(user.salt);
+                        return;
+                    }
                 }
             }
 		}
 
-        synchronized void remove(User user) {
+        void remove(User user) {
             users.remove(user);
-            for(int i = 0; i < salts.length; i++) {
-                if (salts[i] == user.intsalt) {
-                    if(i < salts.length - 1 && salts[i + 1] == -1)
-                        salts[i] = -1;
-                    else {
-                        // TODO: Add forward pointer.
-                        salts[i] = 0;
+
+            synchronized(salts) {
+                for (int i = 0; i < salts.length; i++) {
+                    if (salts[i] == user.intsalt) {
+                        if (i < salts.length - 1 && salts[i + 1] == -1)
+                            salts[i] = -1;
+                        else {
+                            // TODO: Add forward pointer.
+                            salts[i] = 0;
+                        }
+                        return;
                     }
-                    return;
                 }
             }
 		}
