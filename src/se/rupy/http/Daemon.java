@@ -756,9 +756,10 @@ public class Daemon implements Runnable {
 	private JVMListener listener;
 	private Chain listeners; // UDPListeners
 
-	private ErrorListener err;
+	private ErrListener err;
 	private DNSListener dns;
 	private ComPort com;
+	private SPIData[] spi = new SPIData[2];
 
 	/**
 	 * Send Object to JVM listener. We recommend you only send bootclasspath loaded 
@@ -849,7 +850,7 @@ public class Daemon implements Runnable {
 	/**
 	 * Receives COM port data.
 	 */
-	public interface COMListener {
+	public interface ComListener {
 		public void read(byte[] data, int length) throws Exception;
 	}
 
@@ -857,13 +858,13 @@ public class Daemon implements Runnable {
 	 * COM port.
 	 */
 	public static abstract class ComPort {
-		public COMListener listen;
+		public ComListener listener;
 
 		/**
 		 * To set the hot-deploy as listener.
 		 */
-		public void set(COMListener listen) {
-			this.listen = listen;
+		public void set(ComListener listener) {
+			this.listener = listener;
 		}
 
 		public abstract void write(byte[] data) throws Exception;
@@ -885,6 +886,46 @@ public class Daemon implements Runnable {
 	public void set(ComPort com) {
 		this.com = com;
 	}
+
+    /**
+     * Receives SPI interrupt.
+     */
+    public interface SPIListener {
+        public void interrupt() throws Exception;
+    }
+
+    /**
+     * SPI data.
+     */
+    public static abstract class SPIData {
+        public SPIListener listener;
+
+        /**
+         * To set the hot-deploy as listener.
+         */
+        public void set(SPIListener listener) {
+            this.listener = listener;
+        }
+
+        public abstract byte[] write(int channel, byte[] data, int length) throws Exception;
+    }
+
+    /**
+     * To get the SPI data channel.
+     */
+    public SPIData spi(int channel) {
+        return spi[channel];
+    }
+
+    /**
+     * To use the SPI interface you should boot rupy with your own main method.
+     * And call {@link Daemon#init(String[])} from there to be able to use this method.
+     * Don't forget to call {@link Daemon#start()} after you used this method.
+     * @param spi
+     */
+    public void set(SPIData spi, int channel) {
+        this.spi[channel] = spi;
+    }
 
 	/**
 	 * Cross cluster-node communication interface. So that applications deployed 
@@ -922,7 +963,7 @@ public class Daemon implements Runnable {
 	 * Error listener, so you can for example send a warning mail and swallow 
 	 * certain exceptions to not be logged.
 	 */
-	public interface ErrorListener {
+	public interface ErrListener {
 		/**
 		 * Here you will receive all errors before they are logged.
 		 * @param e the responsible
@@ -938,7 +979,7 @@ public class Daemon implements Runnable {
 	 * @param err
 	 * @return success
 	 */
-	public boolean set(ErrorListener err) {
+	public boolean set(ErrListener err) {
 		try {
 			secure();
 			this.err = err;
