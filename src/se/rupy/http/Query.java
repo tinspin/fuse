@@ -34,7 +34,7 @@ public class Query extends Hash {
 
 		//System.out.println(line + " " + line.equals("<policy-file-request/>"));
 		
-		if(line.equals("<policy-file-request/>")) {
+		if(line.startsWith("<policy-file-request/>")) {
 			policy = true;
 			return true;
 		}
@@ -98,7 +98,7 @@ public class Query extends Hash {
 
 		String accept = header("accept");
 		
-		if(header("head") != null || (accept != null && accept.indexOf("text/event-stream") > -1)) {
+		if(path.equals("/push") || header("head") != null || (accept != null && accept.indexOf("text/event-stream") > -1)) {
 			input.event().headless = true;
 			input.event().channel().socket().setTcpNoDelay(true);
 			input.event().channel().socket().setKeepAlive(true);
