@@ -1015,11 +1015,16 @@ System.out.println(poll + " " + names);
 		}
 		else if(split[0].equals("load") || split[0].equals("hard") || split[0].equals("item") || split[0].equals("soft")) {
 			boolean load = split[0].equals("load");
+
 			final String base = load ? user.name : split[2];
             //final String base = split[2]; // jonas
+
 			final String name = load ? split[2] : split[3];
 			final String type = load && split.length > 3 ? split[3] : split[0];
 
+			System.out.println(data);
+			System.out.println(load + " " + base + " " + name + " " + type);
+			
 			if(type.equals("soft")) {
 				String salt = null;
 				

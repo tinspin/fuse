@@ -39,9 +39,11 @@ platform:
 
 license:
 
-  - lgpl but you have to show the logo on startup and without any
-    restrictions on having to share the modified original source.
-    
+  - mit but you have to show the logo on startup,
+    sponsor the fuse tier on github while you are
+    using this commercially and cube.html and
+    bomb.html are proprietary.
+
 +------------------+
 | <i>work in progress</i> |
 +------------------+

@@ -105,14 +105,18 @@ Protocol Standard
 Examples:
 <ul style="list-style-type: none;">
 <li><table border="0">
-<tr><td width="50"><a href="http://aeonalpha.com"><img height="60" src="http://aeonalpha.com/aeb.svg"></a></td><td width="50">
+<tr><td width="50"><a href="http://aeonalpha.com"><img height="60" src="http://aeonalpha.com/aeb.svg"></a></td>
+<td><a href="http://ahoy.rupy.se"><img width="60" src="http://ahoy.rupy.se/icon.svg"></a></td>
+<td width="50">
 <a href="http://fuse.rupy.se/cube.html">
 <table cellspacing="0" cellpadding="0" style="margin: 5px;">
 <tr><td><img width="30px" style="display: block;" src="svg/blue.svg"></td><td><img width="30px" style="display: block;" src="svg/green.svg"></td><td></td></tr>
 <tr><td><img width="30px" src="svg/orange.svg"></td><td><img width="30px" src="svg/purple.svg"></td></tr>
 </table>
-</a></td></tr>
-<tr><td colspan="3" align="left"><a name="meadow" href="http://store.steampowered.com/app/486310/"><img width="640" style="image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; -ms-interpolation-mode: nearest-neighbor;" src="meadow.jpg"></a></td></tr>
+</a></td>
+<td rowspan="2" align="left"><a name="meadow" href="http://store.steampowered.com/app/486310/"><img height="222" style="image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; -ms-interpolation-mode: nearest-neighbor;" src="http://move.rupy.se/file/meadow.jpg"></a></td>
+</tr>
+    <tr><td colspan="3"><a href="http://fuse.rupy.se/bomb.html"><img src="http://move.rupy.se/file/bomb.gif"></a></td></tr>
 </table></li>
 </ul>
 <font>Performance: (Meadow)</font>
@@ -153,7 +157,9 @@ Flaws:
 </ul>
     Roadmap:
     <ul style="list-style-type: none;">
-        <li>Khronos (OpenGL/AL and Collada) C+ (C syntax compiled with gcc) Engine</li>
+        <li>Khronos (OpenGL/AL and Collada) C+ (C syntax compiled with g++) Engine:<br>
+        &nbsp;&nbsp;- Windows on x86 (OpenGL 3)<br>
+        &nbsp;&nbsp;- Linux on Pi 4 (OpenGL ES 3)</li>
         <li>Off-Chain Micropayments</li>
         <li><br>
             <div style="width: 200px; position: relative; left: 0; top: 0;">
@@ -170,7 +176,7 @@ Flaws:
             </div></li>
         <li>&nbsp;</li>
         <li>Physics: Server discrete validation</li>
-        <li>Protocol: Polar analog input</li>
+        <li>Protocol: Polar digitize compress input over network<br>(decompress as analog acceleration on the other end)</li>
         <li>&nbsp;</li>
         <li><img width="50px" src="polar.svg"></li>
     </ul>
@@ -207,18 +213,22 @@ Flaws:
     </li></ul>
 Hosting:<br>
     <ul style="list-style-type: none;"><li><a href="http://sprout.rupy.se/article?id=290"><img src="http://sprout.rupy.se/file/2/9/1/cluster-200.jpeg"></a></li></ul>
-<ul style="list-style-type: circle"><li>Dedicated: Minimum equivalent of two micro instances on AWS, Java SE 8u181 is free forever:</li>
+<ul style="list-style-type: circle"><li>Dedicated: Minimum equivalent of two micro instances, last free Oracle Java (8u181):</li>
     <ul style="list-style-type: circle">
-    <li><a href="http://move.rupy.se/file/jdk-8u181-linux-arm32-vfp-hflt.tar.gz">linux-arm32</a></li>
-    <li><a href="http://move.rupy.se/file/jdk-8u181-linux-arm64-vfp-hflt.tar.gz">linux-arm64</a></li>
-    <li><a href="http://move.rupy.se/file/jdk-8u181-linux-x64.rpm">linux-x64</a></li>
-    <li><a href="http://move.rupy.se/file/jdk-8u181-windows-x64.exe">windows-x64</a></li>
+    <li><a href="http://move.rupy.se/file/jdk-8u181-linux-arm32-vfp-hflt.tar.gz">jdk-linux-arm32.tar</a> / <a href="http://move.rupy.se/file/jdk-8u181-linux-arm64-vfp-hflt.tar.gz">jdk-linux-arm64.tar</a></li>
+    <li><a href="http://move.rupy.se/file/jdk-8u181-linux-x64.rpm">jdk-linux-x64.rpm</a></li>
+    <li><a href="http://move.rupy.se/file/jdk-8u181-linux-x64.tar.gz">jdk-linux-x64.tar</a> / <a href="http://move.rupy.se/file/jdk-8u181-windows-x64.exe">jdk-windows-x64.exe</a></li>
+        <li><a href="http://move.rupy.se/file/jre-8u181-linux-x64.tar.gz">jre-linux-x64.tar</a> / <a href="http://move.rupy.se/file/jre-8u181-windows-x64.tar.gz">jre-windows-x64.tar</a></li>
     </ul>
-<li>"Cloud": We host and maintain on Google Cloud; pricing: <a href="http://host.binarytask.com">host.binarytask.com</a></li></ul>
-License:<br>
+<li>"Cloud": We host and maintain on globally redundant hybrid cloud (AWS/GCE/ION): <a href="http://host.binarytask.com">host.binarytask.com</a></li></ul>
+License MIT but:<br>
     <ul style="list-style-type:circle">
-        <li>LGPL but you have to show the logo on startup and without any <br>
-            restrictions on having to share the modified original source.</li>
+        <li>You have to show the <img width="45px" src="svg/mos.svg"> logo on startup. (also availiable with <br>
+            white outline: <img width="45px" src="http://fuse.rupy.se/svg/mos_outline.svg">)</li>
+        <li>You have to sponsor my <a href="https://github.com/sponsors/tinspin">Fuse</a> tier on github during the time you <br>
+            are using this commercially, for every project.</li>
+        <li>Last but not least the cube.html and bomb.html files (including <br>
+            content in them) are proprietary and cannot be used commercially.</li>
     </ul>
     Documentation:<br>
     <ul style="list-style-type:circle">

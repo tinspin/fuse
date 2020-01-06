@@ -16,7 +16,7 @@ using System.Text;
 public class Fuse { // : MonoBehaviour { // ### 2
 	public static Fuse instance;
 	public static string host = "localhost";//"fuse.rupy.se";
-	public int port = 8000;//80;
+	public static int port = 8000;//80;
 
 	private readonly object sync = new System.Object();
 	private Thread thread;
@@ -54,7 +54,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 		if(!policy)
 			throw new Exception("Policy (" + host + ":" + port + ") failed.");
 		//Log(host);
-		IPAddress address = Dns.GetHostEntry(host).AddressList[host.Equals("localhost") ? 1 : 0];
+		IPAddress address = Dns.GetHostEntry(Fuse.host).AddressList[host.Equals("localhost") ? 1 : 0];
 		remote = new IPEndPoint(address, port);
 		
 		Log(host + " " + address);
@@ -65,7 +65,7 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	public static int Ping(string host) {
 		Fuse fuse = new Fuse();
 		fuse.Host(host);
-		fuse.Connect();
+		//fuse.Connect();
 		int time = Environment.TickCount;
 		fuse.Push("ping");
 		return Environment.TickCount - time;
@@ -598,6 +598,8 @@ public class Fuse { // : MonoBehaviour { // ### 2
 	
 	public static void Main() {
 		try {
+			Fuse.host = "euro.bark.binarytask.com";
+Fuse.port = 80;
 			Log("Ping: " + Ping(host));
 		
 			string key = "TvaaS3cqJhQyK6sn";
@@ -605,10 +607,10 @@ public class Fuse { // : MonoBehaviour { // ### 2
 			
 			Fuse fuse = new Fuse();
 			fuse.Start();
-			fuse.Host(host);
-			
+			//fuse.Host(host);
+			fuse.Host("euro.bark.binarytask.com");
 			//Thread.Sleep(100);
-			
+
 			Log("Time: " + fuse.Time());
 			
 			// if no key is stored try
@@ -631,7 +633,8 @@ public class Fuse { // : MonoBehaviour { // ### 2
 
 			//if(key != null) {
 				try {
-					salt = fuse.SignNameKey("fuse", key);
+					//salt = fuse.SignNameKey("fuse", key);
+					salt = fuse.SignNamePass("jonas", "jonas");
 				}
 				catch(Exception e) {
 					Log(e.Message);
