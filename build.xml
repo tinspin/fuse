@@ -65,8 +65,9 @@
 			<fileset dir="res">
 				<exclude name="**/*.jpg"/>
 				<exclude name="**/*.png"/>
-				<exclude name="**/*.svg"/>
+				<!--exclude name="**/*.svg"/-->
 				<exclude name="**/*.java"/>
+				<exclude name="**/*.wav"/>
 			</fileset>
 		</copy>
 		<jar jarfile="tmp/${root}.jar">
@@ -90,10 +91,37 @@
 	
 	<target name="remote" depends="build">
 		<java fork="yes" classname="se.rupy.http.Deploy" classpath="lib/http.jar">
-			<arg line="host.binarytask.com"/>
+			<arg line="fuse.rupy.se"/>
 			<arg line="bin/${root}.jar"/>
 			<arg line="${fuse.rupy.se}"/>
 		</java>
+	</target>
+
+    <target name="boca" depends="build">
+        <copy file="bin/${root}.jar" tofile="bin/boca.binarytask.com.jar"/>
+        <java fork="yes" classname="se.rupy.http.Deploy" classpath="lib/http.jar">
+            <arg line="host.binarytask.com"/>
+            <arg line="bin/boca.binarytask.com.jar"/>
+            <arg line="${boca.binarytask.com}"/>
+        </java>
+    </target>
+
+    <target name="bark" depends="build">
+        <copy file="bin/${root}.jar" tofile="bin/bark.binarytask.com.jar"/>
+        <java fork="yes" classname="se.rupy.http.Deploy" classpath="lib/http.jar">
+            <arg line="host.binarytask.com"/>
+            <arg line="bin/bark.binarytask.com.jar"/>
+            <arg line="${bark.binarytask.com}"/>
+        </java>
+    </target>
+	
+	<target name="fuse" depends="build">
+	    <copy file="bin/${root}.jar" tofile="bin/fuse.binarytask.com.jar"/>
+	    <java fork="yes" classname="se.rupy.http.Deploy" classpath="lib/http.jar">
+	        <arg line="host.binarytask.com"/>
+	        <arg line="bin/fuse.binarytask.com.jar"/>
+	        <arg line="${fuse.binarytask.com}"/>
+	    </java>
 	</target>
 
 </project>

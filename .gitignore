@@ -1,3 +1,2 @@
-.cvsignore
 CVS
-res/bomb.html
+.gitignore
