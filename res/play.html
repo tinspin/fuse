@@ -13,7 +13,7 @@ public class play extends Service {
 	String green = "#00cc33";
 	String black = "#000000";
 	String white = "#ffffff";
-	String font = "font-size: 200%;";
+	String size = "font-size: 200%;";
 	
 	private String hide(String pass) {
 		StringBuilder hide = new StringBuilder();
@@ -28,11 +28,12 @@ public class play extends Service {
 	public String path() { return "/play.html"; }
 	public void filter(Event event) throws Event, Exception {
 		event.query().parse();
-
-		String host = event.query().string("host", Router.fuse);
-		String game = event.query().string("game", "cube");
-		String path = event.query().string("path", game + ".html");
-		boolean test = event.query().bit("test", false);
+        Query q = event.query();
+        String font = q.string("font", "ttf/kynge");
+		String host = q.string("host", Router.fuse);
+		String game = q.string("game", "cube");
+		String path = q.string("path", game + ".html");
+		boolean test = q.bit("test", false);
 		String name = event.string("name");
 		String pass = event.string("pass");
 		
@@ -47,7 +48,7 @@ public class play extends Service {
 <style>
   @font-face {
     font-family: '8-bit';
-    src: url('BitPotionExt.ttf');
+    src: url('[[ font ]].ttf');
   }
   .parent {
     position: relative;
@@ -708,7 +709,7 @@ public class play extends Service {
   }
 </script>
 </head>
-<body bgcolor="#cccccc" style="margin: 0px; padding: 0px; [[ font ]] height: 100%;">
+<body bgcolor="#cccccc" style="margin: 0px; padding: 0px; [[ size ]] height: 100%;">
 
 <!-- only for background color!!! -->
 <table border="0" style="width: 100%; height: 49vw; min-height: 49vw; overflow: auto; z-index: -2; position: absolute;">
