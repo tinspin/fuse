@@ -543,9 +543,7 @@ public class play extends Service {
   function hash_code(e) {
     e = e || window.event;
     var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-    var s = String.fromCharCode(unicode);
-    if(!e.shiftKey)
-      s = s.toLowerCase();
+    var s = String.fromCharCode(e.target.value.charAt(e.target.selectionStart - 1).charCodeAt());
     if(unicode == 13) {
       hash();
     }
@@ -729,7 +727,7 @@ public class play extends Service {
 </td></tr>
 <tr><td colspan="3"><div id="fail1"></div></td></tr>
 <tr><td><font color="#00cc33">name</font>&nbsp;</td><td><input id="name" name="name" value="[[ name ]]" style="width: 100px;"></td></tr>
-<tr><td><font color="#00cc33">pass</font>&nbsp;</td><td><input id="hide" name="hide" value="[[ hide(pass) ]]" style="width: 100px;" onkeydown="return hash_code(event);"></td></tr>
+<tr><td><font color="#00cc33">pass</font>&nbsp;</td><td><input id="hide" name="hide" value="[[ hide(pass) ]]" style="width: 100px;" onkeyup="return hash_code(event);"></td></tr>
 <tr><td></td><td><a href="javascript:hash();">login</a></td></tr>
 <tr><td></td><td><a class="orange" href="javascript:user();">register</a></td></tr>
 <tr><td></td><td><a class="grey" href="about.html">about</a></td></tr>
