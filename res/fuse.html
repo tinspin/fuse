@@ -60,8 +60,13 @@ public class fuse extends Service {
 <html>
 <head>
 <meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Fredoka%20One">
 <style>
+@font-face {
+  font-family: 'Fredoka One';
+  font-style: normal;
+  font-weight: 400;
+  src: url(fredoka.woff2) format('woff2');
+}
   html { -webkit-text-size-adjust: none; }
   a:link, a:hover, a:active, a:visited { color: [[ blue ]]; text-decoration: none; }
   /*img { display: block; }*/
@@ -100,7 +105,7 @@ Protocol Standard
 <li>Integrated Forum: <a href="http://talk.binarytask.com">http://talk.binarytask.com</a></li>
     <li>&nbsp;</li>
     <li>Physics: Client predicts everything</li>
-    <li>Protocol: Events instead of ticks</li>
+    <li>Movement: Events instead of ticks</li>
 </ul>
 Examples:
 <ul style="list-style-type: none;">
@@ -158,8 +163,8 @@ Flaws:
     Roadmap:
     <ul style="list-style-type: none;">
         <li>Khronos (OpenGL/AL and Collada) C+ (C syntax compiled with g++) Engine:<br>
-        &nbsp;&nbsp;- Windows (OpenGL EW 3)<br>
-        &nbsp;&nbsp;- Pi 4 (OpenGL ES 3)</li>
+        &nbsp;&nbsp;- Raspberry 4 (GLES 3)<br>
+        &nbsp;&nbsp;- Windows (GLEW 3)</li>
         <li>Off-Chain Micropayments</li>
         <li><br>
             <div style="width: 200px; position: relative; left: 0; top: 0;">
@@ -175,8 +180,8 @@ Flaws:
                 <!--img height="32" src="http://aeonalpha.com/vanilla.svg" style="position: absolute; bottom: 10px; left: 10px;"/-->
             </div></li>
         <li>&nbsp;</li>
-        <li>Physics: Server discrete validation</li>
-        <li>Protocol: Polar digitize compress input over network<br>(decompress as analog acceleration on the other end)</li>
+        <li>Physics: Distributed collision, random blow/miss heuristic.</li>
+        <li>Movement: Polar digitize compress input over network<br>(decompress as analog acceleration on the other end)</li>
         <li>&nbsp;</li>
         <li><img width="50px" src="polar.svg"></li>
     </ul>

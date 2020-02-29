@@ -117,6 +117,7 @@ public class play extends Service {
 <script src="[[ Router.hash.equals("md5") ? "md5" : "sha256" ]].js"></script>
 <!-- fuse network code -->
 <script>
+  var agent = (navigator.userAgent.indexOf('Android') > 0 ? 'Android' : 'Other');
   var host = '[[ host ]]';
   var game = '[[ game ]]';
   var show = [[ test ]];
@@ -125,7 +126,7 @@ public class play extends Service {
   if(Object.defineProperty) {
     Object.defineProperty(navigator, 'userAgent', {
       get: function () {
-        return "fuse";
+        return agent;
       }
     });
   }
@@ -174,7 +175,7 @@ public class play extends Service {
          */
         fetch(url, {
 	      headers: new Headers({
-	        'User-Agent': 'fuse',
+	        'User-Agent': agent,
 	        'Accept-Language': 'en',
 		    'Head': 'less'
 	      })
@@ -188,7 +189,7 @@ public class play extends Service {
     if(!ie) {
       try {
         xhr.setRequestHeader('Accept', 'text/event-stream');
-        xhr.setRequestHeader('User-Agent', 'fuse');
+        xhr.setRequestHeader('User-Agent', agent);
       }
       catch(e) {}
     }
@@ -544,6 +545,11 @@ public class play extends Service {
     e = e || window.event;
     var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
     var s = String.fromCharCode(e.target.value.charAt(e.target.selectionStart - 1).charCodeAt());
+    if(navigator.userAgent.indexOf('Android') == -1) {
+      s = String.fromCharCode(unicode);
+      if(!e.shiftKey)
+        s = s.toLowerCase();
+    }
     if(unicode == 13) {
       hash();
     }
