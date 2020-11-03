@@ -94,7 +94,12 @@ Protocol Standard
 <ul style="list-style-type: none;">
 <li>Generic: User - Item - Room</li>
     <li>JSON: Distributed async. <a href="http://root.rupy.se">database</a></li>
-<li>HTTP: Traverses all firewalls</li>
+<li>HTTP:
+    <ul style="list-style-type: none;">
+    <li>- Triplex TCP (2 sockets)</li>
+    <li>- Comet-Stream / Server-Sent Events</li>
+    <li>- Traverses all firewalls</li></ul>
+</li>
 <li>&nbsp;</li>
 <li>Async. hot-deploy to the global cluster.</li>
 <li>Completely <i>Joint Parallel Non-Blocking Async.</i></li>
@@ -121,7 +126,7 @@ Examples:
 </a></td>
 <td rowspan="2" align="left"><a name="meadow" href="http://store.steampowered.com/app/486310/"><img height="222" style="image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; -ms-interpolation-mode: nearest-neighbor;" src="http://move.rupy.se/file/meadow.jpg"></a></td>
 </tr>
-    <tr><td colspan="3"><a href="http://fuse.rupy.se/bomb.html"><img src="http://move.rupy.se/file/bomb.gif"></a></td></tr>
+    <tr><td colspan="3"><a href="http://fuse.rupy.se/bomb.html"><img style="image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; -ms-interpolation-mode: nearest-neighbor; image-rendering: pixelated;" src="http://move.rupy.se/file/bomb.gif"></a></td></tr>
 </table></li>
 </ul>
 <font>Performance: (Meadow)</font>
@@ -152,23 +157,25 @@ Advantages:
 <li><font color="#00cc33">One process for C#, C++ and HTML5 cross play, website and database!</font></li>
 <li>200KB total size (excl. Java)</li>
 <li>Global 100% Read Uptime</li>
-<li>Open & Free</li>
+<li>Commercial License starting at 20$/Month</li>
 </ul>
-Flaws:
+Flaws (2018-11-30):
 <ul style="list-style-type: circle">
 <li><font color="#ff3300">759 out of 205.875 customers refunded</font> because their antivirus blocks the pull HTTP stream</li>
 <li>You need large database hard-drives; Meadow uses <font color="#ff3300">100KB per user</font>, also inodes run out<br>before disk space if you don't configure the /app mount with 'mkfs.ext4 -T small'</li>
 <li>Peak garbage collect is <font color="#ff3300">7ms</font> once per minute on AWS T2 Micro instance</li>
 </ul>
-    Roadmap:
+    Roadmap (2020-02-02):
     <ul style="list-style-type: none;">
-        <li>Khronos (OpenGL/AL and Collada) C+ (C syntax compiled with g++) Engine:<br>
-        &nbsp;&nbsp;- Raspberry 4 (GLES 3)<br>
-        &nbsp;&nbsp;- Windows (GLEW 3)</li>
-        <li>Off-Chain Micropayments</li>
+        <li>Khronos (OpenGL/AL and Collada) C+ (C syntax compiled with g++/cl.exe) Engine:<br>
+            &nbsp;&nbsp;- Raspberry 4 GLES 3 (<a href="http://talk.binarytask.com/task?id=4064110776042269443">100</a> characters at 60 FPS)<br>
+            &nbsp;&nbsp;- Windows GLEW 3 (<a href="http://talk.binarytask.com/task?id=579711216639635462">100-2.000</a>+ characters at 60 FPS)</li>
+        <li>Github Sponsorship / Itch & Off-Chain Prepaid </li>
         <li><br>
+            <!--img width="250" src="http://move.rupy.se/file/park.svg"><br><br-->
+            <img height="50" src="http://move.rupy.se/file/park.svg">&nbsp;&nbsp;<img height="50" src="http://move.rupy.se/file/park.png"><br><br>
             <div style="width: 200px; position: relative; left: 0; top: 0;">
-                <img src="http://ahoy.rupy.se/girl.gif" style="position: relative; top: 0; left: 0;"/>
+                <img src="http://ahoy.rupy.se/girl.gif" style="position: relative; top: 0; left: 0; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; -ms-interpolation-mode: nearest-neighbor; image-rendering: pixelated;"/>
                 <img height="50" src="svg/cp.svg" style="position: absolute; top: 0px; left: 0px;"/>
                 <div style="position: absolute; left: 0px; bottom: 0px;">
                     <svg style="position: relative; top: 0px; left: 0px;" height="50" width="50">
@@ -176,12 +183,14 @@ Flaws:
                     </svg>
                     <img style="position: absolute; top: 13px; left: 8px;" src="http://aeonalpha.com/vanilla.svg" height="25">
                 </div>
-                <!--img style="position: relative; bottom: 25px; right: 0px;" width="50" src="svg/mos.svg"-->
+                <img height="50" src="svg/itch.svg" style="position: absolute; top: 0px; right: 0px;"/>
+                <img height="50" src="svg/github.svg" style="position: absolute; bottom: 0px; right: 0px;"/>
+                <!--img style="position: absolute; bottom: 25px; right: 0px;" width="250" src="http://move.rupy.se/file/park.png"-->
                 <!--img height="32" src="http://aeonalpha.com/vanilla.svg" style="position: absolute; bottom: 10px; left: 10px;"/-->
             </div></li>
         <li>&nbsp;</li>
-        <li>Physics: Distributed collision, random blow/miss heuristic.</li>
-        <li>Movement: Polar digitize compress input over network<br>(decompress as analog acceleration on the other end)</li>
+        <li>Physics: Distributed collision, server validation on disagreement<br>and/or random 3rd party authority selection, report election<br>for performance burst.</li>
+        <li>Movement: Polar ADC - DAC compression for input over network.<br>Delay precision correction until delta is (s)low enough.</li>
         <li>&nbsp;</li>
         <li><img width="50px" src="polar.svg"></li>
     </ul>
@@ -217,7 +226,7 @@ Flaws:
         6) Edit host and port depending on local/remote.<br>
     </li></ul>
 Hosting:<br>
-    <ul style="list-style-type: none;"><li><a href="http://sprout.rupy.se/article?id=290"><img src="http://sprout.rupy.se/file/2/9/1/cluster-200.jpeg"></a></li></ul>
+    <ul style="list-style-type: none;"><li><a href="http://sprout.rupy.se/article?id=290"><img style="image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; -ms-interpolation-mode: nearest-neighbor; image-rendering: pixelated;" src="http://sprout.rupy.se/file/2/9/1/cluster-200.jpeg"></a></li></ul>
 <ul style="list-style-type: circle"><li>Dedicated: Minimum equivalent of two micro instances, last free Oracle Java (8u181):</li>
     <ul style="list-style-type: circle">
     <li><a href="http://move.rupy.se/file/jdk-8u181-linux-arm32-vfp-hflt.tar.gz">jdk-linux-arm32.tar</a> / <a href="http://move.rupy.se/file/jdk-8u181-linux-arm64-vfp-hflt.tar.gz">jdk-linux-arm64.tar</a></li>
@@ -232,8 +241,8 @@ License MIT but:<br>
     <ul style="list-style-type:circle">
         <li>You have to show the <img width="45px" src="svg/mos.svg"> logo on startup. (also availiable with <br>
             white outline: <img width="45px" src="http://fuse.rupy.se/svg/mos_outline.svg">)</li>
-        <li>You have to sponsor my <a href="https://github.com/sponsors/tinspin">Fuse</a> tier on github during the time you <br>
-            are using this commercially, for every project.</li>
+        <li>You have to sponsor my <a href="https://github.com/sponsors/tinspin">Fuse</a> Commercial tier (according to your company yearly revenue) <br>
+            on github during the time you are developing/using this commercially.</li>
         <li>Last but not least the cube.html and bomb.html files (including <br>
             content in them) are proprietary and cannot be used commercially.</li>
     </ul>

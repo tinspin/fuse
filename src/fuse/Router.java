@@ -485,7 +485,7 @@ public class Router implements Node {
 			String info = split.length > 3 ? "|" + split[3] : "";
 			
 			if(poll == null) {
-				return "ally|fail|user not online";
+				return "ally|fail|user " + split[2] + " not online";
 			}
 
 			if(user.ally(poll)) {

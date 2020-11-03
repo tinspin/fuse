@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import se.rupy.http.*;
 
 public class Server extends Service implements Node, Runnable {
-	ConcurrentHashMap list;	// The pull streams.
+	ConcurrentHashMap list1, list2;	// The pull streams.
 	Thread thread;			// To purge "noop" messages so proxies don't timeout the connections.
 	Node node;				// The routing implementation.
 
@@ -22,7 +22,7 @@ public class Server extends Service implements Node, Runnable {
 	StringBuilder padding = new StringBuilder();
 	
 	private Queue find(String salt) {
-		Iterator it = list.values().iterator();
+		Iterator it = list1.values().iterator();
 
 		while(it.hasNext()) {
 			Queue queue = (Queue) it.next();
@@ -40,8 +40,8 @@ public class Server extends Service implements Node, Runnable {
 	}
 
 	public void remove(String salt, int place) throws Exception {
-        list.remove(salt);
-        list.remove(Router.User.salt(salt));
+        list1.remove(salt);
+        list2.remove(Router.User.salt(salt));
 		node.remove(salt, place);
 	}
 
@@ -77,7 +77,8 @@ public class Server extends Service implements Node, Runnable {
         if(!alive) {
             System.out.println(Router.data + " / " + Router.fuse);
 
-			list = new ConcurrentHashMap();
+			list1 = new ConcurrentHashMap();
+			list2 = new ConcurrentHashMap();
 			alive = true;
 
 			thread = new Thread(this);
@@ -126,7 +127,7 @@ public class Server extends Service implements Node, Runnable {
 	}
 	
 	public String push(String salt, String data, boolean wake) throws Exception {
-		Queue queue = (Queue) list.get(salt); //find(salt);
+		Queue queue = (Queue) list1.get(salt); //find(salt);
 		
 		if(queue != null) {
 			queue.add(data);
@@ -149,7 +150,7 @@ public class Server extends Service implements Node, Runnable {
 	}
 
     public String push(int salt, String data, boolean wake) throws Exception {
-        Queue queue = (Queue) list.get(salt); //find(salt);
+        Queue queue = (Queue) list2.get(salt); //find(salt);
 
         if(queue != null) {
             queue.add(data);
@@ -171,7 +172,7 @@ public class Server extends Service implements Node, Runnable {
     }
 	
 	public int wakeup(String salt) {
-		Queue queue = (Queue) list.get(salt); //find(salt);
+		Queue queue = (Queue) list1.get(salt); //find(salt);
 
 		//System.err.println(salt + " " + queue.size());
 		
@@ -187,12 +188,12 @@ public class Server extends Service implements Node, Runnable {
 	}
 	
 	public void broadcast(String message, boolean finish) throws Exception {
-		Iterator it = list.values().iterator();
+		Iterator it = list1.values().iterator();
 
 		while(it.hasNext()) {
 			Queue queue = (Queue) it.next();
 			queue.add(message);
-
+//System.out.println(queue.salt);
 			if(finish) {
 				queue.finish = true;
 			}
@@ -276,7 +277,7 @@ public class Server extends Service implements Node, Runnable {
 		}
 
 		if(event.push()) {
-			Queue queue = (Queue) list.get(event.string("salt"));
+			Queue queue = (Queue) list1.get(event.string("salt"));
 
 			try {
 				Output out = event.output();
@@ -316,22 +317,22 @@ public class Server extends Service implements Node, Runnable {
 			event.query().parse();
 			boolean ie = event.bit("ie");
 			String salt = event.string("salt");
-			Queue queue = (Queue) list.get(salt); //find(salt);
+			Queue queue = (Queue) list1.get(salt); //find(salt);
 
 			if(queue != null) {
 				if(queue.event.remote().equals(event.remote())) {
-					remove(queue.salt, 4);
+					//remove(queue.salt, 4);
 				}
 				else {
-					System.out.println("### IP fuse hack " + event.remote());
+					System.out.println("### IP fuse hack " + queue.event.remote() + " " + event.remote());
 					event.output().print("salt in use from another IP.");
 					throw event;
 				}
 			}
 
             Queue q = new Queue(salt, event);
-			list.put(salt, q);
-            list.put(Router.User.salt(salt), q);
+			list1.put(salt, q);
+            list2.put(Router.User.salt(salt), q);
 			
 			if(Router.debug)
 				System.err.println("poll " + Router.date.format(new Date()) + " " + salt);
