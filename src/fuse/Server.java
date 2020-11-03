@@ -335,7 +335,7 @@ public class Server extends Service implements Node, Runnable {
             list2.put(Router.User.salt(salt), q);
 			
 			if(Router.debug)
-				System.err.println("poll " + Router.date.format(new Date()) + " " + salt);
+				System.err.println("poll " + Router.date.format(new Date()) + " " + salt + " " + event.remote());
 			
 			String accept = event.query().header("accept");
 

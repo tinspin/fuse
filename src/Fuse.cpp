@@ -473,6 +473,10 @@ void Pull() {
 	string prefix("data: ");
 	
 	while(alive) {
+		if(stream.eof()) {
+	        cout << "EOF" << endl;
+	        return;
+	    }
 		getline(stream, line, '\r');
 		line.erase(0, 1);
 		if(append) {
