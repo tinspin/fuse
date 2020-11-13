@@ -94,20 +94,28 @@ public class Server extends Service implements Node, Runnable {
 	}
 
 	public void run() {
-		try {
-			while(alive) {
-				purge(false);
-				Thread.sleep(5000);
-			}
+	    while(alive) {
+            try {
+                purge(false);
 
-			if(debug)
-				System.err.println("purge");
+                //if (debug)
+                //    System.err.println("purge");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    Thread.sleep(5000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
-			purge(true);
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
+        try {
+	        purge(true);
+        } catch (Exception e) {
+	        e.printStackTrace();
+        }
 	}
 
 	public void destroy() throws Exception {
