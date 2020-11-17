@@ -134,7 +134,7 @@ in sort of chronological order:
  <b><i>\/</i></b> anything below          -> main|fail|no game
 
                             // get patch file resource list
-*<b><i>file</i></b>|&lt;salt&gt;                -> file|done|&lt;name&gt;,&lt;size&gt;,[hash];…
+*<b><i>file</i></b>|&lt;salt&gt;                -> file|done|&lt;name&gt;,&lt;size&gt;[,hash];…
 
                             // set nick for user
  <b><i>nick</i></b>|&lt;salt&gt;|&lt;nick&gt;         -> nick|done
