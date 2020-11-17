@@ -1,8 +1,8 @@
 <img width="170" src="https://rawgit.com/tinspin/fuse/master/res/svg/mos.svg"><br>
 <pre>
-+---------------------------+
-| <i>multiplayer online system</i> |
-+---------------------------+
++-----------------------------+
+| <i>multiplayer online standard</i> |
++-----------------------------+
 
 about:
 
@@ -132,6 +132,9 @@ in sort of chronological order:
                             -> game|fail|name invalid       // [a-zA-Z]+
 
  <b><i>\/</i></b> anything below          -> main|fail|no game
+
+                            // get patch file resource list
+*<b><i>file</i></b>|&lt;salt&gt;|file           -> file|done|&lt;name&gt;,&lt;size&gt;,[hash];…
 
                             // set nick for user
  <b><i>nick</i></b>|&lt;salt&gt;|&lt;nick&gt;         -> nick|done
