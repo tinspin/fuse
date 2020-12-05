@@ -213,7 +213,8 @@ in sort of chronological order:
                             -> room|fail|not in lobby
                             -> room|fail|type invalid       // [a-zA-Z]+
 
-                            // list rooms, room items or data (hard, soft and inventory items)
+                            // list files, rooms, room items or user data (hard, soft and inventory items)
+*<b><i>list</i></b>|&lt;salt&gt;|file           -> list|done|room|&lt;name&gt;,&lt;size&gt;,[hash];…
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;here&gt;,&lt;size&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|room|item      -> list|done|room|item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|user|hard      -> list|done|user|hard|&lt;name&gt;,&lt;size&gt;;…
@@ -227,8 +228,8 @@ in sort of chronological order:
                             // data is base64 which sucks
                             // so I might implement this
                             // separately, maybe later...
-*<b><i>push</i></b>|&lt;salt&gt;|<name>|<data>  -> file|done
-*<b><i>pull</i></b>|&lt;salt&gt;|<name>         -> file|done|<data>
+*<b><i>push</i></b>|&lt;salt&gt;|&lt;name&gt;|&lt;data&gt;  -> file|done
+*<b><i>pull</i></b>|&lt;salt&gt;|&lt;name&gt;         -> file|done|&lt;data&gt;
 
                             // join room
                             // between <i>lock</i> and <i>view</i> nobody can join
