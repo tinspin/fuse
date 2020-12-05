@@ -41,8 +41,8 @@ license:
 
   - mit but you have to show the logo on startup,
     sponsor the fuse tier on github while you are
-    using this commercially and cube.html and
-    bomb.html are proprietary.
+    using this commercially and .html files are
+    proprietary except the javascript in play.html!
 
 +------------------+
 | <i>work in progress</i> |
@@ -133,9 +133,6 @@ in sort of chronological order:
 
  <b><i>\/</i></b> anything below          -> main|fail|no game
 
-                            // get patch file resource list
-*<b><i>file</i></b>|&lt;salt&gt;                -> file|done|&lt;name&gt;,&lt;size&gt;[,hash];…
-
                             // set nick for user
  <b><i>nick</i></b>|&lt;salt&gt;|&lt;nick&gt;         -> nick|done
                             -> nick|fail|nick invalid       // [a-zA-Z0-9.\\-]+
@@ -219,13 +216,19 @@ in sort of chronological order:
                             // list rooms, room items or data (hard, soft and inventory items)
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;here&gt;,&lt;size&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|room|item      -> list|done|room|item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;;…
-*<b><i>list</i></b>|&lt;salt&gt;|user           -> list|done|user|&lt;user&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|user|hard      -> list|done|user|hard|&lt;name&gt;,&lt;size&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|user|soft      -> list|done|user|soft|&lt;name&gt;,&lt;size&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|user|item      -> list|done|user|item|&lt;name&gt;,&lt;many&gt;;…
                             -> list|fail|not found
                             -> list|fail|type missing
                             -> list|fail|wrong type
+
+                            // pull & push resource file
+                            // data is base64 which sucks
+                            // so I might implement this
+                            // separately, maybe later...
+*<b><i>push</i></b>|&lt;salt&gt;|<name>|<data>  -> file|done
+*<b><i>pull</i></b>|&lt;salt&gt;|<name>         -> file|done|<data>
 
                             // join room
                             // between <i>lock</i> and <i>view</i> nobody can join

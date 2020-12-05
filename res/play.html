@@ -822,7 +822,7 @@ public class play extends Service {
 </td></tr></table>
 
 <div class="modal" style="background-color: white; border: none; display: none;" id="itch">
-    <center><img height="50" src="svg/itch.svg"/> prepaid</center><br/>
+    <center><img height="50" src="svg/itch.svg"/> prepaid / subscription</center><br/>
     1) name: <input style="border-color: red; color: red;" size="6" type="text" name="name" id="itch_name" readonly/><br/>
     2) purchase: <a target="_blank" href="https://tinspin.itch.io/prepaid-coins">itch.io</a><br/>
     3) your itch.io email:<br/><div style="float: right;"><input style="color: black;" size="10" type="text" name="mail"/> <a href="#" onclick="verify_itch(); return false;">link</a></div><br/><br/>
@@ -830,7 +830,7 @@ public class play extends Service {
 </div>
 
 <div class="modal" style="background-color: white; border: none; display: none;" id="github">
-    <center><img height="50" src="svg/github.svg"/> subscription</center><br/>
+    <center><img height="50" src="svg/github.svg"/> license / sponsorship</center><br/>
     1) name: <input style="border-color: red; color: red;" size="6" type="text" name="name" id="github_name" readonly/><br/>
     2) purchase: <a target="_blank" href="https://github.com/login?return_to=%2Fsponsors%2Ftinspin%2Fsponsorships%3Ftier_id%3D4594">github</a><br/>
     3) your github email:<br/><div style="float: right;"><input style="color: black;" size="10" type="text" name="mail"/> <a href="#" onclick="verify_github(); return false;">link</a></div><br/><br/>
@@ -862,9 +862,9 @@ public class play extends Service {
     </script>
     <table><tr><td>
         <a style="color: black;" onclick="open_itch(); element('itch').style.display = 'block'; return false;" href="#">
-            <img style="display: inline; vertical-align: middle;" height="30" src="svg/itch.svg"/>&nbsp;prepaid</a></td></tr><tr><td>
+            <img style="display: inline; vertical-align: middle;" height="30" src="svg/itch.svg"/>&nbsp;prepaid / subscription</a></td></tr><tr><td>
         <a style="color: black;" onclick="open_github(); element('github').style.display = 'block'; return false;" href="#">
-            <img style="display: inline; vertical-align: middle;" height="30" src="svg/github.svg"/>&nbsp;subscription</a></td></tr></table>
+            <img style="display: inline; vertical-align: middle;" height="30" src="svg/github.svg"/>&nbsp;license / sponsorship</a></td></tr></table>
 <!--div id="pull">pull:</div>
 <div id="push">push:</div-->
 </div>
