@@ -76,6 +76,9 @@ in sort of chronological order:
 
                             // to get latency
  <b><i>ping</i></b>                       -> ping|done
+
+                             // simple crash report
+ <b><i>snap</i></b>|[data]                -> snap|done
  
                             // to get server time in millisec from 1970
  <b><i>time</i></b>                       -> time|done|&lt;time&gt;
@@ -214,7 +217,7 @@ in sort of chronological order:
                             -> room|fail|type invalid       // [a-zA-Z]+
 
                             // list files, rooms, room items or user data (hard, soft and inventory items)
-*<b><i>list</i></b>|&lt;salt&gt;|file           -> list|done|file|&lt;name&gt;,&lt;size&gt;,[hash];…
+*<b><i>list</i></b>|&lt;salt&gt;|file|&lt;date&gt;    -> list|done|file|&lt;date&gt;,&lt;size&gt;,[hash];…
  <b><i>list</i></b>|&lt;salt&gt;|room           -> list|done|room|&lt;user&gt;,&lt;type&gt;,&lt;here&gt;,&lt;size&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|room|item      -> list|done|room|item|&lt;salt&gt,&lt;spot&gt;,&lt;name&gt;,&lt;many&gt;;…
  <b><i>list</i></b>|&lt;salt&gt;|user|hard      -> list|done|user|hard|&lt;name&gt;,&lt;size&gt;;…
@@ -227,7 +230,7 @@ in sort of chronological order:
                             // pull & push resource file
                             // data is base64 which sucks
                             // so I might implement this
-                            // separately, maybe later...
+                            // later...
 *<b><i>push</i></b>|&lt;salt&gt;|&lt;name&gt;|&lt;data&gt;  -> file|done
 *<b><i>pull</i></b>|&lt;salt&gt;|&lt;name&gt;         -> file|done|&lt;data&gt;
 

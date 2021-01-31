@@ -1138,8 +1138,17 @@ System.out.println(poll + " " + names);
 			user.position.x = Float.parseFloat(pos[0]);
 			user.position.y = Float.parseFloat(pos[1]);
 			user.position.z = Float.parseFloat(pos[2]);
+
+			String[] vel = all[1].split(",");
+
+			if(user.velocity == null)
+				user.velocity = new Velocity();
+
+			user.velocity.x = Float.parseFloat(vel[0]);
+			user.velocity.y = Float.parseFloat(vel[1]);
+			user.velocity.z = Float.parseFloat(vel[2]);
 			
-			String[] rot = all[1].split(",");
+			String[] rot = all[2].split(",");
 			
 			if(user.rotation == null)
 				user.rotation = new Rotation();
@@ -1149,7 +1158,7 @@ System.out.println(poll + " " + names);
 			user.rotation.z = Float.parseFloat(rot[2]);
 			user.rotation.w = Float.parseFloat(rot[3]);
 			
-			user.action = all[2];
+			user.action = all[3];
 			
 			return "move|done";	
 		}
