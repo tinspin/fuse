@@ -230,7 +230,7 @@ in sort of chronological order:
                             // pull & push resource file
                             // data is base64 which sucks
                             // so I might implement this
-                            // later...
+                            // later... poke/peek?
 *<b><i>push</i></b>|&lt;salt&gt;|&lt;name&gt;|&lt;data&gt;  -> file|done
 *<b><i>pull</i></b>|&lt;salt&gt;|&lt;name&gt;         -> file|done|&lt;data&gt;
 

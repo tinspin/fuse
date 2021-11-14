@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <style>
-  body { margin: 0; padding: 0; color: #ffffff; }
+  body { margin: 0; padding: 0; }
   textarea { color: #ffffff; }
   select { color: #ffffff; }
   #fail3 { color: #ff3300; }
@@ -128,15 +128,15 @@
   }
 </script>
 
-<div style="position: absolute; top: 25vw; left: 50%; margin: -150px 0 0 -150px;" id="room">
-<table border="0">
+<div style="position: absolute; top: 25vw; left: 50%; margin: -180px 0 0 -180px;" id="room">
+<table border="0" style="color: #ffffff;">
 <tr><td colspan="4"><div id="fail3"></div></td></tr>
 <tr><td align="center">user</td><td></td>
     <td colspan="2" align="center">json</td>
 </tr>
-<tr><td>type&nbsp;<select id="data_type" onchange="javascript:data_list();" style="width: 80px; height: 21px;"><option>hard</option><option>item</option><option>soft</option></select></td>
+<tr><td>type&nbsp;<select id="data_type" onchange="javascript:data_list();" style="width: 80px; height: 35px;"><option>hard</option><option>item</option><option>soft</option></select></td>
     <td></td>
-    <td colspan="2">name&nbsp;<input style="width: 80px; height: 21px;" id="data_name" type="text" size="10">
+    <td colspan="2">name&nbsp;<input style="width: 80px; height: 35px;" id="data_name" type="text" size="10">
 </tr>
 <tr><td rowspan="3"><select id="data_list" style="width: 115px; height: 65px;" multiple></select></td>
     <td rowspan="3" valign="middle">&nbsp;<font color="red">&rarr;</font>&nbsp;</td>
@@ -148,13 +148,13 @@
 <tr><td><a href="javascript:data_load();">load</a></td><td></td>
     <td><a href="javascript:data_save();">save</a></td><td align="right"><a href="javascript:data_tear();">tear</a></td>
 </tr>
-<tr><td align="center"><font color="red">&uarr;</font></td><td></td><td colspan="2" align="center"><font color="red">&darr;</font></td>
+<tr><td align="center"><!--font color="red">&uarr;</font></td><td></td><td colspan="2" align="center"><font color="red">&darr;</font--></td>
 </tr>
 <tr><td align="center">room</td><td></td>
     <td colspan="2" align="center">item</td>
 </tr>
 <tr><td><select id="room_list" style="width: 115px; height: 65px;" multiple></select></td>
-    <td valign="middle">&nbsp;<font color="red">&larr;</font>&nbsp;</td><td colspan="2" valign="top">many&nbsp;<input style="width: 80px; height: 21px;" id="room_many" type="text" size="10" value="1"></td>
+    <td valign="middle">&nbsp;<font color="red">&larr;</font>&nbsp;</td><td colspan="2" valign="top">many&nbsp;<input style="width: 80px; height: 35px;" id="room_many" type="text" size="10" value="1"></td>
 </tr>
 <tr><td><a href="javascript:room_pick();">pick</a></td><td></td>
     <td><a href="javascript:room_drop();">drop</a></td><td align="right"><a href="javascript:over('done');">over</a></td>

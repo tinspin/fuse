@@ -76,7 +76,7 @@ public class play extends Service {
     font-family: '8-bit', monospace;
     box-sizing: border-box;
     font-size: 100%;
-    color: #FFFFFF;
+    color: #ffffff;
     padding-left: 3px;
   }
   table { margin: 5px; }
@@ -552,7 +552,9 @@ public class play extends Service {
     e = e || window.event;
     var unicode = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
     var s = String.fromCharCode(e.target.value.charAt(e.target.selectionStart - 1).charCodeAt());
-    if(navigator.userAgent.indexOf('Android') == -1) {
+    if(navigator.userAgent.indexOf('Android') == -1 &&
+       navigator.userAgent.indexOf('Other') == -1 &&
+       navigator.userAgent.indexOf('SamsungBrowser') == -1) {
       s = String.fromCharCode(unicode);
       if(!e.shiftKey)
         s = s.toLowerCase();
@@ -759,8 +761,8 @@ public class play extends Service {
 
 <div id="room" style="display: none;"><center><table>
 <tr><td colspan="3"><div id="fail2"></div></td></tr>
-<tr><td align="center" style="color: #FFFFFF;">user</td><td></td>
-    <td align="center" style="color: #FFFFFF;">room</td></tr>
+<tr><td align="center" style="color: #ffffff;">user</td><td></td>
+    <td align="center" style="color: #ffffff;">room</td></tr>
 <tr><td><select id="ally" size="5" multiple></select></td><td></td>
     <td><select id="join" size="5" multiple></select></td></tr>
 <tr><td><a href="javascript:ally();">ally</a></td><td></td>
