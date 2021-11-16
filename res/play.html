@@ -301,8 +301,8 @@ public class play extends Service {
         }      
         if(split[1] == 'leaf') {
           remove_select('join', split[2]);
-          stop_game();
         }
+        stop_game();
       }
       else if(split[0] == 'room') {
         add_select('join', split[1].split(',')[0], orange);

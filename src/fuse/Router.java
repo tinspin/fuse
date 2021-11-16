@@ -27,7 +27,7 @@ public class Router implements Node {
 	public static String hash = "sha-256";
 
 	public static String data = "root.rupy.se";
-    public static String what = "195.67.191.192";
+    public static String what = "81.236.222.232";
 
     // change these to localhost:8000 if
     // you are developing with HTML5 on localhost
@@ -69,7 +69,7 @@ public class Router implements Node {
 	private User session(Event event, String name, String salt) throws Exception {
 		User user = new User(name, salt);
 		users.put(salt, user);
-		names.put(name, user);
+		names.put(name.toLowerCase(), user);
 
 		// This uses host.rupy.se specific MaxMind GeoLiteCity.dat
         try {
@@ -135,7 +135,7 @@ public class Router implements Node {
 	public String push(final Event event, String data) throws Event, Exception {
 		final String[] split = data.split("\\|");
 
-		if(!split[0].equals("send") && !split[0].equals("move")) {
+		if(!split[0].equals("send") && !split[0].equals("move") && !split[0].equals("ping")) {
 			if(debug)
 				System.err.println(" -> '" + data + "'");
 		}
@@ -311,7 +311,8 @@ public class Router implements Node {
 					}
 					catch(Exception e) {
 						event.query().put("fail", "sign|fail|" + body);
-					}
+                        //e.printStackTrace();
+                    }
 					int wakeup = event.reply().wakeup(true);
 					if(debug)
 						System.err.println(wakeup);
@@ -481,7 +482,7 @@ public class Router implements Node {
 			return "back|done";
 		}
 		else if(split[0].equals("ally")) {
-			final User poll = (User) names.get(split[2]);
+			final User poll = (User) names.get(split[2].toLowerCase());
 			String info = split.length > 3 ? "|" + split[3] : "";
 			
 			if(poll == null) {
@@ -669,7 +670,7 @@ public class Router implements Node {
 				if(!game && user.room.users.size() == user.room.size && !user.room.play)
 					return "join|fail|is full";
 
-				User poll = (User) names.get(split[2]);
+				User poll = (User) names.get(split[2].toLowerCase());
 System.out.println(poll + " " + names);
 				boolean poll_game = poll.room instanceof Game;
 
@@ -709,7 +710,7 @@ System.out.println(poll + " " + names);
 			if(debug)
 				System.err.println(split[2] + " " + names);
 
-			final User poll = (User) names.get(split[2]);
+			final User poll = (User) names.get(split[2].toLowerCase());
 			boolean accept = split[3].toLowerCase().equals("true");
 
 			if(poll == null)
@@ -1863,15 +1864,15 @@ System.out.println(poll + " " + names);
 		users.remove(salt);
 
 		if(user != null && user.salt != null && user.game != null) {
-			Room room = user.move(user.room, null, false);
+			//Room room = user.move(user.room, null, false);
 			user.game.rooms.remove(user.name);
 
-			if(place != 1) {
+			//if(place != 1) {
 				user.game.send(user, "quit|" + user.name);
-			}
+			//}
 
-			names.remove(user.name);
-			broadcast(user, "gone|root|" + user.name, true);
+			names.remove(user.name.toLowerCase());
+			broadcast(user, "gone|root|" + user.name, false);
 		}
 	}
 
