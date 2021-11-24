@@ -40,8 +40,10 @@ public class Server extends Service implements Node, Runnable {
 	}
 
 	public void remove(String salt, int place) throws Exception {
-        list1.remove(salt);
-        list2.remove(Router.User.salt(salt));
+        boolean success = list1.remove(salt) != null;
+        //if(!success) System.out.println("FAIL1 " + salt);
+        success = list2.remove(Router.User.salt(salt)) != null;
+        //if(!success) System.out.println("FAIL2 " + salt);
 		node.remove(salt, place);
 	}
 
@@ -60,7 +62,7 @@ public class Server extends Service implements Node, Runnable {
             if (!daemon.domain().equals("host.rupy.se")) {
                 //System.out.println(host + " " + top);
 
-                if (host.startsWith("live")) {
+                if (host.endsWith("radiomesh.org")) {
                     Router.data = "data" + top;
                 } else {
                     Router.data = "base" + top;
@@ -101,7 +103,10 @@ public class Server extends Service implements Node, Runnable {
                 //if (debug)
                 //    System.err.println("purge");
             } catch (Exception e) {
-                e.printStackTrace();
+                if(e.getMessage().startsWith("Prune"))
+                    System.out.println(e.getMessage());
+                else
+                    e.printStackTrace();
             } finally {
                 try {
                     Thread.sleep(5000);
@@ -147,7 +152,6 @@ public class Server extends Service implements Node, Runnable {
 			
 			if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
 				remove(queue.salt, 1);
-
 			}
 		}
 		else {
@@ -192,23 +196,34 @@ public class Server extends Service implements Node, Runnable {
 	}
 
 	private void purge(boolean finish) throws Exception {
-		broadcast("noop", finish);
-	}
-	
+        broadcast("noop", finish);
+    }
+
 	public void broadcast(String message, boolean finish) throws Exception {
 		Iterator it = list1.values().iterator();
+        //boolean noop = message.equals("noop");
 
 		while(it.hasNext()) {
 			Queue queue = (Queue) it.next();
 			queue.add(message);
-//System.out.println(queue.salt);
+
 			if(finish) {
 				queue.finish = true;
 			}
 
 			int wakeup = queue.event.reply().wakeup();
+/*
+			if(noop) {
+                long time = queue.event.query().big("time");
 
-			if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
+			    if(time > 0 &&
+                   time < System.currentTimeMillis() - 1000 * 30) { // 30 sec client timeout?
+                    remove(queue.salt, 7);
+			        it.remove();
+                }
+            }
+*/
+            if(wakeup == Reply.CLOSED || wakeup == Reply.COMPLETE) {
 				remove(queue.salt, 2);
 				it.remove();
 			}
@@ -227,7 +242,7 @@ public class Server extends Service implements Node, Runnable {
 					String send = fail == null ? data : fail;
 					String origin = event.query().header("origin");
 					
-					if(Router.debug)
+					if(Router.debug && data != null && !data.startsWith("ping"))
 						System.err.println(" <- " + data);
 					
 					if(origin != null)
@@ -247,18 +262,30 @@ public class Server extends Service implements Node, Runnable {
 				}
 			}
 			else {
-				event.query().put("time", new Long(System.currentTimeMillis()));
-				
+			    event.query().put("time", new Long(System.currentTimeMillis()));
+
 				String data = event.string("data");
 				byte[] body = null;
-				
+
+				// for proxied connections that never explicitly disconnect
+                // we set the time of the last incoming packet so we can timeout
+                // the player after some time
+                /*
+				if(data.length() > 9) {
+                    Queue q = (Queue) list1.get(data.substring(5, 9));
+
+                    if(q != null) {
+                        q.event.query().put("time", new Long(System.currentTimeMillis()));
+                    }
+                }
+                */
 				try {
 					String response = node.push(event, data);
 
 					//if(response.equals("hold"))
 					//	throw event;
 					
-					if(!data.startsWith("send") && !data.startsWith("move"))
+					if(!data.startsWith("send") && !data.startsWith("move") && !data.startsWith("ping"))
 						if(Router.debug)
 							System.err.println(" <- " + response);
 					
@@ -299,7 +326,7 @@ public class Server extends Service implements Node, Runnable {
 					String accept = queue.event.query().header("accept");
 					
 					while(data != null) {
-						if(!data.equals("noop") && !data.startsWith("move"))
+						if(!data.equals("noop") && !data.startsWith("move") && !data.startsWith("send"))
 							if(Router.debug)
 								System.err.println(queue.salt + " " + data);
 						

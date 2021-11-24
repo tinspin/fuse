@@ -1605,7 +1605,7 @@ System.out.println(poll + " " + names);
 
 			if(data.startsWith("here"))
 				if(debug)
-					System.err.println(users);
+					System.err.println("here " + users);
 
 			boolean wakeup = false;
 
@@ -1856,15 +1856,18 @@ System.out.println(poll + " " + names);
 		User user = (User) users.get(salt);
 
 		if(debug)
-			System.err.println("quit " + place + " " + user + " " + salt); // + " " + stack(Thread.currentThread()));
-		
+			System.err.println("quit " + place + " " + user + " " + salt + " " + users); // + " " + stack(Thread.currentThread()));
+
 		if(place == 6 && user == null)
 			throw new Exception("Prune salt " + salt);
-		
+
 		users.remove(salt);
 
+		if(debug)
+			System.err.println("quit " + users); // + " " + stack(Thread.currentThread()));
+
 		if(user != null && user.salt != null && user.game != null) {
-			//Room room = user.move(user.room, null, false);
+			Room room = user.move(user.room, null, false);
 			user.game.rooms.remove(user.name);
 
 			//if(place != 1) {
@@ -1872,6 +1875,7 @@ System.out.println(poll + " " + names);
 			//}
 
 			names.remove(user.name.toLowerCase());
+			salts.remove(salt);
 			broadcast(user, "gone|root|" + user.name, false);
 		}
 	}
