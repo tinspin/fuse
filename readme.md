@@ -40,7 +40,7 @@ platform:
 license:
 
   - mit but you have to show the logo on startup,
-    sponsor the fuse tier on github while you are
+    sponsor the fuse tier on gumroad while you are
     using this commercially and .html files are
     proprietary except the javascript in play.html!
 
