@@ -31,6 +31,12 @@ public class play extends Service {
         Query q = event.query();
         String font = q.string("font", "soda");
 		String host = q.string("host", Router.fuse);
+        String real = q.header("host");
+
+        if(!host.equals(real)) {
+            host = real;
+        }
+
 		String game = q.string("game", "cube");
 		String path = q.string("path", game + ".html");
 		boolean test = q.bit("test", false);
@@ -43,6 +49,7 @@ public class play extends Service {
 <html style="margin: 0px; padding: 0px; height: 100%; min-height: 100%; overflow: hidden;">
 <head>
 <meta charset="utf-8">
+<title>[[ host ]]</title>
 <meta name="referrer" content="no-referrer">
 <!--meta name="viewport" content="width=300, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"-->
 <style>
@@ -121,7 +128,7 @@ public class play extends Service {
     padding: 25px;
   }
 </style>
-<script src="[[ Router.hash.equals("md5") ? "md5" : "sha256" ]].js"></script>
+<script src="js/[[ Router.hash.equals("md5") ? "md5" : "sha256" ]].js"></script>
 <!-- fuse network code -->
 <script>
   var agent = (navigator.userAgent.indexOf('Android') > 0 ? 'Android' : 'Other');
@@ -236,7 +243,7 @@ public class play extends Service {
             read(trim);
         }
         catch(e) {
-          alert(e);
+          alert(e + ' ' + body);
         }
     }
   }
@@ -473,12 +480,12 @@ public class play extends Service {
   var pass = '[[ pass ]]';
   function user() {
     name = id('name');
-    if(name.length < 3) {
+    if(name.length < 2) {
       show_fail('name too short');
       return;
     }
     //pass = id('pass');
-    if(pass.length < 3) {
+    if(pass.length < 4) {
       show_fail('pass too short');
       return;
     }
@@ -499,12 +506,12 @@ public class play extends Service {
   var digits = /^\d+$/;
   function hash() {
     name = id('name');
-    if(name.length < 3) {
+    if(name.length < 2) {
       show_fail('name too short');
       return;
     }
     //pass = id('pass');
-    if(pass.length < 3) {
+    if(pass.length < 4) {
       show_fail('pass too short');
       return;
     }

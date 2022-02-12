@@ -154,20 +154,24 @@ public class Router implements Node {
 			final boolean mail = split.length > 3 && split[3].length() > 0;
 
 			if(name) {
-				if(split[1].length() < 3)
+				if(split[1].length() < 2)
 					return "user|fail|name too short";
 
-				if(split[1].length() > 12)
-					return "user|fail|name too long";
+				/* The distributed name service I'm building
+				 * is going to use 5-bit letters so to fit inside
+				 * an integer we can only have 6 letters.
+				 */
+				if(split[1].length() > 6)
+					return "user|fail|name too long (6)";
 
-				if(name && !split[1].matches("[a-zA-Z0-9.\\-]+"))
-					return "user|fail|name invalid";
+				if(name && !split[1].matches("[a-zA-Z1-6.\\-]+"))
+					return "user|fail|name invalid (a-z/1-6)";
 
 				if(name && split[1].matches("[0-9]+"))
 					return "user|fail|name alpha missing"; // [0-9]+ reserved for <id>
 			}
 
-			if(pass && split[2].length() < 3)
+			if(pass && split[2].length() < 4)
 				return "user|fail|pass too short";
 
 			if(mail && split[3].indexOf("@") < 1 && !split[3].matches("[a-zA-Z0-9.@\\-\\+]+"))
