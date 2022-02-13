@@ -157,6 +157,7 @@ public class play extends Service {
       return split;
     }
   }
+  var body_fix;
   function http(path, data) {
     hide_fail();
     var async = false;
@@ -208,17 +209,31 @@ public class play extends Service {
       catch(e) {}
     }
     if(state == 3) {
+      if(send_game) {
+        setTimeout(function() { push('game|' + game); list() }, 1000); // Give IE time to handle 2000kb payload.
+        send_game = false;
+      }
       if(ie)
         xhr.onprogress = function() {
-          var body = xhr.responseText.substring(size, xhr.responseText.length);
-          chop(body, '\n'); // last \n instead
+          body_fix = xhr.responseText.substring(size, xhr.responseText.length);
+          chop(body_fix, '\n'); // last \n instead
           size = xhr.responseText.length;
         };
       else
         xhr.onreadystatechange = function() {
+         /* Now firefox sends multiple readyState == 3 for each chunk.
+          * The ugly workaround I'm doing now is to see if the body is
+          * new and ONLY then I chop it! I'm quitting browser dev and
+          * focusing on C clients.
+          */
           if(xhr.readyState == 3) {
-            var body = xhr.responseText.substring(size, xhr.responseText.length);
-            chop(body, '\n\n'); // last \n\n instead
+            var temp_body = xhr.responseText.substring(size, xhr.responseText.length);
+            //console.log(temp_body + ' hello ' + (temp_body != body_fix));
+            if(temp_body != body_fix && temp_body.indexOf('data: noop') == -1) {
+              //console.log('yo');
+              chop(temp_body, '\n\n'); // last \n\n instead
+              body_fix = temp_body;
+            }
             size = xhr.responseText.length;
           }
         };
@@ -237,6 +252,7 @@ public class play extends Service {
       var trim = part[i].trim();
       if(trim.length > 0)
         try {
+          //console.log(trim);
           if(trim.indexOf('data: ') == 0)
             read(trim.substring(6, trim.length));
           else
@@ -244,6 +260,7 @@ public class play extends Service {
         }
         catch(e) {
           alert(e + ' ' + body);
+          console.log(e + ' ' + body);
         }
     }
   }
@@ -269,10 +286,12 @@ public class play extends Service {
   function read(data) {
     if(show)
       element('pull').innerHTML += data + '\n';
+    /*
     if(send_game) {
       setTimeout(function() { push('game|' + game); list() }, 1000); // Give IE time to handle 2000kb payload.
       send_game = false;
     }
+    */
     var split = data.split('|');
     if(split.length > 0) {
       if(split[0] == 'chat') {

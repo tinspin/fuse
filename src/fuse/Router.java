@@ -720,8 +720,11 @@ System.out.println(poll + " " + names);
 			if(poll == null)
 				return "poll|fail|user not online";
 
-			if(user.poll == null || !user.poll.equals(poll.name))
-				return "poll|fail|wrong user";
+			if(user.poll == null || !user.poll.equals(poll.name)) {
+			    if(debug)
+				    System.err.println(user.poll + " " + poll.name);
+                return "poll|fail|wrong user";
+            }
 
 			if(accept) {
 				if(type.equals("join")) {
