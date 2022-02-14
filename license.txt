@@ -2,7 +2,7 @@ Permission is hereby granted, to any person obtaining a copy of this software an
 
 1) You have to show the logo on startup.
 
-2) You have to sponsor the fuse tier on gumroad while you are using this commercially:
+2) You have to sponsor the fuse tier on gumroad while you are using this, or any derived software, commercially:
 
 https://tinspin.gumroad.com/l/xwluh
 

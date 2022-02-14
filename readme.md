@@ -40,8 +40,8 @@ platform:
 license:
 
   - Source available, you have to show the logo on startup,
-    sponsor the fuse tier on <a href="http://tinspin.gumroad.com/l/xwluh">gumroad</a> while you are
-    using this commercially and the .html and graphics are
+    sponsor the fuse tier on <a href="http://tinspin.gumroad.com/l/xwluh">gumroad</a> while you are using
+    this, or any derived software, commercially and the .html and graphics are
     proprietary examples except the javascript in play.html!
 
 +------------------+
