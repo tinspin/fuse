@@ -1,0 +1,207 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Line</title>
+</head>
+<script src="js/p5.js"></script>
+<script>
+class Line{
+  constructor(a,b){
+    this.array=[];
+    this.array.push([a,b]);
+  }
+
+  add_position(a,b){
+    this.array.push([a,b]);
+  }
+
+// the only thing needed to move is the angle
+  move(angle)
+  {
+    var a=this.array[this.array.length-2];
+    var b=this.array[this.array.length-1];
+    var vectorx=(b[0]-a[0])
+    var vectory=(b[1]-a[1])
+    // we take the vector of the previous move
+
+    // we apply a rotation matrix
+    var x=vectorx*Math.cos(angle)-vectory*Math.sin(angle)
+    var y=vectorx*Math.sin(angle)+vectory*Math.cos(angle)
+
+    // and add this new vector to the last coord
+    var new_x=b[0]+x
+    var new_y=b[1]+y
+
+    // print("distance",((new_x-b[0])**2+(new_y-b[1])**2)**0.5)
+    this.array.push([new_x,new_y]);
+  }
+
+  // we only display the last line
+  display()
+  {
+    for(var i=this.array.length-2;i<this.array.length-1;i++)
+    {
+      line(this.array[i][0],this.array[i][1],this.array[i+1][0],this.array[i+1][1]);
+    }
+  }
+
+  // display line foreach player
+  static display_lines(player_lines){
+    for (var i=0;i<player_lines.length;i++)
+    {
+      stroke(color_tab[i]);
+      strokeWeight(line_width);
+      player_lines[i].display();
+    }
+  }
+
+  // check if the game is ended
+  static is_ended(player_lines)
+  {
+    // check if someone get trough a wall
+    for (var i=0;i<player_lines.length;i++)
+    {
+      for (var k=0;k<2;k++)
+      {
+        var x=player_lines[i].array[player_lines[i].array.length-1][k];
+        if (x<=0 || x>=dimension)
+        {
+          print(true);
+          return true;
+        }
+      }
+    }
+
+    // check if a line get trough another one or itself
+    for (var i=0;i<player_lines.length;i++)
+    {
+      for (var j=0;j<player_lines.length;j++)
+      {
+        for(var k=0;k<player_lines[j].array.length;k++)
+        {
+          var x = player_lines[i].array[player_lines[i].array.length-1]
+          var y = player_lines[j].array[k]
+          if (Math.abs(x[0]-y[0])<line_width*0.8 && (Math.abs(x[1]-y[1])<line_width*0.8))
+          {
+            if(i==j && k<player_lines[j].array.length-line_width-1)
+            {
+              print('Dead');
+              return i;
+            }
+            else if (i!=j)
+            {
+              print("Dead");
+              return i;
+            }
+          }
+        }
+      }
+    }
+    return -1;
+  }
+}
+
+speed=[2,1,1];
+var players=[];
+// canvas dimension
+var dimension=800;
+// the angle speed
+var angle=2;
+var started=false;
+
+// 2 keys foreach player
+var keys=['LEFT_ARROW','RIGHT_ARROW','Q','S','V','B'];
+var keys_code=[ [37,39],[81,83],[86,66] ];
+var accelerate=[38,87,70];
+// color line foreach player
+var color_tab=["red","blue","green"];
+var line_width=15;
+
+// create this function to start the game onclick
+function start(nb_players)
+{
+  // to avoid start again while playing and not before clicking
+  if (started==false)
+  {
+    var elt=document.getElementById("looser").innerHTML="";
+    background('black');
+    players=[];
+    var rules="";
+    for (var i=0;i<nb_players;i++)
+    {
+      x=Math.floor(Math.random() * 0.8*dimension) + 1;
+      line_tmp=new Line(x,x);
+      console.log(speed[i]);
+      line_tmp.add_position(x+speed[i],x+speed[i]);
+      players.push(line_tmp);
+      rules+="Player "+i.toString()+" : keys "+keys[2*i]+" and "+keys[2*i+1]+"<br>";
+    }
+    var elt = document.getElementById("rules").innerHTML=rules;
+    started=true;
+  }
+}
+
+
+function setup() {
+  canvas=createCanvas(dimension, dimension);
+  colorMode(HSB);
+  background('black');
+  canvas.parent('curve_fever_canvas');
+}
+
+function draw() {
+  if (started)
+  {
+    for (var i=0;i<players.length;i++)
+    {
+      if (keyIsDown(accelerate[i])) {
+      console.log("1");
+        speed[i]=2;
+      }
+      //else {
+      //  speed[i]=1;
+      //}
+      if (keyIsDown(keys_code[i][0])) {
+        players[i].move(-angle* Math.PI / 180);
+      }
+      else if (keyIsDown(keys_code[i][1])) {
+        players[i].move(angle* Math.PI / 180);
+      }
+      else {
+        players[i].move(0);
+      }
+    }
+    var looser_id=Line.is_ended(players);
+    if (looser_id!=-1)
+    {
+      var elt = document.getElementById("looser").innerHTML="Player "+looser_id+ " lost";
+      started=false;
+    }
+    Line.display_lines(players);
+  }
+}
+
+</script>
+<body>
+
+  <style>
+  div {
+  width: 50%;
+  margin: 0 auto;
+  text-align:center;
+  }
+
+  </style>
+  <div id="curve_fever_canvas">
+  </div>
+  <div>
+  <button onclick="start(1)">One player</button>
+  <button onclick="start(2)">Two players</button>
+  <button onclick="start(3)">Three players</button>
+  <p id="rules"></p>
+  <b><p id="looser"></p></b>
+  </div>
+
+</body>
+</html>
