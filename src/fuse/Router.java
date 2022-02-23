@@ -160,12 +160,16 @@ public class Router implements Node {
 				/* The distributed name service I'm building
 				 * is going to use 5-bit letters so to fit inside
 				 * an integer we can only have 6 letters.
+		         * o = 0
+				 * i = 1
+				 * x and z removed
+				 * oi23456789abcdefghjklmnpqrstuvwy
 				 */
 				if(split[1].length() > 6)
 					return "user|fail|name too long (6)";
 
-				if(name && !split[1].matches("[a-zA-Z1-6.\\-]+"))
-					return "user|fail|name invalid (a-z/1-6)";
+				if(name && !split[1].matches("[a-wyA-wy2-9]+"))
+					return "user|fail|name invalid (a-wy/2-9)";
 
 				if(name && split[1].matches("[0-9]+"))
 					return "user|fail|name alpha missing"; // [0-9]+ reserved for <id>
