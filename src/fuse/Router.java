@@ -168,7 +168,7 @@ public class Router implements Node {
 				if(split[1].length() > 6)
 					return "user|fail|name too long (6)";
 
-				if(name && !split[1].matches("[a-wyA-wy2-9]+"))
+				if(name && !split[1].matches("[a-wyA-WY2-9]+"))
 					return "user|fail|name invalid (a-wy/2-9)";
 
 				if(name && split[1].matches("[0-9]+"))
