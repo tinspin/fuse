@@ -1748,14 +1748,14 @@ System.out.println(poll + " " + names);
 
 		if(error)
 			stat.error++;
-
-		if(fail)
+		else if(fail)
 			stat.fail++;
-
-		stat.count++;
-		stat.total += time;
-		stat.min = (int) (time < stat.min ? time : stat.min);
-		stat.max = (int) (time > stat.max ? time : stat.max);
+        else { // errors and fails should not impact timings
+		    stat.count++;
+            stat.total += time;
+            stat.min = (int) (time < stat.min ? time : stat.min);
+            stat.max = (int) (time > stat.max ? time : stat.max);
+        }
 	}
 
 	public static class Warn extends Service {
