@@ -1813,7 +1813,11 @@ System.out.println(poll + " " + names);
 				String name = (String) it.next();
 				Stat stat = (Stat) stats.get(name);
 
-				float avg = (float) stat.total / (float) stat.count;
+				float avg = 0;
+
+				if(stat.count > 0) {
+				    avg = (float) stat.total / (float) stat.count;
+                }
 
 				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.min + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.max + "&nbsp;&nbsp;&nbsp;</td><td>x</td><td>" + stat.count + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.fail + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.error + "&nbsp;&nbsp;&nbsp;</td></tr>");
 			}
