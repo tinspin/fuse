@@ -1814,12 +1814,15 @@ System.out.println(poll + " " + names);
 				Stat stat = (Stat) stats.get(name);
 
 				float avg = 0;
+                int min = 0;
 
-				if(stat.count > 0) {
+				if(stat.count > 0)
 				    avg = (float) stat.total / (float) stat.count;
-                }
 
-				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.min + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.max + "&nbsp;&nbsp;&nbsp;</td><td>x</td><td>" + stat.count + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.fail + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.error + "&nbsp;&nbsp;&nbsp;</td></tr>");
+                if(min < Integer.MAX_VALUE)
+                    min = stat.min;
+
+				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "&nbsp;&nbsp;&nbsp;</td><td>" + min + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.max + "&nbsp;&nbsp;&nbsp;</td><td>x</td><td>" + stat.count + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.fail + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.error + "&nbsp;&nbsp;&nbsp;</td></tr>");
 			}
 
 			out.println("</table>");
