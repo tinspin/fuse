@@ -1819,7 +1819,7 @@ System.out.println(poll + " " + names);
 				if(stat.count > 0)
 				    avg = (float) stat.total / (float) stat.count;
 
-                if(min < Integer.MAX_VALUE)
+                if(stat.min < Integer.MAX_VALUE)
                     min = stat.min;
 
 				out.println("<tr><td>" + name + "&nbsp;&nbsp;&nbsp;</td><td>" + decimal.format(avg) + "&nbsp;&nbsp;&nbsp;</td><td>" + min + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.max + "&nbsp;&nbsp;&nbsp;</td><td>x</td><td>" + stat.count + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.fail + "&nbsp;&nbsp;&nbsp;</td><td>" + stat.error + "&nbsp;&nbsp;&nbsp;</td></tr>");
