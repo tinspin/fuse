@@ -387,7 +387,72 @@ public class Router implements Node {
 		if(user.game == null)
 			return "main|fail|no game";
 
-		if(split[0].equals("name") || split[0].equals("nick") || split[0].equals("pass") || split[0].equals("mail")) {
+		if(split[0].equals("move")) {
+			user.room.send(user, "move|" + user.name + "|" + split[2]);
+
+			String[] all = split[2].split(";");
+			String[] pos = all[0].split(",");
+
+			if(user.position == null)
+				user.position = new Position();
+
+			user.position.x = Float.parseFloat(pos[0]);
+			user.position.y = Float.parseFloat(pos[1]);
+			user.position.z = Float.parseFloat(pos[2]);
+
+			String[] vel = all[1].split(",");
+
+			if(user.velocity == null)
+				user.velocity = new Velocity();
+
+			user.velocity.x = Float.parseFloat(vel[0]);
+			user.velocity.y = Float.parseFloat(vel[1]);
+			user.velocity.z = Float.parseFloat(vel[2]);
+
+			String[] rot = all[2].split(",");
+
+			if(user.rotation == null)
+				user.rotation = new Rotation();
+
+			user.rotation.x = Float.parseFloat(rot[0]);
+			user.rotation.y = Float.parseFloat(rot[1]);
+			user.rotation.z = Float.parseFloat(rot[2]);
+			user.rotation.w = Float.parseFloat(rot[3]);
+
+			user.action = all[3];
+
+			return "move|done";
+		}
+		else if(split[0].equals("send")) {
+			user.room.send(user, "send|" + user.name + "|" + split[2]);
+			return "send|done";
+		}
+		else if(split[0].equals("show")) {
+			user.room.send(user, "show|" + user.name + "|" + split[2], true);
+
+			String[] show = split[2].split(",");
+
+			if(show[0].equals("ball")) {
+				Item item = (Item) user.game.items.get(show[1]);
+
+				if(item.position == null)
+					item.position = new Position();
+
+				item.position.x = Float.parseFloat(show[2]);
+				item.position.y = Float.parseFloat(show[3]);
+				item.position.z = Float.parseFloat(show[4]);
+
+				if(item.velocity == null)
+					item.velocity = new Velocity();
+
+				item.velocity.x = Float.parseFloat(show[5]);
+				item.velocity.y = Float.parseFloat(show[6]);
+				item.velocity.z = Float.parseFloat(show[7]);
+			}
+
+			return "show|done";
+		}
+		else if(split[0].equals("name") || split[0].equals("nick") || split[0].equals("pass") || split[0].equals("mail")) {
 			File file = null;
 			final String rule = split[0];
 			boolean id = split[2].matches("[0-9]+");
@@ -1108,71 +1173,6 @@ System.out.println(poll + " " + names);
 			}
 
 			return "chat|done";
-		}
-		else if(split[0].equals("send")) {
-			user.room.send(user, "send|" + user.name + "|" + split[2]);
-			return "send|done";
-		}
-		else if(split[0].equals("show")) {
-			user.room.send(user, "show|" + user.name + "|" + split[2], true);
-
-			String[] show = split[2].split(",");
-
-			if(show[0].equals("ball")) {
-				Item item = (Item) user.game.items.get(show[1]);
-
-				if(item.position == null)
-					item.position = new Position();
-				
-				item.position.x = Float.parseFloat(show[2]);
-				item.position.y = Float.parseFloat(show[3]);
-				item.position.z = Float.parseFloat(show[4]);
-
-				if(item.velocity == null)
-					item.velocity = new Velocity();
-
-				item.velocity.x = Float.parseFloat(show[5]);
-				item.velocity.y = Float.parseFloat(show[6]);
-				item.velocity.z = Float.parseFloat(show[7]);
-			}
-
-			return "show|done";
-		}
-		else if(split[0].equals("move")) {
-			user.room.send(user, "move|" + user.name + "|" + split[2]);
-			
-			String[] all = split[2].split(";");
-			String[] pos = all[0].split(",");
-			
-			if(user.position == null)
-				user.position = new Position();
-			
-			user.position.x = Float.parseFloat(pos[0]);
-			user.position.y = Float.parseFloat(pos[1]);
-			user.position.z = Float.parseFloat(pos[2]);
-
-			String[] vel = all[1].split(",");
-
-			if(user.velocity == null)
-				user.velocity = new Velocity();
-
-			user.velocity.x = Float.parseFloat(vel[0]);
-			user.velocity.y = Float.parseFloat(vel[1]);
-			user.velocity.z = Float.parseFloat(vel[2]);
-			
-			String[] rot = all[2].split(",");
-			
-			if(user.rotation == null)
-				user.rotation = new Rotation();
-			
-			user.rotation.x = Float.parseFloat(rot[0]);
-			user.rotation.y = Float.parseFloat(rot[1]);
-			user.rotation.z = Float.parseFloat(rot[2]);
-			user.rotation.w = Float.parseFloat(rot[3]);
-			
-			user.action = all[3];
-			
-			return "move|done";	
 		}
 
 		return "main|fail|rule not found";

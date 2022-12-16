@@ -228,9 +228,9 @@ public class play extends Service {
           */
           if(xhr.readyState == 3) {
             var temp_body = xhr.responseText.substring(size, xhr.responseText.length);
-            //console.log(temp_body + ' hello ' + (temp_body != body_fix));
+            console.log(temp_body + ' hello ' + (temp_body != body_fix));
             if(temp_body != body_fix && temp_body.indexOf('data: noop') == -1) {
-              //console.log('yo');
+              console.log('yo');
               chop(temp_body, '\n\n'); // last \n\n instead
               body_fix = temp_body;
             }
