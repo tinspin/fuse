@@ -64,15 +64,16 @@ public class Server extends Service implements Node, Runnable {
 
                 if (host.endsWith("radiomesh.org")) {
                     Router.data = "data" + top;
+					Router.what = "localhost";
                 } else {
                     Router.data = "base" + top;
+					Router.what = daemon.bind();
                 }
 
                 // Only when you don't have Latency driven DNS like Route53.
                 //Router.fuse = System.getProperty("host") + top;
                 Router.fuse = host;
                 Router.path = host;
-                Router.what = "localhost";
             }
         }
 

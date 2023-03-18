@@ -124,6 +124,7 @@ public class Router implements Node {
 
 			public void fail(String host, Exception e) throws Exception {
 				e.printStackTrace();
+				System.out.println(host);
 				event.query().put("done", "salt|fail|unknown problem");
 				event.reply().wakeup(true);
 			}

@@ -65,7 +65,7 @@
 			<fileset dir="res">
 				<exclude name="**/*.jpg"/>
 				<exclude name="**/*.png"/>
-				<!--exclude name="**/*.svg"/-->
+				<exclude name="**/*.svg"/>
 				<exclude name="**/*.java"/>
 				<exclude name="**/*.wav"/>
 			</fileset>
@@ -91,7 +91,7 @@
 	
 	<target name="remote" depends="build">
 		<java fork="yes" classname="se.rupy.http.Deploy" classpath="lib/http.jar">
-			<arg line="fuse.rupy.se"/>
+			<arg line="host.rupy.se"/>
 			<arg line="bin/${root}.jar"/>
 			<arg line="${fuse.rupy.se}"/>
 		</java>
@@ -115,12 +115,21 @@
         </java>
     </target>
 	
-	<target name="fuse" depends="build">
+	<target name="binary" depends="build">
 	    <copy file="bin/${root}.jar" tofile="bin/fuse.binarytask.com.jar"/>
 	    <java fork="yes" classname="se.rupy.http.Deploy" classpath="lib/http.jar">
 	        <arg line="host.binarytask.com"/>
 	        <arg line="bin/fuse.binarytask.com.jar"/>
 	        <arg line="${fuse.binarytask.com}"/>
+	    </java>
+	</target>
+
+    <target name="radio" depends="build">
+	    <copy file="bin/${root}.jar" tofile="bin/fuse.radiomesh.org.jar"/>
+	    <java fork="yes" classname="se.rupy.http.Deploy" classpath="lib/http.jar">
+	        <arg line="host.radiomesh.org"/>
+	        <arg line="bin/fuse.radiomesh.org.jar"/>
+	        <arg line="${fuse.radiomesh.org}"/>
 	    </java>
 	</target>
 
