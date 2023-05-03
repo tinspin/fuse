@@ -73,7 +73,7 @@ public class Server extends Service implements Node, Runnable {
                 // Only when you don't have Latency driven DNS like Route53.
                 //Router.fuse = System.getProperty("host") + top;
                 Router.fuse = host;
-                Router.path = host;
+                //Router.path = host;
             }
         }
 

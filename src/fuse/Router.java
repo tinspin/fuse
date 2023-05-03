@@ -32,7 +32,7 @@ public class Router implements Node {
     // change these to localhost:8000 if
     // you are developing with HTML5 on localhost
 	public static String fuse = "fuse.rupy.se";//"localhost:8000"; // So .js cross domain connects to the right node; does not work with IE with XDR.
-	public static String path = "fuse.rupy.se";//"localhost:8000"; // So the modular .js will load from the right domain.
+	//public static String path = "fuse.rupy.se";//"localhost:8000"; // So the modular .js will load from the right domain.
 
 	public static int time = 30;
 	
