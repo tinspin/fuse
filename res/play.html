@@ -807,10 +807,11 @@ public class play extends Service {
      fuse.rupy.se/play.html?game=<name>&path=URLtoyourgame.html -->
      
 [[		if(path.equals("cube.html") || path.equals("bomb.html") || path.equals("item.html")) {
-			//System.out.println(event.query().header());
+			System.out.println(event.query().header());
 			String _host = (String) event.query().header().get("host");
-			//System.out.println(_host);
-			String _path = _host.equals("127.0.0.1:8000") || _host.equals("localhost:8000") ? "content" : _host;
+			System.out.println(_host);
+			String _path = _host.equals("127.0.0.1:8000") || _host.equals("localhost:8000") ? "content" : !_host.startsWith("fuse") ? _host.substring(_host.indexOf(".") + 1, _host.length()) : _host;
+			System.out.println(_path);
 			BufferedReader file = new BufferedReader(new FileReader("app/" + _path + "/" + path));
 			String line = file.readLine();
 			while(line != null) {
