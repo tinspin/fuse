@@ -43,6 +43,8 @@ license:
     sponsor the fuse tier on <a href="http://tinspin.gumroad.com/l/xwluh">gumroad</a> while you are using this,
     or any derivation, commercially. The .html and graphics are
     proprietary examples except the javascript in play.html!
+    The protocol is completely public domain.
+    The more that implement it the better!
 
 +------------------+
 | <i>work in progress</i> |
