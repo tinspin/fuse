@@ -27,7 +27,7 @@ public class Router implements Node {
 	public static String hash = "sha-256";
 
 	public static String data = "root.rupy.se";
-    public static String what = "81.236.222.232";
+    public static String what = "217.210.200.55";
 
     // change these to localhost:8000 if
     // you are developing with HTML5 on localhost
@@ -178,6 +178,9 @@ public class Router implements Node {
 
 			if(pass && split[2].length() < 4)
 				return "user|fail|pass too short";
+
+			if(pass && split[2].length() > 9)
+				return "user|fail|pass too long";
 
 			if(mail && split[3].indexOf("@") < 1 && !split[3].matches("[a-zA-Z0-9.@\\-\\+]+"))
 				return "user|fail|mail invalid";

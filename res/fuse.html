@@ -111,7 +111,7 @@ Reference Implementation
     <li>Physics: Client predicts everything</li>
     <li>Movement: Events instead of ticks</li>
 </ul>
-Examples:
+<a id="examples">Examples</a>:
 <ul style="list-style-type: none;">
 <li><table border="0">
 <tr><td width="50"><a href="http://aeonalpha.com"><img height="60" src="http://aeonalpha.com/aeb.svg"></a></td>
@@ -128,7 +128,7 @@ Examples:
     <tr><td colspan="3"><a href="http://fuse.rupy.se/bomb.html"><img style="image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; -ms-interpolation-mode: nearest-neighbor; image-rendering: pixelated;" src="http://move.rupy.se/file/bomb.gif"></a></td></tr>
 </table></li>
 </ul>
-<font>Performance: (Meadow)</font>
+<a id="performance">Performance</a>: (Meadow)
 <ul style="list-style-type: none;"><li><font>150 concurrent users ~30% CPU on AWS T2 Micro (3 ECU burst?)</font></li>
 <li><font color="#ff9900">&nbsp;&nbsp;&nbsp;&nbsp;Then we upgraded because CPU credits were<br>&nbsp;&nbsp;&nbsp;&nbsp;running low and not replenishing at night:</font></li>
 <li><font>200 concurrent users ~12.5% CPU on AWS T2 Medium (10 ECU burst?)</font></li>
@@ -143,7 +143,7 @@ Examples:
     &nbsp;&nbsp;&nbsp;&nbsp;and sends 100.000 move messages per second while<br>&nbsp;&nbsp;&nbsp;&nbsp;keeping internal latency low enough for FPS games.</font></li>
 <li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales linearly / zero io-wait</font></li>
 <li><font color="#00cc33">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100% stable / zero leakage</font></li></ul>
-Advantages:
+<a id="advantages">Advantages</a>:
 <ul style="list-style-type:circle">
 <li>Scalable - 1000 mess.in+out/s on Raspberry Pi 1 / Distr. Async. DB</li>
 <li>Simple - Virtual Host Hotdeploy / HTTP JSON File DB / HTTP API</li>
@@ -158,13 +158,13 @@ Advantages:
 <li>Global 100% Read Uptime</li>
 <li>Commercial License starting at 20$/Month</li>
 </ul>
-Flaws (2018-11-30):
+<a id="flaws">Flaws</a> (2018-11-30):
 <ul style="list-style-type: circle">
 <li><font color="#ff3300">759 out of 205.875 customers refunded</font> because their antivirus blocks the pull HTTP stream</li>
 <li>You need large database hard-drives; Meadow uses <font color="#ff3300">100KB per user</font>, also inodes run out<br>before disk space if you don't configure the /app mount with 'mkfs.ext4 -T small'</li>
 <li>Peak garbage collect is <font color="#ff3300">7ms</font> once per minute on AWS T2 Micro instance</li>
 </ul>
-    Roadmap (2020-02-02):
+<a id="roadmap">Roadmap</a> (2020-02-02):
     <ul style="list-style-type: none;">
         <li>Update 2020-11-02: <a href="http://talk.binarytask.com/task?id=5959519327505901449">Preview Teaser!</a></li>
         <li>Update 2020-12-02: <a href="http://move.rupy.se/file/park_engine.html">A bold prediction!</a></li>
@@ -211,7 +211,7 @@ Flaws (2018-11-30):
         <li>&nbsp;</li>
         <li><img width="50px" src="polar.svg"></li>
     </ul>
-    Competition:
+<a id="competition">Competition</a>:
 <ul style="list-style-type: none;">
 <li>None of the competition has an integrated<br>async-to-async distributed database or web<br>server that can scale across continents<br>or hot-deploy in under 2 seconds.<br><br></li>
 <li><a href="https://forums.improbable.io/t/newer-dependencies/3042">SpatialOS</a> (Java, uses netty/akka) <font color="red">80MB total size = x400 and now military only?!</font></li>
@@ -221,7 +221,7 @@ Flaws (2018-11-30):
 <li><a href="https://www.photonengine.com/en-US/Photon">Exit Games</a> (C++/C#) <font color="red">Only Windows</font></li>
 <li><a href="https://github.com/heroiclabs/nakama">Nakama</a> (Go)</li>
 </ul>
-    Tutorial:<br>
+    <a id="tutorial">Tutorial</a>:<br>
     <ul style="list-style-type: none"><li>
         Server<br><br>
         1) Install JDK (See below for my own backups of free Java) and <a href="https://ant.apache.org/bindownload.cgi">Ant</a>, add their /bin folders to OS path.<br>
@@ -242,7 +242,7 @@ Flaws (2018-11-30):
         5) Copy Fuse.cs/Fuse.cpp to your client project.<br>
         6) Edit host and port depending on local/remote.<br>
     </li></ul>
-Hosting:<br>
+<a id="hosting">Hosting</a>:<br>
     <ul style="list-style-type: none;"><li><a href="http://sprout.rupy.se/article?id=290"><img style="image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; -ms-interpolation-mode: nearest-neighbor; image-rendering: pixelated;" src="http://sprout.rupy.se/file/2/9/1/cluster-200.jpeg"></a></li></ul>
 <ul style="list-style-type: circle"><li>Dedicated: Minimum equivalent of two micro instances, last free Oracle Java (8u181):</li>
     <ul style="list-style-type: circle">
@@ -254,7 +254,7 @@ Hosting:<br>
 <li>"Cloud": We host and maintain on globally redundant hybrid cloud: <a href="http://host.binarytask.com">host.binarytask.com</a>
     <ul style="list-style-type: circle">
         <li>Taipei & Hong Kong in Asia</li><li>Omaha & Kansas City in US</li><li>Zürich & Berlin in Europe</li></ul></li></ul>
-License:<br>
+<a id="license">License</a>:<br>
     <ul style="list-style-type:circle">
         <li>You have to show the <img width="45px" src="svg/mos.svg"> logo on startup. (also availiable with <br>
             white outline: <img width="45px" src="http://fuse.rupy.se/svg/mos_outline.svg">)</li>
@@ -265,13 +265,13 @@ License:<br>
             proprietary and cannot be used commercially as is, from the play.html <br>
             you can reuse the platform specific javascript though!</li>
     </ul>
-    Documentation:<br>
+<a id="documentation">Documentation</a>:<br>
     <ul style="list-style-type:circle">
         <li><a href="doc/game_networking_json_vs_custom_binary_protocol.txt">game_networking_json_vs_custom_binary_protocol_over_TLS/TCP</a></li>
         <li><a href="doc/why_do_game_developers_use_udptcp_ports_that_are.txt">why_do_game_developers_use_udptcp_ports_that_are_not_open_by_default?</a></li>
     </ul>
 
-Contact:<br>
+<a id="contact">Contact</a>:<br>
 <form method="post">
 <table style="margin: 5px;">
 [[ back.length() > 0 ? "<tr><td colspan=\"2\"><font color=\"" + (done.equals("OK") ? green : red) + "\">" + back + "</font></td></tr>" : "" ]]

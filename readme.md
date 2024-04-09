@@ -77,7 +77,7 @@ in sort of chronological order:
                             // to get latency
  <b><i>ping</i></b>                       -> ping|done
 
-                             // simple crash report
+                            // simple crash report
  <b><i>snap</i></b>|[data]                -> snap|done
  
                             // to get server time in millisec from 1970
@@ -91,12 +91,13 @@ in sort of chronological order:
                             //        preferably [pass] is a hash with salt 
                             //        we simply use <i>hash</i>(pass + name.toLowerCase())
  <b><i>user</i></b>|[name]|[pass]         -> user|done|&lt;salt&gt;|&lt;key&gt;|&lt;id&gt;
-                            -> user|fail|name too short     // min 3
-                            -> user|fail|name too long      // max 12
+                            -> user|fail|name too short     // min 2
+                            -> user|fail|name too long      // max 6
                             -> user|fail|name already registered
                             -> user|fail|name invalid       // [a-wyA-WY2-9]+
                             -> user|fail|name alpha missing // [0-9]+ reserved for &lt;id&gt;
-                            -> user|fail|pass too short
+                            -> user|fail|pass too short     // min 3
+                            -> user|fail|pass too long      // max 9
  
                             // get salt for &lt;name&gt; or &lt;id&gt;
  <b><i>salt</i></b>|&lt;name&gt;/&lt;id&gt;           -> salt|done|&lt;salt&gt;
