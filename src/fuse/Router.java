@@ -174,6 +174,8 @@ public class Router implements Node {
 
 				if(name && split[1].matches("[0-9]+"))
 					return "user|fail|name alpha missing"; // [0-9]+ reserved for <id>
+
+				// TODO: Add bad word filter and limit registrations per IP to once per 5 minutes?
 			}
 
 			if(pass && split[2].length() < 4)
