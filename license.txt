@@ -4,7 +4,7 @@ Permission is hereby granted, to any person obtaining a copy of this software an
 
 2) You have to sponsor the fuse tier on gumroad while you are using the Software, or any derived Software, commercially:
 
-https://tinspin.gumroad.com/l/xwluh
+https://tinspin.gumroad.com (then click Fuse)
 
 3) The .html and graphics are proprietary examples except the javascript in play.html
 
