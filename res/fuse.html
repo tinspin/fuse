@@ -36,7 +36,7 @@ public class fuse extends Service {
 		else if(name.length() > 0 && mail.length() > 0 && mail.contains("@")) {
 			Async.Work work = new Async.Work(event) {
 				public void send(Async.Call call) throws Exception {
-					call.get("/mail?to=marc@rupy.se&from=" + mail + "&title=" + URLEncoder.encode("Fuse Contact") + "&body=" + URLEncoder.encode("Please tell me more about Fuse!<br><br>" + name) + "&send", "Head:less\r\nHost:host.rupy.se");
+					call.get("/mail?to=marc@rupy.se&from=" + mail + "&title=" + URLEncoder.encode("Fuse Contact") + "&body=" + URLEncoder.encode("Please tell me more about Fuse!<br><br>" + name) + "&send", "Head:less\r\nHost:host.radiomesh.org");
 				}
 
 				public void read(String host, final String body) throws Exception {
@@ -50,7 +50,7 @@ public class fuse extends Service {
 				}
 			};
 		
-			event.daemon().client().send("localhost", work, 0);
+			event.daemon().client().send("host.radiomesh.org", work, 0);
 			throw event;
 		}
 		
@@ -105,7 +105,7 @@ Reference Implementation
 <li>Global 100% Read Uptime (registered users<br>will always be able to login and play)</li>
 <li>&nbsp;</li>
 <li>Low internal latency: <a href="http://fuse.rupy.se/data">statistics</a> (Raspberry Pi 2)</li>
-<li>Source Available: <a href="https://github.com/tinspin/fuse">https://github.com/tinspin/fuse</a></li>
+<li>Source Available: <a href="http://github.com/tinspin/fuse">http://github.com/tinspin/fuse</a></li>
 <li>Integrated Forum: <a href="http://talk.binarytask.com">http://talk.binarytask.com</a></li>
     <li>&nbsp;</li>
     <li>Physics: Client predicts everything</li>
@@ -114,7 +114,7 @@ Reference Implementation
 <a id="examples">Examples</a>:
 <ul style="list-style-type: none;">
 <li><table border="0">
-<tr><td width="50"><a href="http://aeonalpha.com"><img height="60" src="http://aeonalpha.com/aeb.svg"></a></td>
+<tr><td width="50"><a href="http://aeonalpha.com"><img height="60" src="http://aeonalpha.com/ae.svg"></a></td>
 <td><a href="http://ahoy.rupy.se"><img width="60" src="http://ahoy.rupy.se/icon.svg"></a></td>
 <td width="50">
 <a href="http://fuse.rupy.se/cube.html">
@@ -173,19 +173,19 @@ Reference Implementation
         <li>Gumroad License, Github Sponsorship and Itch Prepaid & Subscription.</li>
         <li><br>
             <img height="75" src="http://ahoy.rupy.se/park.svg">&nbsp;&nbsp;<img width="250" src="http://move.rupy.se/file/logo.svg"><br><br>
-            <img width="500" src="http://move.rupy.se/file/drawing.svg"><br><br>
+            <img width="500" src="http://move.rupy.se/file/drawing_lite.svg"><br><br>
             <!--img height="50" src="http://move.rupy.se/file/park.png"><br><br-->
             <div style="width: 200px; position: relative; left: 0; top: 0;">
                 <img src="http://ahoy.rupy.se/girl.gif" style="position: relative; top: 0; left: 0; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; -ms-interpolation-mode: nearest-neighbor; image-rendering: pixelated;"/>
                 <img height="50" src="svg/cp.svg" style="position: absolute; top: 0px; left: 0px;"/>
                 <div style="position: absolute; left: 0px; bottom: 0px;">
                     <svg style="position: relative; top: 0px; left: 0px;" height="50" width="50">
-                        <circle cx="25" cy="25" r="25" fill="#333333" />
+                        <circle cx="25" cy="25" r="25" fill="#cccccc" />
                     </svg>
-                    <img style="position: absolute; top: 13px; left: 8px;" src="http://aeonalpha.com/vanilla.svg" height="25">
+                    <img style="position: absolute; top: 13px; left: 8px;" src="http://move.rupy.se/file/vanilla_dark.svg" height="25">
                 </div>
-                <img height="50" src="svg/itch.svg" style="position: absolute; top: 0px; right: 0px;"/>
-                <img height="50" src="svg/github.svg" style="position: absolute; bottom: 0px; right: 0px;"/>
+                <img height="50" src="http://move.rupy.se/file/itch_lite.svg" style="position: absolute; top: 0px; right: 0px;"/>
+                <img height="50" src="http://move.rupy.se/file/github_lite.svg" style="position: absolute; bottom: 0px; right: 0px;"/>
                 <!--img style="position: absolute; bottom: 25px; right: 0px;" width="250" src="http://move.rupy.se/file/park.png"-->
                 <!--img height="32" src="http://aeonalpha.com/vanilla.svg" style="position: absolute; bottom: 10px; left: 10px;"/-->
             </div></li>
@@ -209,7 +209,7 @@ Reference Implementation
         <li>&nbsp;</li>
         <li>Movement: Polar ADC - DAC compression for input over network.<br>Delay precision correction until delta is (s)low enough.</li>
         <li>&nbsp;</li>
-        <li><img width="50px" src="polar.svg"></li>
+        <li><img width="50px" src="http://move.rupy.se/file/polar_lite.svg"></li>
     </ul>
 <a id="competition">Competition</a>:
 <ul style="list-style-type: none;">
@@ -258,7 +258,7 @@ Reference Implementation
     <ul style="list-style-type:circle">
         <li>You have to show the <img width="45px" src="svg/mos.svg"> logo on startup. (also availiable with <br>
             white outline: <img width="45px" src="http://fuse.rupy.se/svg/mos_outline.svg">)</li>
-        <li>You have to sponsor my fuse <a href="http://tinspin.gumroad.com/l/xwluh">tier</a> on gumroad (according <br>
+        <li>You have to sponsor my fuse <a href="http://tinspin.gumroad.com">tier</a> on gumroad (according <br>
             to your entire company structures yearly revenue) during the time <br>
             you are using this commercially.</li>
         <li>Last but not least the .html files (including content in them) are <br>

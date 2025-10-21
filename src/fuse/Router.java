@@ -156,18 +156,19 @@ public class Router implements Node {
 
 			if(name) {
 				if(split[1].length() < 2)
-					return "user|fail|name too short";
+					return "user|fail|name too short (2)";
 
 				/* The distributed name service I'm building
 				 * is going to use 5-bit letters so to fit inside
-				 * an integer we can only have 6 letters.
-		         * o = 0
-				 * i = 1
-				 * x and z removed
-				 * oi23456789abcdefghjklmnpqrstuvwy
+				 * 2 integers we can only have 12 letters.
+				 * 0 = o
+				 * 1 = i
+				 * x = 8
+				 * z = 2
+				 * oi23456789 abcdefghjk lmnpqrstuv wy
 				 */
-				if(split[1].length() > 6)
-					return "user|fail|name too long (6)";
+				if(split[1].length() > 12)
+					return "user|fail|name too long (12)";
 
 				if(name && !split[1].matches("[a-wyA-WY2-9]+"))
 					return "user|fail|name invalid (a-wy/2-9)";
@@ -177,13 +178,13 @@ public class Router implements Node {
 
 				// TODO: Add bad word filter and limit registrations per IP to once per 5 minutes?
 			}
-
-			if(pass && split[2].length() < 4)
+/*
+			if(pass && split[2].length() < 3)
 				return "user|fail|pass too short";
 
 			if(pass && split[2].length() > 9)
 				return "user|fail|pass too long";
-
+*/
 			if(mail && split[3].indexOf("@") < 1 && !split[3].matches("[a-zA-Z0-9.@\\-\\+]+"))
 				return "user|fail|mail invalid";
 

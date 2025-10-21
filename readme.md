@@ -40,7 +40,7 @@ platform:
 license:
 
   - Source available, you have to show the logo on startup,
-    sponsor the fuse tier on <a href="http://tinspin.gumroad.com/l/xwluh">gumroad</a> while you are using this,
+    sponsor the fuse tier on <a href="http://tinspin.gumroad.com">gumroad</a> while you are using this,
     or any derivation, commercially. The .html and graphics are
     proprietary examples except the javascript in play.html!
     The protocol is public domain.

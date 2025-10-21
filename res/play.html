@@ -503,9 +503,17 @@ public class play extends Service {
       show_fail('name too short');
       return;
     }
+    if(name.length > 6) {
+      show_fail('name too long');
+      return;
+    }
     //pass = id('pass');
     if(pass.length < 4) {
       show_fail('pass too short');
+      return;
+    }
+    if(pass.length > 9) {
+      show_fail('pass too long');
       return;
     }
     /*var mail = id('mail');
@@ -513,6 +521,7 @@ public class play extends Service {
       show_fail('mail invalid');
       return;
     }*/
+    /*alert("'" + pass + "'");*/
 [[	if(Router.hash.equals("sha-256")) { ]]
     var hash = CryptoJS.SHA256(pass + name.toLowerCase());
 [[	} else { ]]
@@ -529,9 +538,17 @@ public class play extends Service {
       show_fail('name too short');
       return;
     }
+    if(name.length > 6) {
+      show_fail('name too long');
+      return;
+    }
     //pass = id('pass');
-    if(pass.length < 4) {
+    if(pass.length < 3) {
       show_fail('pass too short');
+      return;
+    }
+    if(pass.length > 9) {
+      show_fail('pass too long');
       return;
     }
     var salt = push('salt|' + name);
