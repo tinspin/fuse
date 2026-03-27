@@ -1,4 +1,4 @@
-<img width="170" src="https://rawgit.com/tinspin/fuse/master/res/svg/mos.svg"><br>
+<img width="170" src="https://raw.githubusercontent.com/tinspin/fuse/84bc0d889414579074588b0d57d8534cbb5871cb/res/svg/mos.svg"><br>
 <pre>
 +-----------------------------+
 | <i>multiplayer online standard</i> |
